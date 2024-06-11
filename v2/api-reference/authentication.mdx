@@ -1,0 +1,145 @@
+---
+title: Authentication 🗝
+description: Understand how to authenticate using your unique API key
+---
+The Authentication is done via the `**x-api-key**` HTTP Header.
+
+
+
+For example, if your API key is `your_key_1`
+
+<Tabs>
+  <Tab title="Python SDK">
+```python
+from newscatcherapi import NewsCatcherApiClient
+
+API_KEY = 'your_key_1'
+
+newscatcherapi = NewsCatcherApiClient(x_api_key=API_KEY)
+
+news_articles = newscatcherapi.get_search(q="Tesla")
+```
+  </Tab>
+  <Tab title="cURL">
+
+```bash
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Tesla' -H 'x-api-key: your_key_1'
+```
+  </Tab>
+  <Tab title="Node.js">
+```Node
+var axios = require("axios").default;
+
+var options = {
+  method: 'GET',
+  url: 'https://api.newscatcherapi.com/v2/search',
+  params: {q: 'Bitcoin', lang: 'en', sort_by: 'relevancy', page: '1'},
+  headers: {
+    'x-api-key': 'your_key_1'
+  }
+};
+
+axios.request(options).then(function (response) {
+	console.log(response.data);
+}).catch(function (error) {
+	console.error(error);
+});
+```
+  </Tab>
+
+    <Tab title="Go">
+```golang
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"io/ioutil"
+)
+
+func main() {
+
+	url := "https://api.newscatcherapi.com/v2/search?q=Tesla&lang=en&sort_by=relevancy&page=1"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("x-api-key", "your_key_1")
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+
+}
+```
+  </Tab>
+
+    <Tab title="PHP">
+```PHP
+<?php
+
+$client = new http\Client;
+$request = new http\Client\Request;
+
+$request->setRequestUrl('https://api.newscatcherapi.com/v2/search');
+$request->setRequestMethod('GET');
+$request->setQuery(new http\QueryString([
+	'q' => 'Google',
+	'lang' => 'en',
+	'sort_by' => 'relevancy',
+	'page' => '1'
+]));
+
+$request->setHeaders([
+	'x-api-key' => 'your_key_1'
+]);
+
+$client->enqueue($request)->send();
+$response = $client->getResponse();
+
+echo $response->getBody();
+```
+  </Tab>
+
+    <Tab title="Ruby">
+```Ruby
+require "uri"
+require "net/http"
+
+url = URI("https://api.newscatcherapi.com/v2/search?q=\"Elon Musk\"&lang=en&countries=US,CA")
+
+https = Net::HTTP.new(url.host, url.port)
+https.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request["X-API-KEY"] = "enter-your-api-key-here"
+
+response = https.request(request)
+puts response.read_body
+```
+  </Tab>
+</Tabs>
+
+
+
+<Info>
+
+Get your API key by registering at [app.newscatcherapi.com](https://app.newscatcherapi.com/auth/login)
+
+</Info>
+
+Be mindful of your [account type](https://newscatcherapi.com/news-api#news-api-pricing) while making calls. Different types have different limits on the total API calls you can make, the number of calls/second, and the publication dates of the articles. Here's a table for quick reference:
+
+
+|Free Trial              |Pro                   |Enterprise            |
+|------------------------|----------------------|----------------------|
+|10,000 calls            |250,000 calls/mo      |custom limits         |
+|1 API call/second       |5 API calls/second    |custom limits         |
+|upto 2 week old articles|all available articles|all available articles|
+
+<Info>
+You can check your account type in the [dashboard](https://app.newscatcherapi.com/dashboard/)
+</Info>

@@ -1,0 +1,279 @@
+---
+title: Search By Date & Time
+description: Learn how to filter your search results by their publication date and time
+---
+While searching for news articles you'll often need to filter out the results by their publication date. The articles returned by our News API have their publication date and time as an attribute : `published_date`. Using this information you can further drill down in your search queries on the [`v2/search`](https://docs.newscatcherapi.com/api-docs/endpoints/search-news) and [`v2/latest_headlines`](https://docs.newscatcherapi.com/api-docs/endpoints/latest-headlines) endpoints.
+
+`/search`
+-------------
+
+The `/search` endpoint has two parameters, `to` and `from`, that enable you to filter your news search results by their publication dates.
+
+Let's say, you want to understand the general perception of the new Tesla UI update. To achieve this you'll need to fetch the articles published around the time the update was pushed to the cars. If you decide on the date range of _2021/12/01_ to _2022/31/01,_ you would use the `to` and `from` parameters to make a request like_:_
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?lang=en&from=2021/12/01&q=Tesla%20AND%20UI&to=2022/01/31' -H 'x-api-key: your_key_1'
+```
+
+<Info>
+The default timezone for the **_`to`_** and **_`from`_** parameters is UTC.
+</Info>
+
+Which would yield articles such as:
+
+```javascript
+{
+    "status": "ok",
+    "total_hits": 167,
+    "page": 1,
+    "total_pages": 4,
+    "page_size": 50,
+    "articles": [
+        {
+            "title": "Tesla custom V11 UI concept shows how to address one of drivers' biggest complaints",
+            "author": "Simon Alvarez",
+            "published_date": "2022-01-13 14:28:59",
+            "published_date_precision": "full",
+            "link": "https://www.teslarati.com/tesla-software-v11-ui-improvements-video",
+            "clean_url": "teslarati.com",
+            "excerpt": "When Tesla's Software V11 was released, numerous electric vehicle owners were quick to note that while the new features that came with the update were great, the system's new interface left much to be…",
+            "summary": "When Tesla's Software V11 was released, numerous electric vehicle owners were quick to note that while the new features that came with the update were great, the system's new interface left much to be desired. Eventually, even CEO Elon Musk noted on Twitter that Tesla had received its customers' feedback and improvements are coming to V11's UI.  Among the biggest gripes from Tesla owners about the V11 UI was the fact that key vehicle functions and information such as seat heaters and trip information are now hidden behind menus, instead of being directly accessible from the display with just a single tap. With this in mind, Tesla enthusiast and interface designer @deleetdesign created a mockup of what V11's improved user interface could be like.  A video of the design team's custom Tesla V11 user interface was shared online, and one has to admit, it looks pretty good. In the custom V11 UI concept, icons for useful features could be dragged into the bottom taskbar, allowing drivers to gain quick access to functions that would likely be used while on the road. Needless to say, the concept video of the fanmade V11 UI was met with positive comments from members of the online Tesla community.  The custom V11 UI created by the Tesla enthusiast shows that the EV maker could really introduce optimizations to its latest software without much difficulty. It does, if any, show that V11's user interface could actually work very well, with just some slight optimizations that are geared towards usability. Once this is done, V11's user interface could leave its designation as one of Tesla's most polarizing UI updates to date.  — CHROME DELEET (@deleetdesign) January 12, 2022 Tesla's V11 UI and its succeeding backlash from Tesla owners echo some of the issues that Apple faced when it retired its well-loved iOS 6 UI in favor of iOS 7. Numerous avid Apple fans flat-out hated iOS 7's UI, and some even claimed that the transitions in the system were causing them to feel sick. With bug fixes and incremental improvements, however, iOS 7 was improved and its new look and interface were eventually welcomed by Apple's mobile users. With more driver-friendly optimizations, perhaps Tesla's V11 UI could also go down a similar path.  Don't hesitate to contact us with news tips. Just send a message to [email protected] to give us a heads up.",
+            "rights": "teslarati.com",
+            "rank": 10382,
+            "topic": "news",
+            "country": "unknown",
+            "language": "en",
+            "authors": [
+                "Simon Alvarez"
+            ],
+            "media": "https://www.teslarati.com/wp-content/uploads/2022/01/tesla-v11-fan-edit-1-1024x648.jpg",
+            "is_opinion": false,
+            "twitter_account": "@ResidentSponge",
+            "_score": 25.722795,
+            "_id": "3370867de514b0c3e5b5587c596bbd40"
+        },
+        ... 
+            ],
+        "q": "Tesla AND UI",
+        "search_in": [
+            "title_summary_en"
+        ],
+        "lang": [
+            "en"
+        ],
+        "not_lang": null,
+        "countries": null,
+        "not_countries": null,
+        "from": "2021-12-01 00:00:00",
+        "to": "2022-01-31 00:00:00",
+        "ranked_only": "True",
+        "from_rank": null,
+        "to_rank": null,
+        "sort_by": "relevancy",
+        "page": 1,
+        "size": 50,
+        "sources": null,
+        "not_sources": null,
+        "topic": null,
+        "published_date_precision": null
+}
+```
+
+<Info>
+In our Python SDK, the _to_ and _from_ parameter names are replaced by _**to\_**_ and _**from\_**_ to avoid clashes with Python keywords.
+</Info>
+
+### Search Using Phrases
+
+You can use simple phrases like '_three months ago'_ and _'6 weeks ago'_ instead of specifying the date & time explicitly. For example, _'Tesla UI'_ related news articles can be searched as follows:
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?lang=en&from=three%20months%20ago&q=Tesla%20AND%20UI&to=6%20weeks%20ago' -H 'x-api-key: your_key_1'
+```
+
+
+```javascript
+{
+    "status": "ok",
+    "total_hits": 150,
+    "page": 1,
+    "total_pages": 3,
+    "page_size": 50,
+    "articles": [
+        {
+            "title": "Tesla custom V11 UI concept shows how to address one of drivers' biggest complaints",
+            "author": "Simon Alvarez",
+            "published_date": "2022-01-13 14:28:59",
+            "published_date_precision": "full",
+            "link": "https://www.teslarati.com/tesla-software-v11-ui-improvements-video",
+            "clean_url": "teslarati.com",
+            "excerpt": "When Tesla's Software V11 was released, numerous electric vehicle owners were quick to note that while the new features that came with the update were great, the system's new interface left much to be…",
+            "summary": "When Tesla's Software V11 was released, numerous electric vehicle owners were quick to note that while the new features that came with the update were great, the system's new interface left much to be desired. Eventually, even CEO Elon Musk noted on Twitter that Tesla had received its customers' feedback and improvements are coming to V11's UI.  Among the biggest gripes from Tesla owners about the V11 UI was the fact that key vehicle functions and information such as seat heaters and trip information are now hidden behind menus, instead of being directly accessible from the display with just a single tap. With this in mind, Tesla enthusiast and interface designer @deleetdesign created a mockup of what V11's improved user interface could be like.  A video of the design team's custom Tesla V11 user interface was shared online, and one has to admit, it looks pretty good. In the custom V11 UI concept, icons for useful features could be dragged into the bottom taskbar, allowing drivers to gain quick access to functions that would likely be used while on the road. Needless to say, the concept video of the fanmade V11 UI was met with positive comments from members of the online Tesla community.  The custom V11 UI created by the Tesla enthusiast shows that the EV maker could really introduce optimizations to its latest software without much difficulty. It does, if any, show that V11's user interface could actually work very well, with just some slight optimizations that are geared towards usability. Once this is done, V11's user interface could leave its designation as one of Tesla's most polarizing UI updates to date.  — CHROME DELEET (@deleetdesign) January 12, 2022 Tesla's V11 UI and its succeeding backlash from Tesla owners echo some of the issues that Apple faced when it retired its well-loved iOS 6 UI in favor of iOS 7. Numerous avid Apple fans flat-out hated iOS 7's UI, and some even claimed that the transitions in the system were causing them to feel sick. With bug fixes and incremental improvements, however, iOS 7 was improved and its new look and interface were eventually welcomed by Apple's mobile users. With more driver-friendly optimizations, perhaps Tesla's V11 UI could also go down a similar path.  Don't hesitate to contact us with news tips. Just send a message to [email protected] to give us a heads up.",
+            "rights": "teslarati.com",
+            "rank": 10382,
+            "topic": "news",
+            "country": "unknown",
+            "language": "en",
+            "authors": [
+                "Simon Alvarez"
+            ],
+            "media": "https://www.teslarati.com/wp-content/uploads/2022/01/tesla-v11-fan-edit-1-1024x648.jpg",
+            "is_opinion": false,
+            "twitter_account": "@ResidentSponge",
+            "_score": 25.722795,
+            "_id": "3370867de514b0c3e5b5587c596bbd40"
+        },
+        ... 
+            ],
+        ... 
+}
+```
+
+
+Querying with phrases returns a slightly different set of news articles, this is because our simple phrases aren't as granular as using specific dates. It's hard to precisely look for a complex time period time. For instance, it's easier to simply use the date `_2021/07/18_`_,_ as opposed to `'7 months and 27 days ago'`. And if you want to specify the time, things get even more complicated.
+<Info>
+If you want to learn how to make more detailed queries using date/time phrases, check out the [_dateparser_](https://dateparser.readthedocs.io/en/latest/#) module docs.
+</Info>
+Also, the phrases are relative to the time of the request. Therefore, if you make a query using phrases today, and use it to fetch news articles again next week, you'll get different results. On the other hand, if you use the dates you'll get the same set of news articles.
+
+### Making Better Queries
+
+The _'Tesla UI'_ search query is very specific so the number of results isn't that high. But if you were to make a similar search for a broader term like '_Apple_', you would run into the API result limit of 10,000 articles:
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2022/31/01' -H 'x-api-key: your_key_1'
+```
+
+
+```
+{
+    "status": "ok",
+    "total_hits": 10000,
+    "page": 1,
+    "total_pages": 200,
+    "page_size": 50,
+    "articles": [
+        {
+            "title": "How To Watch Apple TV+ Without An Apple Device",
+            "author": "Brady Snyder",
+            "published_date": "2022-01-30 18:16:44",
+            "published_date_precision": "full",
+            "link": "https://screenrant.com/watch-apple-tv-without-apple-device-how",
+            "clean_url": "screenrant.com",
+            "excerpt": "Apple TV+ is on many TVs, but signup is tricky.",
+            "summary": "Apple TV+ is available on many non-Apple devices, but signing up can be tricky without a verified Apple ID. Here's the workaround using only Android. \nApple TV+ is slowly but steadily expanding its catalog of available shows, making its $4.99 monthly subscription fee look more appealing. With successful original series like Ted Lasso and Dickinson backed by high production value, some TV and movie lovers find the subscription service a must-have. Although Apple TV+ is available on many devices, signing up can be tricky without a validated Apple ID. The company offers the option to create an Apple ID online but doesn't allow it to be used with Apple TV+ until setting up an Apple device. Not to worry, because there is a workaround using only an Android device. The Apple TV+ subscription service was one of the first announced, second to Apple Music, in the company's shift towards a subscription model. Apple initially offered a combination of different services separately — additional iCloud storage, Apple Music, and Apple News — as the company added more services, it consolidated its offerings. Now, the family plan is called iCloud Plus and offers all of the benefits of the Apple ecosystem. But where does that leave Android users intrigued by the Apple TV+ catalog but outside the Apple ecosystem? The process is simple to watch Apple TV+ in a web browser. Go to the Apple TV+ website, and users can create an Apple ID and enter payment information to subscribe to the streaming service. However, if the goal is to connect an Apple TV+ account to a smart TV or a set-top box, creating an online account won't be enough to complete the setup process. Additionally, while the Apple TV+ app is a matured evolution of iTunes on iOS, macOS and TVOS, it is relatively primitive on the website, offering a subpar experience.\nUse Apple Music To Validate An Apple ID \n \n\n\n While Apple TV+ doesn't currently offer an Android app, it recently added its Apple Music app to Android. That means users can use the Apple Music app, found on the Google Play store, to validate their Apple ID for use on other devices. Thankfully, since Apple Music offers a free trial and the option to create an Apple ID, users can quickly validate their accounts. Simply download the Apple Music app for Android, follow the prompts to make or enter an existing Apple ID, and subscribe to the free trial. Users can cancel the free trial immediately after signing up to protect against accidental charges. After users complete the process, their Apple ID will be 'cleared' by Apple's servers for use on smart TVs and set-top boxes. Though Apple has made it increasingly difficult for users outside of its ecosystem, this solution offers a simple way to create an Apple ID and subscribe to Apple TV+ with just an Android device. After everything is set up, the Apple TV+ account will function as part of the iCloud system, allowing users to sign in to other devices normally. That means users can use the devices they might already own — like an Xbox, Amazon Fire TV, Roku, or Playstation — instead of forcing users to purchase an Apple TV or an Apple device. In the future, it's possible Apple could add its entire catalog of subscription services to non-Apple devices as the company did with Apple Music as it gained popularity. Next: How To Filter Explicit Songs On Spotify For A Safe Listening Experience\nSource: 9to5 Mac \n \n Halo TV Show Trailer Teaser: Best Look Yet at Master Chief's Full Armor Related Topics About The Author Brady Snyder (34 Articles Published) More From Brady Snyder",
+            ...
+        },
+        ...
+        ]
+        ...
+}
+```
+
+
+To work around this limit, it's recommended to break down your query time intervals into smaller chunks of time like a month, a fortnight, a week, or even a day depending on the query. In the case of the previous _'Apple'_ query, you will need to break it down into individual days to fetch all the results for the two month time period:
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2021/12/02' -H 'x-api-key: your_key_1
+```
+
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/02&to=2021/12/03' -H 'x-api-key: your_key_1
+```
+
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/03&to=2021/12/04' -H 'x-api-key: your_key_1
+```
+
+
+and so on.
+
+### Date Precision
+
+One thing to keep in mind when searching by date is the `published_date_precision` attribute. There are three types of date precision defined in our News API:
+
+1.  **`"full"`** — day and time of an article is correctly identified with the appropriate timezone
+    
+2.  **`"timezone unknown"`** — day and time of an article is correctly identified without timezone
+    
+3.  **`"date"`** — only the day is identified without an exact time
+    
+
+The date and time of all articles with full precision is converted into UTC. And all articles without the timezone information are treated as if they are published in the UTC timezone. This may cause some minor issues but the percentage of articles without the timezone information is tiny and it's only becoming smaller.
+
+<Frame caption="Distribution of `published_date_precision` attribute">![](/images/date-time.png)</Frame>
+
+`/latest_headlines`
+-----------------------
+
+The `/latest_headlines` endpoint doesn't have the `to` and `from` parameters. Instead, it has the `when` parameter that dictates the time period starting from which you want to get the articles for. It accepts two forms:
+
+1.  Daily Form `Xd` `7d` => last 7 days time period
+    
+2.  Hourly Form `Xh` `24h` => last 12 hours
+    
+
+So an API request for the articles in the last twelve hours `12h` will yield more and older results than a request for articles from the last one hour `1h`.
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=12h' -H 'x-api-key: your_key_1
+```
+
+
+```javascript
+{
+    "status": "ok",
+    "total_hits": 1434,
+    "page": 1,
+    "total_pages": 29,
+    "page_size": 50,
+    "articles": [
+        {
+            "title": "Aboard becomes first order-book derivatives protocol on Arbitrum",
+            "author": null,
+            "published_date": "2022-03-14 16:29:21",
+            "published_date_precision": "full",
+            "link": "https://cointelegraph.com/press-releases/aboard-becomes-first-order-book-derivatives-protocol-on-arbitrum",
+            "clean_url": "cointelegraph.com",
+            ...
+        },
+        ... 
+                ],
+        ...
+}
+```
+
+
+```
+curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=1h' -H 'x-api-key: your_key_1
+```
+
+
+```javascript
+{
+    "status": "ok",
+    "total_hits": 21,
+    "page": 1,
+    "total_pages": 1,
+    "page_size": 21,
+    "articles": [
+        {
+            "title": "Aboard becomes first order-book derivatives protocol on Arbitrum",
+            "author": null,
+            "published_date": "2022-03-14 16:29:21",
+            "published_date_precision": "full",
+            "link": "https://cointelegraph.com/press-releases/aboard-becomes-first-order-book-derivatives-protocol-on-arbitrum",
+            "clean_url": "cointelegraph.com",
+            ...
+        },
+        ... 
+                ],
+        ...
+}
+```
+
+<Info>
+The default time period is the amount of historical data available for your subscription type. For example, for the [free no-card trial](https://newscatcherapi.com/news-api#news-api-pricing), the _**latest\_headlines**_ endpoint will return the articles from the last two weeks.
+</Info>

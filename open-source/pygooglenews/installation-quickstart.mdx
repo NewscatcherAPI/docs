@@ -1,0 +1,46 @@
+---
+title: Installation & Quickstart
+---
+### **Installation**
+
+```
+$ pip install pygooglenews --upgrade
+```
+
+
+### **Quickstart**
+
+```
+from pygooglenews import GoogleNews
+
+gn = GoogleNews()
+```
+
+
+#### **Top Stories**
+
+```bash
+top = gn.top_news()
+```
+
+#### **Stories by Topic**
+
+```bash
+business = gn.topic_headlines('business')
+```
+
+
+#### **Geolocation Specific Stories**
+
+```bash
+headquaters = gn.geo_headlines('San Fran')
+```
+
+
+#### **Stories by a Query Search**
+
+```bash
+# search for the best matching articles that mention MSFT and 
+# do not mention AAPL (over the past 6 month
+search = gn.search('MSFT -APPL', when = '6m')
+```

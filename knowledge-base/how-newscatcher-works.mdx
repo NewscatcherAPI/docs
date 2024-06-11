@@ -1,0 +1,90 @@
+---
+title: How NewsCatcher Works
+description: Learn more about what it takes to deliver online-published news to your API response object
+---
+
+
+### News API
+
+Our core product is a JSON News API: **we enable you to find relevant news articles based on your query parameters,** such as keyword, language, country, news website, etc.
+
+In order to find relevant results only - among the more than a million news articles that we index daily - the API makes a call to [ElasticSearch](https://www.elastic.co/elasticsearch/) clusters.
+
+ElasticSearch is a powerful tool to index text data.
+
+But, the REST API itself is just the tip of the iceberg: the bulk of the work is to bring structured news articles into the ElasticSearch cluster.
+
+### Part I: Web Crawling (How We Find News Data)
+
+News gets published online every second. To keep up, we have to constantly monitor news websites and check for updates. So we crawl the web. We don't crawl the entire web like Google does, just the news parts of it.
+
+We have a list of over 60,000 news websites that produce new articles (new data points).
+
+Our web crawlers constantly find new web pages. The next step would be to check whether these pages have been processed already. Then, our algorithms decide whether this page is a news article page or not.
+
+At the end of this process, we have a stream of HTML pages of news articles that were recently published online.
+
+
+### Part II: Data Extraction (How We Turn Unstructured Text Into Structured Data)
+
+Now, we have to turn the HTML page into a source of structured data, such as title, article body, published time, etc.
+
+![](/images/data-extraction.jpeg)
+
+This is the most advanced and complicated part of what we do, as we have to write a generic news parser: **it has to extract data fields from any news website in any language**.
+
+Another more obvious option would be to write a dedicated web scraper for each news website. But it becomes a much more difficult task when you have ~100,000 news websites to get news articles from.
+
+### Part III: Data Enrichment
+
+After we parse the fields from the article HTML we have to enrich them with more data points:
+
+*   article language
+    
+*   publishers' country
+    
+*   publishers' page rank
+    
+*   publishers' topic
+    
+*   whether this article is "Opinion" or not
+    
+
+### Part IV: Indexing
+
+Now, each news article is structured in the following JSON format:
+
+```json
+{
+    "title": "Tesla Model X vs Tesla Model Y: which Tesla SUV should you buy?",
+    "author": "Rob Clymo",
+    "published_date": "2021-07-26 16:42:51",
+    "published_date_precision": "full",
+    "link": "https://www.techradar.com/news/tesla-model-x-vs-tesla-model-y",
+    "clean_url": "techradar.com",
+    "excerpt": "What to look for if you're in the market a Tesla SUV",
+    "summary": "Tesla is gradually filling every spot in the current carbuying marketplace. There's even a budget level compact on the way that'll open up the brand to more customers. It's also establishing itself in the burgeoning SUV sector with models in the shape of the older Tesla Model X and the new Tesla Model Y. Both offer the classic SUV experience while blending it with Tesla's unique styling, dazzling performance and lots of innovation.With demand for SUV's still high, the Tesla Model X is perfect fo",
+    "rights": "techradar.com",
+    "rank": 640,
+    "topic": "tech",
+    "country": "US",
+    "language": "en",
+    "authors": [
+        "Rob Clymo"
+    ],
+    "media": "https://cdn.mos.cms.futurecdn.net/5BMZkUwoQhz64NSM6a89PG-1200-80.jpg",
+    "is_opinion": false,
+    "twitter_account": "@TechRadar"
+}
+```
+
+
+We may have over 1.5M such articles daily, so we'd need the most efficient tool to index this data.
+
+We use ElasticSearch for this purpose. It enables our NEWS API to respond to your advanced queries in **less than 300ms**.
+
+### Part V: Data Delivery
+
+After being indexed, news articles are delivered to you via a REST JSON API.
+
+Each call is transformed into an ElasticSearch query.
