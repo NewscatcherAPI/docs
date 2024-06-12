@@ -1,0 +1,143 @@
+---
+title: Your First Call
+description: Learn how to make your first News API call
+---
+
+
+Shell (cURL)
+----------------
+
+Replace `your_key_1` with your personal API key.
+
+```bash
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Tesla' -H 'x-api-key: your_key_1'
+```
+
+
+Python (SDK)
+----------------
+
+The Python library can be installed using _pip install_ launched from terminal. All the details can be found either on [PyPi website](https://pypi.org/project/newscatcherapi/) or our [GitHub Repository](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python).
+
+```bash
+pip install newscatcherapi
+```
+
+
+When installed, the package can be directly called from Python application.
+
+```python
+from newscatcherapi import NewsCatcherApiClient
+
+newscatcherapi = NewsCatcherApiClient(x_api_key='your_key_1')
+
+all_articles = newscatcherapi.get_search(q='Elon Musk',
+                                         lang='en',
+                                         countries='CA',
+                                         page_size=100)
+```
+
+
+Python (requests)
+---------------------
+
+```python
+import requests
+
+url = "https://api.newscatcherapi.com/v2/search"
+
+querystring = {"q":"\"Elon Musk\"","lang":"en","sort_by":"relevancy","page":"1"}
+
+headers = {
+    "x-api-key": "your_key_1"
+    }
+
+response = requests.request("GET", url, headers=headers, params=querystring)
+
+print(response.text)
+```
+
+
+Node.js (axios)
+-------------------
+
+```js
+var axios = require("axios").default;
+
+var options = {
+  method: 'GET',
+  url: 'https://api.newscatcherapi.com/v2/search',
+  params: {q: 'Bitcoin', lang: 'en', sort_by: 'relevancy', page: '1'},
+  headers: {
+    'x-api-key': 'your_key_1'
+  }
+};
+
+axios.request(options).then(function (response) {
+	console.log(response.data);
+}).catch(function (error) {
+	console.error(error);
+});
+```
+
+
+Go
+------
+
+```golang
+package main
+
+import (
+	"fmt"
+	"net/http"
+	"io/ioutil"
+)
+
+func main() {
+
+	url := "https://api.newscatcherapi.com/v2/search?q=Tesla&lang=en&sort_by=relevancy&page=1"
+
+	req, _ := http.NewRequest("GET", url, nil)
+
+	req.Header.Add("x-api-key", "your_key_1")
+
+	res, _ := http.DefaultClient.Do(req)
+
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+
+	fmt.Println(res)
+	fmt.Println(string(body))
+
+}
+```
+
+
+PHP (HTTP v2)
+-----------------
+
+```php
+<?php
+
+$client = new http\Client;
+$request = new http\Client\Request;
+
+$request->setRequestUrl('https://api.newscatcherapi.com/v2/search');
+$request->setRequestMethod('GET');
+$request->setQuery(new http\QueryString([
+	'q' => 'Google',
+	'lang' => 'en',
+	'sort_by' => 'relevancy',
+	'page' => '1'
+]));
+
+$request->setHeaders([
+	'x-api-key' => 'your_key_1'
+]);
+
+$client->enqueue($request)->send();
+$response = $client->getResponse();
+
+echo $response->getBody();
+```
+

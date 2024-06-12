@@ -1,0 +1,62 @@
+---
+title: Product FAQ
+---
+Do you cover only English news articles?
+--------------------------------------------
+
+No, we cover multi-language worldwide news.
+
+How many websites do you aggregate news from?
+-------------------------------------------------
+
+We aggregate news from over 60,000 news websites. We get up to 1.5 million news articles daily.
+
+Do you have a platform/app/UI to interact with your data?
+-------------------------------------------------------------
+
+No, we are a data-as-a-service that delivers data over RESTful API or data files. We do not serve any kind of UI at the moment.
+
+How to scroll through the results?
+--------------------------------------
+
+By incrementing the `page`parameter you will be able to get all the results. Go check [this example](/v2-code-snippets/scroll-through-pages).
+
+How to get more than 10,000 articles per call?
+--------------------------------------------------
+
+You can do it only by breaking down your search into small parts by using the `published_date` or other parameters. You can check [this example](/v2-code-snippets/10000-articles).
+
+Do you deduplicate news articles?
+-------------------------------------
+
+Yes. We use 2-factor deduplication. Firstly we deduplicate by URL. Secondly, we deduplicate by ID, generated using a combination of `title` and `clean_url` (Web Domain Name).
+
+What is the `rank` parameter? How do you calculate it?
+----------------------------------------------------------
+
+Our `rank`parameter is based on the [Majestic Million rank](https://blog.majestic.com/welcome-to-majestic-million/) system. The smaller the rank, the more trustful is the website domain.
+
+I want to know how many people read each article. Or, what is the pageview of each article?
+-----------------------------------------------------------------------------------------------
+
+This information is only known to the website owners if they track these analytics somehow. It is not possible for an outsider to get this information. If you find a similar News API that can provide such info - please let us know.
+
+Can I use content from your API on my platform/website?
+-----------------------------------------------------------
+
+Our service aggregates publicly available web pages. We do not own any copyright.
+
+Topic?
+----------
+
+Info coming soon
+
+Can you add a news website per request?
+-------------------------------------------
+
+Yes, for Enterprise clients we can add websites per request (in case we do not support them already)
+
+Can you serve data via SFTP/S3/data dumps?
+----------------------------------------------
+
+Yes, our Enterprise clients can have full access to our data.

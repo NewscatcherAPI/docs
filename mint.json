@@ -1,91 +1,239 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
-  "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
-  },
-  "favicon": "/favicon.svg",
-  "colors": {
-    "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
-    "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
-    }
-  },
-  "topbarLinks": [
-    {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
-    }
-  ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
-  },
-  "tabs": [
-    {
-      "name": "API Reference",
-      "url": "api-reference"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+    "name": "newscatcher",
+    "logo": {
+        "light": "/logos/logo1.png",
+        "dark": "/logos/logo2.png"
+      },
+    "favicon": "/logos/favicon.png",
+    "colors": {
+      "primary": "#3884ff",
+      "light": "#609eff",
+      "dark": "#3884ff"
+    },
+    "versions": [
+      "v3",
+      "v2"
+    ],
+
+    "topbarCtaButton": {
+        "name": "Get Started",
+        "url": "https://www.newscatcherapi.com/pricing"
+      },
+      "topbarLinks": [
+        {
+          "name": "Get API Key",
+          "url": "https://app.newscatcherapi.com/auth/register"
+        }
+      ],
+      "anchors": [
+        {
+          "name": "FAQ",
+          "icon": "question",
+          "url": "https://www.newscatcherapi.com/faq"
+        },
+        {
+          "name": "Case Studies",
+          "icon": "file",
+          "url": "https://www.newscatcherapi.com/case-studies"
+        },
+        {
+          "name": "Blog",
+          "icon": "newspaper",
+          "url": "https://www.newscatcherapi.com/blog"
+        }
+      ],
+      "tabs": [
+        {
+          "name": "API Docs",
+          "version": "v2",
+          "url": "v2/api-reference"
+        },
+        {
+          "name": "API Docs",
+          "version": "v3",
+          "url": "v3/api-reference"
+        }
+      ],
+    
+    
+
+    "navigation": [
+        {
+            "group": " ",
+            "pages": [
+                "welcome"
+            ]
+        },
+
+            {
+              "group": "v2 API Documentation",
+              "version": "v2",
+              "pages": [
+                  "v2/api-reference/overview",
+                  "v2/api-reference/authentication",
+                  {
+                      "group": "Search News ",
+                      "pages": [
+                          "v2/api-reference/search/search-for-specific-news-articles",
+                          "v2/api-reference/search/search-for-specific-news-articles-1"
+                      ]
+                  },
+                  {
+                      "group": "Latest Headlines",
+                      "pages": [
+                          "v2/api-reference/latest_headlines/get-latest-news-articles",
+                          "v2/api-reference/latest_headlines/get-latest-news-articles-1"
+                      ]
+                  },
+                  {
+                      "group": "Sources",
+                      "pages": [
+                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher",
+                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher-1"
+                      ]
+                  }
+                  
+              ]
+          },
+          {
+            "group": "v3 API Documentation",
+            "version": "v3",
+            "pages": [
+                "v3/api-reference/authentication",
+                {
+                  "group": "v3 Latest Headlines",
+                  "pages": [
+                      "v3/api-reference/latestheadlines/[get]-search-for-latest-headlines-request",
+                      "v3/api-reference/latestheadlines/[post]-search-for-latest-headlines-request"
+                  ]
+              },
+                {
+                    "group": "v3 Authors",
+                    "pages": [
+                        "v3/api-reference/authors/[post]-search-by-author-request",
+                        "v3/api-reference/authors/[get]-search-by-author-request"
+                    ]
+                },
+                {
+                  "group": "v3 Sources",
+                  "pages": [
+                      "v3/api-reference/sources/[post]-search-for-sources-request",
+                      "v3/api-reference/sources/[get]-search-for-sources-request"
+                  ]
+              },
+              {
+                "group": "v3 search By Link",
+                "pages": [
+                    "v3/api-reference/searchlink/[get]-search-for-articles-by-id-or-link",
+                    "v3/api-reference/searchlink/[post]-search-for-articles-request"
+                ]
+            },
+            {
+              "group": "v3 Subscription",
+              "pages": [
+                  "v3/api-reference/subscription/[post]-get-my-plan-info",
+                  "v3/api-reference/subscription/[get]-get-my-plan-info"
+              ]
+          },
+                
+                
+                {
+                    "group": "v3 Search",
+                    "pages": [
+                        "v3/api-reference/search/[get]-search-for-articles-request",
+                        "v3/api-reference/search/[post]-search-for-articles-request"
+                    ]
+                },
+                
+                
+                
+                {
+                    "group": "v3 searchsimilar",
+                    "pages": [
+                        "v3/api-reference/searchsimilar/[post]-search-for-similar-articles-request",
+                        "v3/api-reference/searchsimilar/[get]-search-for-similar-articles-request"
+                    ]
+                },
+                "v3/api-reference/debugging"
+            ]
+        },
+
+
+        {
+            "group": "v2 Code Snippets",
+            "pages": [
+                "v2-code-snippets/your-first-call",
+                "v2-code-snippets/search--person-company-product",
+                "v2-code-snippets/scroll-through-pages",
+                "v2-code-snippets/search-by-date-time",
+                "v2-code-snippets/10000-articles"
+
+            ]
+        },
+        {
+          "group": "Knowledge Base",
+          "pages": [
+              "knowledge-base/how-newscatcher-works",
+              {
+                "group": "V2 Guides & Tutorials",
+                "pages": [
+                    "knowledge-base/v2-guides--tutorials/overview",
+                    "knowledge-base/v2-guides--tutorials/export-news-into-csv-with-python",
+                    "knowledge-base/v2-guides--tutorials/build-news-aggregator",
+                    "knowledge-base/v2-guides--tutorials/monitor-crypto-news"
+      
+                ]
+            },
+            "knowledge-base/projects-done-via-newscatcher",
+            "knowledge-base/migrate-from-v1",
+            {
+              "group": "Case Studies",
+              "pages": [
+                  "knowledge-base/case-studies/overview",
+                  "knowledge-base/case-studies/share-of-voice-measurement",
+                  "knowledge-base/case-studies/competitor-tracking"
+  
+              ]
+          },
+          "knowledge-base/newscatcher-api-in-postman"
+
+          ]
+      },
+      {
+        "group": "FAQ ⁉️",
+        "pages": [
+            "faq/overview",
+            "faq/product-faq",
+            "faq/company-faq"
+
+        ]
     },
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
-    },
-    {
-      "name": "Blog",
-      "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Get Started",
+      "group": "Open Source",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        {
+          "group": "PyGoogleNews",
+          "pages": [
+              "open-source/pygooglenews/overview",
+              "open-source/pygooglenews/installation-quickstart",
+              "open-source/pygooglenews/functions-classes",
+              "open-source/pygooglenews/special-query-terms",
+              "open-source/pygooglenews/advanced-querying-search-examples",
+              "open-source/pygooglenews/proxies"
+    
+          ]
+      }
+
       ]
-    },
-    {
-      "group": "Essentials",
-      "pages": [
-        "essentials/markdown",
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
-      ]
-    },
-    {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
-      ]
-    }
-  ],
-  "footerSocials": {
-    "x": "https://x.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
   }
-}
+
+
+
+    ],
+
+    
+    "footerSocials": {
+      "linkedin": "https://www.linkedin.com/company/newscatcherapi/about/",
+      "twitter": "https://twitter.com/newscatcherapi"
+    }
+  }

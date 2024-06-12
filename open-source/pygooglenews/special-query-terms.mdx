@@ -1,0 +1,84 @@
+---
+title: Special Query Terms
+description: Google's Special Query Terms Cheat Sheet
+---
+
+[**Google's Special Query Terms**](https://developers.google.com/custom-search/docs/xml_results#special-query-terms) **Cheat Sheet**
+
+Many Google's Special Query Terms have been tested one by one. Most of the core ones have been inherited by Google News service. At first, I wanted to integrate all of those as the `search()` function parameters. But, I realised that it might be a bit confusing and difficult to make them all work correctly.
+
+Instead, **I decided to write some kind of a cheat sheet that should give you a decent understanding of what you could do**.
+
+### Boolean OR Search \[ OR \]
+
+```python
+from pygooglenews import GoogleNews
+
+gn = GoogleNews()
+
+s = gn.search('boeing OR airbus')
+
+print(s['feed'].title)
+# "boeing OR airbus" - Google News
+```
+
+
+### Exclude Query Term \[-\]
+
+"The exclude (`-`) query term restricts results for a particular search request to documents that do not contain a particular word or phrase. To use the exclude query term, you would preface the word or phrase to be excluded from the matching documents with "-" (a minus sign)."
+
+### Include Query Term \[+\]
+
+"The include (`+`) query term specifies that a word or phrase must occur in all documents included in the search results. To use the include query term, you would preface the word or phrase that must be included in all search results with "+" (a plus sign).
+
+The URL-escaped version of **`+`** (a plus sign) is `%2B`."
+
+### Phrase Search
+
+"The phrase search (`"`) query term allows you to search for complete phrases by enclosing the phrases in quotation marks or by connecting them with hyphens.
+
+The URL-escaped version of **`"*"`** (a quotation mark) is **`%22`**.
+
+Phrase searches are particularly useful if you are searching for famous quotes or proper names."
+
+### allintext
+
+"The **`allintext:`** query term requires each document in the search results to contain all of the words in the search query in the body of the document. The query should be formatted as **`allintext:`** followed by the words in your search query.
+
+If your search query includes the **`allintext:`** query term, Google will only check the body text of documents for the words in your search query, ignoring links in those documents, document titles and document URLs."
+
+### intitle
+
+"The `intitle:` query term restricts search results to documents that contain a particular word in the document title. The search query should be formatted as `intitle:WORD` with no space between the intitle: query term and the following word."
+
+### allintitle
+
+"The **`allintitle:`** query term restricts search results to documents that contain all of the query words in the document title. To use the **`allintitle:`** query term, include "allintitle:" at the start of your search query.
+
+Note: Putting **`allintitle:`** at the beginning of a search query is equivalent to putting [intitle:](https://developers.google.com/custom-search/docs/xml_results#TitleSearchqt) in front of each word in the search query."
+
+### inurl
+
+"The `inurl:` query term restricts search results to documents that contain a particular word in the document URL. The search query should be formatted as `inurl:WORD` with no space between the inurl: query term and the following word"
+
+### allinurl
+
+The `allinurl:` query term restricts search results to documents that contain all of the query words in the document URL. To use the `allinurl:` query term, include allinurl: at the start of your search query.
+
+#### List of operators that do not work (for me, at least):
+
+1.  Most (probably all) of the `as_*` terms do not work for Google News
+    
+2.  `allinlinks:`
+    
+3.  `related:`
+    
+<Tip>
+**Tip**. If you want to build a near real-time feed for a specific topic, use `when='1h'`. If Google captured fewer than 100 articles over the past hour, you should be able to retrieve all of them.
+</Tip>
+
+Check the Useful Links section if you want to dig into how Google Search works.
+
+Especially, [Special Query Terms](https://developers.google.com/custom-search/docs/xml_results#special-query-terms) section of Google XML reference.
+
+Plus, I will provide some more examples under the Full-Text Search Examples section
