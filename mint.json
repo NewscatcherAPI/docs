@@ -44,12 +44,12 @@
       ],
       "tabs": [
         {
-          "name": "API Docs",
+          "name": "API Reference",
           "version": "v2",
           "url": "v2/api-reference"
         },
         {
-          "name": "API Docs",
+          "name": "API Reference",
           "version": "v3",
           "url": "v3/api-reference"
         }
@@ -64,97 +64,105 @@
                 "welcome"
             ]
         },
-
-            {
-              "group": "v2 API Documentation",
+          {
+            "group": "Overview",
+            "version": "v2",
+            "pages": [
+              "v2/api-reference/introduction",
+              "v2/api-reference/authentication"
+            ]
+          },
+          {
+              "group": "Endpoints",
               "version": "v2",
               "pages": [
-                  "v2/api-reference/overview",
-                  "v2/api-reference/authentication",
                   {
                       "group": "Search News ",
                       "pages": [
-                          "v2/api-reference/search/search-for-specific-news-articles",
-                          "v2/api-reference/search/search-for-specific-news-articles-1"
+                          "v2/api-reference/search/search-for-specific-news-articles-get",
+                          "v2/api-reference/search/search-for-specific-news-articles-post"
                       ]
                   },
                   {
                       "group": "Latest Headlines",
                       "pages": [
-                          "v2/api-reference/latest_headlines/get-latest-news-articles",
-                          "v2/api-reference/latest_headlines/get-latest-news-articles-1"
+                          "v2/api-reference/latest_headlines/get-latest-news-articles-get",
+                          "v2/api-reference/latest_headlines/get-latest-news-articles-post"
                       ]
                   },
                   {
                       "group": "Sources",
                       "pages": [
-                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher",
-                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher-1"
+                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher-get",
+                          "v2/api-reference/sources/get-top-news-sources-supported-by-newscatcher-post"
                       ]
                   }
                   
               ]
           },
           {
-            "group": "v3 API Documentation",
+            "group": "Overview",
             "version": "v3",
             "pages": [
-                "v3/api-reference/authentication",
-                {
-                  "group": "v3 Latest Headlines",
-                  "pages": [
-                      "v3/api-reference/latestheadlines/[get]-search-for-latest-headlines-request",
-                      "v3/api-reference/latestheadlines/[post]-search-for-latest-headlines-request"
-                  ]
-              },
-                {
-                    "group": "v3 Authors",
-                    "pages": [
-                        "v3/api-reference/authors/[post]-search-by-author-request",
-                        "v3/api-reference/authors/[get]-search-by-author-request"
-                    ]
-                },
-                {
-                  "group": "v3 Sources",
-                  "pages": [
-                      "v3/api-reference/sources/[post]-search-for-sources-request",
-                      "v3/api-reference/sources/[get]-search-for-sources-request"
-                  ]
-              },
-              {
-                "group": "v3 search By Link",
-                "pages": [
-                    "v3/api-reference/searchlink/[get]-search-for-articles-by-id-or-link",
-                    "v3/api-reference/searchlink/[post]-search-for-articles-request"
-                ]
-            },
-            {
-              "group": "v3 Subscription",
-              "pages": [
-                  "v3/api-reference/subscription/[post]-get-my-plan-info",
-                  "v3/api-reference/subscription/[get]-get-my-plan-info"
-              ]
+              "v3/api-reference/introduction",
+              "v3/api-reference/authentication",
+              "v3/api-reference/debugging"
+
+            ]
           },
-                
-                
+          {
+            "group": "Endpoints",
+            "version": "v3",
+            "pages": [
                 {
-                    "group": "v3 Search",
-                    "pages": [
-                        "v3/api-reference/search/[get]-search-for-articles-request",
-                        "v3/api-reference/search/[post]-search-for-articles-request"
-                    ]
+                  "group": "Search",
+                  "pages": [
+                    "v3/api-reference/search/search-articles-get",
+                    "v3/api-reference/search/search-articles-post"
+                  ]
                 },
-                
-                
-                
                 {
-                    "group": "v3 searchsimilar",
-                    "pages": [
-                        "v3/api-reference/searchsimilar/[post]-search-for-similar-articles-request",
-                        "v3/api-reference/searchsimilar/[get]-search-for-similar-articles-request"
-                    ]
+                  "group": "Latest Headlines",
+                  "pages": [
+                    "v3/api-reference/latestheadlines/retrieve-latest-headlines-get",
+                    "v3/api-reference/latestheadlines/retrieve-latest-headlines-post"
+                  ]
                 },
-                "v3/api-reference/debugging"
+                {
+                  "group": "Authors",
+                  "pages": [
+                    "v3/api-reference/authors/search-articles-by-author-get",
+                    "v3/api-reference/authors/search-articles-by-author-post"
+                  ]
+                },
+                {
+                  "group": "Search Link",
+                  "pages": [
+                    "v3/api-reference/searchlink/search-articles-by-id-or-link-get",
+                    "v3/api-reference/searchlink/search-articles-by-id-or-link-post"
+                  ]
+                },
+                {
+                  "group": "Search Similar",
+                  "pages": [
+                    "v3/api-reference/searchsimilar/search-similar-articles-get",
+                    "v3/api-reference/searchsimilar/search-similar-articles-post"
+                  ]
+                },
+                {
+                  "group": "Sources",
+                  "pages": [
+                    "v3/api-reference/sources/retrieve-sources-get",
+                    "v3/api-reference/sources/retrieve-sources-post"
+                  ]
+                },
+                {
+                  "group": "Subscription",
+                  "pages": [
+                    "v3/api-reference/subscription/retrieve-subscription-plan-information-get",
+                    "v3/api-reference/subscription/retrieve-subscription-plan-information-post"
+                  ]
+                }
             ]
         },
 
