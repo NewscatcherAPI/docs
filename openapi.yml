@@ -73,29 +73,33 @@ paths:
       operationId: Search_get
       parameters:
         - $ref: '#/components/parameters/Q'
-        - $ref: '#/components/parameters/Lang'
-        - $ref: '#/components/parameters/NotLang'
-        - $ref: '#/components/parameters/PublishedDatePrecision'
         - $ref: '#/components/parameters/SearchIn'
-        - $ref: '#/components/parameters/Countries'
-        - $ref: '#/components/parameters/NotCountries'
+        - $ref: '#/components/parameters/PredefinedSources'
         - $ref: '#/components/parameters/Sources'
         - $ref: '#/components/parameters/NotSources'
+        - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/NotLang'
+        - $ref: '#/components/parameters/Countries'
+        - $ref: '#/components/parameters/NotCountries'
+        - $ref: '#/components/parameters/NotAuthorName'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/PublishedDatePrecision'
+        - $ref: '#/components/parameters/ByParseDate'
+        - $ref: '#/components/parameters/SortBy'
         - $ref: '#/components/parameters/RankedOnly'
         - $ref: '#/components/parameters/FromRank'
         - $ref: '#/components/parameters/ToRank'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/To'
-        - $ref: '#/components/parameters/From'
-        - $ref: '#/components/parameters/ByParseDate'
         - $ref: '#/components/parameters/IsHeadline'
+        - $ref: '#/components/parameters/IsOpinion'
+        - $ref: '#/components/parameters/IsPaidContent'
+        - $ref: '#/components/parameters/ParentUrl'
         - $ref: '#/components/parameters/AllLinks'
-        - $ref: '#/components/parameters/NotAuthorName'
         - $ref: '#/components/parameters/AllDomainLinks'
         - $ref: '#/components/parameters/WordCountMin'
         - $ref: '#/components/parameters/WordCountMax'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/ClusteringVariable'
         - $ref: '#/components/parameters/ClusteringEnabled'
         - $ref: '#/components/parameters/ClusteringThreshold'
@@ -113,6 +117,9 @@ paths:
         - $ref: '#/components/parameters/ContentSentimentMax'
         - $ref: '#/components/parameters/IptcTags'
         - $ref: '#/components/parameters/NotIptcTags'
+        - $ref: '#/components/parameters/SourceName'
+        - $ref: '#/components/parameters/IabTags'
+        - $ref: '#/components/parameters/NotIabTags'
         - $ref: '#/components/parameters/ExcludeDuplicates'
       responses:
         '200':
@@ -141,45 +148,51 @@ paths:
       description: Retrieves the latest headlines since a specified time. You can filter results by language, country, source, and more.
       operationId: LatestHeadlines_get
       parameters:
-        - $ref: '#/components/parameters/RankedOnly'
         - $ref: '#/components/parameters/When'
+        - $ref: '#/components/parameters/ByParseDate'
         - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/NotLang'
         - $ref: '#/components/parameters/Countries'
         - $ref: '#/components/parameters/NotCountries'
-        - $ref: '#/components/parameters/Theme'
         - $ref: '#/components/parameters/Sources'
+        - $ref: '#/components/parameters/PredefinedSources'
         - $ref: '#/components/parameters/NotSources'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/ByParseDate'
+        - $ref: '#/components/parameters/NotAuthorName'
+        - $ref: '#/components/parameters/RankedOnly'
         - $ref: '#/components/parameters/IsHeadline'
         - $ref: '#/components/parameters/IsOpinion'
-        - $ref: '#/components/parameters/PredefinedSources'
         - $ref: '#/components/parameters/IsPaidContent'
         - $ref: '#/components/parameters/ParentUrl'
+        - $ref: '#/components/parameters/AllLinks'
+        - $ref: '#/components/parameters/AllDomainLinks'
         - $ref: '#/components/parameters/WordCountMin'
         - $ref: '#/components/parameters/WordCountMax'
-        - $ref: '#/components/parameters/IncludeNlpData'
-        - $ref: '#/components/parameters/HasNlp'
-        - $ref: '#/components/parameters/TitleSentimentMin'
-        - $ref: '#/components/parameters/TitleSentimentMax'
-        - $ref: '#/components/parameters/ContentSentimentMin'
-        - $ref: '#/components/parameters/ContentSentimentMax'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/ClusteringVariable'
         - $ref: '#/components/parameters/ClusteringEnabled'
         - $ref: '#/components/parameters/ClusteringThreshold'
-        - $ref: '#/components/parameters/ClusteringVariable'
+        - $ref: '#/components/parameters/IncludeNlpData'
+        - $ref: '#/components/parameters/HasNlp'
+        - $ref: '#/components/parameters/Theme'
+        - $ref: '#/components/parameters/NotTheme'
         - $ref: '#/components/parameters/OrgEntityName'
         - $ref: '#/components/parameters/PerEntityName'
         - $ref: '#/components/parameters/LocEntityName'
         - $ref: '#/components/parameters/MiscEntityName'
+        - $ref: '#/components/parameters/TitleSentimentMin'
+        - $ref: '#/components/parameters/TitleSentimentMax'
+        - $ref: '#/components/parameters/ContentSentimentMin'
+        - $ref: '#/components/parameters/ContentSentimentMax'
         - $ref: '#/components/parameters/IptcTags'
         - $ref: '#/components/parameters/NotIptcTags'
+        - $ref: '#/components/parameters/IabTags'
+        - $ref: '#/components/parameters/NotIabTags'
       responses:
         '200':
           $ref: '#/components/responses/LatestHeadlinesSuccessfulResponse'
         '422':
           $ref: '#/components/responses/ValidationErrorResponse'
-
     post:
       tags:
         - LatestHeadlines
@@ -204,49 +217,44 @@ paths:
       parameters:
         - $ref: '#/components/parameters/AuthorName'
         - $ref: '#/components/parameters/NotAuthorName'
+        - $ref: '#/components/parameters/Sources'
+        - $ref: '#/components/parameters/PredefinedSources'
+        - $ref: '#/components/parameters/NotSources'
         - $ref: '#/components/parameters/Lang'
         - $ref: '#/components/parameters/NotLang'
-        - $ref: '#/components/parameters/PublishedDatePrecision'
         - $ref: '#/components/parameters/Countries'
         - $ref: '#/components/parameters/NotCountries'
-        - $ref: '#/components/parameters/Sources'
-        - $ref: '#/components/parameters/NotSources'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/PublishedDatePrecision'
+        - $ref: '#/components/parameters/ByParseDate'
+        - $ref: '#/components/parameters/SortBy'
         - $ref: '#/components/parameters/RankedOnly'
         - $ref: '#/components/parameters/FromRank'
         - $ref: '#/components/parameters/ToRank'
-        - $ref: '#/components/parameters/SortBy'
-        - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/Page'
-        - $ref: '#/components/parameters/To'
-        - $ref: '#/components/parameters/From'
-        - $ref: '#/components/parameters/ByParseDate'
         - $ref: '#/components/parameters/IsHeadline'
         - $ref: '#/components/parameters/IsOpinion'
+        - $ref: '#/components/parameters/IsPaidContent'
         - $ref: '#/components/parameters/ParentUrl'
         - $ref: '#/components/parameters/AllLinks'
         - $ref: '#/components/parameters/AllDomainLinks'
         - $ref: '#/components/parameters/WordCountMin'
         - $ref: '#/components/parameters/WordCountMax'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
         - $ref: '#/components/parameters/IncludeNlpData'
         - $ref: '#/components/parameters/HasNlp'
         - $ref: '#/components/parameters/Theme'
-        - $ref: '#/components/parameters/OrgEntityName'
-        - $ref: '#/components/parameters/PerEntityName'
-        - $ref: '#/components/parameters/LocEntityName'
-        - $ref: '#/components/parameters/MiscEntityName'
+        - $ref: '#/components/parameters/NotTheme'
+        - $ref: '#/components/parameters/NerName'
         - $ref: '#/components/parameters/TitleSentimentMin'
         - $ref: '#/components/parameters/TitleSentimentMax'
         - $ref: '#/components/parameters/ContentSentimentMin'
         - $ref: '#/components/parameters/ContentSentimentMax'
         - $ref: '#/components/parameters/IptcTags'
         - $ref: '#/components/parameters/NotIptcTags'
-        - $ref: '#/components/parameters/NotTheme'
-        - $ref: '#/components/parameters/IsPaidContent'
-        - $ref: '#/components/parameters/ClusteringEnabled'
-        - $ref: '#/components/parameters/ClusteringThreshold'
-        - $ref: '#/components/parameters/ClusteringVariable'
-        - $ref: '#/components/parameters/SourceName'
-        - $ref: '#/components/parameters/PredefinedSources'
+        - $ref: '#/components/parameters/IabTags'
+        - $ref: '#/components/parameters/NotIabTags'
       responses:
         '200':
           $ref: '#/components/responses/AuthorsSuccessfulResponse'
@@ -283,6 +291,26 @@ paths:
           $ref: '#/components/responses/SearchLinkSuccessfulResponse'
         '422':
           $ref: '#/components/responses/ValidationErrorResponse'
+  paths:
+  /api/search_link:
+    get:
+      tags:
+        - SearchLink
+      summary: Search articles by links or IDs
+      description: Searches for articles based on specified links or IDs. You can filter results by date range.
+      operationId: SearchLink_get
+      parameters:
+        - $ref: '#/components/parameters/Ids'
+        - $ref: '#/components/parameters/Links'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+      responses:
+        '200':
+          $ref: '#/components/responses/SearchLinkSuccessfulResponse'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
     post:
       tags:
         - SearchLink
@@ -302,8 +330,8 @@ paths:
     get:
       tags:
         - SearchSimilar
-      summary: Search similar articles
-      description: Searches for articles similar to the specified query. You can filter results by language, country, source, and more.
+      summary: Search for similar articles
+      description: Searches for articles similar to a specified query.
       operationId: SearchSimilar_get
       parameters:
         - $ref: '#/components/parameters/Q'
@@ -372,7 +400,7 @@ paths:
       tags:
         - Sources
       summary: Retrieve sources
-      description: Retrieves the list of sources available in the database. You can filter the sources by language, country, and more. The maximum number of sources displayed is set according to your subscription plan.
+      description: Retrieves a list of sources based on specified criteria such as language, country, rank, and more.
       operationId: Sources_get
       parameters:
         - $ref: '#/components/parameters/Lang'
@@ -388,6 +416,7 @@ paths:
           $ref: '#/components/responses/SourcesSuccessfulResponse'
         '422':
           $ref: '#/components/responses/ValidationErrorResponse'
+
     post:
       tags:
         - Sources
@@ -428,19 +457,17 @@ paths:
           $ref: '#/components/responses/ValidationErrorResponse'
 
 
-
 components:
   parameters:
-    # Search parameters
     Q:
       description: |
         The keyword(s) to search for in articles. 
-        Query syntax supports logical operators (AND, OR, NOT) and wildcards:
+        Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
 
-        - For an exact match, use double quotes (e.g., "exact phrase").
+        - For an exact match, use double quotes. For example, `"technology news"`.
         - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases (e.g., +keyword, -keyword).
-        - Use AND, OR, and NOT to refine search results (e.g., keyword1 AND (keyword2 OR keyword3) NOT keyword4).
+        - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
+        - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
         For more details, see [Advanced Querying](#).
       name: q
@@ -449,13 +476,14 @@ components:
       schema:
         type: string
       example: "technology AND (Apple OR Microsoft) NOT Google"
+
     Lang:
       description: | 
         The language(s) of the search. 
         The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To select multiple languages, use a comma-separated string (e.g., "en,es").
+        To select multiple languages, use a comma-separated string. For example, `en,es`.
 
-        To learn more, see (Language format)(https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
       name: lang
       in: query
       required: false
@@ -468,13 +496,14 @@ components:
           multiple-langs:
             summary: Multiple languages
             value: "en,es"
+    
     NotLang:
       description: | 
         The language(s) to exclude from the search. 
         The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To exclude multiple languages, use a comma-separated string (e.g., "en,es").
+        To exclude multiple languages, use a comma-separated string. For example, `en,es`.
 
-        To learn more, see (Language format)(https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
       name: not_lang
       in: query
       required: false
@@ -487,16 +516,19 @@ components:
           multiple-langs:
             summary: Multiple languages
             value: "en,es"
+    
     SearchIn:
       description: |
-        The fields to search in. The accepted values are "title", "summary", and "content".
-        To search in multiple fields, use a comma-separated string (e.g., "title,summary"). 
-        The "summary" option available if NLP is enabled in you plan. Default: "title,content"
+        The article fields to search in. The accepted values are `title`, `summary`, and `content`.
+        To search in multiple fields, use a comma-separated string. For example, `title,summary`.
+
+        The `summary` option is available if NLP is enabled in your plan.
       name: search_in
       in: query
       required: false
       schema:
         type: string
+        default: "title,content"
       examples:
         single-field:
           summary: Single field
@@ -504,11 +536,12 @@ components:
         multiple-fields:
           summary: Multiple fields
           value: "title,content"
+    
     Countries:
       description: | 
         The countries where the news publisher is located. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To select multiple countries, use a comma-separated string (e.g., "US,CA").
+        To select multiple countries, use a comma-separated string. For example, `US,CA`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format)
       name: countries
@@ -523,11 +556,12 @@ components:
         multiple-countries:
           summary: Multiple countries
           value: "US,CA"
+    
     NotCountries:
       description: | 
         The publisher location countries to exclude from the search. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To select multiple countries, use a comma-separated string (e.g., "US,CA").
+        To exclude multiple countries, use a comma-separated string. For example, `US,CA`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format)
       name: not_countries
@@ -542,10 +576,12 @@ components:
         multiple-countries:
           summary: Multiple countries
           value: "US,CA"
+    
     Sources:
       description: | 
-        One or more news sources to narrow down your search. The format should be a domain URL. 
-        Subdomains, like finance.yahoo.com, are also accepted. Use a comma-separated string or a list/array. 
+        One or more news sources to narrow down the search. The format must be a domain URL. 
+        Subdomains, such as `finance.yahoo.com`, are also acceptable. 
+        To specify multiple sources, use a comma-separated string.
         For example, `nytimes.com`, `theguardian.com`, `finance.yahoo.com`.
       name: sources
       in: query
@@ -554,77 +590,86 @@ components:
         type: string
       examples:
         single-source:
-          summary: Single source.
+          summary: Single source
           value: "nytimes.com"
         multiple-sources:
-          summary: Multiple sources.
+          summary: Multiple sources
           value: "nytimes.com,theguardian.com,finance.yahoo.com"
+    
     NotSources:
-      description: | 
-        One or more sources to be excluded from the search. Comma-separated string or a list/array. 
-        For example, `cnn.com`, `wsj.com`.
+      description: |
+        The news sources to exclude from the search.
+        To exclude multiple sources, use a comma-separated string. For example, `cnn.com,wsj.com`.
       name: not_sources
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
-      example: ["cnn.com", "wsj.com"]
+        type: string
+      examples:
+        single-source:
+          summary: Single source
+          value: "cnn.com"
+        multiple-sources:
+          summary: Multiple sources
+          value: "cnn.com,wsj.com"
+    
     PredefinedSources:
       description: | 
         Use our TOP predefined sources per country. The format should be strictly like this: 
         starting with the word `top`, put the number of desired sources, and then the two-letter country code ISO 3166-1 alpha-2. 
-        For example, `top 100 US`, `top 33 AT`, `top 5 GB`. Multiple countries can be specified with custom numbers, comma separated. 
-        For example, `top 100 US, GB`, `top 33 AT, 55 IT`.
+        For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
+
+        Multiple countries can be specified with custom numbers, comma separated. For example, `top 100 US,GB`, `top 33 AT,55 IT`.
       name: predefined_sources
       in: query
       required: false
       schema:
         type: string
       example: "top 100 US, top 5 GB"
+    
     SourceName:
-      description: | 
-        The names of one or more news sources to narrow down your search. Comma-separated string or a list/array. 
-        For example: `CryptoPotato`, `thethings`. 
-        NewsCatcher team does not suggest using `source_name` in Production. The best parameter to get data from a specific News Domain is `sources`.
+      description: |
+        The names of news sources to narrow down your search.
+        To specify multiple news sources, use a comma-separated string. 
+        For example, `The New York Times,The Guardian`. 
+
+        **Caution**: We don't recommend using the `source_name` parameter in production. 
+        To get data from a specific news domain, use the `sources` parameter instead of `source_name`.
       name: source_name
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
+        type: string
       examples:
         single-source-name:
           summary: Single source name
-          value: ["CryptoPotato"]
+          value: "CryptoPotato"
         multiple-source-names:
           summary: Multiple source names
-          value: ["CryptoPotato", "The Guardian"]
+          value: "The New York Times,The Guardian"
+    
     ParentUrl:
-      description: | 
-        One or more categorical URLs to filter your search. It should be the normal form of the URL. 
-        For example, `https://www.washingtonpost.com/politics`, `https://www.washingtonpost.com/technology`, `https://www.washingtonpost.com/business`.
+      description: |
+        The categorical URL(s) to filter your search.
+        To filter your search by multiple categorical URLs, use a comma-separated string. 
+        For example, `https://www.washingtonpost.com/politics,https://www.washingtonpost.com/technology`.
       name: parent_url
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
+        type: string
       examples:
         single-parent-url:
           summary: Single parent URL
-          value: ["https://www.washingtonpost.com/politics"]
+          value: "https://www.washingtonpost.com/politics"
         multiple-parent-urls:
           summary: Multiple parent URLs
-          value: ["https://www.washingtonpost.com/politics", "https://www.washingtonpost.com/technology"]
+          value: "https://www.washingtonpost.com/politics,https://www.washingtonpost.com/technology"
+    
     RankedOnly:
       description: | 
         If true, limits the search to sources ranked in the top 1 million online websites. 
-        If false, includes unranked sources which are assigned a rank of 999999. 
-        Default: true.
+        If false, includes unranked sources which are assigned a rank of 999999.
       name: ranked_only
       in: query
       required: false
@@ -632,10 +677,11 @@ components:
         type: boolean
         default: true
       example: true
+    
     FromRank:
       description: | 
         The lowest boundary of the rank of a news website to filter by. 
-        Range: 0 to 999999. 
+        Range: `0` to `999999`. 
         Lower rank means that a source is more popular.
       name: from_rank
       in: query
@@ -645,10 +691,11 @@ components:
         minimum: 0
         maximum: 999999
       example: 100
+    
     ToRank:
       description: | 
         The highest boundary of the rank of a news website to filter by. 
-        Range: 0 to 999999.
+        Range: `0` to `999999`. Lower rank means that a source is more popular.
       name: to_rank
       in: query
       required: false
@@ -657,10 +704,11 @@ components:
         minimum: 0
         maximum: 999999
       example: 10000
+    
     SortBy:
       description: | 
         The sorting order of the results. Possible values are:
-        - `relevancy` (default): The most relevant results first.
+        - `relevancy`: The most relevant results first.
         - `date`: The most recently published results first.
         - `rank`: The results from the highest-ranked sources first.
       name: sort_by
@@ -674,10 +722,11 @@ components:
           - rank
         default: relevancy
       example: "date"
+    
     PageSize:
       description: | 
         The number of articles to return per page. 
-        Range: 1 to 1000.
+        Range: `1` to `1000`.
       name: page_size
       in: query
       required: false
@@ -687,6 +736,7 @@ components:
         maximum: 1000
         default: 100
       example: 50
+    
     Page:
       description: | 
         The page number to scroll through the results. 
@@ -699,32 +749,16 @@ components:
         minimum: 1
         default: 1
       example: 2
-    To:
-      description: | 
-        The end point in time to search for. The default timezone is UTC. 
-        Available formats:
-        - `YYYY/mm/dd`
-        - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago.`
-      name: to_
-      in: query
-      required: false
-      schema:
-        type: string
-      examples:
-        specific-date:
-          summary: Specific date
-          value: "2021/12/31"
-        relative-date:
-          summary: Relative date
-          value: "1 day ago"
+    
     From:
       description: | 
-        The start point in time to search for. Defaults to the past week. 
+        The starting point in time to search from. By default, the publication date of the article is used. 
+        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        
         Available formats:
         - `YYYY/mm/dd`
         - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago.`
+        - English phrases like `1 day ago`
       name: from_
       in: query
       required: false
@@ -737,6 +771,29 @@ components:
         relative-date:
           summary: Relative date
           value: "7 days ago"
+    
+    To:
+      description: | 
+        The ending point in time to search up to. By default, the publication date of the article is used. 
+        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+
+        Available formats:
+        - `YYYY/mm/dd`
+        - `YYYY/mm/dd HH:MM:SS`
+        - English phrases like `1 day ago`.
+      name: to_
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        specific-date:
+          summary: Specific date
+          value: "2021/12/31"
+        relative-date:
+          summary: Relative date
+          value: "1 day ago"
+    
     PublishedDatePrecision:
       description: | 
         The precision of the published date. There are three types:
@@ -753,16 +810,18 @@ components:
           - timezone unknown
           - date
       example: "full"
+    
     ByParseDate:
       description: | 
-        If true, transforms your `from_` and `to_` parameters to filter by parse_date instead of published_date. 
-        Be aware that a new variable `parse_date` will be added to the output list with each article.
+        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. 
+        Additionally, the `parse_date` variable is added to the output list for each article.
       name: by_parse_date
       in: query
       required: false
       schema:
         type: boolean
       example: true
+    
     IsHeadline:
       description: | 
         If true, only returns articles that were posted on the home page of a given news domain.
@@ -772,58 +831,73 @@ components:
       schema:
         type: boolean
       example: true
+    
     AllLinks:
-      description: | 
-        Search for desired URLs mentioned in the article. 
-        Please refer to the All Links And Domains Format page for more examples and explanations.
+      description: |
+        The desired URL(s) mentioned in the article to search for.
+        To specify multiple URLs, use a comma-separated string. For example, `washingtonpost.com,wsj.com`.
+
+        To learn more, see the [All Links And Domains Format](#) page.
       name: all_links
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
+        type: string
       examples:
         single-link:
           summary: Single link
-          value: ["https://example.com"]
+          value: "https://www.washingtonpost.com"
         multiple-links:
           summary: Multiple links
-          value: ["https://example.com", "https://anotherexample.com"]
+          value: "washingtonpost.com,wsj.com"
+    
+    AuthorName:
+      description: |
+        The name of the author to search for. This parameter returns exact matches only.
+      name: author_name
+      in: query
+      required: true
+      schema:
+        type: string
+      example: "Jane Smith"
+    
     NotAuthorName:
-      description: | 
-        The list of author names to exclude from your search. 
-        Can be a list of strings or a comma-separated string containing all the author names. 
-        Usually, you might want to exclude articles where one of the authors is Associated Press, or PRNewswire. 
-        For example: `PRNewswire`, `AOL Staff`.
+      description: |
+        The list of author names to exclude from your search.
+        To exclude articles by specific authors, use a comma-separated string. 
+        For example, `John Doe, Jane Doe`.
       name: not_author_name
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
+        type: string
       examples:
         single-author-name:
           summary: Single author name
-          value: ["PRNewswire"]
+          value: "John Doe"
         multiple-author-names:
           summary: Multiple author names
-          value: ["PRNewswire", "AOL Staff"]
+          value: "John Doe, Jane Doe"
+    
     AllDomainLinks:
-      description: | 
-        Search for desired domain URLs mentioned in the article. 
-        Please refer to the All Links And Domains Format page for more examples and explanations.
+      description: |
+        The domain URLs that are mentioned in the article to search for.
+        To specify multiple domain URLs, use a comma-separated string. 
+
+        To learn more, see [All Links and Domains Format](#).
       name: all_domain_links
       in: query
       required: false
       schema:
-        type: array
-        items:
-          type: string
-      example:
-        summary: Multiple domain URLs
-        value: ["example.com", "example2.com"]
+        type: string
+      examples:
+        single-domain-url:
+          summary: Single domain URL
+          value: "washingtonpost.com"
+        multiple-domain-urls:
+          summary: Multiple domain URLs
+          value: "washingtonpost.com,wsj.com"
+    
     WordCountMin:
       description: | 
         The minimum number of words an article must contain. 
@@ -835,6 +909,7 @@ components:
         type: integer
         minimum: 0
       example: 300
+    
     WordCountMax:
       description: | 
         The maximum number of words an article can contain. 
@@ -846,10 +921,10 @@ components:
         type: integer
         minimum: 0
       example: 1000
+    
     ClusteringVariable:
       description: | 
-        The data on which the similarity is calculated. Options are `content`, `title`, `summary`. 
-        Default is `content`.
+        The data on which the similarity is calculated.
       name: clustering_variable
       in: query
       required: false
@@ -859,42 +934,51 @@ components:
           - content
           - title
           - summary
+        default: content
       example: "content"
+    
     ClusteringEnabled:
       description: | 
-        If true, enables clustering on articles. Default is false.
+        If true, enables clustering on articles.
       name: clustering_enabled
       in: query
       required: false
       schema:
         type: boolean
+        default: false
       example: true
+    
     ClusteringThreshold:
       description: | 
-        The threshold for an article to be considered similar. Default value: 0.6. 
-        The value can vary from 0 to 1.
+        The threshold for an article to be considered similar.
+        The value can vary from `0.0` to `1.0`.
       name: clustering_threshold
       in: query
       required: false
       schema:
         type: number
-        minimum: 0
-        maximum: 1
+        format: float
+        minimum: 0.0
+        maximum: 1.0
         default: 0.6
       example: 0.7
+    
     IncludeNlpData:
       description: | 
         If true, includes an NLP layer with each article. 
-        Not available for all plans. Contact support to enable it.
+
+        Available only if NLP is enabled for your API key.
       name: include_nlp_data
       in: query
       required: false
       schema:
         type: boolean
       example: true
+    
     HasNlp:
       description: | 
         If true, filters data to include only articles with an NLP layer. 
+
         Available only if NLP is enabled for your API key.
       name: has_nlp
       in: query
@@ -902,11 +986,14 @@ components:
       schema:
         type: boolean
       example: true
+    
     Theme:
       description: | 
         A general topic of the article. Topic labeling is based on the actual content of an article. 
-        Options include `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
-        Multiple themes can be selected, separated by commas. 
+        Multiple themes can be selected, separated by commas. For example, `Finance, Tech`.
+
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
+      
         Available only if NLP is enabled for your API key.
       name: theme
       in: query
@@ -914,9 +1001,11 @@ components:
       schema:
         type: string
       example: "Business,Finance"
+    
     NotTheme:
       description: | 
-        Inverse of the `theme` parameter. Filters articles based on their general topic. 
+        Inverse of the `theme` parameter. Filters articles based on their general topic.
+
         Available only if NLP is enabled for your API key.
       name: not_theme
       in: query
@@ -924,160 +1013,230 @@ components:
       schema:
         type: string
       example: "Crime"
+    
     OrgEntityName:
       description: | 
-        The organization entity names mentioned in articles to filter by. 
+        The organization name(s) mentioned in articles.
+        To specify multiple organizations, use a comma-separated string. For example, `Apple,Microsoft`.
+     
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       name: ORG_entity_name
       in: query
       required: false
       schema:
         type: string
-      example: "Apple"
+      examples:
+        single-entity:
+          summary: Single entity
+          value: "Apple"
+        multiple-entities:
+          summary: Multiple entities
+          value: "Apple,Microsoft"
+    
     PerEntityName:
       description: | 
-        The person entity names mentioned in articles to filter by. 
+        The person names mentioned in articles.
+        To specify multiple names, use a comma-separated string. For example, `Elon Musk,Jeff Bezos`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       name: PER_entity_name
       in: query
       required: false
       schema:
         type: string
-      example: "Elon Musk"
+      examples:
+        single-entity:
+          summary: Single entity
+          value: "Elon Musk"
+        multiple-entities:
+          summary: Multiple entities
+          value: "Elon Musk,Jeff Bezos"
+    
     LocEntityName:
       description: | 
-        The location entity names mentioned in articles to filter by. 
+        The locations mentioned in articles.
+        To specify multiple locations, use a comma-separated string. For example, `California,New York`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       name: LOC_entity_name
       in: query
       required: false
       schema:
         type: string
-      example: "California"
+      examples:
+        single-entity:
+          summary: Single entity
+          value: "California"
+        multiple-entities:
+          summary: Multiple entities
+          value: "California,New York"
+    
     MiscEntityName:
       description: | 
-        The miscellaneous entity names mentioned in articles to filter by. 
+        Other named entities that do not fall under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
+        To specify multiple entities, use a comma-separated string. For example, `Bitcoin,Blockchain`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       name: MISC_entity_name
       in: query
       required: false
       schema:
         type: string
-      example: "Bitcoin"
+      examples:
+        single-entity:
+          summary: Single entity
+          value: "Bitcoin"
+        multiple-entities:
+          summary: Multiple entities
+          value: "Bitcoin,Blockchain"
+    
     TitleSentimentMin:
       description: | 
-        The minimum title sentiment score. Range is -1 to 1. 
+        The minimum title sentiment score. Range is `-1.0` to `1.0`. 
+
         Available only if NLP is enabled for your API key.
       name: title_sentiment_min
       in: query
       required: false
       schema:
         type: number
-        minimum: -1
-        maximum: 1
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
+    
     TitleSentimentMax:
       description: | 
-        The maximum title sentiment score. Range is -1 to 1. 
+        The maximum title sentiment score. Range is `-1.0` to `1.0`. 
+
         Available only if NLP is enabled for your API key.
       name: title_sentiment_max
       in: query
       required: false
       schema:
         type: number
-        minimum: -1
-        maximum: 1
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
+    
     ContentSentimentMin:
       description: | 
-        The minimum content sentiment score. Range is -1 to 1. 
+        The minimum content sentiment score. Range is `-1.0` to `1.0`. 
+
         Available only if NLP is enabled for your API key.
       name: content_sentiment_min
       in: query
       required: false
       schema:
         type: number
-        minimum: -1
-        maximum: 1
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
+    
     ContentSentimentMax:
       description: | 
-        The maximum content sentiment score. Range is -1 to 1. 
+        The maximum content sentiment score. Range is `-1.0` to `1.0`. 
+
         Available only if NLP is enabled for your API key.
       name: content_sentiment_max
       in: query
       required: false
       schema:
         type: number
-        minimum: -1
-        maximum: 1
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
+    
     IptcTags:
       description: | 
-        The IPTC tags to filter articles by. Only IPTC tag IDs can be used. 
+        The IPTC tag ID(s) to include articles by media topic.
+        To specify multiple IPTC tags, use a comma-separated string. For example, `20000199, 20000209`.
+
+        To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
+
         Available only if tags are enabled for your API key.
       name: iptc_tags
       in: query
       required: false
       schema:
         type: string
-      example: "20000188"
+      example: "20000209"
+    
     NotIptcTags:
       description: | 
-        The IPTC tags to exclude articles by. Only IPTC tag IDs can be used. 
-        Available only if tags are enabled for your API key.
+        The IPTC tag ID(s) to exclude articles by media topic.
+        To specify multiple IPTC tags, use a comma-separated string. For example, `20000205, 20000209`.
+
+        To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
+
+        Available only if tags are enabled for your API key. 
       name: not_iptc_tags
       in: query
       required: false
       schema:
         type: string
-      example: "20000199"
+      example: "20000205"
+    
     IabTags:
       description: | 
-        The IAB tags based on the content to filter articles. IAB tags refer to standardized categories used in online advertising to classify the content of web pages. Use these tags to include articles that match specific IAB categories.
+        The IAB categories to filter articles by.
+        To specify multiple IAB categories, use a comma-separated string. For example, `Business, Events`.
       name: iab_tags
       in: query
       required: false
       schema:
         type: string
-      example: "IAB1, IAB2"
+      example: "Business, Events"
+    
     NotIabTags:
       description: | 
-        The IAB tags to exclude articles based on their content. IAB tags refer to standardized categories used in online advertising to classify the content of web pages. Use these tags to exclude articles that match specific IAB categories.
+        The IAB categories to exclude articles by. 
+        To specify multiple IAB categories, use a comma-separated string. For example, `Business, Events`.
       name: not_iab_tags
       in: query
       required: false
       schema:
         type: string
-      example: "IAB1, IAB2"
-
+      example: "Business, Events"
+    
     ExcludeDuplicates:
       description: | 
-        If true, excludes duplicate articles from the search results. 
+        If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
-        To learn more, see Deduplicate Articles.
+
+        To learn more, see [Deduplicate Articles](#).
       name: exclude_duplicates
       in: query
       required: false
       schema:
         type: boolean
       example: true
-
-    # Additinal parameters for Latest Headlines
+    
     When:
       description: |
-        The time period to get the latest headlines for.
-        Accepted forms:
-        - `7d`: Daily Form (last 7 days time period)
-        - `30d`: (last 30 days time period)
-        - `1h`: Hourly Form (last hour)
-        - `24h`: (last 24 hours)
-        Default: The number of historic data available for your subscription plan.
+        The time period for which you want to get the latest headlines.
+        Format examples:
+        - `7d`: Last seven days
+        - `30d`: Last 30 days
+        - `1h`: Last hour
+        - `24h`: Last 24 hours
       name: when
       in: query
       required: false
       schema:
         type: string
+        default: "7d"
       examples:
         daily:
           summary: Last 7 days
@@ -1085,46 +1244,31 @@ components:
         hourly:
           summary: Last hour
           value: "1h"
+    
     IsOpinion:
       description: |
-        If true, only returns articles that are determined to be opinion pieces.
-        If false, excludes opinion-based articles and returns news only.
-        Default: false.
+        If true, returns only opinion pieces. If false, excludes opinion-based articles and returns news only.
       name: is_opinion
       in: query
       required: false
       schema:
         type: boolean
+        default: false
       example: true
+    
     IsPaidContent:
       description: |
-        If false, only returns articles that publish fully publicly available content.
-        Some news publishers partially block content of their articles, so we get only several sentences from them.
-        This filter will help you get full content.
+        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       name: is_paid_content
       in: query
       required: false
       schema:
         type: boolean
       example: false
-
-    # Additional parameter for Authors
-    AuthorName:
-      description: |
-        The name of the author to search for.
-        This parameter returns exact matches only.
-      name: author_name
-      in: query
-      required: true
-      schema:
-        type: string
-      example: "John Doe"
-
-    # Additional parameters for Search By Link
+    
     Links:
       description: |
-        The article link or list of article links to search for.
-        For example: `https://example.com/article1`, `https://example.com/article2`.
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string. For example, `https://example.com/article1, https://example.com/article2`.
       name: links
       in: query
       required: true
@@ -1133,14 +1277,14 @@ components:
       examples:
         single-link:
           summary: Single article link
-          value: "https://example.com/article1"
+          value: "https://nytimes.com/article1"
         multiple-links:
           summary: Multiple article links
-          value: "https://example.com/article1,https://example.com/article2"
+          value: "https://nytimes.com/article1,https://bbc.com/article2"
+    
     Ids:
       description: |
-        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for.
-        For example: `1234567890abcdef`, `abcdef1234567890`.
+        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string. For example, `1234567890abcdef, abcdef1234567890`.
       name: ids
       in: query
       required: true
@@ -1149,16 +1293,14 @@ components:
       examples:
         single-id:
           summary: Single article ID
-          value: "1234567890abcdef"
+          value: "5f8d0d55b6e45e00179c6e7e"
         multiple-ids:
           summary: Multiple article IDs
-          value: "1234567890abcdef,abcdef1234567890"
+          value: "5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"
     
-    # Additional parametes for Search Similar (hidden endpoint). Need to clarify.
     IncludeSimilarDocuments:
       description: |
         If true, includes similar documents in the response.
-        Default: false.
       name: include_similar_documents
       in: query
       required: false
@@ -1166,10 +1308,10 @@ components:
         type: boolean
         default: false
       example: true
+    
     SimilarDocumentsNumber:
       description: |
         The number of similar documents to return.
-        Default: 5.
       name: similar_documents_number
       in: query
       required: false
@@ -1177,10 +1319,10 @@ components:
         type: integer
         default: 5
       example: 10
+    
     SimilarDocumentsFields:
       description: |
         The fields to consider for finding similar documents.
-        Default: title,content.
       name: similar_documents_fields
       in: query
       required: false
@@ -1188,6 +1330,7 @@ components:
         type: string
         default: "title,content"
       example: "title,summary"
+    
     NerName:
       description: |
         The name entity recognition (NER) name to search for.
@@ -1196,9 +1339,8 @@ components:
       required: false
       schema:
         type: string
-      example: "Elon Musk"
-
-    # Additional parameters for Sources
+      example: "Tesla"
+    
     IncludeAdditionalInfo:
       description: |
         If true, returns the following additional datapoints about each news source:
@@ -1211,16 +1353,16 @@ components:
       schema:
         type: boolean
       example: true
+    
     SourceUrl:
       description: |
-        The domain of the news publication to search for.
-        You cannot use the `source_url` parameter in combination with any other parameter.
+        The domain of the news publication to search for. You cannot use the `source_url` parameter in combination with any other parameter.
       name: source_url
       in: query
       required: false
       schema:
         type: string
-      example: "example.com"
+      example: "bbc.com"
 
   requestBodies:
     AuthorsRequestBody:
@@ -1351,7 +1493,8 @@ components:
               to_:
                 type: string
                 description: | 
-                  The end point in time to search for. The default timezone is UTC. 
+                  The ending point in time to search up to. By default, the publication date of the article is used. 
+                  To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
                   Available formats:
                   - `YYYY/mm/dd`
                   - `YYYY/mm/dd HH:MM:SS`
@@ -1474,32 +1617,36 @@ components:
                 example: "Bitcoin"
               title_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               title_sentiment_max:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: 0.5
               content_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               content_sentiment_max:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
@@ -1709,32 +1856,36 @@ components:
                 example: true
               title_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               title_sentiment_max:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: 0.5
               content_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               content_sentiment_max:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
@@ -1785,7 +1936,7 @@ components:
                   The keyword(s) to search for in articles. 
                   Query syntax supports logical operators (AND, OR, NOT) and wildcards:
 
-                  - For an exact match, use double quotes (e.g., "exact phrase").
+                  - For an exact match, use double quotes. For example, "exact phrase".
                   - Use `*` to search for any keyword.
                   - Use `+` to include and `-` to exclude specific words or phrases (e.g., +keyword, -keyword).
                   - Use AND, OR, and NOT to refine search results (e.g., keyword1 AND (keyword2 OR keyword3) NOT keyword4).
@@ -1799,7 +1950,7 @@ components:
                   The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
                   To select multiple languages, use a comma-separated string (e.g., "en,es").
 
-                  To learn more, see (Language format)(https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+                  To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
                 example: "en"
               not_lang:
                 type: string
@@ -1808,7 +1959,7 @@ components:
                   The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
                   To exclude multiple languages, use a comma-separated string (e.g., "en,es").
 
-                  To learn more, see (Language format)(https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+                  To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
                 example: "en"
               published_date_precision:
                 type: string
@@ -1995,6 +2146,7 @@ components:
                 example: true
               clustering_threshold:
                 type: number
+                format: float
                 minimum: 0
                 maximum: 1
                 description: | 
@@ -2054,24 +2206,27 @@ components:
                 example: "Bitcoin"
               title_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               title_sentiment_max:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: 0.5
               content_sentiment_min:
                 type: number
-                minimum: -1
-                maximum: 1
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
@@ -2407,12 +2562,18 @@ components:
                 example: "Elon Musk"
               title_sentiment_min:
                 type: number
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The minimum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
                 example: -0.5
               title_sentiment_max:
                 type: number
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum title sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
@@ -2425,6 +2586,9 @@ components:
                 example: -0.5
               content_sentiment_max:
                 type: number
+                format: float
+                minimum: -1.0
+                maximum: 1.0
                 description: | 
                   The maximum content sentiment score. Range is -1 to 1. 
                   Available only if NLP is enabled for your API key.
@@ -2558,7 +2722,9 @@ components:
             title: Response Search Get
             anyOf:
               - $ref: '#/components/schemas/dto__responses__search_response__SearchResponse'
+                title: Search response
               - $ref: '#/components/schemas/ClusteringSearchResponse'
+                title: Search response with clustering
 
     SearchLinkSuccessfulResponse:
       description: A successful response containing articles that match the provided links or IDs.
@@ -2969,7 +3135,7 @@ components:
     # Search related schemas for the response object
     # Note: The ClusteringSearchResponse and Cluster schemas are the same as in Latest Headlines
     dto__responses__search_response__SearchResponse:
-      title: SearchResponse
+      title: SearchResponse 
       description: The response model for a search request.
       required:
         - total_hits
