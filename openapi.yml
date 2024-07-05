@@ -910,7 +910,7 @@ components:
     
     ClusteringVariable:
       description: | 
-        The data on which the similarity is calculated.
+        The article data on which the similarity to be calculated.
       name: clustering_variable
       in: query
       required: false
@@ -925,7 +925,11 @@ components:
     
     ClusteringEnabled:
       description: | 
-        If true, enables clustering on articles.
+        If true, enables clustering on articles. 
+        This changes the response format to include clustering information - instead of a list of articles, 
+        you receive a list of clusters that group similar articles together.
+
+        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
@@ -3011,13 +3015,17 @@ components:
     ClusteringVariable:
       $ref: '#/components/parameters/ClusteringVariable/schema'
       description: | 
-        The data on which the similarity is calculated.
+        The article data on which the similarity to be calculated.
       example: "content"
 
     ClusteringEnabled:
       $ref: '#/components/parameters/ClusteringEnabled/schema'
       description: | 
-        If true, enables clustering on articles.
+        If true, enables clustering on articles. 
+        This changes the response format to include clustering information - instead of a list of articles, 
+        you receive a list of clusters that group similar articles together.
+
+        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
       example: true
 
     ClusteringThreshold:
