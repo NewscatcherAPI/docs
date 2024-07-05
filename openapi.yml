@@ -501,10 +501,12 @@ components:
     
     SearchIn:
       description: |
-        The article fields to search in. The accepted values are `title`, `summary`, and `content`.
+        The article fields to search in. 
         To search in multiple fields, use a comma-separated string. For example, `title,summary`.
 
-        The `summary` option is available if NLP is enabled in your plan.
+        Available options: `title`, `summary`, `content`.
+
+        **Note:** The `summary` option is available if NLP is enabled in your plan.
       name: search_in
       in: query
       required: false
@@ -597,11 +599,13 @@ components:
     
     PredefinedSources:
       description: | 
-        Use our TOP predefined sources per country. The format should be strictly like this: 
-        starting with the word `top`, put the number of desired sources, and then the two-letter country code ISO 3166-1 alpha-2. 
+        Predefined top sources per country. Format: start with the word `top`, 
+        followed by the number of desired sources, and then the two-letter country 
+        code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
         For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
 
-        Multiple countries can be specified with custom numbers, comma separated. For example, `top 100 US,GB`, `top 33 AT,55 IT`.
+        Multiple countries can be specified with custom numbers as a comma-separated strings.
+        For example, `top 100 US,GB`, `top 33 AT,55 IT`.
       name: predefined_sources
       in: query
       required: false
@@ -634,7 +638,7 @@ components:
       description: |
         The categorical URL(s) to filter your search.
         To filter your search by multiple categorical URLs, use a comma-separated string. 
-        For example, `https://www.washingtonpost.com/politics,https://www.washingtonpost.com/technology`.
+        For example, `wsj.com/politics,wsj.com/tech`.
       name: parent_url
       in: query
       required: false
@@ -972,7 +976,7 @@ components:
     Theme:
       description: | 
         A general topic of the article. Topic labeling is based on the actual content of an article. 
-        Multiple themes can be selected, separated by commas. For example, `Finance, Tech`.
+        To select multiple themes, use a comma-separated string. For example, `Finance,Tech`.
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
       
@@ -987,7 +991,8 @@ components:
     NotTheme:
       description: | 
         Inverse of the `theme` parameter. Filters articles based on their general topic.
-
+        To exclude multiple themes, use a comma-separated string. For example, `Crime,Tech`.
+        
         Available only if NLP is enabled for your API key.
       name: not_theme
       in: query
@@ -1229,7 +1234,8 @@ components:
     
     IsOpinion:
       description: |
-        If true, returns only opinion pieces. If false, excludes opinion-based articles and returns news only.
+        If true, returns only opinion pieces. 
+        If false, excludes opinion-based articles and returns news only.
       name: is_opinion
       in: query
       required: false
@@ -1240,7 +1246,8 @@ components:
     
     IsPaidContent:
       description: |
-        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
+        If false, returns only articles that have publicly available complete content. 
+        Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       name: is_paid_content
       in: query
       required: false
@@ -1250,7 +1257,11 @@ components:
     
     Links:
       description: |
-        The article link or list of article links to search for. To specify multiple links, use a comma-separated string. For example, `https://example.com/article1, https://example.com/article2`.
+        The article link or list of article links to search for. 
+        To specify multiple links, use a comma-separated string. 
+        For example, `https://example.com/article1, https://example.com/article2`.
+
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
       in: query
       required: true
@@ -1266,7 +1277,10 @@ components:
     
     Ids:
       description: |
-        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string. For example, `1234567890abcdef, abcdef1234567890`.
+        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
+        To specify multiple IDs, use a comma-separated string. For example, `1234567890abcdef, abcdef1234567890`.
+        
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
       in: query
       required: true
@@ -1646,9 +1660,9 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - links
-              - ids
+            oneOf:
+              - required: ["links"]
+              - required: ["ids"]
             properties:
               ids:
                 $ref: '#/components/schemas/Ids'
@@ -2711,7 +2725,7 @@ components:
         The language(s) of the search. 
         The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
         To select multiple languages, use a comma-separated string or an array of strings.
-        For example, `en,es` or ["en", "es"].
+        For example, `en,es` or `["en", "es"]`.
         
         To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
       example: ["en", "es"]
@@ -2726,7 +2740,7 @@ components:
         The language(s) to exclude from the search. 
         The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
         To exclude multiple languages, use a comma-separated string or an array of strings.
-        For example, `fr,de` or ["fr", "de"].
+        For example, `fr,de` or `["fr", "de"]`.
 
         To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
       example: ["fr", "de"]
@@ -2734,10 +2748,12 @@ components:
     SearchIn:
       $ref: '#/components/parameters/SearchIn/schema'
       description: |
-        The article fields to search in. The accepted values are `title`, `summary`, and `content`.
+        The article fields to search in. 
         To search in multiple fields, use a comma-separated string. For example, `title,summary`.
 
-        The `summary` option is available if NLP is enabled in your plan.
+        Available options: `title`, `summary`, `content`.
+
+        **Note:** The `summary` option is available if NLP is enabled in your plan.
       example: "title,content"
 
     Countries:
@@ -2750,7 +2766,7 @@ components:
         The countries where the news publisher is located. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
         To select multiple countries, use a comma-separated string or an array of strings.
-        For example, `US,CA` or ["US", "CA"].
+        For example, `US,CA` or `["US", "CA"]`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
       example: ["US", "CA"]
@@ -2765,7 +2781,7 @@ components:
         The publisher location countries to exclude from the search. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
         To exclude multiple countries, use a comma-separated string or an array of strings.
-        For example, `UK,FR` or ["UK", "FR"].
+        For example, `UK,FR` or `["UK", "FR"]`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
       example: ["UK", "FR"]
@@ -2779,8 +2795,9 @@ components:
       description: | 
         One or more news sources to narrow down the search. The format must be a domain URL. 
         Subdomains, such as `finance.yahoo.com`, are also acceptable. 
+        
         To specify multiple sources, use a comma-separated string or an array of strings.
-        For example, `nytimes.com, theguardian.com, finance.yahoo.com` or ["nytimes.com", "theguardian.com", "finance.yahoo.com"].
+        For example, `nytimes.com, theguardian.com, finance.yahoo.com` or `["nytimes.com", "theguardian.com", "finance.yahoo.com"]`.
       example: ["nytimes.com", "theguardian.com", "finance.yahoo.com"]
 
     NotSources:
@@ -2792,7 +2809,7 @@ components:
       description: |
         The news sources to exclude from the search.
         To exclude multiple sources, use a comma-separated string or an array of strings.
-        For example, `cnn.com, wsj.com` or ["cnn.com", "wsj.com"].
+        For example, `cnn.com, wsj.com` or `["cnn.com", "wsj.com"]`.
       example: ["cnn.com", "wsj.com"]
 
     PredefinedSources:
@@ -2802,12 +2819,13 @@ components:
           items:
             type: string
       description: | 
-        Use our TOP predefined sources per country. The format should be strictly like this: 
-        starting with the word `top`, put the number of desired sources, and then the two-letter country code ISO 3166-1 alpha-2. 
+        Predefined top sources per country. Format: start with the word `top`, 
+        followed by the number of desired sources, and then the two-letter country 
+        code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
         For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
 
-        Multiple countries can be specified with custom numbers, either as a comma-separated string or an array of strings.
-        For example, `top 100 US,GB`, `top 33 AT,55 IT` or ["top 100 US", "top 5 GB"].
+        Multiple countries can be specified with custom numbers as a comma-separated string or an array of strings. 
+        For example, `top 100 US,GB`, `top 33 AT,55 IT`, `["top 100 US", "top 5 GB"]`.
       example: ["top 100 US", "top 5 GB"]
 
     SourceName:
@@ -2819,7 +2837,7 @@ components:
       description: |
         The names of news sources to narrow down your search.
         To specify multiple news sources, use a comma-separated string or an array of strings.
-        For example, `The New York Times, The Guardian` or ["The New York Times", "The Guardian"].
+        For example, `The New York Times, The Guardian` or `["The New York Times", "The Guardian"]`.
 
         **Caution**: We don't recommend using the `source_name` parameter in production. 
         To get data from a specific news domain, use the `sources` parameter instead of `source_name`.
@@ -2834,8 +2852,8 @@ components:
       description: |
         The categorical URL(s) to filter your search.
         To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
-        For example, `https://www.washingtonpost.com/politics, https://www.washingtonpost.com/technology` or ["https://www.washingtonpost.com/politics", "https://www.washingtonpost.com/technology"].
-      example: ["https://www.washingtonpost.com/politics", "https://www.washingtonpost.com/technology"]
+        For example, `wsj.com/politics,wsj.com/tech` or`["wsj.com/politics", "wsj.com/tech"]`.
+      example: ["wsj.com/politics", "wsj.com/tech"]
 
     RankedOnly:
       $ref: '#/components/parameters/RankedOnly/schema'
@@ -2885,8 +2903,10 @@ components:
     From:
       $ref: '#/components/parameters/From/schema'
       description: | 
-        The starting point in time to search from. By default, the publication date of the article is used. 
+        The starting point in time to search from. 
+        By default, the publication date of the article is used. 
         To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        
         Available formats:
         - `YYYY/mm/dd`
         - `YYYY/mm/dd HH:MM:SS`
@@ -2896,8 +2916,10 @@ components:
     To:
       $ref: '#/components/parameters/To/schema'
       description: | 
-        The ending point in time to search up to. By default, the publication date of the article is used. 
+        The ending point in time to search up to. 
+        By default, the publication date of the article is used. 
         To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        
         Available formats:
         - `YYYY/mm/dd`
         - `YYYY/mm/dd HH:MM:SS`
@@ -2935,7 +2957,7 @@ components:
       description: |
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string or an array of strings.
-        For example, `washingtonpost.com, wsj.com` or ["washingtonpost.com", "wsj.com"].
+        For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
         To learn more, see the [All Links And Domains Format](#) page.
       example: ["washingtonpost.com", "wsj.com"]
@@ -2955,7 +2977,7 @@ components:
       description: |
         The list of author names to exclude from your search.
         To exclude articles by specific authors, use a comma-separated string or an array of strings. 
-        For example, `John Doe, Jane Doe` or ["John Doe", "Jane Doe"].
+        For example, `John Doe, Jane Doe` or `["John Doe", "Jane Doe"]`.
       example: ["John Doe", "Jane Doe"]
 
     AllDomainLinks:
@@ -2967,7 +2989,7 @@ components:
       description: |
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string or an array of strings. 
-        For example, `washingtonpost.com, wsj.com` or ["washingtonpost.com", "wsj.com"].
+        For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
         To learn more, see [All Links and Domains Format](#).
       example: ["washingtonpost.com", "wsj.com"]
@@ -3022,40 +3044,38 @@ components:
       example: true
 
     Theme:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      $ref: '#/components/parameters/Theme/schema'
       description: | 
         A general topic of the article. Topic labeling is based on the actual content of an article. 
-        Multiple themes can be selected, separated by commas or provided as an array of strings. 
-        For example, `Finance, Tech` or ["Finance", "Tech"].
-        
+        To select multiple themes, use a comma-separated string. 
+        For example, `Finance,Tech`.
+
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
-        
+      
         Available only if NLP is enabled for your API key.
-      example: ["Business", "Finance"]
+      example: "Business,Finance"
     
     NotTheme:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      $ref: '#/components/parameters/NotTheme/schema'
       description: | 
-        Inverse of the `theme` parameter. Filters articles based on their general topic. 
-        Multiple themes can be excluded, separated by commas or provided as an array of strings. For example, `Crime, Tech` or ["Crime", "Tech"].
+        Inverse of the `theme` parameter. Filters articles based on their general topic.
+        To exclude multiple themes, use a comma-separated string. 
+        For example, `Crime,Tech`.
         
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
+
         Available only if NLP is enabled for your API key.
-      example: ["Crime", "Tech"]
+      example: "Crime"
 
     OrgEntityName:
       $ref: '#/components/parameters/OrgEntityName/schema'
       description: | 
         The organization name(s) mentioned in articles.
-        To specify multiple organizations, use a comma-separated string. For example, `Apple, Microsoft` or ["Apple", "Microsoft"].
-        
+        To specify multiple organizations, use a comma-separated string. 
+        For example, `Apple,Microsoft`.
+     
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       example: "Apple"
 
@@ -3063,8 +3083,11 @@ components:
       $ref: '#/components/parameters/PerEntityName/schema'
       description: | 
         The person names mentioned in articles.
-        To specify multiple names, use a comma-separated string or an array of strings. For example, `Elon Musk, Jeff Bezos` or ["Elon Musk", "Jeff Bezos"].
-        
+        To specify multiple names, use a comma-separated string. 
+        For example, `Elon Musk,Jeff Bezos`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       example: "Elon Musk"
 
@@ -3072,17 +3095,24 @@ components:
       $ref: '#/components/parameters/LocEntityName/schema'
       description: | 
         The locations mentioned in articles.
-        To specify multiple locations, use a comma-separated string or an array of strings. For example, `California, New York` or ["California", "New York"].
-        
+        To specify multiple locations, use a comma-separated string. 
+        For example, `California,New York`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       example: "California"
 
     MiscEntityName:
       $ref: '#/components/parameters/MiscEntityName/schema'
       description: | 
-        Other named entities that do not fall under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string or an array of strings. For example, `Bitcoin, Blockchain` or ["Bitcoin", "Blockchain"].
-        
+        Other named entities that do not fall under person, organization, or location categories. 
+        Includes events, nationalities, products, works of art, and more.
+        To specify multiple entities, use a comma-separated string. 
+        For example, `Bitcoin,Blockchain`.
+
+        To learn more, see [Search by Entity](#).
+
         Available only if NLP is enabled for your API key.
       example: "Bitcoin"
 
@@ -3127,7 +3157,7 @@ components:
       description: | 
         The IPTC tag ID(s) to include articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
-        For example, `20000199, 20000209` or ["20000199", "20000209"].
+        For example, `20000199, 20000209` or `["20000199", "20000209"]`.
         
         Available only if tags are enabled for your API key.
       example: ["20000199", "20000209"]
@@ -3141,7 +3171,7 @@ components:
       description: | 
         The IPTC tag ID(s) to exclude articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
-        For example, `20000205, 20000209` or ["20000205", "20000209"].
+        For example, `20000205, 20000209` or `["20000205", "20000209"]`.
         
         Available only if tags are enabled for your API key. 
       example: ["20000205", "20000209"]
@@ -3155,7 +3185,7 @@ components:
       description: | 
         The IAB categories to filter articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
-        For example, `Business, Events` or ["Business", "Events"].
+        For example, `Business, Events` or `["Business", "Events"]`.
       example: ["Business", "Events"]
 
     NotIabTags:
@@ -3165,9 +3195,9 @@ components:
           items:
             type: string
       description: | 
-        The IAB categories to exclude articles by. 
+        The IAB categories to exclude articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
-        For example, `Agriculture, Metals` or ["Agriculture", "Metals"].
+        For example, `Agriculture, Metals` or `["Agriculture", "Metals"]`.
       example: ["Agriculture", "Metals"]
 
     ExcludeDuplicates:
@@ -3212,7 +3242,10 @@ components:
       description: |
         The article link or list of article links to search for. 
         To specify multiple links, use a comma-separated string or an array of strings.
-        For example, `https://nytimes.com/article1, https://bbc.com/article2` or ["https://nytimes.com/article1", "https://bbc.com/article2"].
+        For example, `https://nytimes.com/article1, https://bbc.com/article2` 
+        or `["https://nytimes.com/article1", "https://bbc.com/article2"]`.
+
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: "https://nytimes.com/article1"
 
     Ids:
@@ -3224,7 +3257,9 @@ components:
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string or an array of strings.
-        For example, `5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f` or ["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"].
+        For example, `5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f` or `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`.
+
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: ["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]
 
     IncludeSimilarDocuments:
@@ -3249,8 +3284,9 @@ components:
       $ref: '#/components/parameters/NerName/schema'
       description: |
         The name of person, organization, location, product or other named entity to search for.
-        To specify multiple names use a comma-separated string. For example, `Tesla,Amazon`.
-      example: ["Tesla", "Amazon"]
+        To specify multiple names use a comma-separated string. 
+        For example, `Tesla,Amazon`.
+      example: "Tesla,Amazon"
 
     IncludeAdditionalInfo:
       $ref: '#/components/parameters/IncludeAdditionalInfo/schema'
@@ -3276,6 +3312,7 @@ components:
       name: x-api-token
       description: |
         API Key to authenticate requests.
+
         To access the API, include your API key in the `x-api-token` header. 
         To obtain your API key, complete the [form](https://www.newscatcherapi.com/pricing) or contact us directly.
   
