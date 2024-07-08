@@ -1,0 +1,3 @@
+apis:
+  openapi.yml:
+    alias: newscatcher-news-api-v3
