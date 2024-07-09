@@ -136,7 +136,7 @@
                   ]
                 },
                 {
-                  "group": "Search Link",
+                  "group": "Search by Link",
                   "pages": [
                     "v3/api-reference/searchlink/search-articles-by-id-or-link-get",
                     "v3/api-reference/searchlink/search-articles-by-id-or-link-post"

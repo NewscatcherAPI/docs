@@ -284,8 +284,32 @@ paths:
       parameters:
         - $ref: '#/components/parameters/Ids'
         - $ref: '#/components/parameters/Links'
-        - $ref: '#/components/parameters/From'
-        - $ref: '#/components/parameters/To'
+        - name: from_
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 1 month ago
+          description: |
+            The starting point in time to search from. The publication date of the article is used. 
+            The default time zone is UTC.
+            Available formats:
+            - `YYYY/mm/dd`
+            - `YYYY/mm/dd HH:MM:SS`
+            - English phrases like `1 day ago`.
+        - name: to_
+          in: query
+          required: false
+          schema:
+            type: string
+            default: now
+          description: |
+            The ending point in time to search up to. The publication date of the article is used. 
+            The default time zone is UTC.
+            Available formats:
+            - `YYYY/mm/dd`
+            - `YYYY/mm/dd HH:MM:SS`
+            - English phrases like `1 day ago`.
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
       responses:
@@ -802,6 +826,7 @@ components:
       required: false
       schema:
         type: boolean
+        default: false
       example: true
     
     IsHeadline:
@@ -1225,7 +1250,6 @@ components:
       required: false
       schema:
         type: boolean
-        default: false
       example: true
     
     IsPaidContent:
@@ -1337,9 +1361,10 @@ components:
     
     SourceUrl:
       description: |
-        The domain of the news publication to search for. 
+        The domain(s) of the news publication to search for. 
         
-        **Caution**: You cannot use the `source_url` parameter in combination with any other parameter.
+        **Caution**:  When specifying the `source_url` parameter, 
+        you can only use `include_additional_info` as an extra parameter.
       name: source_url
       in: query
       required: false
@@ -1376,9 +1401,9 @@ components:
                 $ref: '#/components/schemas/Countries'
               not_countries:
                 $ref: '#/components/schemas/NotCountries'
-              from:
+              from_:
                 $ref: '#/components/schemas/From'
-              to:
+              to_:
                 $ref: '#/components/schemas/To'
               published_date_precision:
                 $ref: '#/components/schemas/PublishedDatePrecision'
@@ -1438,6 +1463,14 @@ components:
                 $ref: '#/components/schemas/IabTags'
               not_iab_tags:
                 $ref: '#/components/schemas/NotIabTags'
+            example:
+              author_name: "Joanna Stern"
+              lang: "en"
+              sources:
+                - "wsj.com"
+                - "nytimes.com"
+              from_: "2024/01/01"
+              to_: "2024/06/30"
 
     LatestHeadlinesRequestBody:
       description: Request body for retrieving the latest headlines based on specified criteria such as language, country, source, and more.
@@ -1527,6 +1560,13 @@ components:
                 $ref: '#/components/schemas/IabTags'
               not_iab_tags:
                 $ref: '#/components/schemas/NotIabTags'
+            example:
+              lang: "en"
+              predefined_sources: 
+                - "top 50 US"
+                - "top 20 GB"
+              is_opinion: false
+              page_size: 10
 
     SearchRequestBody:
       description: Request body for searching articles based on specified criteria such as keyword, language, country, source, and more.
@@ -1558,9 +1598,9 @@ components:
                 $ref: '#/components/schemas/NotCountries'
               not_author_name:
                 $ref: '#/components/schemas/NotAuthorName'
-              from:
+              from_:
                 $ref: '#/components/schemas/From'
-              to:
+              to_:
                 $ref: '#/components/schemas/To'
               published_date_precision:
                 $ref: '#/components/schemas/PublishedDatePrecision'
@@ -1636,6 +1676,15 @@ components:
                 $ref: '#/components/schemas/NotIabTags'
               exclude_duplicates:
                 $ref: '#/components/schemas/ExcludeDuplicates'
+            example:
+              q: "renewable energy"
+              search_in: "title"
+              predefined_sources: 
+                - "top 50 US"
+              lang: 
+                - "en"
+              from_: "2024/01/01"
+              to_: "2024/06/30"
 
     SearchLinkRequestBody:
       description: Request body for searching articles based on specified links or IDs.
@@ -1644,22 +1693,42 @@ components:
         application/json:
           schema:
             type: object
-            oneOf:
-              - required: ["links"]
-              - required: ["ids"]
+            required:
+              - ids
+              - links
             properties:
               ids:
                 $ref: '#/components/schemas/Ids'
               links:
                 $ref: '#/components/schemas/Links'
-              from:
-                $ref: '#/components/schemas/From'
-              to:
-                $ref: '#/components/schemas/To'
+              from_:
+                type: string
+                default: 1 month ago
+                description: |
+                  The starting point in time to search from. The publication date of the article is used. 
+                  The default time zone is UTC.
+                  Available formats:
+                  - `YYYY/mm/dd`
+                  - `YYYY/mm/dd HH:MM:SS`
+                  - English phrases like `1 day ago`.
+              to_:
+                type: string
+                default: now
+                description: |
+                  The ending point in time to search up to. The publication date of the article is used. 
+                  The default time zone is UTC.
+                  Available formats:
+                  - `YYYY/mm/dd`
+                  - `YYYY/mm/dd HH:MM:SS`
+                  - English phrases like `1 day ago`.
               page:
                 $ref: '#/components/schemas/Page'
               page_size:
                 $ref: '#/components/schemas/PageSize'
+            example: 
+              ids:
+                - "8ea8a784568ffaa05cb6d1ab2d2e84dd"
+                - "0146a551ef05ab1c494a55e806e3ce64"
 
     SearchSimilarRequestBody:
       description: Request body for searching similar articles based on specified criteria such as query, language, country, source, and more.
@@ -1695,9 +1764,9 @@ components:
                 $ref: '#/components/schemas/Countries'
               not_countries:
                 $ref: '#/components/schemas/NotCountries'
-              from:
+              from_:
                 $ref: '#/components/schemas/From'
-              to:
+              to_:
                 $ref: '#/components/schemas/To'
               by_parse_date:
                 $ref: '#/components/schemas/ByParseDate'
@@ -1753,6 +1822,10 @@ components:
                 $ref: '#/components/schemas/IptcTags'
               not_iptc_tags:
                 $ref: '#/components/schemas/NotIptcTags'
+            example:
+              q: "artificial intelligence"
+              include_similar_documents: true
+              similar_documents_number: 5
 
     SourcesRequestBody:
       description: Request body for searching news sources based on specified criteria such as language, country, and more.
@@ -1778,6 +1851,10 @@ components:
                 $ref: '#/components/schemas/SourceName'
               source_url:
                 $ref: '#/components/schemas/SourceUrl'
+            example:
+              predefined_sources:
+                - top 50 US
+              additional_info: true
 
   responses:
     AuthorsSuccessfulResponse:
@@ -2689,9 +2766,6 @@ components:
     DateTime:
       oneOf:
         - type: string
-          format: date
-          example: "2023/12/31"
-        - type: string
           format: date-time
           example: "2023/12/31 23:59:59"
         - type: string
@@ -2934,6 +3008,7 @@ components:
 
     ByParseDate:
       type: boolean
+      default: false
       description: | 
         If true, the `from_` and `to_` parameters use article parse dates instead of published dates. 
         Additionally, the `parse_date` variable is added to the output list for each article.
@@ -3203,7 +3278,6 @@ components:
 
     IsOpinion:
       type: boolean
-      default: false
       description: |
         If true, returns only opinion pieces. If false, excludes opinion-based articles and returns news only.
       example: true
@@ -3275,11 +3349,14 @@ components:
       example: true
 
     SourceUrl:
-      type: string
+      $ref: '#/components/schemas/StringArray'
       description: |
-        The domain of the news publication to search for. 
+        The domains of the news publication to search for. To specify multiple news sources, 
+        use a comma-separated string or an array of strings. 
+        For example, `bbc.com, nytimes.com` or `["bbc.com", "nytimes.com"]`
 
-        **Caution**: You cannot use the `source_url` parameter in combination with any other parameter.
+        **Caution**:  When specifying the `source_url` parameter, 
+        you can only use `include_additional_info` as an extra parameter.
       example: "bbc.com"
 
   securitySchemes:
