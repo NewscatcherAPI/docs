@@ -448,7 +448,7 @@ paths:
       tags:
         - Aggregation
       summary: Get aggregation count by interval
-      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source. Supports clustering for grouping similar articles.
+      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
       operationId: Aggregation_get
       parameters:
         - $ref: '#/components/parameters/Q'
@@ -479,9 +479,6 @@ paths:
         - $ref: '#/components/parameters/WordCountMax'
         - $ref: '#/components/parameters/Page'
         - $ref: '#/components/parameters/PageSize'
-        - $ref: '#/components/parameters/ClusteringVariable'
-        - $ref: '#/components/parameters/ClusteringEnabled'
-        - $ref: '#/components/parameters/ClusteringThreshold'
         - $ref: '#/components/parameters/IncludeNlpData'
         - $ref: '#/components/parameters/HasNlp'
         - $ref: '#/components/parameters/Theme'
@@ -508,13 +505,15 @@ paths:
       tags:
         - Aggregation
       summary: Get aggregation count by interval
-      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source. Supports clustering for grouping similar articles.
+      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
       operationId: Aggregation_post
       requestBody:
         $ref: '#/components/requestBodies/AggregationRequestBody'
       responses:
         '200':
           $ref: '#/components/responses/AggregationSuccessfulResponse'
+        '400':
+          $ref: '#/components/responses/FailedAggregationResponse'
         '422':
           $ref: '#/components/responses/ValidationErrorResponse'
 
@@ -1535,12 +1534,6 @@ components:
                 $ref: '#/components/schemas/Page'
               page_size:
                 $ref: '#/components/schemas/PageSize'
-              clustering_variable:
-                $ref: '#/components/schemas/ClusteringVariable'
-              clustering_enabled:
-                $ref: '#/components/schemas/ClusteringEnabled'
-              clustering_threshold:
-                $ref: '#/components/schemas/ClusteringThreshold'
               include_nlp_data:
                 $ref: '#/components/schemas/IncludeNlpData'
               has_nlp:
@@ -1572,11 +1565,11 @@ components:
               aggregation_by:
                 $ref: '#/components/schemas/AggregationBy'
             example:
-              q: "renewable energy"
-              predefined_sources: "top 50 US"
-              from_: "2024/01/01"
-              to_: "2024/06/30"
-              aggregation_by: "day"
+              q: renewable energy
+              predefined_sources: top 50 US
+              from_: 2024/01/01
+              to_: 2024/06/30
+              aggregation_by: day
 
     AuthorsRequestBody:
       description: Request body for searching articles by author based on specified criteria such as author name, language, country, source, and more.
@@ -2068,10 +2061,7 @@ components:
         application/json:
           schema:
             title: Response Aggregation Get
-            anyOf:
-              - $ref: '#/components/schemas/AggregationResponse'
-              - $ref: '#/components/schemas/ClusteringSearchResponse'
-
+            $ref: '#/components/schemas/AggregationResponse'
     FailedAggregationResponse:
       description: No matches found for the search criteria.
       content:
