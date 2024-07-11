@@ -561,7 +561,7 @@ components:
       required: true
       schema:
         type: string
-      example: "technology AND (Apple OR Microsoft) NOT Google"
+      example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
       description: | 
@@ -578,10 +578,10 @@ components:
       examples:
           single-lang:
             summary: Single language
-            value: "en"
+            value: en
           multiple-langs:
             summary: Multiple languages
-            value: "en,es"
+            value: en,es
     
     NotLang:
       description: | 
@@ -598,10 +598,10 @@ components:
       examples:
           single-lang:
             summary: Single language
-            value: "fr"
+            value: fr
           multiple-langs:
             summary: Multiple languages
-            value: "fr,de"
+            value: fr,de
     
     SearchIn:
       description: |
@@ -616,14 +616,14 @@ components:
       required: false
       schema:
         type: string
-        default: "title,content"
+        default: title,content
       examples:
         single-field:
           summary: Single field
-          value: "title"
+          value: title
         multiple-fields:
           summary: Multiple fields
-          value: "title,content"
+          value: title,content
     
     Countries:
       description: | 
@@ -715,7 +715,7 @@ components:
       required: false
       schema:
         type: string
-      example: "top 100 US, top 5 GB"
+      example: top 100 US, top 5 GB
     
     SourceName:
       description: |
@@ -807,7 +807,7 @@ components:
           - date
           - rank
         default: relevancy
-      example: "date"
+      example: date
     
     PageSize:
       description: | 
@@ -946,7 +946,7 @@ components:
       required: true
       schema:
         type: string
-      example: "Jane Smith"
+      example: Jane Smith
     
     NotAuthorName:
       description: |
@@ -1018,7 +1018,7 @@ components:
       schema:
         $ref: '#/components/schemas/ArticleFields'
         default: content
-      example: "content"
+      example: content
     
     ClusteringEnabled:
       description: | 
@@ -1087,7 +1087,7 @@ components:
       required: false
       schema:
         type: string
-      example: "Business,Finance"
+      example: Business,Finance
     
     NotTheme:
       description: | 
@@ -1100,7 +1100,7 @@ components:
       required: false
       schema:
         type: string
-      example: "Crime"
+      example: Crime
     
     OrgEntityName:
       description: | 
@@ -1247,7 +1247,7 @@ components:
       required: false
       schema:
         type: string
-      example: "20000209"
+      example: 20000199, 20000209
     
     NotIptcTags:
       description: | 
@@ -1262,7 +1262,7 @@ components:
       required: false
       schema:
         type: string
-      example: "20000205"
+      example: 20000205, 20000209
     
     IabTags:
       description: | 
@@ -1273,7 +1273,7 @@ components:
       required: false
       schema:
         type: string
-      example: "Business, Events"
+      example: Business, Events
     
     NotIabTags:
       description: | 
@@ -1284,7 +1284,7 @@ components:
       required: false
       schema:
         type: string
-      example: "Agriculture"
+      example: Agriculture
     
     ExcludeDuplicates:
       description: | 
@@ -1312,14 +1312,14 @@ components:
       required: false
       schema:
         type: string
-        default: "7d"
+        default: 7d
       examples:
         daily:
           summary: Last 7 days
-          value: "7d"
+          value: 7d
         hourly:
           summary: Last hour
-          value: "1h"
+          value: 1h
     
     IsOpinion:
       description: |
@@ -1412,8 +1412,8 @@ components:
       required: false
       schema:
         type: string
-        default: "title,content"
-      example: "title,summary"
+        default: title,content
+      example: title,summary
     
     NerName:
       description: |
@@ -1424,7 +1424,7 @@ components:
       required: false
       schema:
         type: string
-      example: "Tesla"
+      example: Tesla
     
     IncludeAdditionalInfo:
       description: |
@@ -1450,7 +1450,7 @@ components:
       required: false
       schema:
         type: string
-      example: "bbc.com"
+      example: bbc.com
 
     AggregationBy:
       description: |
@@ -1662,13 +1662,13 @@ components:
               not_iab_tags:
                 $ref: '#/components/schemas/NotIabTags'
             example:
-              author_name: "Joanna Stern"
-              lang: "en"
+              author_name: Joanna Stern
+              lang: en
               sources:
-                - "wsj.com"
-                - "nytimes.com"
-              from_: "2024/01/01"
-              to_: "2024/06/30"
+                - wsj.com
+                - nytimes.com
+              from_: 2024/01/01
+              to_: 2024/06/30
 
     LatestHeadlinesRequestBody:
       description: Request body for retrieving the latest headlines based on specified criteria such as language, country, source, and more.
@@ -1759,10 +1759,10 @@ components:
               not_iab_tags:
                 $ref: '#/components/schemas/NotIabTags'
             example:
-              lang: "en"
+              lang: en
               predefined_sources: 
-                - "top 50 US"
-                - "top 20 GB"
+                - top 50 US
+                - top 20 GB
               is_opinion: false
               page_size: 10
 
@@ -1875,14 +1875,13 @@ components:
               exclude_duplicates:
                 $ref: '#/components/schemas/ExcludeDuplicates'
             example:
-              q: "renewable energy"
-              search_in: "title"
+              q: renewable energy
               predefined_sources: 
-                - "top 50 US"
-              lang: 
-                - "en"
-              from_: "2024/01/01"
-              to_: "2024/06/30"
+                - top 50 US
+              lang:
+                - en
+              from_: 2024/01/01
+              to_: 2024/06/30
 
     SearchLinkRequestBody:
       description: Request body for searching articles based on specified links or IDs.
@@ -1925,8 +1924,8 @@ components:
                 $ref: '#/components/schemas/PageSize'
             example: 
               ids:
-                - "8ea8a784568ffaa05cb6d1ab2d2e84dd"
-                - "0146a551ef05ab1c494a55e806e3ce64"
+                - 8ea8a784568ffaa05cb6d1ab2d2e84dd
+                - 0146a551ef05ab1c494a55e806e3ce64
 
     SearchSimilarRequestBody:
       description: Request body for searching similar articles based on specified criteria such as query, language, country, source, and more.
@@ -2021,7 +2020,7 @@ components:
               not_iptc_tags:
                 $ref: '#/components/schemas/NotIptcTags'
             example:
-              q: "artificial intelligence"
+              q: artificial intelligence
               include_similar_documents: true
               similar_documents_number: 5
 
@@ -3068,9 +3067,9 @@ components:
       oneOf:
         - type: string
           format: date-time
-          example: "2023/12/31 23:59:59"
+          example: 2023/12/31 23:59:59
         - type: string
-          example: "1 day ago"
+          example: 1 day ago
     StringArray:
       oneOf:
         - type: string
@@ -3105,7 +3104,7 @@ components:
         - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
         
         For more details, see [Advanced Querying](#).
-      example: "technology AND (Apple OR Microsoft) NOT Google"
+      example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
       $ref: '#/components/schemas/StringArray'
@@ -3131,7 +3130,7 @@ components:
 
     SearchIn:
       type: string
-      default: "title,content"
+      default: title,content
       description: |
         The article fields to search in. 
         To search in multiple fields, use a comma-separated string. For example, `title,summary`.
@@ -3139,7 +3138,7 @@ components:
         Available options: `title`, `summary`, `content`.
 
         **Note:** The `summary` option is available if NLP is enabled in your plan.
-      example: "title,content"
+      example: title,content
 
     Countries:
       $ref: '#/components/schemas/StringArray'
@@ -3247,7 +3246,7 @@ components:
         - `relevancy`: The most relevant results first.
         - `date`: The most recently published results first.
         - `rank`: The results from the highest-ranked sources first.
-      example: "date"
+      example: date
 
     PageSize:
       type: integer
@@ -3279,7 +3278,7 @@ components:
         - `YYYY/mm/dd`
         - `YYYY/mm/dd HH:MM:SS`
         - English phrases like `1 day ago`
-      example: "2021/01/01"
+      example: 2021/01/01
 
     To:
       $ref: '#/components/schemas/DateTime'
@@ -3292,7 +3291,7 @@ components:
         - `YYYY/mm/dd`
         - `YYYY/mm/dd HH:MM:SS`
         - English phrases like `1 day ago`.
-      example: "2021/12/31"
+      example: 2021/12/31
 
     PublishedDatePrecision:
       type: string
@@ -3305,7 +3304,7 @@ components:
         - `full`: The day and time of an article is correctly identified with the appropriate timezone.
         - `timezone unknown`: The day and time of an article is correctly identified without timezone.
         - `date`: Only the day is identified without an exact time.
-      example: "full"
+      example: full
 
     ByParseDate:
       type: boolean
@@ -3335,7 +3334,7 @@ components:
       type: string
       description: |
         The name of the author to search for. This parameter returns exact matches only.
-      example: "Jane Smith"
+      example: Jane Smith
 
     NotAuthorName:
       $ref: '#/components/schemas/StringArray'
@@ -3375,7 +3374,7 @@ components:
       $ref: '#/components/schemas/ArticleFields'
       description: | 
         The article data on which the similarity to be calculated.
-      example: "content"
+      example: content
 
     ClusteringEnabled:
       type: boolean
@@ -3425,7 +3424,7 @@ components:
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
       
         Available only if NLP is enabled for your API key.
-      example: "Business,Finance"
+      example: Business,Finance
     
     NotTheme:
       type: string
@@ -3437,7 +3436,7 @@ components:
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
 
         Available only if NLP is enabled for your API key.
-      example: "Crime"
+      example: Crime
 
     OrgEntityName:
       type: string
@@ -3449,7 +3448,7 @@ components:
         To learn more, see [Search by Entity](#).
 
         Available only if NLP is enabled for your API key.
-      example: "Apple"
+      example: Apple
 
     PerEntityName:
       type: string
@@ -3461,7 +3460,7 @@ components:
         To learn more, see [Search by Entity](#).
 
         Available only if NLP is enabled for your API key.
-      example: "Elon Musk"
+      example: Elon Musk
 
     LocEntityName:
       type: string
@@ -3473,7 +3472,7 @@ components:
         To learn more, see [Search by Entity](#).
 
         Available only if NLP is enabled for your API key.
-      example: "California"
+      example: California
 
     MiscEntityName:
       type: string
@@ -3486,7 +3485,7 @@ components:
         To learn more, see [Search by Entity](#).
 
         Available only if NLP is enabled for your API key.
-      example: "Bitcoin"
+      example: Bitcoin
 
     TitleSentimentMin:
       $ref: '#/components/schemas/SentimentNumber'
@@ -3567,7 +3566,7 @@ components:
 
     When:
       type: string
-      default: "7d"
+      default: 7d
       description: |
         The time period for which you want to get the latest headlines.
         Format examples:
@@ -3575,7 +3574,7 @@ components:
         - `30d`: Last 30 days
         - `1h`: Last hour
         - `24h`: Last 24 hours
-      example: "7d"
+      example: 7d
 
     IsOpinion:
       type: boolean
@@ -3599,7 +3598,7 @@ components:
         or `["https://nytimes.com/article1", "https://bbc.com/article2"]`.
 
         **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
-      example: "https://nytimes.com/article1"
+      example: https://nytimes.com/article1
 
     Ids:
       $ref: '#/components/schemas/StringArray'
@@ -3627,10 +3626,10 @@ components:
 
     SimilarDocumentsFields:
       type: string
-      default: "title,content"      
+      default: title,content     
       description: |
         The fields to consider for finding similar documents.
-      example: "title,summary"
+      example: title,summary
 
     NerName:
       type: string
@@ -3638,7 +3637,7 @@ components:
         The name of person, organization, location, product or other named entity to search for.
         To specify multiple names use a comma-separated string. 
         For example, `Tesla,Amazon`.
-      example: "Tesla,Amazon"
+      example: Tesla,Amazon
 
     IncludeAdditionalInfo:
       type: boolean
@@ -3658,7 +3657,7 @@ components:
 
         **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
-      example: "bbc.com"
+      example: bbc.com
 
     AggregationBy:
       type: string
@@ -3669,7 +3668,7 @@ components:
         The aggregation interval for the results. Possible values are:
         - `day`: Aggregates results by day.
         - `hour`: Aggregates results by hour.
-      example: "day"
+      example: day
 
   securitySchemes:
     ApiKeyAuth:
