@@ -157,6 +157,13 @@
                   ]
                 },
                 {
+                  "group": "Aggregation",
+                  "pages": [
+                    "v3/api-reference/aggregation/aggregation-count-get",
+                    "v3/api-reference/aggregation/aggregation-count-post"
+                  ]
+                },
+                {
                   "group": "Subscription",
                   "pages": [
                     "v3/api-reference/subscription/retrieve-subscription-plan-information-get",

@@ -43,9 +43,9 @@ tags:
       description: Search for articles by author.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-authors
   - name: SearchLink
-    description: Operations to search by link.
+    description: Operations to search by link or ID.
     externalDocs:
-      description: Search for articles by ID or link.
+      description: Search for articles by link or ID.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-search-by-link
   - name: SearchSimilar
     description: Operations to find similar articles.
@@ -57,6 +57,11 @@ tags:
     externalDocs:
       description: Retrieve the list of available sources, filtered by language and country.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-sources
+  - name: Aggregation
+    description: Operations to aggregate news counts.
+    externalDocs:
+      description: Aggregate news counts based on specified criteria such as keyword, language, country, source, and more.
+      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-aggregation
   - name: Subscription
     description: Operations to get subscription info.
     externalDocs:
@@ -436,6 +441,82 @@ paths:
           $ref: '#/components/responses/SourcesSuccessfulResponse'
         '422':
           $ref: '#/components/responses/ValidationErrorResponse' 
+
+  # Aggregation count
+  /api/aggregation_count:
+    get:
+      tags:
+        - Aggregation
+      summary: Get aggregation count by interval
+      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source. Supports clustering for grouping similar articles.
+      operationId: Aggregation_get
+      parameters:
+        - $ref: '#/components/parameters/Q'
+        - $ref: '#/components/parameters/SearchIn'
+        - $ref: '#/components/parameters/PredefinedSources'
+        - $ref: '#/components/parameters/Sources'
+        - $ref: '#/components/parameters/NotSources'
+        - $ref: '#/components/parameters/Lang'
+        - $ref: '#/components/parameters/NotLang'
+        - $ref: '#/components/parameters/Countries'
+        - $ref: '#/components/parameters/NotCountries'
+        - $ref: '#/components/parameters/NotAuthorName'
+        - $ref: '#/components/parameters/From'
+        - $ref: '#/components/parameters/To'
+        - $ref: '#/components/parameters/PublishedDatePrecision'
+        - $ref: '#/components/parameters/ByParseDate'
+        - $ref: '#/components/parameters/SortBy'
+        - $ref: '#/components/parameters/RankedOnly'
+        - $ref: '#/components/parameters/FromRank'
+        - $ref: '#/components/parameters/ToRank'
+        - $ref: '#/components/parameters/IsHeadline'
+        - $ref: '#/components/parameters/IsOpinion'
+        - $ref: '#/components/parameters/IsPaidContent'
+        - $ref: '#/components/parameters/ParentUrl'
+        - $ref: '#/components/parameters/AllLinks'
+        - $ref: '#/components/parameters/AllDomainLinks'
+        - $ref: '#/components/parameters/WordCountMin'
+        - $ref: '#/components/parameters/WordCountMax'
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/ClusteringVariable'
+        - $ref: '#/components/parameters/ClusteringEnabled'
+        - $ref: '#/components/parameters/ClusteringThreshold'
+        - $ref: '#/components/parameters/IncludeNlpData'
+        - $ref: '#/components/parameters/HasNlp'
+        - $ref: '#/components/parameters/Theme'
+        - $ref: '#/components/parameters/NotTheme'
+        - $ref: '#/components/parameters/OrgEntityName'
+        - $ref: '#/components/parameters/PerEntityName'
+        - $ref: '#/components/parameters/LocEntityName'
+        - $ref: '#/components/parameters/MiscEntityName'
+        - $ref: '#/components/parameters/TitleSentimentMin'
+        - $ref: '#/components/parameters/TitleSentimentMax'
+        - $ref: '#/components/parameters/ContentSentimentMin'
+        - $ref: '#/components/parameters/ContentSentimentMax'
+        - $ref: '#/components/parameters/IptcTags'
+        - $ref: '#/components/parameters/NotIptcTags'
+        - $ref: '#/components/parameters/AggregationBy'
+      responses:
+        '200':
+          $ref: '#/components/responses/AggregationSuccessfulResponse'
+        '400':
+          $ref: '#/components/responses/FailedAggregationResponse'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
+    post:
+      tags:
+        - Aggregation
+      summary: Get aggregation count by interval
+      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source. Supports clustering for grouping similar articles.
+      operationId: Aggregation_post
+      requestBody:
+        $ref: '#/components/requestBodies/AggregationRequestBody'
+      responses:
+        '200':
+          $ref: '#/components/responses/AggregationSuccessfulResponse'
+        '422':
+          $ref: '#/components/responses/ValidationErrorResponse'
 
   # Subscriptions
   /api/subscription:
@@ -1372,7 +1453,131 @@ components:
         type: string
       example: "bbc.com"
 
+    AggregationBy:
+      description: |
+        The aggregation interval for the results. Possible values are:
+        - `day`: Aggregates results by day.
+        - `hour`: Aggregates results by hour.
+      name: aggregation_by
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - day
+          - hour
+      example: day
+
   requestBodies:
+    AggregationRequestBody:
+      description: Request body for aggregation counts based on specified criteria such as keyword, language, country, source, and more.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - q
+            properties:
+              q:
+                $ref: '#/components/schemas/Q'
+              search_in:
+                $ref: '#/components/schemas/SearchIn'
+              predefined_sources:
+                $ref: '#/components/schemas/PredefinedSources'
+              sources:
+                $ref: '#/components/schemas/Sources'
+              not_sources:
+                $ref: '#/components/schemas/NotSources'
+              lang:
+                $ref: '#/components/schemas/Lang'
+              not_lang:
+                $ref: '#/components/schemas/NotLang'
+              countries:
+                $ref: '#/components/schemas/Countries'
+              not_countries:
+                $ref: '#/components/schemas/NotCountries'
+              not_author_name:
+                $ref: '#/components/schemas/NotAuthorName'
+              from_:
+                $ref: '#/components/schemas/From'
+              to_:
+                $ref: '#/components/schemas/To'
+              published_date_precision:
+                $ref: '#/components/schemas/PublishedDatePrecision'
+              by_parse_date:
+                $ref: '#/components/schemas/ByParseDate'
+              sort_by:
+                $ref: '#/components/schemas/SortBy'
+              ranked_only:
+                $ref: '#/components/schemas/RankedOnly'
+              from_rank:
+                $ref: '#/components/schemas/FromRank'
+              to_rank:
+                $ref: '#/components/schemas/ToRank'
+              is_headline:
+                $ref: '#/components/schemas/IsHeadline'
+              is_opinion:
+                $ref: '#/components/schemas/IsOpinion'
+              is_paid_content:
+                $ref: '#/components/schemas/IsPaidContent'
+              parent_url:
+                $ref: '#/components/schemas/ParentUrl'
+              all_links:
+                $ref: '#/components/schemas/AllLinks'
+              all_domain_links:
+                $ref: '#/components/schemas/AllDomainLinks'
+              word_count_min:
+                $ref: '#/components/schemas/WordCountMin'
+              word_count_max:
+                $ref: '#/components/schemas/WordCountMax'
+              page:
+                $ref: '#/components/schemas/Page'
+              page_size:
+                $ref: '#/components/schemas/PageSize'
+              clustering_variable:
+                $ref: '#/components/schemas/ClusteringVariable'
+              clustering_enabled:
+                $ref: '#/components/schemas/ClusteringEnabled'
+              clustering_threshold:
+                $ref: '#/components/schemas/ClusteringThreshold'
+              include_nlp_data:
+                $ref: '#/components/schemas/IncludeNlpData'
+              has_nlp:
+                $ref: '#/components/schemas/HasNlp'
+              theme:
+                $ref: '#/components/schemas/Theme'
+              not_theme:
+                $ref: '#/components/schemas/NotTheme'
+              org_entity_name:
+                $ref: '#/components/schemas/OrgEntityName'
+              per_entity_name:
+                $ref: '#/components/schemas/PerEntityName'
+              loc_entity_name:
+                $ref: '#/components/schemas/LocEntityName'
+              misc_entity_name:
+                $ref: '#/components/schemas/MiscEntityName'
+              title_sentiment_min:
+                $ref: '#/components/schemas/TitleSentimentMin'
+              title_sentiment_max:
+                $ref: '#/components/schemas/TitleSentimentMax'
+              content_sentiment_min:
+                $ref: '#/components/schemas/ContentSentimentMin'
+              content_sentient_max:
+                $ref: '#/components/schemas/ContentSentimentMax'
+              iptc_tags:
+                $ref: '#/components/schemas/IptcTags'
+              not_iptc_tags:
+                $ref: '#/components/schemas/NotIptcTags'
+              aggregation_by:
+                $ref: '#/components/schemas/AggregationBy'
+            example:
+              q: "renewable energy"
+              predefined_sources: "top 50 US"
+              from_: "2024/01/01"
+              to_: "2024/06/30"
+              aggregation_by: "day"
+
     AuthorsRequestBody:
       description: Request body for searching articles by author based on specified criteria such as author name, language, country, source, and more.
       required: true
@@ -1857,6 +2062,23 @@ components:
               additional_info: true
 
   responses:
+    AggregationSuccessfulResponse:
+      description: A successful response containing aggregation results.
+      content:
+        application/json:
+          schema:
+            title: Response Aggregation Get
+            anyOf:
+              - $ref: '#/components/schemas/AggregationResponse'
+              - $ref: '#/components/schemas/ClusteringSearchResponse'
+
+    FailedAggregationResponse:
+      description: No matches found for the search criteria.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/FailedAggregationResponse'
+
     AuthorsSuccessfulResponse:
       description: A successful response containing a list of authors that match the search criteria.
       content:
@@ -1874,8 +2096,8 @@ components:
           schema:
             title: Response Latestheadlines Get
             anyOf:
-              - $ref: '#/components/schemas/ClusteringSearchResponse'
               - $ref: '#/components/schemas/LatestHeadlinesResponse'
+              - $ref: '#/components/schemas/ClusteringSearchResponse'
 
     SearchSuccessfulResponse:
       description: A successful response containing articles that match the specified search criteria. The response may include clustering information if enabled.
@@ -1928,6 +2150,95 @@ components:
             $ref: '#/components/schemas/HTTPValidationError'
 
   schemas:
+    # Aggregation related schemas for the response object
+    AggregationResponse:
+      title: AggregationResponse
+      description: The response model for a successful aggregation request.
+      required:
+        - status
+        - total_hits
+        - page
+        - total_pages
+        - page_size
+        - aggregations
+        - user_input
+      type: object
+      properties:
+        status:
+          title: Status
+          description: The status of the response.
+          type: string
+          default: ok
+        total_hits:
+          title: Total Hits
+          description: The total number of articles matching the search criteria.
+          type: integer
+        page:
+          title: Page
+          description: The current page number of the results.
+          type: integer
+        total_pages:
+          title: Total Pages
+          description: The total number of pages available for the given search criteria.
+          type: integer
+        page_size:
+          title: Page Size
+          description: The number of articles per page.
+          type: integer
+        aggregations:
+          title: Aggregations
+          description: The aggregation results.
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        user_input:
+          title: User Input
+          description: The user input parameters for the search.
+          type: object
+
+    FailedAggregationResponse:
+      title: FailedAggregationResponse
+      description: The response model for a failed aggregation request.
+      required:
+        - status
+        - total_hits
+        - page
+        - total_pages
+        - page_size
+        - user_input
+      type: object
+      properties:
+        status:
+          title: Status
+          description: The status of the response, indicating no matches were found.
+          type: string
+          default: No matches for your search.
+        total_hits:
+          title: Total Hits
+          description: The total number of articles matching the search criteria, always zero in this case.
+          type: integer
+          default: 0
+        page:
+          title: Page
+          description: The current page number of the results, always zero in this case.
+          type: integer
+          default: 0
+        total_pages:
+          title: Total Pages
+          description: The total number of pages available for the given search criteria, always zero in this case.
+          type: integer
+          default: 0
+        page_size:
+          title: Page Size
+          description: The number of articles per page, always zero in this case.
+          type: integer
+          default: 0
+        user_input:
+          title: User Input
+          description: The user input parameters for the search.
+          type: object
+
     # Authors related schemas for the response object
     dto__responses__author_search_response__SearchResponse:
       title: SearchResponse
@@ -3358,6 +3669,17 @@ components:
         **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
       example: "bbc.com"
+
+    AggregationBy:
+      type: string
+      enum:
+        - day
+        - hour
+      description: |
+        The aggregation interval for the results. Possible values are:
+        - `day`: Aggregates results by day.
+        - `hour`: Aggregates results by hour.
+      example: "day"
 
   securitySchemes:
     ApiKeyAuth:
