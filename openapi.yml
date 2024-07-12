@@ -165,7 +165,7 @@ paths:
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
-      description: Retrieves the latest headlines since a specified time. You can filter results by language, country, source, and more.
+      description: Retrieves the latest headlines for the specified time period. You can filter results by language, country, source, and more.
       operationId: LatestHeadlines_get
       parameters:
         - $ref: "#/components/parameters/When"
@@ -217,7 +217,7 @@ paths:
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
-      description: Retrieves the latest headlines since a specified time. You can filter results by language, country, source, and more.
+      description: Retrieves the latest headlines for the specified time period. You can filter results by language, country, source, and more.
       operationId: LatestHeadlines_post
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
