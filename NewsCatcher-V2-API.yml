@@ -40,8 +40,8 @@ paths:
     get:
       tags:
         - search
-      summary: Search for specific news articles
-      description: Main endpoint that allows you to find news article by keyword, date, language, country, etc.
+      summary: Search for news articles
+      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
       operationId: Search_get
       parameters:
         - $ref: "#/components/parameters/q"
@@ -102,8 +102,8 @@ paths:
     post:
       tags:
         - search
-      summary: Search for specific news articles
-      description: Main endpoint that allows you to find news article by keyword, date, language, country, etc.
+      summary: Search for news articles
+      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
       operationId: Search_post
       requestBody:
         content:
@@ -151,8 +151,8 @@ paths:
     get:
       tags:
         - latest_headlines
-      summary: Get Latest News Articles
-      description: Get the latest headlines given any topic, country, or language.
+      summary: Get latest headlines
+      description: Retrieves the latest headlines given any topic, country, or language.
       operationId: LatestHeadlines_get
       parameters:
         - $ref: "#/components/parameters/lang"
@@ -205,8 +205,8 @@ paths:
     post:
       tags:
         - latest_headlines
-      summary: Get Latest News Articles
-      description: Get the latest headlines given any topic, country, or language.
+      summary: Get latest headlines
+      description: Retrieves the latest headlines given any topic, country, or language.
       operationId: LatestHeadlines_post
       requestBody:
         content:
@@ -254,8 +254,10 @@ paths:
     get:
       tags:
         - sources
-      summary: Get top news sources supported by NewsCatcher.
-      description: Returns a list of the top 100 supported news websites. Overall, we support over 60,000 websites. Using this endpoint, you may find the top 100 for your specific language, country, topic combination.
+      summary: Get top news sources
+      description: |
+        Returns a list of the top 100 news websites supported by NewsCatcher. Overall, we support over 60,000 websites. 
+        Using this endpoint, you may find the top 100 for your specific language, country, topic combination.
       operationId: Sources_get
       parameters:
         - $ref: "#/components/parameters/lang"
@@ -301,8 +303,10 @@ paths:
     post:
       tags:
         - sources
-      summary: Get top news sources supported by NewsCatcher.
-      description: Returns a list of the top 100 supported news websites. Overall, we support over 60,000 websites. Using this endpoint, you may find the top 100 for your specific language, country, topic combination.
+      summary: Get top news sources
+      description: |
+        Returns a list of the top 100 news websites supported by NewsCatcher. Overall, we support over 60,000 websites. 
+        Using this endpoint, you may find the top 100 for your specific language, country, topic combination.
       operationId: Sources_post
       requestBody:
         content:
@@ -359,7 +363,7 @@ components:
     q:
       description: |
         Keyword/keywords you're searching for. This is the most important part of your query.
-        Please, refer to the **Advanced Query Parameter** section below of the docs for more examples and explanations
+        For for more examples and explanations, leant [Advanced Query Parameter](#).
       name: q
       in: query
       required: true
@@ -502,10 +506,10 @@ components:
           ]
     published_date_precision:
       description: |
-        There are 3 types of date precision we define:
-        `full` — day and time of an article is correctly identified with the appropriate timezone
-        `timezone unknown` — day and time of an article is correctly identified without timezone
-        `date` — only the day is identified without an exact time
+        The precision of the published date. There are three types:
+        - `full`: The day and time of an article is correctly identified with the appropriate timezone.
+        - `timezone unknown`: The day and time of an article is correctly identified without timezone.
+        - `date`: Only the day is identified without an exact time.
       name: published_date_precision
       in: query
       required: false
@@ -533,7 +537,7 @@ components:
     search_in:
       description: |
         By default, we search what you specified in the `q` parameter in both `title` and `summary` of the article.
-        However, you can limit this to either `title` or `summary`
+        However, you can limit this to either `title` or `summary`.
       name: search_in
       in: query
       required: false
@@ -542,10 +546,11 @@ components:
     countries:
       description: |
         Countries where the news publisher is located.
-        **Important**: This parameter is not responsible for the countries mentioned in the news article.
         One or multiple countries can be used in the search.
         The only acceptable format is [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
         For example, `US,CA,MX` or just `US`
+
+        **Important**: This parameter is not responsible for the countries mentioned in the news article.
       name: countries
       in: query
       required: false
@@ -561,7 +566,6 @@ components:
         $ref: "#/components/schemas/countries"
     topic:
       description: |
-        Accepted values: `news`, `sport`, `tech`, `world`, `finance`, `politics`, `business`, `economics`, `entertainment`, `beauty`, `travel`, `music`, `food`, `science`, `gaming`
         The topic to which you want to restrict the articles of your choice.
         Not all news articles are assigned with a topic, therefore, we cannot guarantee that 100% of topics talking about technology will be assigned a tech label.
       name: topic
@@ -628,8 +632,8 @@ components:
         The time period you want to get the latest headlines for.
 
         Accepted forms:
-        - `7d` => Dailly Form (last 7 days time period),  `30d`  (last 30 days time period)
-        - `1h` => Hourly Form (last hour), `24h` (last 24 hours)
+        - `7d`: Dailly Form (last 7 days time period), `30d` (last 30 days time period)
+        - `1h`: Hourly Form (last hour), `24h` (last 24 hours)
 
         *Default*: The number of historic data available for your subscription plan
       name: when
@@ -660,7 +664,9 @@ components:
       properties:
         q:
           type: string
-          description: Keyword/keywords you're searching for. This is the most important part of your query. Please, refer to the **Advanced Query Parameter** section of the docs for more examples and explanations.
+          description: |
+            The keyword or keywords you're searching for. This is the most important part of your query. 
+            For for more examples and explanations, leant [Advanced Query Parameter](#).
           example: '"Elon Musk"'
         lang:
           type: string
@@ -726,7 +732,7 @@ components:
           example: "en"
         not_lang:
           type: string
-          description: Inverse to the lang parameter.
+          description: The language to exclude from the search results. Inverse to the `lang` parameter.
           enum:
             [
               "af",
@@ -787,28 +793,44 @@ components:
             ]
         published_date_precision:
           type: string
-          description: Precision of the publication date.
-          enum: ["full", "timezone unknown", "date"]
-          example: "full"
+          enum:
+            - full
+            - timezone unknown
+            - date
+          description: |
+            The precision of the published date. There are three types:
+            - `full`: The day and time of an article is correctly identified with the appropriate timezone.
+            - `timezone unknown`: The day and time of an article is correctly identified without timezone.
+            - `date`: Only the day is identified without an exact time.
         from:
           type: string
-          description: YYYY/mm/dd From which point in time to start the search. The default timezone is UTC.  Defaults to the past week.
+          description: The start date for the search in `YYYY/mm/dd` format. The default timezone is UTC.  Defaults to the past week.
           example: "2021/05/06"
         to:
           type: string
-          description: YYYY/mm/dd Until which point in time to search for. The default timezone is UTC.
+          description: The end date for the search in `YYYY/mm/dd` format. The default timezone is UTC.
           example: "2021/05/06"
         search_in:
           type: string
+          description: The fields to search for the keywords in.
           enum: ["title", "summary", "title_summary"]
           example: "title"
         countries:
           type: string
+          description: |
+            The countries where the news publisher is located, 
+            using the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format. 
+            Multiple countries can be specified, separated by commas.
           example: "US,CA"
         not_countries:
           type: string
+          description: |
+            The countries to exclude from the search results, 
+            using the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format. 
+            Multiple countries can be specified, separated by commas.
         topic:
           type: string
+          description: The topic to restrict the articles to.
           enum:
             [
               "news",
@@ -830,36 +852,53 @@ components:
           example: "business"
         sources:
           type: string
+          description: |
+            The news sources to filter the search, specified in the normal form of the URL. 
+            For example, `nytimes.com,theguardian.com`.
           example: "nytimes.com,theguardian.com"
         not_sources:
           type: string
+          description: |
+            The news sources to exclude from the search, specified as a comma-separated list. 
+            For example, `nytimes.com,cnn.com,wsj.com`.
         ranked_only:
           type: boolean
+          description: |
+            If true, limits the search to sources in the top 1 million online websites. 
+            Unranked sources are assigned a rank of `999999`.
+          default: true
           example: true
         from_rank:
-          description: |
-            `[0:999999]` The lowest boundary of the rank of a news website to filter by.
-            Important: lower rank means that a source is more popular
           type: integer
+          description: |
+            The lowest boundary of the rank of a news website to filter by. 
+            Lower rank means a more popular source. Range: `[0:999999]`.
           minimum: 0
           maximum: 999999
         to_rank:
-          description: |
-            `[0:999999]` The upper boundary of the rank of a news website to filter by.
           type: integer
+          description: |
+            The upper boundary of the rank of a news website to filter by. Range: `[0:999999]`.
           minimum: 0
           maximum: 999999
         sort_by:
           type: string
+          description: The sorting order of the search results.
           enum: ["relevancy", "date", "rank"]
+          default: relevancy
           example: "rank"
         page_size:
           type: integer
+          description: |
+            The number of articles to return per page. Range: `[1:100]`.
           minimum: 1
           maximum: 100
           example: 100
         page:
           type: integer
+          description: |
+            The page number for paginated results. Use it to scroll through the results, 
+            as one API response cannot return more than 100 articles.
           minimum: 1
           example: 1
     SourcesQuery:
@@ -929,9 +968,14 @@ components:
           example: "en"
         countries:
           type: string
+          description: |
+            The countries where the news publisher is located, using the 
+            [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format. 
+            Multiple countries can be specified, separated by commas.
           example: "US,CA"
         topic:
           type: string
+          description: The topic to restrict the articles to.
           enum:
             [
               "news",
@@ -956,11 +1000,12 @@ components:
       properties:
         when:
           type: string
+          default: 7d
           description: |
-            The time period you want to get the headlines for.
-            Accpeted format:
-            - `7d` -> Daily form, last 7 days time period
-            - `6h` -> Hourly form, last six hours
+            The time period for which you want to get the latest headlines.
+            Accepted forms:
+            - `7d`: Dailly Form (last 7 days time period), `30d` (last 30 days time period)
+            - `1h`: Hourly Form (last hour), `24h` (last 24 hours)
           example: "12h"
         lang:
           type: string
@@ -1026,11 +1071,19 @@ components:
           example: "en"
         countries:
           type: string
-          example: "US,CA"
+          description: |
+            The countries where the news publisher is located, using the 
+            [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format. 
+            Multiple countries can be specified, separated by commas.
         not_countries:
           type: string
+          description: |
+            The countries to exclude from the search results, 
+            using the [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) format. 
+            Multiple countries can be specified, separated by commas.
         topic:
           type: string
+          description: The topic to restrict the articles to.
           enum:
             [
               "news",
@@ -1052,20 +1105,33 @@ components:
           example: "business"
         sources:
           type: string
+          description: |
+            The news sources to filter the search, specified in the normal form of the URL. 
+            For example, `nytimes.com,theguardian.com`.
           example: "nytimes.com,theguardian.com"
         not_sources:
           type: string
-          example: "wsj.com"
+          description: |
+            The news sources to exclude from the search, specified as a comma-separated list. 
+            For example, `nytimes.com,cnn.com,wsj.com`.
         ranked_only:
           type: boolean
+          description: |
+            If true, limits the search to sources in the top 1 million online websites. 
+            Unranked sources are assigned a rank of `999999`.
           example: true
         page_size:
           type: integer
+          description: |
+            The number of articles to return per page. Range: `[1:100]`.
           minimum: 1
           maximum: 100
           example: 100
         page:
           type: integer
+          description: |
+            The page number for paginated results. Use it to scroll through the results, 
+            as one API response cannot return more than 100 articles.
           minimum: 1
           example: 1
 
@@ -1149,6 +1215,7 @@ components:
       example: "US,CA"
     topic:
       type: string
+      description: The topic to restrict the articles to.
       enum:
         [
           "news",
@@ -1201,191 +1268,270 @@ components:
     # Response parameters
     success_status:
       type: string
+      description: The status of the response.
       enum: ["ok", "No matches for your search."]
       example: "ok"
     error_status:
       type: string
+      description: The error status of the response.
       enum: ["error", "No matches for your search."]
       example: "error"
     list:
       type: array
+      description: A list of items.
       items:
         type: string
       nullable: true
     article:
       type: array
+      description: A list of articles.
       items:
         type: object
         properties:
           title:
             type: string
+            description: The title of the article.
           author:
             type: string
+            description: The author of the article.
           published_date:
             type: string
+            description: The date the article was published.
           published_date_precision:
             type: string
+            description: The precision of the publication date.
           link:
             type: string
+            description: The URL link to the article.
           clean_url:
             type: string
+            description: The clean URL of the article.
           excerpt:
             type: string
+            description: An excerpt from the article.
             nullable: true
           summary:
             type: string
+            description: A summary of the article.
           rights:
             type: string
+            description: The rights information of the article.
             nullable: true
           rank:
             type: integer
+            description: The rank of the article.
           topic:
             type: string
+            description: The topic of the article.
           country:
             type: string
+            description: The country of the article.
           language:
             type: string
+            description: The language of the article.
             nullable: true
           authors:
             type: string
+            description: The authors of the article.
           is_opinion:
             type: boolean
+            description: True if the article is an opinion piece; false otherwise.
           twitter_account:
             type: string
+            description: The Twitter account associated with the article.
             nullable: true
           _score:
             type: number
+            description: The score of the article.
             nullable: true
           _id:
             type: string
+            description: The ID of the article.
     search_user_input:
       type: object
+      description: The user input for a search request.
       properties:
         q:
           type: string
+          description: The keyword or keywords for the search.
         search_in:
           $ref: "#/components/schemas/list"
+          description: The fields to search in.
         lang:
           $ref: "#/components/schemas/list"
+          description: The languages to include in the search.
         not_lang:
           $ref: "#/components/schemas/list"
+          description: The languages to exclude from the search.
         countries:
           $ref: "#/components/schemas/list"
+          description: The countries to include in the search.
         not_countries:
           $ref: "#/components/schemas/list"
+          description: The countries to exclude from the search.
         from:
           type: string
+          description: The start date for the search.
         to:
           type: string
+          description: The end date for the search.
           nullable: true
         ranked_only:
           type: string
+          description: If true, limits the search to ranked sources only.
         from_rank:
           type: integer
+          description: The minimum rank of the sources to include in the search.
           nullable: true
         to_rank:
           type: integer
+          description: The maximum rank of the sources to include in the search.
           nullable: true
         sort_by:
           type: string
+          description: The sorting order of the search results.
         page:
           type: integer
+          description: The page number of the search results.
         size:
           type: integer
+          description: The number of results per page.
         sources:
           $ref: "#/components/schemas/list"
+          description: The sources to include in the search.
         not_sources:
           $ref: "#/components/schemas/list"
+          description: The sources to exclude from the search.
         topic:
           type: string
+          description: The topic to include in the search.
           nullable: true
         published_date_precision:
           type: string
+          description: The precision of the publication date.
           nullable: true
     latest_headlines_user_input:
       type: object
+      description: The user input for a latest headlines request.
       properties:
         lang:
           $ref: "#/components/schemas/list"
+          description: The languages to include in the search.
         not_lang:
           $ref: "#/components/schemas/list"
+          description: The languages to exclude from the search.
         countries:
           $ref: "#/components/schemas/list"
+          description: The countries to include in the search.
         not_countries:
           $ref: "#/components/schemas/list"
+          description: The countries to exclude from the search.
         page:
           type: integer
+          description: The page number of the search results.
         size:
           type: integer
+          description: The number of results per page.
         sources:
           $ref: "#/components/schemas/list"
+          description: The sources to include in the search.
         not_sources:
           $ref: "#/components/schemas/list"
+          description: The sources to exclude from the search.
         topic:
           type: string
+          description: The topic to include in the search.
           nullable: true
     sources_user_input:
       type: object
+      description: The user input for a sources request.
       properties:
         lang:
           $ref: "#/components/schemas/list"
+          description: The languages to include in the search.
         countries:
           $ref: "#/components/schemas/list"
+          description: The countries to include in the search.
         topic:
           type: string
+          description: The topic to include in the search.
           nullable: true
     200_response:
       type: object
+      description: The response for a successful search request.
       properties:
         status:
           $ref: "#/components/schemas/success_status"
+          description: The status of the response.
         total_hits:
           type: integer
+          description: The total number of hits for the search.
         page:
           type: integer
+          description: The current page number.
         total_pages:
           type: integer
+          description: The total number of pages.
         page_size:
           type: integer
+          description: The number of results per page.
         articles:
           $ref: "#/components/schemas/article"
+          description: The list of articles returned by the search.
         user_input:
           $ref: "#/components/schemas/search_user_input"
+          description: The user input for the search request.
     200_response_latest:
       type: object
+      description: The response for a successful latest headlines request.
       properties:
         status:
           $ref: "#/components/schemas/success_status"
+          description: The status of the response.
         total_hits:
           type: integer
+          description: The total number of hits for the search.
         page:
           type: integer
+          description: The current page number.
         total_pages:
           type: integer
+          description: The total number of pages.
         page_size:
           type: integer
+          description: The number of results per page.
         articles:
           $ref: "#/components/schemas/article"
+          description: The list of articles returned by the search.
         user_input:
           $ref: "#/components/schemas/latest_headlines_user_input"
+          description: The user input for the latest headlines request.
     200_response_sources:
       type: object
+      description: The response for a successful sources request.
       properties:
         message:
           type: string
+          description: The message of the response.
         sources:
           $ref: "#/components/schemas/list"
+          description: The list of sources returned by the request.
         user_input:
           $ref: "#/components/schemas/sources_user_input"
+          description: The user input for the sources request.
     error_response:
       type: object
+      description: The response for an error.
       properties:
         status:
           $ref: "#/components/schemas/error_status"
+          description: The error status of the response.
         error_code:
           type: string
+          description: The error code of the response.
         message:
           type: string
+          description: The error message of the response.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
