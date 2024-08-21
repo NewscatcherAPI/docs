@@ -1,0 +1,116 @@
+{
+  "navigation": [
+    {
+      "group": "Get Started",
+      "version": "v3",
+      "pages": [
+        "v3/documentation/get-started/overview",
+        "v3/documentation/get-started/quickstart",
+        "v3/documentation/get-started/libraries"
+      ]
+    },
+    {
+      "group": "Guides and Concepts",
+      "version": "v3",
+      "pages": [
+        "v3/documentation/guides-and-concepts/boolean-operators",
+        "v3/documentation/guides-and-concepts/wildcards",
+        "v3/documentation/guides-and-concepts/proximity-based-searching-near",
+        "v3/documentation/guides-and-concepts/how-clustering-works",
+        "v3/documentation/guides-and-concepts/articles-deduplication"
+      ]
+    },
+    {
+      "group": "How To",
+      "version": "v3",
+      "pages": [
+        "v3/documentation/how-to/paginate-large-data-sets",
+        "v3/documentation/how-to/interpret-api-errors",
+        "v3/documentation/how-to/check-sources-coverage",
+        "v3/documentation/how-to/search-by-entity"
+      ]
+    },
+    {
+      "group": "Overview",
+      "version": "v3",
+      "pages": [
+        "v3/api-reference/overview/introduction",
+        "v3/api-reference/overview/authentication",
+        "v3/api-reference/overview/rate-limits-quotas"
+      ]
+    },
+    {
+      "group": "Endpoints",
+      "version": "v3",
+      "pages": [
+        {
+          "group": "Search",
+          "pages": [
+            "v3/api-reference/endpoints/search/search-articles-get",
+            "v3/api-reference/endpoints/search/search-articles-post"
+          ]
+        },
+        {
+          "group": "LatestHeadlines",
+          "pages": [
+            "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get",
+            "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-post"
+          ]
+        },
+        {
+          "group": "Authors",
+          "pages": [
+            "v3/api-reference/endpoints/authors/search-articles-by-author-get",
+            "v3/api-reference/endpoints/authors/search-articles-by-author-post"
+          ]
+        },
+        {
+          "group": "SearchLink",
+          "pages": [
+            "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get",
+            "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-post"
+          ]
+        },
+        {
+          "group": "SearchSimilar",
+          "pages": [
+            "v3/api-reference/endpoints/searchsimilar/search-similar-articles-get",
+            "v3/api-reference/endpoints/searchsimilar/search-similar-articles-post"
+          ]
+        },
+        {
+          "group": "Sources",
+          "pages": [
+            "v3/api-reference/endpoints/sources/retrieve-sources-get",
+            "v3/api-reference/endpoints/sources/retrieve-sources-post"
+          ]
+        },
+        {
+          "group": "Aggregation",
+          "pages": [
+            "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
+            "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post"
+          ]
+        },
+        {
+          "group": "Subscription",
+          "pages": [
+            "v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get",
+            "v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post"
+          ]
+        }
+      ]
+    },
+    {
+      "group": "Libraries",
+      "version": "v3",
+      "pages": [
+        "v3/api-reference/libraries/python",
+        "v3/api-reference/libraries/typescript",
+        "v3/api-reference/libraries/java",
+        "v3/api-reference/libraries/go",
+        "v3/api-reference/libraries/csharp"
+      ]
+    }
+  ]
+}

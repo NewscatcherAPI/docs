@@ -1,0 +1,162 @@
+---
+title: Scroll Through Pages
+description: Learn how to iterate through found pages and extract articles
+---
+Whenever you make an API call using _/v2/search_ or _/v2/latest\_headlines_ endpoints_,_ we give you key information about your search. Here is an example of a _search_ API call:
+
+```bash
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q="Elon%20Musk&countries=in,GB&from=13%20days%20ago&page_size=50&page=1' -H 'x-api-key: your_key_1'
+```
+
+
+The output:
+
+```bash
+    "status": "ok",
+    "total_hits": 1300,
+    "page": 1,
+    "total_pages": 26,
+    "page_size": 50,
+    "articles": [ ...
+```
+
+
+`total_hits` tells you how many articles are found.
+
+`total_pages` indicates how many API calls you will have to make in order to get these articles.
+
+**One API call can bring a maximum of 100 articles.**
+
+You can increase the `page_size` parameter for your search to make fewer calls and get more data.
+
+```bash
+curl -XGET 'https://api.newscatcherapi.com/v2/search?q="Elon%20Musk&countries=in,GB&from=13%20days%20ago&page_size=100&page=1' -H 'x-api-key: your_key_1'
+```
+
+
+gives
+
+```bash
+    "status": "ok",
+    "total_hits": 1300,
+    "page": 1,
+    "total_pages": 13,
+    "page_size": 100,
+    "articles": [ ...
+```
+
+
+Based on the information above, we can say that given the `page_size` and being on the **1st page**, we are seeing all found articles **from 1 to 100 out of 1300.**
+
+By incrementing the `page` parameter to **2**, I will get all articles **from 101 to 200 out of 1300**. You get the logic.
+<Info>
+    To summarize, your goal is to iterate through all found pages and extract articles.
+
+</Info>
+
+The whole process should be divided into 2 parts:
+
+*   Make 1 call and identify the total number of pages in `total_pages`
+    
+*   Increment `page` input until the `total_pages` value to get all articles.
+    
+
+Python (SDK)
+----------------
+
+The Python library can be installed using `pip install` launched from the terminal. You can find all the details either on [PyPi website](https://pypi.org/project/newscatcherapi/) or our [GitHub Repository](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python).
+
+```bash
+pip install newscatcherapi
+```
+
+
+When installed, the package can be directly called from the Python application.
+
+We prepared separate functions `get_search_all_pages` and `get_latest_headlines_all_pages` to simplify the process of extracting all articles.
+
+```python
+from newscatcherapi import NewsCatcherApiClient
+
+newscatcherapi = NewsCatcherApiClient(x_api_key='your_key_1')
+
+# /v2/search Endpoint
+all_articles = newscatcherapi.get_search_all_pages(
+                                         q='\"Elon Musk\"',
+                                         from_='13 days ago',
+                                         countries='IN,GB',
+                                         page_size=100,
+                                         page=1)
+```
+
+
+Python (requests)
+---------------------
+
+```python
+# Preinstalled packages
+import requests # 2.24.0
+
+# Default packages
+import json
+import time
+
+# URL of our News API
+base_url = "https://api.newscatcherapi.com/v2/search"
+
+# Your API key
+X_API_KEY = 'PUT_YOUR_API_KEY'
+
+# Define your desired parameters
+params = {
+    "q": "\"Elon Musk\"",
+    "from": "13 days ago",
+    "countries": "IN,GB",
+    "page_size": 100,
+    "page": 1
+}
+
+# Put your API key to headers in order to be authorized to perform a call
+headers = {"x-api-key": X_API_KEY}
+
+
+# Variable to store all found news articles
+all_news_articles = {}
+
+# Ensure that we start from page 1
+params['page'] = 1
+
+# Infinite loop which ends when all articles are extracted
+while True:
+
+    # Wait for 1 second between each call
+    time.sleep(1)
+
+    # GET Call
+    response = requests.get(base_url, headers=headers, params=params)
+    results = json.loads(response.text.encode())
+    if response.status_code == 200:
+        print(f'Done for page number => {params["page"]}/{results["total_pages"]}')
+
+
+        # Storing all found articles
+        if not all_news_articles:
+            all_news_articles = results
+        else:
+            all_news_articles['articles'].extend(results['articles'])
+
+        # Ensuring to cover all pages by incrementing "page" value at each iteration
+        params['page'] += 1
+        if params['page'] > results['total_pages']:
+            print("All articles have been extracted")
+            break
+        else:
+            print(f'Proceed extracting page number => {params["page"]}')
+    else:
+        print(results)
+        print(f'ERROR: API call failed for page number => {params["page"]}')
+        break
+
+print(f'Number of extracted articles => {str(len(all_news_articles))}')
+
+```

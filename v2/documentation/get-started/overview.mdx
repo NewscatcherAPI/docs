@@ -1,0 +1,42 @@
+---
+title: Overview
+description: One place to find documentation, code examples, use cases, FAQ, and knowledge base of NewsCatcher's News API
+---
+
+### NewsCatcher
+
+NewsCatcher is a data-as-a-service startup that has one main goal: to build the largest database of structured news articles published online. In other words, **we're like Google for the news part of the web, which you can access as a source of data.**
+
+We're not just a classic data provider selling data dumps. We're also a search engine. We're the best at indexing news articles. You can search through millions of news articles in under a second!
+
+### News API
+
+Long story short, our web crawlers find over 1 million news articles in various languages from all over the globe each day. Then, our algorithms clean and normalize articles from different websites to a standard form.
+
+So this article: [https://www.techradar.com/news/tesla-model-x-vs-tesla-model-y](https://www.techradar.com/news/tesla-model-x-vs-tesla-model-y) is transformed into a structured JSON object:
+
+```csharp
+{
+"title": "Tesla Model X vs Tesla Model Y: which Tesla SUV should you buy?",
+"author": "Rob Clymo",
+"published_date": "2021-07-26 16:42:51",
+"published_date_precision": "full",
+"link": "https://www.techradar.com/news/tesla-model-x-vs-tesla-model-y",
+"clean_url": "techradar.com",
+"excerpt": "What to look for if you're in the market a Tesla SUV",
+"summary": "Tesla is gradually filling every spot in the current carbuying marketplace. There's even a budget level compact on the way that'll open up the brand to more customers. It's also establishing itself in the burgeoning SUV sector with models in the shape of the older Tesla Model X and the new Tesla Model Y. Both offer the classic SUV experience while blending it with Tesla's unique styling, dazzling performance and lots of innovation.With demand for SUV's still high, the Tesla Model X is perfect fo",
+"rights": "techradar.com",
+"rank": 640,
+"topic": "tech",
+"country": "US",
+"language": "en",
+"authors": [
+    "Rob Clymo"
+],
+"media": "https://cdn.mos.cms.futurecdn.net/5BMZkUwoQhz64NSM6a89PG-1200-80.jpg",
+"is_opinion": false,
+"twitter_account": "@TechRadar",
+"_score": 12.650374,
+"_id": "6fc42e374a8980a1009305c9115e6bbd"
+}
+```
