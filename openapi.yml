@@ -340,7 +340,7 @@ paths:
     post:
       tags:
         - SearchLink
-      summary: Search articles by ID or link
+      summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
       operationId: Search_url_post
       requestBody:
@@ -356,7 +356,7 @@ paths:
     get:
       tags:
         - SearchSimilar
-      summary: Search for similar articles
+      summary: Search similar articles
       description: Searches for articles similar to a specified query.
       operationId: SearchSimilar_get
       parameters:
@@ -791,7 +791,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/RankInteger"
+        type: integer
+        minimum: 0
+        maximum: 999999
+        format: int32
       example: 100
 
     ToRank:
@@ -802,7 +805,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/RankInteger"
+        type: integer
+        minimum: 0
+        maximum: 999999
+        format: int32
       example: 10000
 
     SortBy:
@@ -863,7 +869,12 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/DateTime"
+        oneOf:
+          - type: string
+            format: date-time
+            example: 2023/12/31 23:59:59
+          - type: string
+            example: 1 day ago
       examples:
         specific-date:
           summary: Specific date
@@ -885,7 +896,12 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/DateTime"
+        oneOf:
+          - type: string
+            format: date-time
+            example: 2023/12/31 23:59:59
+          - type: string
+            example: 1 day ago
       examples:
         specific-date:
           summary: Specific date
@@ -1030,7 +1046,11 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/ArticleFields"
+        type: string
+        enum:
+          - content
+          - title
+          - summary
         default: content
       example: content
 
@@ -1209,7 +1229,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
 
     TitleSentimentMax:
@@ -1221,7 +1244,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
 
     ContentSentimentMin:
@@ -1233,7 +1259,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
 
     ContentSentimentMax:
@@ -1245,7 +1274,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
 
     IptcTags:
@@ -3076,36 +3108,6 @@ components:
           title: Error Type
           type: string
 
-    # Reusable parameter schemas
-    DateTime:
-      oneOf:
-        - type: string
-          format: date-time
-          example: 2023/12/31 23:59:59
-        - type: string
-          example: 1 day ago
-    StringArray:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
-    RankInteger:
-      type: integer
-      minimum: 0
-      maximum: 999999
-      format: int32
-    ArticleFields:
-      type: string
-      enum:
-        - content
-        - title
-        - summary
-    SentimentNumber:
-      type: number
-      format: float
-      minimum: -1.0
-      maximum: 1.0
     # Parameters to use in Request Bodies
     Q:
       type: string
@@ -3121,7 +3123,11 @@ components:
       example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The language(s) of the search. 
         The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
@@ -3132,7 +3138,11 @@ components:
       example: ["en", "es"]
 
     NotLang:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The language(s) to exclude from the search. 
         The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
@@ -3155,7 +3165,11 @@ components:
       example: title,content
 
     Countries:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The countries where the news publisher is located. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
@@ -3166,7 +3180,11 @@ components:
       example: ["US", "CA"]
 
     NotCountries:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The publisher location countries to exclude from the search. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
@@ -3177,7 +3195,11 @@ components:
       example: ["UK", "FR"]
 
     Sources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. 
         Subdomains, such as `finance.yahoo.com`, are also acceptable. 
@@ -3187,7 +3209,11 @@ components:
       example: ["nytimes.com", "theguardian.com", "finance.yahoo.com"]
 
     NotSources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The news sources to exclude from the search.
         To exclude multiple sources, use a comma-separated string or an array of strings.
@@ -3195,7 +3221,11 @@ components:
       example: ["cnn.com", "wsj.com"]
 
     PredefinedSources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         Predefined top sources per country. Format: start with the word `top`, 
         followed by the number of desired sources, and then the two-letter country 
@@ -3207,7 +3237,11 @@ components:
       example: ["top 100 US", "top 5 GB"]
 
     SourceName:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The names of news sources to narrow down your search.
         To specify multiple news sources, use a comma-separated string or an array of strings.
@@ -3218,7 +3252,11 @@ components:
       example: ["The New York Times", "The Guardian"]
 
     ParentUrl:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The categorical URL(s) to filter your search.
         To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
@@ -3234,7 +3272,10 @@ components:
       example: true
 
     FromRank:
-      $ref: "#/components/schemas/RankInteger"
+      type: integer
+      minimum: 0
+      maximum: 999999
+      format: int32
       description: |
         The lowest boundary of the rank of a news website to filter by. 
         Range: `0` to `999999`. 
@@ -3242,7 +3283,10 @@ components:
       example: 100
 
     ToRank:
-      $ref: "#/components/schemas/RankInteger"
+      type: integer
+      minimum: 0
+      maximum: 999999
+      format: int32
       description: |
         The highest boundary of the rank of a news website to filter by. 
         Range: `0` to `999999`. Lower rank means that a source is more popular.
@@ -3282,7 +3326,12 @@ components:
       example: 2
 
     From:
-      $ref: "#/components/schemas/DateTime"
+      oneOf:
+        - type: string
+          format: date-time
+          example: 2023/12/31 23:59:59
+        - type: string
+          example: 1 day ago
       description: |
         The starting point in time to search from. 
         By default, the publication date of the article is used. 
@@ -3295,7 +3344,12 @@ components:
       example: 2021/01/01
 
     To:
-      $ref: "#/components/schemas/DateTime"
+      oneOf:
+        - type: string
+          format: date-time
+          example: 2023/12/31 23:59:59
+        - type: string
+          example: 1 day ago
       description: |
         The ending point in time to search up to. 
         By default, the publication date of the article is used. 
@@ -3335,7 +3389,11 @@ components:
       example: true
 
     AllLinks:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string or an array of strings.
@@ -3351,7 +3409,11 @@ components:
       example: Jane Smith
 
     NotAuthorName:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The list of author names to exclude from your search.
         To exclude articles by specific authors, use a comma-separated string or an array of strings. 
@@ -3359,7 +3421,11 @@ components:
       example: ["John Doe", "Jane Doe"]
 
     AllDomainLinks:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string or an array of strings. 
@@ -3385,7 +3451,11 @@ components:
       example: 1000
 
     ClusteringVariable:
-      $ref: "#/components/schemas/ArticleFields"
+      type: string
+      enum:
+        - content
+        - title
+        - summary
       description: |
         The article data on which the similarity to be calculated.
       example: content
@@ -3502,7 +3572,10 @@ components:
       example: Bitcoin
 
     TitleSentimentMin:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The minimum title sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3510,7 +3583,10 @@ components:
       example: -0.5
 
     TitleSentimentMax:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The maximum title sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3518,7 +3594,10 @@ components:
       example: 0.5
 
     ContentSentimentMin:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The minimum content sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3526,7 +3605,10 @@ components:
       example: -0.5
 
     ContentSentimentMax:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The maximum content sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3534,7 +3616,11 @@ components:
       example: 0.5
 
     IptcTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IPTC tag ID(s) to include articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
@@ -3544,7 +3630,11 @@ components:
       example: ["20000199", "20000209"]
 
     NotIptcTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IPTC tag ID(s) to exclude articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
@@ -3554,7 +3644,11 @@ components:
       example: ["20000205", "20000209"]
 
     IabTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IAB categories to filter articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
@@ -3562,7 +3656,11 @@ components:
       example: ["Business", "Events"]
 
     NotIabTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IAB categories to exclude articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
@@ -3604,7 +3702,11 @@ components:
       example: false
 
     Links:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The article link or list of article links to search for. 
         To specify multiple links, use a comma-separated string or an array of strings.
@@ -3615,7 +3717,11 @@ components:
       example: https://nytimes.com/article1
 
     Ids:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string or an array of strings.
@@ -3663,7 +3769,11 @@ components:
       example: true
 
     SourceUrl:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The domains of the news publication to search for. To specify multiple news sources, 
         use a comma-separated string or an array of strings. 
