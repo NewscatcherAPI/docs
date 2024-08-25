@@ -119,6 +119,15 @@
       ]
     },
     {
+      "group": "FAQ",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/faq/overview",
+        "v2/documentation/faq/product-faq",
+        "v2/documentation/faq/company-faq"
+      ]
+    },
+    {
       "group": "Overview",
       "version": "v2",
       "pages": [
@@ -265,18 +274,8 @@
         "v3/api-reference/libraries/go",
         "v3/api-reference/libraries/csharp"
       ]
-    },
-    {
-      "group": "FAQ",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/faq/overview",
-        "v2/documentation/faq/product-faq",
-        "v2/documentation/faq/company-faq"
-      ]
     }
   ],
-
   "footerSocials": {
     "linkedin": "https://www.linkedin.com/company/newscatcherapi/about/",
     "twitter": "https://twitter.com/newscatcherapi"
