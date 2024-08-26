@@ -187,7 +187,7 @@
       "group": "How To",
       "version": "v3",
       "pages": [
-        "v3/documentation/how-to/paginate-large-data-sets",
+        "v3/documentation/how-to/paginate-large-datasets",
         "v3/documentation/how-to/interpret-api-errors",
         "v3/documentation/how-to/check-sources-coverage",
         "v3/documentation/how-to/search-by-entity"
