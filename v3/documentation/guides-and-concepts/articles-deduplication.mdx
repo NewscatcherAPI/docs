@@ -1,4 +1,154 @@
 ---
 title: Articles Deduplication
-description: Description for Articles Deduplication
+description: Enhance search efficiency by filtering out duplicate articles.
 ---
+
+## Introduction
+
+In today's fast-paced news environment, significant events often receive
+extensive coverage from various media outlets, resulting in numerous similar
+articles published across multiple platforms. To address this effectively and
+provide exclusive content, we've equipped our News API v3 with an advanced
+deduplication feature. This method enhances data management and conserves time
+and resources by eliminating duplicate articles.
+
+## Deduplication Process
+
+Our system identifies and excludes duplicate articles using semantic similarity
+and character-level analysis techniques. Here's a detailed breakdown of our
+process:
+
+### Semantic Similarity Comparison
+
+We begin with an embedding-based text comparison of the articles:
+
+1. We convert texts into vector representations (embeddings) using our Natural
+   Language Processing (NLP) pipeline.
+2. These embeddings capture the meaning and relationships of the content,
+   allowing us to gauge the semantic similarity of the articles.
+3. As a metric, we use cosine similarity with a threshold of 0.95 to identify
+   potential duplicates.
+
+This method allows us to identify semantically similar articles, even if they
+use different wording.
+
+To learn more, see
+[Vector Embeddings](https://www.elastic.co/what-is/vector-embedding) and read
+about [Cosine Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) on
+Wikipedia.
+
+### Levenshtein Distance Analysis
+
+After the initial screening, we refine our process using the Levenshtein
+distance. This metric helps us determine the minimum number of single-character
+edits required to change one text into another, ensuring that articles
+discussing similar topics in different ways aren't mistakenly marked as
+duplicates.
+
+We apply specific thresholds:
+
+- 0.97 for titles
+- 0.92 for content
+
+These thresholds help us maintain high accuracy in our deduplication process.
+
+To learn more about this metric and its applications, check out
+[Levenshtein Distance](https://en.wikipedia.org/wiki/Levenshtein_distance) on
+Wikipedia.
+
+### Identifying Original Article
+
+Our system doesn't just spot duplicates - it also identifies which article is
+likely the original. We use a scoring algorithm that considers factors such as:
+
+- Domain credibility
+- Author's reputation
+
+The article with the highest score is designated as the original or "parent"
+article. This status may shift if a newly found duplicate presents a higher
+score, reflecting the dynamic nature of news content.
+
+### Continuous Updates and Historical Lookup
+
+Our deduplication system is continually updated and checks for duplications over
+a rolling historical period of seven days. This means that when we encounter a
+new article, we compare it with all articles from the past week to identify
+potential duplicates.
+
+## Using Deduplication Feature
+
+The deduplication feature is available for the Search endpoint only. To exclude
+duplicate articles from the search, set the `exclude_duplicates` parameter to
+`true`.
+
+Each article object in the response contains additional fields:
+
+- `duplicate_count`: the number of duplicates associated with the article.
+- `duplicate_articles_group_id`: a unique identifier for a group of duplicates
+  associated with the article.
+
+<Note>
+  {" "}
+  The deduplication feature supports only English-language articles. Applying the
+  exclude_duplicates parameter to non-English articles triggers a validation error.{" "}
+</Note>
+
+### Example Request
+
+Here's an example of how to make a request using Python:
+
+```python request.py
+import requests
+import json
+
+url = "https://v3-api.newscatcherapi.com/api/search"
+payload = json.dumps({
+  "q": "market value",
+  "lang": "en",
+  "theme": "Tech",
+  "exclude_duplicates": True
+})
+headers = {
+  'x-api-token': 'YOUR-API-KEY',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+### Example Response
+
+In the response, you'll find deduplication information for each article,
+including:
+
+```json response.json
+{
+  "title": "Global Financial Services Industry - Insights Around Market Size, Key Trends And Forecast, 2024: Grand View Research, Inc.",
+  ...
+  "duplicate_count": 5,
+  "duplicate_articles_group_id": "542def7ce3844c269d5f1a929309e6da"
+}
+```
+
+This indicates that the article has five duplicates, which have been excluded
+from the results due to the `exclude_duplicates` parameter.
+
+## Related Feature: Clustering
+
+While deduplication focuses on identifying and removing nearly identical
+articles, our API also offers a clustering feature for grouping similar articles
+without removing any content. This can be useful for analyzing trends or
+providing multiple perspectives on a topic.
+
+To learn more clustering and how it differs from deduplication, check out
+[How Clustering Works](/v3/documentation/guides-and-concepts/how-clustering-works).
+
+## Wrapping It Up
+
+Our deduplication process guarantees you receive only unique, high-quality,
+relevant news articles. By storing both unique articles and their duplicates, we
+offer you a choice between complete datasets for detailed analysis and a more
+distinctive, duplicate-free set of articles. This ensures you get the most out
+of the news data, whether conducting in-depth research or looking for original
+content.
