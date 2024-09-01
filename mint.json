@@ -182,7 +182,7 @@
       "pages": [
         "v3/documentation/guides-and-concepts/advanced-querying",
         "v3/documentation/guides-and-concepts/nlp-layer",
-        "v3/documentation/guides-and-concepts/how-clustering-works",
+        "v3/documentation/guides-and-concepts/clustering-news-articles",
         "v3/documentation/guides-and-concepts/articles-deduplication"
       ]
     },
