@@ -1,101 +1,130 @@
----
-title: Articles Deduplication
-description: Enhance search efficiency by filtering out duplicate articles.
----
+# Articles deduplication
+
+Enhance search efficiency by filtering out duplicate articles.
 
 ## Introduction
 
-In today's fast-paced news environment, significant events often receive
-extensive coverage from various media outlets, resulting in numerous similar
-articles published across multiple platforms. To address this effectively and
-provide exclusive content, we've equipped our News API v3 with an advanced
-deduplication feature. This method enhances data management and conserves time
-and resources by eliminating duplicate articles.
+Ever feel like you're seeing the same news story over and over? You're not
+alone. In today's fast-paced digital world, major events often get covered by
+multiple outlets, resulting in a flood of similar articles. This can make it
+challenging to find unique, valuable content.
 
-## Deduplication Process
+That's where article deduplication comes in. It's a feature we've built into
+News API v3 to help you cut through the noise and get to the heart of the news.
 
-Our system identifies and excludes duplicate articles using semantic similarity
-and character-level analysis techniques. Here's a detailed breakdown of our
-process:
+## What is article deduplication?
 
-### Semantic Similarity Comparison
+Article deduplication is a process that identifies and filters out nearly
+identical news articles from a large collection of content. It's smarter than
+simple text matching - it uses advanced language processing to recognize
+articles that say the same thing, even if they use different words or
+structures.
 
-We begin with an embedding-based text comparison of the articles:
+Here's what article deduplication does:
 
-1. We convert texts into vector representations (embeddings) using our Natural
-   Language Processing (NLP) pipeline.
-2. These embeddings capture the meaning and relationships of the content,
-   allowing us to gauge the semantic similarity of the articles.
-3. As a metric, we use cosine similarity with a threshold of 0.95 to identify
-   potential duplicates.
+- Provides you with a diverse set of unique articles.
+- Reduces information overload by eliminating redundant content.
+- Improves the efficiency of content analysis and research.
+- Enhances your experience by presenting a more manageable amount of relevant
+  information.
 
-This method allows us to identify semantically similar articles, even if they
-use different wording.
+## How does it work?
 
-To learn more, see
-[Vector Embeddings](https://www.elastic.co/what-is/vector-embedding) and read
-about [Cosine Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) on
-Wikipedia.
+Our deduplication system uses a multi-step process to accurately identify
+duplicate articles while maintaining high precision. Let's break it down:
 
-### Levenshtein Distance Analysis
+### Semantic similarity comparison
+
+First, we compare the meaning of articles:
+
+1. We convert article texts into vector representations (embeddings) using our
+   Natural Language Processing (NLP) pipeline.
+2. These embeddings capture the meaning and relationships of the content.
+3. We use cosine similarity to compare these embeddings, with a threshold of
+   0.95 to identify potential duplicates.
+
+This method catches similar articles even if they use different wording or
+sentence structures. It's great at identifying rewrites or articles from
+different sources covering the same event.
+
+### Levenshtein distance analysis
 
 After the initial screening, we refine our process using the Levenshtein
-distance. This metric helps us determine the minimum number of single-character
-edits required to change one text into another, ensuring that articles
-discussing similar topics in different ways aren't mistakenly marked as
-duplicates.
+distance, which measures the minimum number of single-character edits needed to
+change one text into another.
 
-We apply specific thresholds:
+We use specific thresholds for accuracy:
 
-- 0.97 for titles
-- 0.92 for content
+- 0.97 for article titles
+- 0.92 for article content
 
-These thresholds help us maintain high accuracy in our deduplication process.
+This step helps us distinguish between articles that discuss similar topics
+differently and those that are true duplicates. It reduces the chance of false
+positives in our deduplication process.
 
-To learn more about this metric and its applications, check out
-[Levenshtein Distance](https://en.wikipedia.org/wiki/Levenshtein_distance) on
-Wikipedia.
-
-### Identifying Original Article
+### Identifying the original article
 
 Our system doesn't just spot duplicates - it also identifies which article is
-likely the original. We use a scoring algorithm that considers factors such as:
+likely the original or most authoritative version.
+
+We use a scoring algorithm that considers factors like:
 
 - Domain credibility
 - Author's reputation
+- Publication timestamp
 
-The article with the highest score is designated as the original or "parent"
-article. This status may shift if a newly found duplicate presents a higher
-score, reflecting the dynamic nature of news content.
+The article with the highest score becomes the "parent" article. This status can
+change if we find a new duplicate with a higher score, reflecting the dynamic
+nature of news content.
 
-### Continuous Updates and Historical Lookup
+By identifying the original article, you get access to the most credible and
+comprehensive version of a story, while still filtering out redundant content.
 
-Our deduplication system is continually updated and checks for duplications over
-a rolling historical period of seven days. This means that when we encounter a
-new article, we compare it with all articles from the past week to identify
-potential duplicates.
+### Continuous updates and historical lookup
 
-## Using Deduplication Feature
+To keep our deduplication system effective, we continuously update our database
+and compare each new article against articles from the past seven days. This
+approach catches duplicates that may appear days after the original publication,
+accounting for delayed reporting or republishing content.
 
-The deduplication feature is available for the Search endpoint only. To exclude
-duplicate articles from the search, set the `exclude_duplicates` parameter to
-`true`.
+By implementing this comprehensive process, News API v3 provides you with a
+rich, diverse, and non-redundant set of news articles, enhancing the overall
+quality and usability of the data.
 
-Each article object in the response contains additional fields:
+## How to use deduplication
 
-- `duplicate_count`: the number of duplicates associated with the article.
-- `duplicate_articles_group_id`: a unique identifier for a group of duplicates
+Now that you understand how article deduplication works, let's look at how to
+use this feature in your News API v3 queries.
+
+### Enable deduplication
+
+To exclude duplicate articles from your search results, set the
+`exclude_duplicates` parameter to `true` in your API request. Here's what you
+need to know:
+
+- The deduplication feature is available only for the
+  [Search](/v3/api-reference/endpoints/search/search-articles-get) endpoint.
+- It supports only English-language articles. If you apply the
+  `exclude_duplicates` parameter to non-English articles, you get a validation
+  error.
+
+### Understand the API response
+
+When you enable deduplication, each article object in the response includes
+additional fields related to duplication:
+
+- `duplicate_count`: The number of duplicates associated with the article.
+- `duplicate_articles_group_id`: A unique identifier for the group of duplicates
   associated with the article.
 
-<Note>
-  {" "}
-  The deduplication feature supports only English-language articles. Applying the
-  exclude_duplicates parameter to non-English articles triggers a validation error.{" "}
-</Note>
+These fields give you valuable information about the extent of duplication for
+each article. You can use this data for further analysis or filtering in your
+application.
 
-### Example Request
+### Code example
 
-Here's an example of how to make a request using Python:
+Here's an example of how to make a request using Python that includes the
+deduplication feature:
 
 ```python request.py
 import requests
@@ -117,10 +146,8 @@ response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
 
-### Example Response
-
-In the response, you'll find deduplication information for each article,
-including:
+In the response, you'll find deduplication information for each article. Here's
+an example of what you might see:
 
 ```json response.json
 {
@@ -131,24 +158,65 @@ including:
 }
 ```
 
-This indicates that the article has five duplicates, which have been excluded
-from the results due to the `exclude_duplicates` parameter.
+This shows that the article has five duplicates, which have been excluded from
+the results due to the `exclude_duplicates` parameter.
 
-## Related Feature: Clustering
+## Use cases for article deduplication
 
-While deduplication focuses on identifying and removing nearly identical
-articles, our API also offers a clustering feature for grouping similar articles
-without removing any content. This can be useful for analyzing trends or
-providing multiple perspectives on a topic.
+Article deduplication can be a game-changer in various scenarios. Here are some
+common use cases:
 
-To learn more clustering and how it differs from deduplication, check out
-[How Clustering Works](/v3/documentation/guides-and-concepts/how-clustering-works).
+### Content curation and aggregation
 
-## Wrapping It Up
+If you're running a news aggregator or curating content, deduplication ensures
+that your users see a diverse range of articles without redundancy. This
+improves the user experience by reducing information overload and increasing the
+variety of perspectives presented.
 
-Our deduplication process guarantees you receive only unique, high-quality,
-relevant news articles. By storing both unique articles and their duplicates, we
-offer you a choice between complete datasets for detailed analysis and a more
-distinctive, duplicate-free set of articles. This ensures you get the most out
-of the news data, whether conducting in-depth research or looking for original
-content.
+### Media monitoring and analysis
+
+Are you monitoring brand mentions or tracking industry trends? Deduplication
+helps you focus on unique mentions rather than getting overwhelmed by repetitive
+content. This leads to more accurate sentiment analysis and trend
+identification.
+
+### Research and trend analysis
+
+For researchers and analysts, deduplication streamlines the data collection
+process. By eliminating duplicate articles, you can more easily identify unique
+data points and trends, leading to more accurate and efficient analysis.
+
+### Personalized news feeds
+
+When creating personalized news feeds, deduplication helps ensure that your
+readers see a wider variety of content rather than multiple versions of the same
+story. This can increase user engagement and satisfaction with your news
+service.
+
+## Deduplication vs clustering
+
+While both deduplication and clustering organize and manage large sets of
+articles, they serve different purposes and are used in different contexts.
+
+### Key differences
+
+- **Deduplication** identifies and removes nearly identical articles, preserving
+  only the most relevant or original version.
+- **Clustering** groups similar articles together without removing any content,
+  allowing you to see multiple perspectives on a topic.
+
+### When to use deduplication vs clustering
+
+- Use **deduplication** to eliminate redundancy and present only unique content
+  to your users.
+- Use **clustering** to group related articles together to show different angles
+  or developments of a story over time.
+
+For more information on our clustering feature, check out
+[How clustering works](/v3/documentation/guides-and-concepts/how-clustering-works).
+
+## Related concepts
+
+- [Vector Embeddings](https://www.elastic.co/what-is/vector-embedding)
+- [Cosine Similarity](https://en.wikipedia.org/wiki/Cosine_similarity)
+- [Levenshtein Distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
