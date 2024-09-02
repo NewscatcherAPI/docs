@@ -1,5 +1,252 @@
 ---
 title: How to search articles by entity
 sidebarTitle: Search by entity
-description: Perform the NER-based search within the news data.
+description:
+  Find articles mentioning specific people, organizations, locations, or other
+  named entities
 ---
+
+## Overview
+
+Empowered by Named Entity Recognition (NER), News API v3 lets you find articles
+mentioning specific people, organizations, locations, or other named entities.
+With NER, you can perform more precise and relevant searches than with simple
+keyword queries.
+
+## Before you start
+
+Before you begin, ensure you have:
+
+- An active API key for NewsCatcher News API v3
+- NLP functionality enabled in your subscription plan
+- Basic knowledge of making API requests
+- Python or another tool for making HTTP requests (e.g., cURL, Postman, or a
+  programming language with HTTP capabilities)
+
+## Steps
+
+<Steps>
+    <Step title="Understand entity types and search syntax">
+
+    News API v3 supports four main entity types that reflect the following query
+    parameters:
+
+    - `PER_entity_name`: Person names
+    - `ORG_entity_name`: Organization names
+    - `LOC_entity_name`: Location names
+    - `MISC_entity_name`: Miscellaneous names (products, events, nationalities,
+      etc.)
+
+    </Step>
+
+    <Step title="Construct your query using entities">
+    Let's start with a simple entity search for a tech company:
+
+    ```json
+    {
+      "q": "tech industry",
+      "ORG_entity_name": "OpenAI"
+    }
+    ```
+
+    This query searches for articles about the tech industry that mention OpenAI as
+    an organization.
+
+    You can expand your search to include multiple entities:
+
+    ```json
+    {
+      "q": "tech industry",
+      "ORG_entity_name": "OpenAI AND Microsoft"
+    }
+    ```
+
+    </Step>
+
+    <Step title="Include NLP data in the API response">
+
+To include entity information in the API response, use the `include_nlp_data`
+parameter:
+
+```json
+{
+  "q": "tech industry",
+  "ORG_entity_name": "OpenAI AND Microsoft",
+  "include_nlp_data": true
+}
+```
+
+To learn more about NLP capabilities in News API v3, see
+[NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+
+    </Step>
+    <Step title="Make an API request with your entity query">
+
+Here's a Python example demonstrating a search request using named entities:
+
+```python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+
+PAYLOAD = {
+    "q": "tech industry",
+    "ORG_entity_name": "OpenAI AND Microsoft",
+    "include_nlp_data": True,
+    "lang": "en"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+    </Step>
+
+    <Step title="Analyze the results">
+
+The API returns a JSON response. Here's a simplified example focusing on
+entity-related fields:
+
+```json
+{
+  "status": "ok",
+  "total_hits": 325,
+  "page": 1,
+  "total_pages": 4,
+  "page_size": 100,
+  "articles": [
+    {
+      "title": "OpenAI Backs California Bill for Labeling AI-Generated Content Amid Industry Debate",
+      "author": "Reiser X",
+      "published_date": "2024-08-26",
+      "link": "https://reiserx.medium.com/openai-backs-california-bill-for-labeling-ai-generated-content-amid-industry-debate-0863d5efa010",
+      "domain_url": "medium.com",
+      "description": "OpenAI, a leading artificial intelligence (AI) research lab, has recently voiced its support for California's Assembly Bill 3211 (AB 3211)…",
+      "content": "OpenAI has voiced its support for California's Assembly Bill 3211, which mandates labeling of AI-generated content. This bill, aimed at transparency, has divided the tech industry, with OpenAI backing it and companies like Microsoft opposing it...",
+      "word_count": 860,
+      "nlp": {
+        "theme": "Tech, Business",
+        "summary": "OpenAI supports California's Assembly Bill 3211 (AB 3211), a legislative proposal that mandates the labeling of AI-generated content. The tech industry is split on the issue of AI regulation, with Microsoft and others opposed to the bill...",
+        "sentiment": {
+          "title": 0.0,
+          "content": 0.0
+        },
+        "ner_PER": [],
+        "ner_ORG": [
+          {
+            "entity_name": "OpenAI",
+            "count": 8
+          },
+          {
+            "entity_name": "Microsoft",
+            "count": 2
+          }
+          // ... other entities
+        ],
+        "ner_MISC": [
+          {
+            "entity_name": "AB 3211",
+            "count": 7
+          }
+          // ... other entities
+        ],
+        "ner_LOC": [
+          {
+            "entity_name": "California",
+            "count": 2
+          }
+          // ... other entities
+        ],
+        "iptc_tags_name": [
+          "economy, business and finance / products and services / media and entertainment industry / streaming service"
+          // ... other tags
+        ],
+        "iab_tags_name": [
+          "Technology & Computing / Artificial Intelligence"
+          // ... other tags
+        ]
+      }
+      // ... other fields
+    }
+    // ... other articles
+  ],
+  "user_input": {
+    "q": "tech industry",
+    "search_in": ["title_content"],
+    "lang": ["en"],
+    "from_": "2024-08-26T00:00:00",
+    "to_": "2024-09-02T17:50:45.314945",
+    "include_nlp_data": true,
+    "ORG_entity_name": "OpenAI AND Microsoft"
+    // ... other input parameters
+  }
+}
+```
+
+    </Step>
+    <Step title="Refine your entity search">
+
+Use the COUNT functionality to filter based on entity mention frequency:
+
+```json
+{
+  "q": "tech industry",
+  "ORG_entity_name": "COUNT(\"Apple\", 2, \"gt\") OR COUNT(\"Microsoft\", 2, \"gt\")",
+  "include_nlp_data": true
+}
+```
+
+Use different entity types together:
+
+```json
+{
+  "q": "tech industry",
+  "ORG_entity_name": "Apple OR Microsoft",
+  "PER_entity_name": "\"Tim Cook\" OR \"Satya Nadella\"",
+  "include_nlp_data": true
+}
+```
+
+Combine entity search with boolean operators for more complex queries:
+
+```json
+{
+  "q": "tech industry AND (innovation OR \"artificial intelligence\")",
+  "ORG_entity_name": "(Apple OR Microsoft) AND NOT Google",
+  "include_nlp_data": true
+}
+```
+
+Use the NEAR operator to find articles where terms are mentioned in proximity to
+each other and combine with entity search:
+
+```json
+{
+  "q": "NEAR(\"tech industry\", \"innovation\", 10)",
+  "ORG_entity_name": "Apple OR Microsoft",
+  "include_nlp_data": true
+}
+```
+
+    </Step>
+
+</Steps>
+
+<Tip>
+  Always use backslashes `\` before double quotes within query strings to
+  maintain exact match syntax in JSON.
+</Tip>
+
+## See also
+
+- [Advanced querying techniques](/v3/documentation/guides-and-concepts/advanced-querying)
+- [How to use boolean operators](/v3/documentation/how-to/use-boolean-operators)
+- [How to perform proximity search with NEAR](/v3/documentation/how-to/search-with-near)
+- [Understanding the NLP features](/v3/documentation/guides-and-concepts/nlp-features)
