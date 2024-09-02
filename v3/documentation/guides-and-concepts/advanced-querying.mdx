@@ -32,6 +32,27 @@ Use double quotes to search for an exact phrase or name.
 Without quotes, the query is treated as individual terms combined with the `AND`
 operator. For example, `q=Tim Cook` is equivalent to `q=Tim AND Cook`.
 
+#### Escaping double quotes in JSON queries
+
+To use exact match syntax in JSON queries, you must escape double quotes by
+adding a backslash `\` before each double quote. This ensures the JSON is valid
+and the query is interpreted correctly.
+
+**Example:**
+
+    ```json
+    {
+      "q": "presidential election",
+      "PER_entity_name": "\"Kamala Harris\" AND \"Donald Trump\"",
+      "include_nlp_data": true
+    }
+    ```
+
+<Tip>
+  Always use backslashes `\` before double quotes within query strings to
+  maintain exact match syntax in JSON.
+</Tip>
+
 ### Boolean operators
 
 #### `AND`
