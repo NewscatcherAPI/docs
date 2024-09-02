@@ -1,5 +1,149 @@
 ---
 title: How to use boolean operators
 sidebarTitle: Use boolean operators
-description: Use AND, OR, and NOT to refine search queries.
+description: Refine queries with AND, OR, and NOT
 ---
+
+## Overview
+
+Boolean operators are powerful tools that allow you to create more complex and
+precise search queries. These operators help you filter news articles to find
+the content you need.
+
+News API v3 supports three main boolean operators:
+
+- `AND`: Ensures both terms are present in the search results.
+- `OR`: Allows for either term to be present.
+- `NOT`: Excludes terms from the search results.
+
+Additionally, you can use parentheses `()` to group terms and create more
+complex queries.
+
+By combining these operators, you can significantly improve the relevance of
+your search results and find the most pertinent news articles for your needs.
+
+## Before you start
+
+Before you begin, ensure you have:
+
+- An active API key for NewsCatcher News API v3
+- Basic knowledge of making API requests
+- Python or another tool for making HTTP requests (e.g., cURL, Postman, or a
+  programming language with HTTP capabilities)
+
+## Steps
+
+1. Construct your query using boolean operators.
+
+When forming your query, use parentheses to group terms and operators. Here are
+some examples:
+
+- `(bitcoin OR cryptocurrency) AND (investment OR trading)`
+- `"electric cars" NOT Tesla`
+- `("artificial intelligence" OR AI) AND healthcare NOT (Google OR Amazon OR Microsoft)`
+
+2. Make an API request with your boolean query.
+
+Use the `/search` endpoint with your constructed query in the `q` parameter.
+Here is a code example in Python:
+
+```python request.py
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+
+PAYLOAD = {
+    "q": "(bitcoin OR cryptocurrency) AND (investment OR trading)",
+    "lang": "en",
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+3. Analyze the results.
+
+The API returns a JSON response with the following structure:
+
+```json response.json
+{
+  "status": "ok",
+  "total_hits": 10000,
+  "page": 100,
+  "total_pages": 10000,
+  "page_size": 100,
+  "articles": [
+    {
+      "title": "$100 Million in Bitcoin: Leading the Charge in Institutional Cryptocurrency Adoption",
+      "author": "Uzair Hasan",
+      "authors": [
+        "Uzair Hasan",
+        "Tech Bullion",
+        "Angela Scott-Briggs",
+        "Busines News Wire",
+        "Businesnews Wire"
+      ],
+      "journalists": ["Angela Scott-Briggs", "Uzair Hasan"],
+      "published_date": "2024-08-22 18:32:13",
+      "published_date_precision": "full",
+      "updated_date": "2024-08-22 18:32:13",
+      "updated_date_precision": "full",
+      "link": "https://techbullion.com/100-million-in-bitcoin-leading-the-charge-in-institutional-cryptocurrency-adoption",
+      "domain_url": "techbullion.com",
+      "full_domain_url": "techbullion.com",
+      "name_source": "TechBullion",
+      "is_headline": true,
+      "paid_content": false,
+      "parent_url": "https://techbullion.com",
+      "country": "US",
+      "rights": "techbullion.com",
+      "rank": 6999,
+      "media": "https://techbullion.com/wp-content/uploads/2024/08/bit-1000x600.jpg",
+      "language": "en",
+      "description": "In a decisive move, tradetide.net has announced a substantial investment of $100 million in Bitcoin. This bold step underscores tradetide.net's confidence in Bitcoin's long-term potential, positioning…",
+      "content": "In a decisive move, tradetide.net has announced a substantial investment of $100 million in Bitcoin. This bold step underscores tradetide.net's confidence in Bitcoin's long-term potential, positioning the firm at the forefront of the digital asset revolution...",
+      "word_count": 556,
+      "is_opinion": false,
+      "twitter_account": "@TechBullion",
+      "all_links": [
+        "http://feeds.feedburner.com/Techbullion",
+        "https://www.facebook.com/TechBullion"
+        // ... other links
+      ],
+      "all_domain_links": [
+        "businesnewswire.com",
+        "tradetide.net"
+        // ... other domains
+      ],
+      "id": "5f839cd4bfddbd275421b5bc6fff68a4",
+      "score": 26.076221
+    }
+    // ... other articles
+  ],
+  "user_input": {
+    "q": "(bitcoin OR cryptocurrency) AND (investment OR trading)",
+    "lang": ["en"],
+    "page": 100,
+    "page_size": 100
+    // ... other input parameter
+  }
+}
+```
+
+4. Refine your query as needed.
+
+If you're getting too many or too few results, adjust your query. Add more
+specific terms with `AND`, broaden your search with `OR`, or exclude certain
+topics with `NOT`.
+
+## See also
+
+- [Advanced querying techniques](/v3/documentation/guides-and-concepts/advanced-querying)
+- [How to optimize search with API parameters](/v3/documentation/guides-and-concepts/optimize-search)
