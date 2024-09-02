@@ -985,7 +985,7 @@ components:
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string. For example, `washingtonpost.com,wsj.com`.
 
-        To learn more, see the [All Links And Domains Format](#) page.
+        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
       name: all_links
       in: query
       required: false
@@ -1032,7 +1032,7 @@ components:
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string. 
 
-        To learn more, see [All Links and Domains Format](#).
+        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
       name: all_domain_links
       in: query
       required: false
@@ -1091,7 +1091,7 @@ components:
         This changes the response format to include clustering information - instead of a list of articles, 
         you receive a list of clusters that group similar articles together.
 
-        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
@@ -1172,7 +1172,7 @@ components:
         The organization name(s) mentioned in articles.
         To specify multiple organizations, use a comma-separated string. For example, `Apple,Microsoft`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: ORG_entity_name
@@ -1193,7 +1193,7 @@ components:
         The person names mentioned in articles.
         To specify multiple names, use a comma-separated string. For example, `Elon Musk,Jeff Bezos`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: PER_entity_name
@@ -1214,7 +1214,7 @@ components:
         The locations mentioned in articles.
         To specify multiple locations, use a comma-separated string. For example, `California,New York`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: LOC_entity_name
@@ -1235,7 +1235,7 @@ components:
         Other named entities that do not fall under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
         To specify multiple entities, use a comma-separated string. For example, `Bitcoin,Blockchain`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: MISC_entity_name
@@ -1368,7 +1368,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Deduplicate Articles](#).
+        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
       in: query
       required: false
@@ -3507,7 +3507,7 @@ components:
         To specify multiple URLs, use a comma-separated string or an array of strings.
         For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
-        To learn more, see the [All Links And Domains Format](#) page.
+        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
       example: ["washingtonpost.com", "wsj.com"]
 
     AuthorName:
@@ -3539,7 +3539,7 @@ components:
         To specify multiple domain URLs, use a comma-separated string or an array of strings. 
         For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
-        To learn more, see [All Links and Domains Format](#).
+        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
       example: ["washingtonpost.com", "wsj.com"]
 
     WordCountMin:
@@ -3576,7 +3576,7 @@ components:
         This changes the response format to include clustering information - instead of a list of articles, 
         you receive a list of clusters that group similar articles together.
 
-        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
 
     ClusteringThreshold:
@@ -3637,7 +3637,7 @@ components:
         To specify multiple organizations, use a comma-separated string. 
         For example, `Apple,Microsoft`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Apple
@@ -3649,7 +3649,7 @@ components:
         To specify multiple names, use a comma-separated string. 
         For example, `Elon Musk,Jeff Bezos`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Elon Musk
@@ -3661,7 +3661,7 @@ components:
         To specify multiple locations, use a comma-separated string. 
         For example, `California,New York`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: California
@@ -3674,7 +3674,7 @@ components:
         To specify multiple entities, use a comma-separated string. 
         For example, `Bitcoin,Blockchain`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Bitcoin
@@ -3781,7 +3781,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Deduplicate Articles](#).
+        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
       example: true
 
     When:
