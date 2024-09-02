@@ -190,7 +190,6 @@
       "group": "How To",
       "version": "v3",
       "pages": [
-        "v3/documentation/how-to/optimize-search",
         "v3/documentation/how-to/use-boolean-operators",
         "v3/documentation/how-to/search-with-near",
         "v3/documentation/how-to/search-by-entity",
