@@ -1,0 +1,216 @@
+---
+title: News API v3 quickstart guide
+sidebarTitle: Quickstart
+description:
+  This guide will help you make your first API call to NewsCatcher News API v3
+  and start retrieving news data in just a few minutes.
+---
+
+## Before you start
+
+Before you begin, make sure you meet these prerequisites:
+
+- An API key for NewsCatcher News API v3 (obtained from your account manager)
+- Python 3.6+ installed on your system
+- The `requests` library for Python
+
+## Get started
+
+### Step 1 - Set up your environment
+
+First, make sure you have Python and the requests library installed. You can
+install requests using pip:
+
+```bash
+pip install requests
+```
+
+### Step 2 - Create your first script
+
+Create a new file named `newscatcher_quickstart.py` and add the following code:
+
+```python
+import requests
+import json
+
+# Configuration
+API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+PAYLOAD = {
+    "q": "renewable energy",
+    "lang": "en",
+    "page_size": 1
+}
+
+try:
+    # Fetch articles using POST method
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()  # Check if the request was successful
+
+    # Print the raw JSON response
+    print(json.dumps(response.json(), indent=2))
+
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+Remember to replace `YOUR_API_KEY_HERE` with your actual API key.
+
+### Step 3 - Run the script and review the results
+
+Run the script from your terminal:
+
+```bash
+python newscatcher_quickstart.py
+```
+
+You should see a JSON response similar to this (shortened for readability):
+
+```json
+{
+  "status": "ok",
+  "total_hits": 10000,
+  "page": 1,
+  "total_pages": 10000,
+  "page_size": 1,
+  "articles": [
+    {
+      "title": "Energix Renewables and Google Sign a Strategic Renewable Energy Agreement",
+      "author": "PR Newswire",
+      "authors": ["PR Newswire"],
+      "journalists": [],
+      "published_date": "2024-08-20 16:28:00",
+      "published_date_precision": "full",
+      "updated_date": "2024-08-20 16:28:00",
+      "updated_date_precision": "full",
+      "link": "https://finance.yahoo.com/news/energix-renewables-google-sign-strategic-162800318.html",
+      "domain_url": "yahoo.com",
+      "full_domain_url": "finance.yahoo.com",
+      "name_source": "Yahoo",
+      "is_headline": false,
+      "paid_content": false,
+      "parent_url": "https://finance.yahoo.com/calendar",
+      "country": "US",
+      "rights": "yahoo.com",
+      "rank": 37,
+      "media": "https://media.zenfs.com/en/prnewswire.com/e28cbff44206d28b1afd175f5527ddff",
+      "language": "en",
+      "description": "Energix Renewables, a leader in the U.S. renewable energy sector and part of the Energix Group, a global leader in renewable energy, is proud to announce the signing of a strategic long-term agreement…",
+      "content": "Pioneering Agreement to Transform the Renewable Energy Landscape in the U.S.\nARLINGTON, Va., Aug. 20, 2024 /PRNewswire/ -- Energix Renewables, a leader in the U.S. renewable energy sector and part of the Energix Group, a global leader in renewable energy, is proud to announce the signing of a strategic long-term agreement with Google...",
+      "word_count": 664,
+      "is_opinion": false,
+      "twitter_account": "@YahooFinance",
+      "all_links": [
+        "https://twitter.com/YahooFinance",
+        "https://facebook.com/yahoofinance"
+        // ... other links
+      ],
+      "all_domain_links": [
+        "rivals.com",
+        "prnewswire.com"
+        // ... other domain links
+      ],
+      "id": "a3b8452db164f7cb06c33ae305372115",
+      "score": 14.821823
+    }
+  ],
+  "user_input": {
+    "q": "renewable energy",
+    "search_in": ["title_content"],
+    "lang": ["en"],
+    "from_": "2024-08-19T00:00:00",
+    "to_": "2024-08-26T10:27:51.752362",
+    "sort_by": "relevancy",
+    "page": 1,
+    "page_size": 1
+    // ...
+  }
+}
+```
+
+This response shows you the rich data available for each article, including
+detailed metadata such as title, author, publication date, source information,
+and content.
+
+### Step 4 - Modify the query for more specific results
+
+Now that you've seen the basic API response, let's modify our script to filter
+the results and include some advanced features. Update your script as follows:
+
+```python
+import requests
+import json
+
+# Configuration
+API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+PAYLOAD = {
+    "q": "electric vehicles",
+    "lang": "en",
+    "countries": "US,GB",
+    "from_": "7 days ago",
+    "page_size": 10,
+    "include_nlp_data": True
+}
+
+try:
+    # Fetch articles using POST method
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()  # Check if the request was successful
+
+    # Parse and display the articles
+    data = response.json()
+    articles = data["articles"]
+
+    print(f"Total hits: {data['total_hits']}")
+    print(f"Page {data['page']} of {data['total_pages']}")
+    print("---")
+
+    for article in articles:
+        title = article.get("title", "No Title")
+        published_date = article.get("published_date", "No Date")
+        sentiment = article["nlp"]["sentiment"]["content"]
+        theme = article["nlp"]["theme"]
+
+        print(f"Title: {title}")
+        print(f"Published Date: {published_date}")
+        print(f"Sentiment: {sentiment}")
+        print(f"Theme: {theme}")
+        print("---")
+
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+This modified script:
+
+1. Searches for "electric vehicles".
+2. Limits results to articles from the United States and Great Britain.
+3. Retrieves articles from the last 7 days.
+4. Returns ten articles per page.
+5. Includes NLP data in the results.
+6. Displays the title, publish date, content sentiment score, and theme for each
+   article.
+
+Run the script again to see the filtered results with NLP data.
+
+## What's next
+
+Now that you've made your first calls to the NewsCatcher News API v3 and
+explored some of its features, here are some next steps to enhance your usage:
+
+1. Explore other parameters like `predefined_sources`, `sort_by`, `iptc_tags`,
+   or `iab_tags` to refine your searches.
+2. Check out our [API Reference](/v3/api-reference) to learn about all available
+   endpoints and parameters.
+3. Learn how to
+   [Implement pagination](/v3/documentation/how-to/paginate-large-data-sets) to
+   handle large datasets.
+4. Dive deeper into the
+   [NLP features](/v3/documentation/guides-and-concepts/nlp-features) to extract
+   insights from the news articles.
+
+If you have any questions or need assistance, don't hesitate to contact our
+support team. Happy news hunting!

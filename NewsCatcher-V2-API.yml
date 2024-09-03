@@ -40,7 +40,7 @@ paths:
     get:
       tags:
         - search
-      summary: Search for news articles
+      summary: Search news
       description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
       operationId: Search_get
       parameters:
@@ -102,7 +102,7 @@ paths:
     post:
       tags:
         - search
-      summary: Search for news articles
+      summary: Search news
       description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
       operationId: Search_post
       requestBody:
@@ -162,6 +162,7 @@ paths:
         - $ref: "#/components/parameters/topic"
         - $ref: "#/components/parameters/sources"
         - $ref: "#/components/parameters/not_sources"
+        - $ref: "#/components/parameters/when"
         - $ref: "#/components/parameters/ranked_only"
         - $ref: "#/components/parameters/page_size"
         - $ref: "#/components/parameters/page"
@@ -352,14 +353,6 @@ paths:
                 $ref: "#/components/schemas/error_response"
 components:
   parameters:
-    api_key:
-      description: |
-        Your unique authentication token
-      name: x-api-key
-      in: header
-      required: true
-      schema:
-        type: string
     q:
       description: |
         Keyword/keywords you're searching for. This is the most important part of your query.
@@ -1069,6 +1062,68 @@ components:
               "vi",
             ]
           example: "en"
+        not_lang:
+          type: string
+          description: The language to exclude from the search results. Inverse to the `lang` parameter.
+          enum:
+            [
+              "af",
+              "ar",
+              "bg",
+              "bn",
+              "ca",
+              "cn",
+              "cs",
+              "cy",
+              "da",
+              "de",
+              "el",
+              "en",
+              "es",
+              "et",
+              "fa",
+              "fi",
+              "fr",
+              "gu",
+              "he",
+              "hi",
+              "hr",
+              "hu",
+              "id",
+              "it",
+              "ja",
+              "kn",
+              "ko",
+              "lt",
+              "lv",
+              "mk",
+              "ml",
+              "mr",
+              "ne",
+              "nl",
+              "no",
+              "pa",
+              "pl",
+              "pt",
+              "ro",
+              "ru",
+              "sk",
+              "sl",
+              "so",
+              "sq",
+              "sv",
+              "sw",
+              "ta",
+              "te",
+              "th",
+              "tl",
+              "tr",
+              "tw",
+              "uk",
+              "ur",
+              "vi",
+            ]
+          example: "fr"
         countries:
           type: string
           description: |

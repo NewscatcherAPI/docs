@@ -45,12 +45,15 @@ tags:
   - name: Search
     description: Operations to search for articles.
     externalDocs:
-      description: Search for articles by keyword, language, country, source, and more.
+      description:
+        Search for articles by keyword, language, country, source, and more.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news
   - name: LatestHeadlines
     description: Operations to retrieve latest headlines.
     externalDocs:
-      description: Retrieve the latest headlines since a specified date, with filtering options.
+      description:
+        Retrieve the latest headlines since a specified date, with filtering
+        options.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-latest-headlines
   - name: Authors
     description: Operations to search by author.
@@ -70,12 +73,16 @@ tags:
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
-      description: Retrieve the list of available sources, filtered by language and country.
+      description:
+        Retrieve the list of available sources, filtered by language and
+        country.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-sources
   - name: Aggregation
     description: Operations to aggregate news counts.
     externalDocs:
-      description: Aggregate news counts based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Aggregate news counts based on specified criteria such as keyword,
+        language, country, source, and more.
       url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-aggregation
   - name: Subscription
     description: Operations to get subscription info.
@@ -89,7 +96,9 @@ paths:
       tags:
         - Search
       summary: Search articles
-      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Searches for articles based on specified criteria such as keyword,
+        language, country, source, and more.
       operationId: Search_get
       parameters:
         - $ref: "#/components/parameters/Q"
@@ -150,7 +159,9 @@ paths:
       tags:
         - Search
       summary: Search articles
-      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Searches for articles based on specified criteria such as keyword,
+        language, country, source, and more.
       operationId: Search_post
       requestBody:
         $ref: "#/components/requestBodies/SearchRequestBody"
@@ -165,7 +176,9 @@ paths:
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
-      description: Retrieves the latest headlines for the specified time period. You can filter results by language, country, source, and more.
+      description:
+        Retrieves the latest headlines for the specified time period. You can
+        filter results by language, country, source, and more.
       operationId: LatestHeadlines_get
       parameters:
         - $ref: "#/components/parameters/When"
@@ -217,7 +230,9 @@ paths:
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
-      description: Retrieves the latest headlines for the specified time period. You can filter results by language, country, source, and more.
+      description:
+        Retrieves the latest headlines for the specified time period. You can
+        filter results by language, country, source, and more.
       operationId: LatestHeadlines_post
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
@@ -232,7 +247,9 @@ paths:
       tags:
         - Authors
       summary: Search articles by author
-      description: Searches for articles written by a specified author. You can filter results by language, country, source, and more.
+      description:
+        Searches for articles written by a specified author. You can filter
+        results by language, country, source, and more.
       operationId: Authors_get
       parameters:
         - $ref: "#/components/parameters/AuthorName"
@@ -284,7 +301,9 @@ paths:
       tags:
         - Authors
       summary: Search articles by author
-      description: Searches for articles by author. You can filter results by language, country, source, and more.
+      description:
+        Searches for articles by author. You can filter results by language,
+        country, source, and more.
       operationId: Authors_post
       requestBody:
         $ref: "#/components/requestBodies/AuthorsRequestBody"
@@ -299,7 +318,9 @@ paths:
       tags:
         - SearchLink
       summary: Search articles by links or IDs
-      description: Searches for articles based on specified links or IDs. You can filter results by date range.
+      description:
+        Searches for articles based on specified links or IDs. You can filter
+        results by date range.
       operationId: SearchLink_get
       parameters:
         - $ref: "#/components/parameters/Ids"
@@ -340,7 +361,7 @@ paths:
     post:
       tags:
         - SearchLink
-      summary: Search articles by ID or link
+      summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
       operationId: Search_url_post
       requestBody:
@@ -356,7 +377,7 @@ paths:
     get:
       tags:
         - SearchSimilar
-      summary: Search for similar articles
+      summary: Search similar articles
       description: Searches for articles similar to a specified query.
       operationId: SearchSimilar_get
       parameters:
@@ -411,7 +432,9 @@ paths:
       tags:
         - SearchSimilar
       summary: Search similar articles
-      description: Searches for articles similar to the specified query. You can filter results by language, country, source, and more.
+      description:
+        Searches for articles similar to the specified query. You can filter
+        results by language, country, source, and more.
       operationId: SearchSimilar_post
       requestBody:
         $ref: "#/components/requestBodies/SearchSimilarRequestBody"
@@ -426,7 +449,9 @@ paths:
       tags:
         - Sources
       summary: Retrieve sources
-      description: Retrieves a list of sources based on specified criteria such as language, country, rank, and more.
+      description:
+        Retrieves a list of sources based on specified criteria such as
+        language, country, rank, and more.
       operationId: Sources_get
       parameters:
         - $ref: "#/components/parameters/Lang"
@@ -447,7 +472,9 @@ paths:
       tags:
         - Sources
       summary: Retrieve sources
-      description: Retrieves the list of sources available in the database. You can filter the sources by language, country, and more.
+      description:
+        Retrieves the list of sources available in the database. You can filter
+        the sources by language, country, and more.
       operationId: Sources_post
       requestBody:
         $ref: "#/components/requestBodies/SourcesRequestBody"
@@ -463,7 +490,9 @@ paths:
       tags:
         - Aggregation
       summary: Get aggregation count by interval
-      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
+      description:
+        Retrieves the count of articles aggregated by day or hour based on
+        various search criteria, such as keyword, language, country, and source.
       operationId: Aggregation_get
       parameters:
         - $ref: "#/components/parameters/Q"
@@ -520,7 +549,9 @@ paths:
       tags:
         - Aggregation
       summary: Get aggregation count by interval
-      description: Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
+      description:
+        Retrieves the count of articles aggregated by day or hour based on
+        various search criteria, such as keyword, language, country, and source.
       operationId: Aggregation_post
       requestBody:
         $ref: "#/components/requestBodies/AggregationRequestBody"
@@ -723,7 +754,7 @@ components:
         For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
 
         Multiple countries can be specified with custom numbers as a comma-separated strings.
-        For example, `top 100 US,GB`, `top 33 AT,55 IT`.
+        For example, `top 50 US, top 20 GB`, `top 33 AT, top 50 IT`.
       name: predefined_sources
       in: query
       required: false
@@ -791,7 +822,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/RankInteger"
+        type: integer
+        minimum: 0
+        maximum: 999999
+        format: int32
       example: 100
 
     ToRank:
@@ -802,7 +836,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/RankInteger"
+        type: integer
+        minimum: 0
+        maximum: 999999
+        format: int32
       example: 10000
 
     SortBy:
@@ -863,7 +900,12 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/DateTime"
+        oneOf:
+          - type: string
+            format: date-time
+            example: 2024-06-01T00:00:00
+          - type: string
+            example: 1 day ago
       examples:
         specific-date:
           summary: Specific date
@@ -885,7 +927,12 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/DateTime"
+        oneOf:
+          - type: string
+            format: date-time
+            example: 2024-07-01T00:00:00
+          - type: string
+            example: 1 day ago
       examples:
         specific-date:
           summary: Specific date
@@ -938,7 +985,7 @@ components:
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string. For example, `washingtonpost.com,wsj.com`.
 
-        To learn more, see the [All Links And Domains Format](#) page.
+        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
       name: all_links
       in: query
       required: false
@@ -985,7 +1032,7 @@ components:
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string. 
 
-        To learn more, see [All Links and Domains Format](#).
+        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
       name: all_domain_links
       in: query
       required: false
@@ -1030,7 +1077,11 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/ArticleFields"
+        type: string
+        enum:
+          - content
+          - title
+          - summary
         default: content
       example: content
 
@@ -1040,7 +1091,7 @@ components:
         This changes the response format to include clustering information - instead of a list of articles, 
         you receive a list of clusters that group similar articles together.
 
-        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
@@ -1121,7 +1172,7 @@ components:
         The organization name(s) mentioned in articles.
         To specify multiple organizations, use a comma-separated string. For example, `Apple,Microsoft`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: ORG_entity_name
@@ -1142,7 +1193,7 @@ components:
         The person names mentioned in articles.
         To specify multiple names, use a comma-separated string. For example, `Elon Musk,Jeff Bezos`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: PER_entity_name
@@ -1163,7 +1214,7 @@ components:
         The locations mentioned in articles.
         To specify multiple locations, use a comma-separated string. For example, `California,New York`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: LOC_entity_name
@@ -1184,7 +1235,7 @@ components:
         Other named entities that do not fall under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
         To specify multiple entities, use a comma-separated string. For example, `Bitcoin,Blockchain`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       name: MISC_entity_name
@@ -1209,7 +1260,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
 
     TitleSentimentMax:
@@ -1221,7 +1275,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
 
     ContentSentimentMin:
@@ -1233,7 +1290,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: -0.5
 
     ContentSentimentMax:
@@ -1245,7 +1305,10 @@ components:
       in: query
       required: false
       schema:
-        $ref: "#/components/schemas/SentimentNumber"
+        type: number
+        format: float
+        minimum: -1.0
+        maximum: 1.0
       example: 0.5
 
     IptcTags:
@@ -1305,7 +1368,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Deduplicate Articles](#).
+        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
       in: query
       required: false
@@ -1483,7 +1546,9 @@ components:
 
   requestBodies:
     AggregationRequestBody:
-      description: Request body for aggregation counts based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Request body for aggregation counts based on specified criteria such as
+        keyword, language, country, source, and more.
       required: true
       content:
         application/json:
@@ -1586,7 +1651,9 @@ components:
               aggregation_by: day
 
     AuthorsRequestBody:
-      description: Request body for searching articles by author based on specified criteria such as author name, language, country, source, and more.
+      description:
+        Request body for searching articles by author based on specified
+        criteria such as author name, language, country, source, and more.
       required: true
       content:
         application/json:
@@ -1685,7 +1752,9 @@ components:
               to_: 2024/06/30
 
     LatestHeadlinesRequestBody:
-      description: Request body for retrieving the latest headlines based on specified criteria such as language, country, source, and more.
+      description:
+        Request body for retrieving the latest headlines based on specified
+        criteria such as language, country, source, and more.
       required: true
       content:
         application/json:
@@ -1781,7 +1850,9 @@ components:
               page_size: 10
 
     SearchRequestBody:
-      description: Request body for searching articles based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Request body for searching articles based on specified criteria such as
+        keyword, language, country, source, and more.
       required: true
       content:
         application/json:
@@ -1898,7 +1969,8 @@ components:
               to_: 2024/06/30
 
     SearchLinkRequestBody:
-      description: Request body for searching articles based on specified links or IDs.
+      description:
+        Request body for searching articles based on specified links or IDs.
       required: true
       content:
         application/json:
@@ -1940,9 +2012,14 @@ components:
               ids:
                 - 8ea8a784568ffaa05cb6d1ab2d2e84dd
                 - 0146a551ef05ab1c494a55e806e3ce64
+              links:
+                - "https://www.nytimes.com/2024/08/30/technology/ai-chatbot-chatgpt-manipulation.html"
+                - "https://www.bbc.com/news/articles/c39k379grzlo"
 
     SearchSimilarRequestBody:
-      description: Request body for searching similar articles based on specified criteria such as query, language, country, source, and more.
+      description:
+        Request body for searching similar articles based on specified criteria
+        such as query, language, country, source, and more.
       required: true
       content:
         application/json:
@@ -2039,7 +2116,9 @@ components:
               similar_documents_number: 5
 
     SourcesRequestBody:
-      description: Request body for searching news sources based on specified criteria such as language, country, and more.
+      description:
+        Request body for searching news sources based on specified criteria such
+        as language, country, and more.
       required: true
       content:
         application/json:
@@ -2073,7 +2152,6 @@ components:
       content:
         application/json:
           schema:
-            title: Response Aggregation Get
             $ref: "#/components/schemas/AggregationResponse"
     FailedAggregationResponse:
       description: No matches found for the search criteria.
@@ -2083,7 +2161,9 @@ components:
             $ref: "#/components/schemas/FailedAggregationResponse"
 
     AuthorsSuccessfulResponse:
-      description: A successful response containing a list of authors that match the search criteria.
+      description:
+        A successful response containing a list of authors that match the search
+        criteria.
       content:
         application/json:
           schema:
@@ -2093,7 +2173,9 @@ components:
               - $ref: "#/components/schemas/dto__responses__author_search_response__FailedSearchResponse"
 
     LatestHeadlinesSuccessfulResponse:
-      description: A successful response containing the latest headlines since the specified time, with optional clustering information.
+      description:
+        A successful response containing the latest headlines since the
+        specified time, with optional clustering information.
       content:
         application/json:
           schema:
@@ -2103,26 +2185,31 @@ components:
               - $ref: "#/components/schemas/ClusteringSearchResponse"
 
     SearchSuccessfulResponse:
-      description: A successful response containing articles that match the specified search criteria. The response may include clustering information if enabled.
+      description:
+        A successful response containing articles that match the specified
+        search criteria. The response may include clustering information if
+        enabled.
       content:
         application/json:
           schema:
             title: Response Search Get
             anyOf:
               - $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
-                title: Search response
               - $ref: "#/components/schemas/ClusteringSearchResponse"
-                title: Search response with clustering
 
     SearchLinkSuccessfulResponse:
-      description: A successful response containing articles that match the provided links or IDs.
+      description:
+        A successful response containing articles that match the provided links
+        or IDs.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
 
     SearchSimilarSuccessfulResponse:
-      description: A successful response containing articles similar to the specified query. The response may include clustering information if enabled.
+      description:
+        A successful response containing articles similar to the specified
+        query. The response may include clustering information if enabled.
       content:
         application/json:
           schema:
@@ -2132,21 +2219,27 @@ components:
               - $ref: "#/components/schemas/dto__responses__more_like_this_response__FailedSearchResponse"
 
     SourcesSuccessfulResponse:
-      description: A successful response containing a list of news sources that match the specified criteria.
+      description:
+        A successful response containing a list of news sources that match the
+        specified criteria.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SourceResponse"
 
     SubscriptionSuccessfulResponse:
-      description: A successful response containing information about the current subscription plan.
+      description:
+        A successful response containing information about the current
+        subscription plan.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SubscriptionResponse"
 
     ValidationErrorResponse:
-      description: A response indicating that there were validation errors with the provided input parameters.
+      description:
+        A response indicating that there were validation errors with the
+        provided input parameters.
       content:
         application/json:
           schema:
@@ -2174,7 +2267,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2182,7 +2276,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2214,27 +2309,34 @@ components:
       properties:
         status:
           title: Status
-          description: The status of the response, indicating no matches were found.
+          description:
+            The status of the response, indicating no matches were found.
           type: string
           default: No matches for your search.
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria, always zero in this case.
+          description:
+            The total number of articles matching the search criteria, always
+            zero in this case.
           type: integer
           default: 0
         page:
           title: Page
-          description: The current page number of the results, always zero in this case.
+          description:
+            The current page number of the results, always zero in this case.
           type: integer
           default: 0
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria, always zero in this case.
+          description:
+            The total number of pages available for the given search criteria,
+            always zero in this case.
           type: integer
           default: 0
         page_size:
           title: Page Size
-          description: The number of articles per page, always zero in this case.
+          description:
+            The number of articles per page, always zero in this case.
           type: integer
           default: 0
         user_input:
@@ -2262,7 +2364,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2270,7 +2373,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2296,27 +2400,34 @@ components:
       properties:
         status:
           title: Status
-          description: The status of the response, indicating no matches were found.
+          description:
+            The status of the response, indicating no matches were found.
           type: string
           default: No Matches for your search
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria, always zero in this case.
+          description:
+            The total number of articles matching the search criteria, always
+            zero in this case.
           type: integer
           default: 0
         page:
           title: Page
-          description: The current page number of the results, always zero in this case.
+          description:
+            The current page number of the results, always zero in this case.
           type: integer
           default: 0
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria, always zero in this case.
+          description:
+            The total number of pages available for the given search criteria,
+            always zero in this case.
           type: integer
           default: 0
         page_size:
           title: Page Size
-          description: The number of articles per page, always zero in this case.
+          description:
+            The number of articles per page, always zero in this case.
           type: integer
           default: 0
         articles:
@@ -2333,7 +2444,8 @@ components:
 
     dto__responses__author_search_response__ArticleResult:
       title: ArticleResult
-      description: The data model representing a single article in the search results.
+      description:
+        The data model representing a single article in the search results.
       required:
         - title
         - link
@@ -2512,7 +2624,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2520,7 +2633,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2584,7 +2698,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2592,7 +2707,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2630,7 +2746,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2638,7 +2755,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2661,7 +2779,8 @@ components:
     # Search Similar related schemas for the response object
     dto__responses__more_like_this_response__SearchResponse:
       title: SearchResponse
-      description: The response model for a successful search for similar articles.
+      description:
+        The response model for a successful search for similar articles.
       required:
         - total_hits
         - page
@@ -2678,7 +2797,8 @@ components:
           default: ok
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
         page:
           title: Page
@@ -2686,7 +2806,8 @@ components:
           type: integer
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
         page_size:
           title: Page Size
@@ -2717,7 +2838,8 @@ components:
           default: No Matches for your search
         total_hits:
           title: Total Hits
-          description: The total number of articles matching the search criteria.
+          description:
+            The total number of articles matching the search criteria.
           type: integer
           default: 0
         page:
@@ -2727,7 +2849,8 @@ components:
           default: 0
         total_pages:
           title: Total Pages
-          description: The total number of pages available for the given search criteria.
+          description:
+            The total number of pages available for the given search criteria.
           type: integer
           default: 0
         page_size:
@@ -2749,7 +2872,8 @@ components:
 
     dto__responses__more_like_this_response__ArticleResult:
       title: ArticleResult
-      description: The data model for an article result in the search for similar articles.
+      description:
+        The data model for an article result in the search for similar articles.
       required:
         - title
         - link
@@ -2895,7 +3019,8 @@ components:
           default: []
         nlp:
           title: Nlp
-          description: The natural language processing data associated with the article.
+          description:
+            The natural language processing data associated with the article.
           type: object
           default: {}
         id:
@@ -2916,7 +3041,9 @@ components:
 
     SimilarDocument:
       title: SimilarDocument
-      description: The data model for a similar document in the search for similar articles.
+      description:
+        The data model for a similar document in the search for similar
+        articles.
       required:
         - id
         - score
@@ -2944,7 +3071,9 @@ components:
     # Sources related schemas for the response object
     SourceResponse:
       title: SourceResponse
-      description: The response model for a successful retrieval of news sources matching the specified criteria.
+      description:
+        The response model for a successful retrieval of news sources matching
+        the specified criteria.
       required:
         - message
         - sources
@@ -2994,12 +3123,15 @@ components:
 
     AdditionalSourceInfo:
       title: AdditionalSourceInfo
-      description: The data model for additional information about a news source.
+      description:
+        The data model for additional information about a news source.
       type: object
       properties:
         nb_articles_for_7d:
           title: Nb Articles For 7D
-          description: The number of articles published by the source in the last seven days.
+          description:
+            The number of articles published by the source in the last seven
+            days.
           type: integer
         country:
           title: Country
@@ -3013,7 +3145,9 @@ components:
     # Subscription related schema for the response object
     SubscriptionResponse:
       title: SubscriptionResponse
-      description: The response model for a successful retrieval of subscription plan information.
+      description:
+        The response model for a successful retrieval of subscription plan
+        information.
       required:
         - active
         - plan_name
@@ -3025,7 +3159,8 @@ components:
           type: boolean
         calls_per_seconds:
           title: Calls Per Seconds
-          description: The number of API calls allowed per second under the current plan.
+          description:
+            The number of API calls allowed per second under the current plan.
           type: integer
         plan_name:
           title: Plan Name
@@ -3033,15 +3168,20 @@ components:
           type: string
         usage_assigned_calls:
           title: Usage Assigned Calls
-          description: The total number of API calls assigned to the current subscription.
+          description:
+            The total number of API calls assigned to the current subscription.
           type: integer
         usage_remaining_calls:
           title: Usage Remaining Calls
-          description: The number of API calls remaining for the current subscription period.
+          description:
+            The number of API calls remaining for the current subscription
+            period.
           type: integer
         historical_days:
           title: Historical Days
-          description: The number of historical days accessible under the current subscription plan.
+          description:
+            The number of historical days accessible under the current
+            subscription plan.
           type: integer
 
     # Validation Error response related schemas
@@ -3076,36 +3216,6 @@ components:
           title: Error Type
           type: string
 
-    # Reusable parameter schemas
-    DateTime:
-      oneOf:
-        - type: string
-          format: date-time
-          example: 2023/12/31 23:59:59
-        - type: string
-          example: 1 day ago
-    StringArray:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
-    RankInteger:
-      type: integer
-      minimum: 0
-      maximum: 999999
-      format: int32
-    ArticleFields:
-      type: string
-      enum:
-        - content
-        - title
-        - summary
-    SentimentNumber:
-      type: number
-      format: float
-      minimum: -1.0
-      maximum: 1.0
     # Parameters to use in Request Bodies
     Q:
       type: string
@@ -3121,7 +3231,11 @@ components:
       example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The language(s) of the search. 
         The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
@@ -3132,7 +3246,11 @@ components:
       example: ["en", "es"]
 
     NotLang:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The language(s) to exclude from the search. 
         The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
@@ -3155,7 +3273,11 @@ components:
       example: title,content
 
     Countries:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The countries where the news publisher is located. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
@@ -3166,7 +3288,11 @@ components:
       example: ["US", "CA"]
 
     NotCountries:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The publisher location countries to exclude from the search. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
@@ -3177,7 +3303,11 @@ components:
       example: ["UK", "FR"]
 
     Sources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. 
         Subdomains, such as `finance.yahoo.com`, are also acceptable. 
@@ -3187,7 +3317,11 @@ components:
       example: ["nytimes.com", "theguardian.com", "finance.yahoo.com"]
 
     NotSources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The news sources to exclude from the search.
         To exclude multiple sources, use a comma-separated string or an array of strings.
@@ -3195,19 +3329,27 @@ components:
       example: ["cnn.com", "wsj.com"]
 
     PredefinedSources:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         Predefined top sources per country. Format: start with the word `top`, 
         followed by the number of desired sources, and then the two-letter country 
         code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-        For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
+        For example, `top 100 US`, `top 33 AT`, `top 5 GB`.        
 
         Multiple countries can be specified with custom numbers as a comma-separated string or an array of strings. 
-        For example, `top 100 US,GB`, `top 33 AT,55 IT`, `["top 100 US", "top 5 GB"]`.
+        For example, `top 50 US, top 20 GB`, `top 33 AT, top 50 IT`, `["top 100 US", "top 5 GB"]`.
       example: ["top 100 US", "top 5 GB"]
 
     SourceName:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The names of news sources to narrow down your search.
         To specify multiple news sources, use a comma-separated string or an array of strings.
@@ -3218,7 +3360,11 @@ components:
       example: ["The New York Times", "The Guardian"]
 
     ParentUrl:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The categorical URL(s) to filter your search.
         To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
@@ -3234,7 +3380,10 @@ components:
       example: true
 
     FromRank:
-      $ref: "#/components/schemas/RankInteger"
+      type: integer
+      minimum: 0
+      maximum: 999999
+      format: int32
       description: |
         The lowest boundary of the rank of a news website to filter by. 
         Range: `0` to `999999`. 
@@ -3242,7 +3391,10 @@ components:
       example: 100
 
     ToRank:
-      $ref: "#/components/schemas/RankInteger"
+      type: integer
+      minimum: 0
+      maximum: 999999
+      format: int32
       description: |
         The highest boundary of the rank of a news website to filter by. 
         Range: `0` to `999999`. Lower rank means that a source is more popular.
@@ -3282,7 +3434,12 @@ components:
       example: 2
 
     From:
-      $ref: "#/components/schemas/DateTime"
+      oneOf:
+        - type: string
+          format: date-time
+          example: 2023/12/31 23:59:59
+        - type: string
+          example: 1 day ago
       description: |
         The starting point in time to search from. 
         By default, the publication date of the article is used. 
@@ -3295,7 +3452,12 @@ components:
       example: 2021/01/01
 
     To:
-      $ref: "#/components/schemas/DateTime"
+      oneOf:
+        - type: string
+          format: date-time
+          example: 2023/12/31 23:59:59
+        - type: string
+          example: 1 day ago
       description: |
         The ending point in time to search up to. 
         By default, the publication date of the article is used. 
@@ -3335,13 +3497,17 @@ components:
       example: true
 
     AllLinks:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string or an array of strings.
         For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
-        To learn more, see the [All Links And Domains Format](#) page.
+        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
       example: ["washingtonpost.com", "wsj.com"]
 
     AuthorName:
@@ -3351,7 +3517,11 @@ components:
       example: Jane Smith
 
     NotAuthorName:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The list of author names to exclude from your search.
         To exclude articles by specific authors, use a comma-separated string or an array of strings. 
@@ -3359,13 +3529,17 @@ components:
       example: ["John Doe", "Jane Doe"]
 
     AllDomainLinks:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string or an array of strings. 
         For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
 
-        To learn more, see [All Links and Domains Format](#).
+        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
       example: ["washingtonpost.com", "wsj.com"]
 
     WordCountMin:
@@ -3385,7 +3559,11 @@ components:
       example: 1000
 
     ClusteringVariable:
-      $ref: "#/components/schemas/ArticleFields"
+      type: string
+      enum:
+        - content
+        - title
+        - summary
       description: |
         The article data on which the similarity to be calculated.
       example: content
@@ -3398,7 +3576,7 @@ components:
         This changes the response format to include clustering information - instead of a list of articles, 
         you receive a list of clusters that group similar articles together.
 
-        To learn more, see [Clustering News Articles](https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news/clustering-news-articles).
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
 
     ClusteringThreshold:
@@ -3459,7 +3637,7 @@ components:
         To specify multiple organizations, use a comma-separated string. 
         For example, `Apple,Microsoft`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Apple
@@ -3471,7 +3649,7 @@ components:
         To specify multiple names, use a comma-separated string. 
         For example, `Elon Musk,Jeff Bezos`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Elon Musk
@@ -3483,7 +3661,7 @@ components:
         To specify multiple locations, use a comma-separated string. 
         For example, `California,New York`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: California
@@ -3496,13 +3674,16 @@ components:
         To specify multiple entities, use a comma-separated string. 
         For example, `Bitcoin,Blockchain`.
 
-        To learn more, see [Search by Entity](#).
+        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
 
         Available only if NLP is enabled for your API key.
       example: Bitcoin
 
     TitleSentimentMin:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The minimum title sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3510,7 +3691,10 @@ components:
       example: -0.5
 
     TitleSentimentMax:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The maximum title sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3518,7 +3702,10 @@ components:
       example: 0.5
 
     ContentSentimentMin:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The minimum content sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3526,7 +3713,10 @@ components:
       example: -0.5
 
     ContentSentimentMax:
-      $ref: "#/components/schemas/SentimentNumber"
+      type: number
+      format: float
+      minimum: -1.0
+      maximum: 1.0
       description: |
         The maximum content sentiment score. Range is `-1.0` to `1.0`. 
 
@@ -3534,7 +3724,11 @@ components:
       example: 0.5
 
     IptcTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IPTC tag ID(s) to include articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
@@ -3544,7 +3738,11 @@ components:
       example: ["20000199", "20000209"]
 
     NotIptcTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IPTC tag ID(s) to exclude articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
@@ -3554,7 +3752,11 @@ components:
       example: ["20000205", "20000209"]
 
     IabTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IAB categories to filter articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
@@ -3562,7 +3764,11 @@ components:
       example: ["Business", "Events"]
 
     NotIabTags:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The IAB categories to exclude articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
@@ -3575,7 +3781,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Deduplicate Articles](#).
+        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
       example: true
 
     When:
@@ -3604,7 +3810,11 @@ components:
       example: false
 
     Links:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The article link or list of article links to search for. 
         To specify multiple links, use a comma-separated string or an array of strings.
@@ -3615,7 +3825,11 @@ components:
       example: https://nytimes.com/article1
 
     Ids:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string or an array of strings.
@@ -3663,7 +3877,11 @@ components:
       example: true
 
     SourceUrl:
-      $ref: "#/components/schemas/StringArray"
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
         The domains of the news publication to search for. To specify multiple news sources, 
         use a comma-separated string or an array of strings. 

@@ -1,0 +1,22 @@
+# Mintlify
+mintlify_cache/
+node_modules/
+
+# macOS
+.DS_Store
+
+# Environment files
+.env
+
+# Logs
+*.log
+
+# Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build artifacts
+build/
+dist/

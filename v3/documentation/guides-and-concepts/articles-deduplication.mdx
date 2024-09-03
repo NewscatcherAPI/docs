@@ -1,0 +1,210 @@
+---
+title: Articles deduplication
+description: Enhance search efficiency by filtering out duplicate articles.
+---
+
+## Introduction
+
+Ever feel like you're seeing the same news story over and over? You're not
+alone. In today's fast-paced digital world, major events often get covered by
+multiple outlets, resulting in a flood of similar articles. This can make it
+challenging to find unique, valuable content.
+
+That's where article deduplication comes in. It's a feature we've built into
+News API v3 to help you cut through the noise and get to the heart of the news.
+
+## What is article deduplication?
+
+Article deduplication is a process that identifies and filters out nearly
+identical news articles from a large collection of content. It's smarter than
+simple text matching - it uses advanced language processing to recognize
+articles that say the same thing, even if they use different words or
+structures.
+
+Here's what article deduplication does:
+
+- Provides you with a diverse set of unique articles.
+- Reduces information overload by eliminating redundant content.
+- Improves the efficiency of content analysis and research.
+- Enhances your experience by presenting a more manageable amount of relevant
+  information.
+
+## How does it work?
+
+Our deduplication system uses a multi-step process to accurately identify
+duplicate articles while maintaining high precision. Let's break it down:
+
+### Semantic similarity comparison
+
+First, we compare the meaning of articles:
+
+1. We convert article texts into vector representations (embeddings) using our
+   Natural Language Processing (NLP) pipeline.
+2. These embeddings capture the meaning and relationships of the content.
+3. We use cosine similarity to compare these embeddings, with a threshold of
+   0.95 to identify potential duplicates.
+
+This method catches similar articles even if they use different wording or
+sentence structures. It's great at identifying rewrites or articles from
+different sources covering the same event.
+
+### Levenshtein distance analysis
+
+After the initial screening, we refine our process using the Levenshtein
+distance, which measures the minimum number of single-character edits needed to
+change one text into another.
+
+We use specific thresholds for accuracy:
+
+- 0.97 for article titles
+- 0.92 for article content
+
+This step helps us distinguish between articles that discuss similar topics
+differently and those that are true duplicates. It reduces the chance of false
+positives in our deduplication process.
+
+### Identifying the original article
+
+Our system doesn't just spot duplicates - it also identifies which article is
+likely the original or most authoritative version.
+
+We use a scoring algorithm that considers factors like:
+
+- Domain credibility
+- Author's reputation
+- Publication timestamp
+
+The article with the highest score becomes the "parent" article. This status can
+change if we find a new duplicate with a higher score, reflecting the dynamic
+nature of news content.
+
+By identifying the original article, you get access to the most credible and
+comprehensive version of a story, while still filtering out redundant content.
+
+### Continuous updates and historical lookup
+
+To keep our deduplication system effective, we continuously update our database
+and compare each new article against articles from the past seven days. This
+approach catches duplicates that may appear days after the original publication,
+accounting for delayed reporting or republishing content.
+
+By implementing this comprehensive process, News API v3 provides you with a
+rich, diverse, and non-redundant set of news articles, enhancing the overall
+quality and usability of the data.
+
+## How to use deduplication
+
+Now that you understand how article deduplication works, let's look at how to
+use this feature in your News API v3 queries.
+
+### Enable deduplication
+
+To exclude duplicate articles from your search results, set the
+`exclude_duplicates` parameter to `true` in your API request. Here's what you
+need to know:
+
+- The deduplication feature is available only for the
+  [Search](/v3/api-reference/endpoints/search/search-articles-get) endpoint.
+- It supports only English-language articles. If you apply the
+  `exclude_duplicates` parameter to non-English articles, you get a validation
+  error.
+
+### Understand the API response
+
+When you enable deduplication, each article object in the response includes
+additional fields related to duplication:
+
+- `duplicate_count`: The number of duplicates associated with the article.
+- `duplicate_articles_group_id`: A unique identifier for the group of duplicates
+  associated with the article.
+
+These fields give you valuable information about the extent of duplication for
+each article. You can use this data for further analysis or filtering in your
+application.
+
+### Code example
+
+Here's an example of how to make a request using Python that includes the
+deduplication feature:
+
+```python request.py
+import requests
+import json
+
+url = "https://v3-api.newscatcherapi.com/api/search"
+payload = json.dumps({
+  "q": "market value",
+  "lang": "en",
+  "theme": "Tech",
+  "exclude_duplicates": True
+})
+headers = {
+  'x-api-token': 'YOUR-API-KEY',
+  'Content-Type': 'application/json',
+  'Accept': 'application/json'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+In the response, you'll find deduplication information for each article. Here's
+an example of what you might see:
+
+```json response.json
+{
+  "title": "Global Financial Services Industry - Insights Around Market Size, Key Trends And Forecast, 2024: Grand View Research, Inc.",
+  ...
+  "duplicate_count": 5,
+  "duplicate_articles_group_id": "542def7ce3844c269d5f1a929309e6da"
+}
+```
+
+This shows that the article has five duplicates, which have been excluded from
+the results due to the `exclude_duplicates` parameter.
+
+## Use cases
+
+Let's explore some key scenarios where deduplication can make a significant
+impact:
+
+- **Content curation and aggregation**: Ensure users of your news aggregator see
+  a diverse range of articles without redundancy, improving user experience by
+  reducing information overload and increasing the variety of perspectives
+  presented.
+- **Media monitoring and analysis**: Focus on unique brand mentions or industry
+  trends without getting overwhelmed by repetitive content, leading to more
+  accurate sentiment analysis and trend identification.
+- **Research and trend analysis**: Streamline data collection for researchers
+  and analysts by eliminating duplicate articles, making it easier to identify
+  unique data points and trends for more accurate and efficient analysis.
+- **Personalized news feeds**: Enhance user engagement and satisfaction by
+  ensuring readers see a wider variety of content rather than multiple versions
+  of the same story in their personalized news feeds.
+
+## Deduplication vs clustering
+
+While both deduplication and clustering organize and manage large sets of
+articles, they serve different purposes and are used in different contexts.
+
+### Key differences
+
+- **Deduplication** identifies and removes nearly identical articles, preserving
+  only the most relevant or original version.
+- **Clustering** groups similar articles together without removing any content,
+  allowing you to see multiple perspectives on a topic.
+
+### When to use deduplication vs clustering
+
+- Use **deduplication** to eliminate redundancy and present only unique content
+  to your users.
+- Use **clustering** to group related articles together to show different angles
+  or developments of a story over time.
+
+For more information on our clustering feature, check out
+[Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+
+## Related concepts
+
+- [Vector Embeddings](https://www.elastic.co/what-is/vector-embedding)
+- [Cosine Similarity](https://en.wikipedia.org/wiki/Cosine_similarity)
+- [Levenshtein Distance](https://en.wikipedia.org/wiki/Levenshtein_distance)
