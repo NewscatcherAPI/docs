@@ -194,6 +194,7 @@
         "v3/documentation/how-to/search-with-near",
         "v3/documentation/how-to/search-by-entity",
         "v3/documentation/how-to/search-by-url",
+        "v3/documentation/how-to/optimize-search",
         "v3/documentation/how-to/paginate-large-datasets",
         "v3/documentation/how-to/check-sources-coverage"
       ]
@@ -202,9 +203,9 @@
       "group": "Troubleshooting",
       "version": "v3",
       "pages": [
-        "v3/documentation/troubleshooting/interpret-api-errors",
-        "v3/documentation/how-to/report-bugs",
-        "v3/documentation/how-to/request-features"
+        "v3/documentation/troubleshooting/error-handling",
+        "v3/documentation/troubleshooting/report-bugs",
+        "v3/documentation/troubleshooting/request-features"
       ]
     },
     {

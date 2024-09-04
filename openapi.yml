@@ -600,7 +600,7 @@ components:
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
         - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced Querying](#).
+        For more details, see [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying).
       name: q
       in: query
       required: true
@@ -655,7 +655,7 @@ components:
 
         Available options: `title`, `summary`, `content`.
 
-        **Note:** The `summary` option is available if NLP is enabled in your plan.
+        > **Note:** The `summary` option is available if NLP is enabled in your plan.
       name: search_in
       in: query
       required: false
@@ -764,12 +764,17 @@ components:
 
     SourceName:
       description: |
-        The names of news sources to narrow down your search.
-        To specify multiple news sources, use a comma-separated string. 
-        For example, `The New York Times,The Guardian`. 
+        Specifies terms to search within the names of sources used to collect news articles.
 
-        **Caution**: We don't recommend using the `source_name` parameter in production. 
-        To get data from a specific news domain, use the `sources` parameter instead of `source_name`.
+        The search does not require an exact match and returns all sources that include 
+        the specified terms anywhere in their names. For example, using `"sport"` as a term 
+        returns sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`. You can use any word, 
+        phrase, or outlet name, such as `"sport"`, `"hello world"`, or `"new york times"`.
+
+        To specify multiple terms, use a comma-separated string, for example, `"sport, tech"`.
+
+        > **Note**: The `source_name` parameter may return a large number of results, depending on the terms used. 
+        For more precise filtering by specific news domains, use the `sources_url` parameter.
       name: source_name
       in: query
       required: false
@@ -777,11 +782,11 @@ components:
         type: string
       examples:
         single-source-name:
-          summary: Single source name
-          value: "CryptoPotato"
+          summary: Single term
+          value: "sport"
         multiple-source-names:
-          summary: Multiple source names
-          value: "The New York Times,The Guardian"
+          summary: Multiple terms
+          value: "sport, tech"
 
     ParentUrl:
       description: |
@@ -1426,7 +1431,7 @@ components:
         To specify multiple links, use a comma-separated string. 
         For example, `https://example.com/article1, https://example.com/article2`.
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
       in: query
       required: true
@@ -1445,7 +1450,7 @@ components:
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string. For example, `1234567890abcdef, abcdef1234567890`.
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
       in: query
       required: true
@@ -1520,7 +1525,7 @@ components:
       description: |
         The domain(s) of the news publication to search for. 
 
-        **Caution**:  When specifying the `source_url` parameter, 
+        > **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
       name: source_url
       in: query
@@ -3227,7 +3232,7 @@ components:
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
         - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced Querying](#).
+        For more details, see [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying).
       example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
@@ -3240,7 +3245,7 @@ components:
         The language(s) of the search. 
         The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
         To select multiple languages, use a comma-separated string or an array of strings.
-        For example, `en,es` or `["en", "es"]`.
+        For example, `"en,es"` or `["en", "es"]`.
 
         To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
       example: ["en", "es"]
@@ -3255,7 +3260,7 @@ components:
         The language(s) to exclude from the search. 
         The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
         To exclude multiple languages, use a comma-separated string or an array of strings.
-        For example, `fr,de` or `["fr", "de"]`.
+        For example, `"fr,de"` or `["fr", "de"]`.
 
         To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
       example: ["fr", "de"]
@@ -3269,7 +3274,7 @@ components:
 
         Available options: `title`, `summary`, `content`.
 
-        **Note:** The `summary` option is available if NLP is enabled in your plan.
+        > **Note:** The `summary` option is available if NLP is enabled in your plan.
       example: title,content
 
     Countries:
@@ -3282,7 +3287,7 @@ components:
         The countries where the news publisher is located. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
         To select multiple countries, use a comma-separated string or an array of strings.
-        For example, `US,CA` or `["US", "CA"]`.
+        For example, `"US,CA"` or `["US", "CA"]`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
       example: ["US", "CA"]
@@ -3297,7 +3302,7 @@ components:
         The publisher location countries to exclude from the search. 
         The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
         To exclude multiple countries, use a comma-separated string or an array of strings.
-        For example, `UK,FR` or `["UK", "FR"]`.
+        For example, `"UK,FR"` or `["UK", "FR"]`.
 
         To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
       example: ["UK", "FR"]
@@ -3313,8 +3318,8 @@ components:
         Subdomains, such as `finance.yahoo.com`, are also acceptable. 
 
         To specify multiple sources, use a comma-separated string or an array of strings.
-        For example, `nytimes.com, theguardian.com, finance.yahoo.com` or `["nytimes.com", "theguardian.com", "finance.yahoo.com"]`.
-      example: ["nytimes.com", "theguardian.com", "finance.yahoo.com"]
+        For example, `"nytimes.com, theguardian.com"` or `["nytimes.com", "theguardian.com"]`.
+      example: ["nytimes.com", "theguardian.com"]
 
     NotSources:
       oneOf:
@@ -3325,7 +3330,7 @@ components:
       description: |
         The news sources to exclude from the search.
         To exclude multiple sources, use a comma-separated string or an array of strings.
-        For example, `cnn.com, wsj.com` or `["cnn.com", "wsj.com"]`.
+        For example, `"cnn.com, wsj.com"` or `["cnn.com", "wsj.com"]`.
       example: ["cnn.com", "wsj.com"]
 
     PredefinedSources:
@@ -3341,8 +3346,8 @@ components:
         For example, `top 100 US`, `top 33 AT`, `top 5 GB`.        
 
         Multiple countries can be specified with custom numbers as a comma-separated string or an array of strings. 
-        For example, `top 50 US, top 20 GB`, `top 33 AT, top 50 IT`, `["top 100 US", "top 5 GB"]`.
-      example: ["top 100 US", "top 5 GB"]
+        For example, `"top 50 US, top 20 GB"`, `["top 50 US", "top 20 GB"]`.
+      example: ["top 50 US", "top 20 GB"]
 
     SourceName:
       oneOf:
@@ -3351,13 +3356,19 @@ components:
           items:
             type: string
       description: |
-        The names of news sources to narrow down your search.
-        To specify multiple news sources, use a comma-separated string or an array of strings.
-        For example, `The New York Times, The Guardian` or `["The New York Times", "The Guardian"]`.
+        Specifies terms to search within the names of sources used to collect news articles.
 
-        **Caution**: We don't recommend using the `source_name` parameter in production. 
-        To get data from a specific news domain, use the `sources` parameter instead of `source_name`.
-      example: ["The New York Times", "The Guardian"]
+        The search does not require an exact match and returns all sources that include 
+        the specified terms anywhere in their names. For example, using `"sport"` as a term 
+        returns sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`. You can use any word, 
+        phrase, or outlet name, such as `"sport"`, `"hello world"`, or `"new york times"`. 
+
+        To specify multiple terms, use a comma-separated string or an array of strings.
+        For example, `"sport, tech"` or `["sport", "tech"]`.
+
+        > **Note**: The `source_name` parameter may return a large number of results, depending on the terms used. 
+        For more precise filtering by specific news domains, use the `sources_url` parameter.
+      example: ["sport", "tech"]
 
     ParentUrl:
       oneOf:
@@ -3368,7 +3379,7 @@ components:
       description: |
         The categorical URL(s) to filter your search.
         To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
-        For example, `wsj.com/politics,wsj.com/tech` or`["wsj.com/politics", "wsj.com/tech"]`.
+        For example, `"wsj.com/politics,wsj.com/tech"` or`["wsj.com/politics", "wsj.com/tech"]`.
       example: ["wsj.com/politics", "wsj.com/tech"]
 
     RankedOnly:
@@ -3505,7 +3516,7 @@ components:
       description: |
         The desired URL(s) mentioned in the article to search for.
         To specify multiple URLs, use a comma-separated string or an array of strings.
-        For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
+        For example, `"washingtonpost.com, wsj.com"` or `["washingtonpost.com", "wsj.com"]`.
 
         To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
       example: ["washingtonpost.com", "wsj.com"]
@@ -3525,7 +3536,7 @@ components:
       description: |
         The list of author names to exclude from your search.
         To exclude articles by specific authors, use a comma-separated string or an array of strings. 
-        For example, `John Doe, Jane Doe` or `["John Doe", "Jane Doe"]`.
+        For example, `"John Doe, Jane Doe"` or `["John Doe", "Jane Doe"]`.
       example: ["John Doe", "Jane Doe"]
 
     AllDomainLinks:
@@ -3537,7 +3548,7 @@ components:
       description: |
         The domain URLs that are mentioned in the article to search for.
         To specify multiple domain URLs, use a comma-separated string or an array of strings. 
-        For example, `washingtonpost.com, wsj.com` or `["washingtonpost.com", "wsj.com"]`.
+        For example, `"washingtonpost.com, wsj.com"` or `["washingtonpost.com", "wsj.com"]`.
 
         To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
       example: ["washingtonpost.com", "wsj.com"]
@@ -3732,7 +3743,7 @@ components:
       description: |
         The IPTC tag ID(s) to include articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
-        For example, `20000199, 20000209` or `["20000199", "20000209"]`.
+        For example, `"20000199, 20000209"` or `["20000199", "20000209"]`.
 
         Available only if tags are enabled for your API key.
       example: ["20000199", "20000209"]
@@ -3746,7 +3757,7 @@ components:
       description: |
         The IPTC tag ID(s) to exclude articles by media topic.
         To specify multiple IPTC tags, use a comma-separated string or an array of strings.
-        For example, `20000205, 20000209` or `["20000205", "20000209"]`.
+        For example, `"20000205, 20000209"` or `["20000205", "20000209"]`.
 
         Available only if tags are enabled for your API key.
       example: ["20000205", "20000209"]
@@ -3760,7 +3771,7 @@ components:
       description: |
         The IAB categories to filter articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
-        For example, `Business, Events` or `["Business", "Events"]`.
+        For example, `"Business, Events"` or `["Business", "Events"]`.
       example: ["Business", "Events"]
 
     NotIabTags:
@@ -3772,7 +3783,7 @@ components:
       description: |
         The IAB categories to exclude articles by.
         To specify multiple IAB categories, use a comma-separated string or an array of strings.
-        For example, `Agriculture, Metals` or `["Agriculture", "Metals"]`.
+        For example, `"Agriculture, Metals"` or `["Agriculture", "Metals"]`.
       example: ["Agriculture", "Metals"]
 
     ExcludeDuplicates:
@@ -3818,7 +3829,7 @@ components:
       description: |
         The article link or list of article links to search for. 
         To specify multiple links, use a comma-separated string or an array of strings.
-        For example, `https://nytimes.com/article1, https://bbc.com/article2` 
+        For example, `"https://nytimes.com/article1, https://bbc.com/article2"` 
         or `["https://nytimes.com/article1", "https://bbc.com/article2"]`.
 
         **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
@@ -3833,9 +3844,10 @@ components:
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string or an array of strings.
-        For example, `5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f` or `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`.
+        For example, `"5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"` 
+        or `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`.
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
 
     IncludeSimilarDocuments:
@@ -3885,9 +3897,9 @@ components:
       description: |
         The domains of the news publication to search for. To specify multiple news sources, 
         use a comma-separated string or an array of strings. 
-        For example, `bbc.com, nytimes.com` or `["bbc.com", "nytimes.com"]`
+        For example, `"bbc.com, nytimes.com"` or `["bbc.com", "nytimes.com"]`
 
-        **Caution**:  When specifying the `source_url` parameter, 
+        > **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
       example: bbc.com
 

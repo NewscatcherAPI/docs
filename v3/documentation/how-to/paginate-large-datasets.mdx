@@ -2,5 +2,348 @@
 title: How to paginate large datasets
 sidebarTitle: Paginate large datasets
 description:
-  Implement pagination to manage and navigate large datasets effectively.
+  Efficiently retrieve and process large volumes of news data using pagination
+  in News API v3
 ---
+
+## Overview
+
+When working with large datasets in News API v3, pagination is essential for
+efficiently retrieving and processing news articles. Pagination allows you to
+break down large result sets into smaller, manageable chunks, improving
+performance and reducing the load on both the client and server.
+
+News API v3 uses a cursor-based pagination system, which is ideal for handling
+large, dynamic datasets. This guide will walk you through the process of
+implementing pagination in your API requests.
+
+## Before you start
+
+Before you begin, ensure you have:
+
+- An active API key for NewsCatcher News API v3
+- Basic knowledge of making API requests
+- Python or another tool for making HTTP requests (e.g., cURL, Postman, or a
+  programming language with HTTP capabilities)
+
+Pagination is available on the following endpoints:
+
+- [Search](/v3/api-reference/endpoints/search/search-articles-get)
+- [Latest headlines](/v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get)
+- [Authors](/v3/api-reference/endpoints/authors/search-articles-by-author-get)
+- [Search by link](/v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get)
+- [Search similar](/v3/api-reference/endpoints/searchsimilar/search-similar-articles-get)
+- [Aggregation](/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get)
+
+<Note>
+  A single API response cannot return more than 1000 articles, so you should use
+  pagination to retrieve larger datasets.
+</Note>
+
+## Steps
+
+<Steps>
+<Step title="Understand pagination parameters">
+
+News API v3 uses two main parameters for pagination:
+
+- `page`: The page number you want to retrieve (default is 1, starts from 1).
+- `page_size`: The number of results per page (default is 100, range is 1 to
+  1000).
+
+</Step>
+
+<Step title="Construct your initial query">
+
+Start by setting up your basic query with pagination parameters. For example:
+
+```json
+{
+  "q": "artificial intelligence",
+  "lang": "en",
+  "page": 1,
+  "page_size": 100
+}
+```
+
+</Step>
+<Step title="Make the first API request">
+
+Here's a Python example demonstrating the initial request:
+
+```python request.py
+import requests
+import json
+
+# Configuration
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+
+PAYLOAD = {"q": "artificial intelligence", "lang": "en", "page": 1, "page_size": 100}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    data = response.json()
+    if "total_pages" not in data or "articles" not in data:
+        print(f"Unexpected response format: {data}")
+    else:
+        print(json.dumps(data, indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}, Status code: {response.status_code if response else 'N/A'}")
+```
+
+</Step>
+<Step title="Analyze the pagination-related information in the response">
+
+The API response includes several fields related to pagination:
+
+```json
+{
+  "status": "ok",
+  "total_hits": 10000,
+  "page": 1,
+  "total_pages": 100,
+  "page_size": 100
+}
+```
+
+- `total_hits`: The total number of articles matching your query.
+- `page`: The current page number.
+- `total_pages`: The total number of pages available.
+- `page_size`: The number of articles per page.
+
+</Step>
+
+<Step title="Implement pagination logic">
+
+To retrieve all pages, you'll need to loop through them. Here's an example of
+how to do this with enhanced error handling and exponential backoff:
+
+```python paginate.py
+import requests
+import time
+import random
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+
+PAYLOAD = {
+    "q": "artificial intelligence",
+    "lang": "en",
+    "page_size": 1000,  # Example with larger page size
+}
+
+def exponential_backoff(retries):
+    time.sleep((2**retries) + random.uniform(0, 1))
+
+def fetch_all_pages():
+    all_articles = []
+    page = 1
+    total_pages = None
+    retries = 0
+    max_retries = 5
+
+    while total_pages is None or page <= total_pages:
+        PAYLOAD["page"] = page
+        try:
+            response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+            response.raise_for_status()
+            data = response.json()
+
+            if "total_pages" not in data or "articles" not in data:
+                print(f"Unexpected response format on page {page}: {data}")
+                break
+
+            # Use the total_pages directly from the API response
+            if total_pages is None:
+                total_pages = data["total_pages"]
+
+            all_articles.extend(data["articles"])
+            print(f"Fetched page {page} of {total_pages}")
+
+            if page >= total_pages:
+                break
+
+            page += 1
+            time.sleep(1)  # Respect rate limits
+            retries = 0  # Reset retries after a successful request
+
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch page {page}: {e}")
+            retries += 1
+            if retries >= max_retries:
+                print("Max retries reached, aborting.")
+                break
+            exponential_backoff(retries)
+
+    return all_articles
+
+articles = fetch_all_pages()
+print(f"Total articles fetched: {len(articles)}")
+```
+
+</Step>
+</Steps>
+
+## Optimize requests
+
+To efficiently fetch large datasets while respecting API rate limits, use the
+following strategies:
+
+- Add delays between requests, such as a fixed sleep time, or implement an
+  exponential backoff strategy for retries in case of failures (as shown in the
+  previous example).
+- Fetch data in manageable batches to avoid memory issues with large datasets.
+- Use multithreading or asynchronous functions to speed up the process while
+  respecting API subscription limits.
+
+Here is an example of asynchronous requests using `aiohttp` with concurrency, a
+retry mechanism, and logging:
+
+```python paginate_with_async.py
+import aiohttp
+import asyncio
+import os
+import logging
+import json
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.FileHandler("fetch_articles.log"),  # Log to a file
+        logging.StreamHandler(),  # Also log to console
+ ],
+)
+
+
+async def fetch_page(session, url, headers, payload, timeout=30, max_retries=3):
+    retries = 0
+    while retries < max_retries:
+        try:
+            async with session.post(
+                url, headers=headers, json=payload, timeout=timeout
+ ) as response:
+                response.raise_for_status()
+                logging.info(f"Successfully fetched page {payload['page']}")
+                return await response.json()
+        except aiohttp.ClientResponseError as e:
+            logging.error(f"Request failed: {e.status} {e.message}")
+        except aiohttp.ClientConnectionError:
+            logging.error("Connection error occurred.")
+        except asyncio.TimeoutError:
+            logging.error("Request timed out.")
+        except aiohttp.ClientError as e:
+            logging.error(f"An error occurred: {e}")
+
+        retries += 1
+        logging.warning(f"Retrying... ({retries}/{max_retries})")
+
+    logging.error(
+        f"Failed to fetch page {payload['page']} after {max_retries} retries."
+ )
+    return None  # Explicitly return None if all retries fail
+
+
+async def fetch_page_with_semaphore(semaphore, session, url, headers, payload):
+    async with semaphore:
+        logging.info(f"Fetching page {payload['page']}...")
+        return await fetch_page(session, url, headers, payload)
+
+
+async def fetch_all_pages_concurrently(
+    url, headers, initial_payload, max_concurrent_requests=5
+):
+    # Semaphore to limit the number of concurrent requests
+    semaphore = asyncio.Semaphore(max_concurrent_requests)
+    all_articles = []
+
+    async with aiohttp.ClientSession(
+        connector=aiohttp.TCPConnector(limit=10)
+ ) as session:
+        # First, get the total number of pages from the first request
+        async with semaphore:
+            initial_payload["page"] = 1
+            data = await fetch_page(session, url, headers, initial_payload)
+
+            if not data or "total_pages" not in data or "articles" not in data:
+                logging.error(f"Unexpected response format on initial request: {data}")
+                return []
+
+            total_pages = data["total_pages"]
+            all_articles.extend(data["articles"])
+            logging.info(f"Fetched page 1 of {total_pages}")
+
+        # Prepare tasks for all remaining pages
+        tasks = []
+        for page in range(2, total_pages + 1):
+            payload = initial_payload.copy()
+            payload["page"] = page
+            task = fetch_page_with_semaphore(semaphore, session, url, headers, payload)
+            tasks.append(
+                asyncio.wait_for(task, timeout=60)
+ )  # Increased timeout for tasks
+
+        # Gather and execute all tasks concurrently
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # Process results
+        for i, result in enumerate(results, start=2):
+            if isinstance(result, Exception):
+                logging.error(f"Error fetching page {i}: {result}")
+            elif result and "articles" in result:
+                all_articles.extend(result["articles"])
+                logging.info(f"Fetched page {i} of {total_pages}")
+            else:
+                logging.warning(f"Unexpected or missing data for page {i}: {result}")
+
+    return all_articles
+
+
+# Usage
+API_KEY = os.getenv("NEWSCATCHER_API_KEY")
+if not API_KEY:
+    raise EnvironmentError("API key not set in environment variables")
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+PAYLOAD = {"q": "artificial intelligence", "lang": "en", "page_size": 100}
+
+# Set the desired number of concurrent calls (e.g., 5)
+max_concurrent_requests = 5
+
+# Fetch all articles
+articles = asyncio.run(
+    fetch_all_pages_concurrently(URL, HEADERS, PAYLOAD, max_concurrent_requests)
+)
+
+# Save fetched data to JSON file
+output_file = "fetched_articles.json"
+with open(output_file, "w", encoding="utf-8") as f:
+    json.dump(articles, f, ensure_ascii=False, indent=2)
+
+logging.info(f"Total articles fetched: {len(articles)}")
+logging.info(f"Data saved to {output_file}")
+```
+
+## Best practices
+
+- Use smaller page sizes (e.g., 20-50) for faster initial load times in user
+  interfaces.
+- Use larger page sizes (up to 1000) for batch processing or to retrieve the
+  entire dataset.
+- Be aware that the dataset may change between requests, especially for queries
+  on recent news.
+- Implement error handling and retries to make your pagination code more robust.
+- Consider implementing a way to resume pagination from a specific page in case
+  of interruptions.
+- When using multithreading or async functions, carefully manage concurrency to
+  stay within your API usage limits.
+
+## See also
+
+- [Advanced querying techniques](/v3/documentation/guides-and-concepts/advanced-querying)
+- [How to optimize search with API parameters](/v3/documentation/how-to/optimize-search)
