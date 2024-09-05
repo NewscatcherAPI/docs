@@ -1,144 +1,207 @@
 ---
 title: Authentication
+description: Learn how to authenticate your API request
 ---
 
+To use News API v3, you must authenticate your requests using an API key. This
+guide explains how to include your API key in your requests.
 
-Understand how to authenticate using your unique API key
+## API key
 
-The Authentication is done via the **`x-api-token`** HTTP Header.
+Your API key is a unique identifier that authenticates your requests to the
+NewsCatcher News API. Include this key in the `x-api-token` HTTP header for each
+request you make to the API.
 
-For example, if your API key is `your_key_1`
+## How to authenticate
 
-<Tabs>
-  <Tab title="Python">
-```python
+To authenticate your requests follow this steps:
+
+1. Obtain your API key from your account manager.
+2. Include your API key in the `x-api-token` header of the request.
+
+Here are the examples of how to use the API key in your requests for differnt
+programming languages:
+
+<CodeGroup>
+
+```python Python
 import requests
+import json
 
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
 
-url = 'https://v3-api.newscatcherapi.com/api/search?'
+PAYLOAD = {
+    "q": "artificial intelligence"
+}
 
-params = {'q': 'Silicon Valley '}
-
-headers = {'x-api-token': 'your_key_1'}
-
-response = requests.get(url, params=params, headers=headers)
+try:
+    response = requests.get(URL, headers=HEADERS, params=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
 ```
 
-  </Tab>
-
-  <Tab title="cURL">
-```curl
-curl -XGET 'https://v3-api.newscatcherapi.com/api/search?q=Tesla' -H 'x-api-token: your_key_1'
+```bash cURL
+curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence" \
+  -H "x-api-token: YOUR_API_KEY_HERE"
 ```
-  </Tab>
 
-  <Tab title="Node.js">
-```node
-var axios = require("axios").default;
+```javascript Node.js
+const axios = require("axios");
 
-var options = {
-  method: 'GET',
-  url: 'https://v3-api.newscatcherapi.com/api/search?',
-  params: {q: 'Bitcoin', lang: 'en', sort_by: 'relevancy', page: '1'},
-  headers: {
-    'x-api-token': 'your_key_1'
-  }
+const API_KEY = "YOUR_API_KEY_HERE";
+const URL = "https://v3-api.newscatcherapi.com/api/search";
+
+const params = {
+  q: "artificial intelligence",
 };
 
-axios.request(options).then(function (response) {
-	console.log(response.data);
-}).catch(function (error) {
-	console.error(error);
-});
+axios
+  .get(URL, {
+    headers: { "x-api-token": API_KEY },
+    params: params,
+  })
+  .then((response) => {
+    console.log(JSON.stringify(response.data, null, 2));
+  })
+  .catch((error) => {
+    console.error(`Failed to fetch articles: ${error.message}`);
+  });
 ```
-  </Tab>
 
-    <Tab title="Go" >
+```typescript TypeScript
+import axios, { AxiosResponse } from "axios";
 
-```golang
+const API_KEY: string = "YOUR_API_KEY_HERE";
+const URL: string = "https://v3-api.newscatcherapi.com/api/search";
+
+const params = {
+  q: "artificial intelligence",
+};
+
+axios
+  .get(URL, {
+    headers: { "x-api-token": API_KEY },
+    params: params,
+  })
+  .then((response: AxiosResponse) => {
+    console.log(JSON.stringify(response.data, null, 2));
+  })
+  .catch((error) => {
+    console.error(`Failed to fetch articles: ${error.message}`);
+  });
+```
+
+```go Go
 package main
 
 import (
-	"fmt"
-	"net/http"
-	"io/ioutil"
+  "fmt"
+  "io/ioutil"
+  "log"
+  "net/http"
 )
 
 func main() {
+  apiKey := "YOUR_API_KEY_HERE"
+  url := "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence"
 
-	url := "https://v3-api.newscatcherapi.com/api/search?q=Tesla&lang=en&sort_by=relevancy&page=1"
+  req, err := http.NewRequest("GET", url, nil)
+  if err != nil {
+    log.Fatalf("Failed to create request: %v", err)
+  }
 
-	req, _ := http.NewRequest("GET", url, nil)
+  req.Header.Set("x-api-token", apiKey)
 
-	req.Header.Add("x-api-token", "your_key_1")
+  client := &http.Client{}
+  resp, err := client.Do(req)
+  if err != nil {
+    log.Fatalf("Failed to fetch articles: %v", err)
+  }
+  defer resp.Body.Close()
 
-	res, _ := http.DefaultClient.Do(req)
+  body, err := ioutil.ReadAll(resp.Body)
+  if err != nil {
+    log.Fatalf("Failed to read response body: %v", err)
+  }
 
-	defer res.Body.Close()
-	body, _ := ioutil.ReadAll(res.Body)
-
-	fmt.Println(res)
-	fmt.Println(string(body))
-
+  fmt.Println(string(body))
 }
 ```
-  </Tab>
 
-    <Tab title="PHP">
-
-```php
+```php PHP
 <?php
 
-$client = new http\Client;
-$request = new http\Client\Request;
+$apiKey = "YOUR_API_KEY_HERE";
+$url = "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence";
 
-$request->setRequestUrl('https://v3-api.newscatcherapi.com/api/search');
-$request->setRequestMethod('GET');
-$request->setQuery(new http\QueryString([
-	'q' => 'Google',
-	'lang' => 'en',
-	'sort_by' => 'relevancy',
-	'page' => '1'
-]));
+$ch = curl_init();
 
-$request->setHeaders([
-	'x-api-token' => 'your_key_1'
+curl_setopt($ch, CURLOPT_URL, $url);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "x-api-token: $apiKey"
 ]);
 
-$client->enqueue($request)->send();
-$response = $client->getResponse();
+$response = curl_exec($ch);
 
-echo $response->getBody();
+if ($response === false) {
+    echo "Failed to fetch articles: " . curl_error($ch);
+} else {
+    echo json_encode(json_decode($response), JSON_PRETTY_PRINT);
+}
+
+curl_close($ch);
+?>
 ```
-  </Tab>
 
-    <Tab title="Ruby">
+```ruby Ruby
+require 'net/http'
+require 'uri'
+require 'json'
 
-```RUBY
-require "uri"
-require "net/http"
+api_key = 'YOUR_API_KEY_HERE'
+url = URI('https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence')
 
-url = URI("https://v3-api.newscatcherapi.com/api/search/?q=\"Elon Musk\"&lang=en&countries=US,CA")
-
-https = Net::HTTP.new(url.host, url.port)
-https.use_ssl = true
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
 
 request = Net::HTTP::Get.new(url)
-request["x-api-token"] = "enter-your-api-key-here"
+request['x-api-token'] = api_key
 
-response = https.request(request)
-puts response.read_body
+begin
+  response = http.request(request)
+  puts JSON.pretty_generate(JSON.parse(response.body))
+rescue StandardError => e
+  puts "Failed to fetch articles: #{e.message}"
+end
 ```
-  </Tab>
-</Tabs>
 
+</CodeGroup>
 
+Replace `YOUR_API_KEY_HERE` with your actual API key in these examples.
 
+## Security best practices
 
+<Warning>
+  Don't share your API key publicly or include it in client-side code.
+</Warning>
 
+<Tip>
+  Store your API key in environment variables or secure key management systems.
+</Tip>
 
+<Tip>Rotate your API key periodically for enhanced security.</Tip>
 
+<Warning>
+  If you suspect your API key has been compromised, contact our support team
+  immediately to have it revoked and replaced.
+</Warning>
 
-
-
-
+<Note>
+  Remember, your API key is tied to your specific plan and usage limits. Protect
+  it to prevent unauthorized use and potential overage charges.
+</Note>
