@@ -24,6 +24,11 @@ programming languages:
 
 <CodeGroup>
 
+```bash cURL
+curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence" \
+  -H "x-api-token: YOUR_API_KEY_HERE"
+```
+
 ```python Python
 import requests
 import json
@@ -42,11 +47,6 @@ try:
     print(json.dumps(response.json(), indent=2))
 except requests.exceptions.RequestException as e:
     print(f"Failed to fetch articles: {e}")
-```
-
-```bash cURL
-curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence" \
-  -H "x-api-token: YOUR_API_KEY_HERE"
 ```
 
 ```javascript Node.js

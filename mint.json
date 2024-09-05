@@ -18,15 +18,9 @@
     "raiseIssue": true
   },
   "topbarCtaButton": {
-    "name": "Get Started",
+    "name": "Get API key",
     "url": "https://www.newscatcherapi.com/pricing"
   },
-  "topbarLinks": [
-    {
-      "name": "Get API Key",
-      "url": "https://app.newscatcherapi.com/auth/register"
-    }
-  ],
   "anchors": [
     {
       "name": "FAQ",
@@ -34,7 +28,7 @@
       "url": "https://www.newscatcherapi.com/faq"
     },
     {
-      "name": "Case Studies",
+      "name": "Case studies",
       "icon": "file",
       "url": "https://www.newscatcherapi.com/case-studies"
     },
@@ -76,7 +70,7 @@
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "Get started",
       "version": "v2",
       "pages": [
         "v2/documentation/get-started/overview",
@@ -84,7 +78,7 @@
       ]
     },
     {
-      "group": "Guides and Concepts",
+      "group": "Guides and concepts",
       "version": "v2",
       "pages": [
         "v2/documentation/guides-and-concepts/how-newscatcher-works",
@@ -93,7 +87,7 @@
       ]
     },
     {
-      "group": "How To",
+      "group": "How to",
       "version": "v2",
       "pages": [
         "v2/documentation/how-to/search-for-person-company-product",
@@ -152,7 +146,7 @@
           ]
         },
         {
-          "group": "Latest Headlines",
+          "group": "Latest headlines",
           "pages": [
             "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get",
             "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-post"
@@ -168,7 +162,7 @@
       ]
     },
     {
-      "group": "Get Started",
+      "group": "Get started",
       "version": "v3",
       "pages": [
         "v3/documentation/get-started/overview",
@@ -177,7 +171,7 @@
       ]
     },
     {
-      "group": "Guides and Concepts",
+      "group": "Guides and concepts",
       "version": "v3",
       "pages": [
         "v3/documentation/guides-and-concepts/advanced-querying",
@@ -187,7 +181,7 @@
       ]
     },
     {
-      "group": "How To",
+      "group": "How to",
       "version": "v3",
       "pages": [
         "v3/documentation/how-to/use-boolean-operators",
@@ -230,7 +224,7 @@
           ]
         },
         {
-          "group": "LatestHeadlines",
+          "group": "Latest headlines",
           "pages": [
             "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get",
             "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-post"
@@ -244,14 +238,14 @@
           ]
         },
         {
-          "group": "SearchLink",
+          "group": "Search by link",
           "pages": [
             "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get",
             "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-post"
           ]
         },
         {
-          "group": "SearchSimilar",
+          "group": "Search similar",
           "pages": [
             "v3/api-reference/endpoints/searchsimilar/search-similar-articles-get",
             "v3/api-reference/endpoints/searchsimilar/search-similar-articles-post"
@@ -265,7 +259,7 @@
           ]
         },
         {
-          "group": "Aggregation",
+          "group": "Aggregation count",
           "pages": [
             "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
             "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post"
