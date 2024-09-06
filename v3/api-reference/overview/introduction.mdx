@@ -89,18 +89,156 @@ except requests.exceptions.RequestException as e:
 
 All API responses are in JSON format and typically include the following fields:
 
-- `status`: The status of the request.
-- `total_hits`: The total number of articles matching the query.
-- `page`: The current page number.
-- `total_pages`: The total number of available pages.
-- `page_size`: The number of articles per page.
-- `articles`: An array of article objects (when applicable), each with article
-  content, title, links, and other metadata. Depending on the subscription plan,
-  it can include an NLP layer with sentiments, topics, tags, named entities, and
-  more.
-- `user_input`: An object reflecting the parameters and filters you used in your
-  request, which helps confirm how the API processed your input and debug any
-  issues if the results are not as expected.
+<ResponseField name="status" type="string">
+  The status of the request.
+</ResponseField>
+
+<ResponseField name="total_hits" type="integer">
+  The total number of articles matching the query.
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  The current page number.
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  The total number of available pages.
+</ResponseField>
+
+<ResponseField name="page_size" type="integer">
+  The number of articles per page.
+</ResponseField>
+
+<ResponseField name="articles" type="array">
+  An array of article objects (when applicable), each with article content,
+  title, links, and other metadata. Depending on the subscription plan, it can
+  include an NLP layer with sentiments, topics, tags, named entities, and more.
+
+  <Expandable title="properties">
+    <ResponseField name="title" type="string">
+      The title of the article.
+    </ResponseField>
+
+    <ResponseField name="author" type="string">
+      The primary author of the article.
+    </ResponseField>
+
+    <ResponseField name="authors" type="array">
+      A list of authors or contributors associated with the article.
+    </ResponseField>
+
+    <ResponseField name="journalists" type="array">
+      A list of journalists who wrote the article, if applicable.
+    </ResponseField>
+
+    <ResponseField name="published_date" type="string">
+      The date and time when the article was published, in ISO 8601 format.
+    </ResponseField>
+
+    <ResponseField name="published_date_precision" type="string">
+      The precision of the published date (e.g., "full", "date").
+    </ResponseField>
+
+    <ResponseField name="updated_date" type="string">
+      The date and time when the article was last updated, in ISO 8601 format.
+    </ResponseField>
+
+    <ResponseField name="updated_date_precision" type="string">
+      The precision of the updated date (e.g., "full", "date").
+    </ResponseField>
+
+    <ResponseField name="link" type="string">
+      The direct URL link to the article.
+    </ResponseField>
+
+    <ResponseField name="domain_url" type="string">
+      The domain of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="full_domain_url" type="string">
+      The full domain URL of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="name_source" type="string">
+      The name of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="is_headline" type="boolean">
+      Indicates if the article is a headline.
+    </ResponseField>
+
+    <ResponseField name="paid_content" type="boolean">
+      Indicates if the article is paid content.
+    </ResponseField>
+
+    <ResponseField name="parent_url" type="string">
+      The parent URL of the article's domain.
+    </ResponseField>
+
+    <ResponseField name="country" type="string">
+      The country code of the article's source.
+    </ResponseField>
+
+    <ResponseField name="rights" type="string">
+      The rights information associated with the article.
+    </ResponseField>
+
+    <ResponseField name="rank" type="integer">
+      The SEO rank of the article's source.
+    </ResponseField>
+
+    <ResponseField name="media" type="string">
+      The URL of the media (e.g., image) associated with the article.
+    </ResponseField>
+
+    <ResponseField name="language" type="string">
+      The language code of the article.
+    </ResponseField>
+
+    <ResponseField name="description" type="string">
+      A brief description or summary of the article.
+    </ResponseField>
+
+    <ResponseField name="content" type="string">
+      The full content of the article.
+    </ResponseField>
+
+    <ResponseField name="word_count" type="integer">
+      The total number of words in the article.
+    </ResponseField>
+
+    <ResponseField name="is_opinion" type="boolean">
+      Indicates if the article is an opinion piece.
+    </ResponseField>
+
+    <ResponseField name="twitter_account" type="string">
+      The Twitter account associated with the article's source or author.
+    </ResponseField>
+
+    <ResponseField name="all_links" type="array">
+      A list of all hyperlinks found in the article content.
+    </ResponseField>
+
+    <ResponseField name="all_domain_links" type="array">
+      A list of all domains linked in the article content.
+    </ResponseField>
+
+    <ResponseField name="id" type="string">
+      A unique identifier for the article.
+    </ResponseField>
+
+    <ResponseField name="score" type="float">
+      A relevance score assigned to the article.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_input" type="object">
+  An object reflecting the parameters and filters you used in your request,
+  which helps confirm how the API processed your input and debug any issues if
+  the results are not as expected.
+</ResponseField>
 
 ### Example response
 

@@ -1,5 +1,136 @@
 ---
 title: Rate limits and quotas
 sidebarTitle: Rate limits
-description: Rate limits and quota management for News API v3 usage.
+description: Rate limits and quota management for News API v3 usage
 ---
+
+News API v3 implements rate limits and quotas to ensure fair usage and maintain
+service quality for all users. This guide explains how these limits work and how
+to monitor your usage.
+
+## Understanding your limits
+
+Your subscription plan defines the following usage limits:
+
+- Concurrent calls: The number of simultaneous API requests you can make.
+- Plan calls: The total number of API calls allowed per month.
+- Historical days: The number of days in the past you can retrieve articles.
+
+## Checking your subscription
+
+You can view your current subscription details and remaining quota by making a
+request to the `/subscription` endpoint.
+
+### Example request
+
+<CodeGroup>
+
+```bash cURL
+curl -X GET "https://v3-api.newscatcherapi.com/api/subscription" \
+ -H "x-api-token: YOUR_API_KEY_HERE"
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/subscription"
+HEADERS = {"x-api-token": API_KEY}
+
+try:
+    response = requests.get(URL, headers=HEADERS)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch subscription details: {e}")
+```
+
+</CodeGroup>
+
+Replace `YOUR_API_KEY_HERE` with your actual API key. Use cURL, Postman, or any
+other tool to make HTTP requests.
+
+### Example response
+
+The response will look similar to this:
+
+```json
+{
+  "active": true,
+  "concurrent_calls": 10,
+  "plan": "v3_nlp_iptc_tags",
+  "plan_calls": 250000,
+  "remaining_calls": 99986,
+  "historical_days": 400
+}
+```
+
+### Response format
+
+<ResponseField name="active" type="boolean">
+  Indicates if your subscription is currently active.
+</ResponseField>
+
+<ResponseField name="concurrent_calls" type="integer">
+  The maximum number of simultaneous API requests you can make.
+</ResponseField>
+
+<ResponseField name="plan" type="string">
+  Your subscription plan name.
+</ResponseField>
+
+<ResponseField name="plan_calls" type="integer">
+  The total number of API calls allowed in your subscription period.
+</ResponseField>
+
+<ResponseField name="remaining_calls" type="integer">
+  The number of API calls you have left in your current period.
+</ResponseField>
+
+<ResponseField name="historical_days" type="integer">
+  The number of days in the past you can retrieve articles for.
+</ResponseField>
+
+## Rate limit behavior
+
+If you exceed your rate limit for concurrent calls, you receive a `429` (Too
+many requests) error. When this happens, wait a short time before retrying your
+request. In production, consider implementing robust error handling and retry
+mechanisms, such as exponential backoff or adaptive throttling, to dynamically
+adjust the frequency of requests based on the server response. This approach
+helps prevent hitting rate limits repeatedly and ensures smoother interactions
+with the API, improving both reliability and user experience.
+
+## Quota reset
+
+Your quota of total calls (`plan_calls`) typically resets monthly at the
+beginning of each billing cycle. The exact reset time depends on your specific
+subscription terms. Any remaining calls from the previous month do not carry
+over to the next month.
+
+## Best practices
+
+To make the most of your subscription and avoid hitting limits:
+
+1. Monitor your usage regularly using the `/subscription` endpoint.
+2. Implement efficient error handling in your code, especially for `429` errors.
+3. Optimize your queries to retrieve only the data you need. Use filters and
+   parameters effectively to reduce unnecessary API calls.
+4. For time-sensitive applications, consider implementing a polling strategy
+   with appropriate intervals rather than constant real-time requests.
+5. If you're building a user-facing application, consider implementing
+   pagination or "load more" functionality to fetch additional results only when
+   needed.
+6. If you consistently reach your limits, consider upgrading your plan to better
+   suit your needs.
+
+<Note>
+  Remember, news data is highly dynamic, with millions of new articles added
+  daily. Avoid caching article data for extended periods, as this could lead to
+  outdated information. Instead, focus on efficient real-time data retrieval
+  strategies.
+</Note>
+
+If you have any questions about your rate limits or need to increase your quota,
+[contact our support team](https://support-sign-in.newscatcherapi.com/).
