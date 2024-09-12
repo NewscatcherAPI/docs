@@ -129,8 +129,8 @@ paths:
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/ClusteringVariable"
         - $ref: "#/components/parameters/ClusteringEnabled"
+        - $ref: "#/components/parameters/ClusteringVariable"
         - $ref: "#/components/parameters/ClusteringThreshold"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
@@ -202,8 +202,8 @@ paths:
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/ClusteringVariable"
         - $ref: "#/components/parameters/ClusteringEnabled"
+        - $ref: "#/components/parameters/ClusteringVariable"
         - $ref: "#/components/parameters/ClusteringThreshold"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
@@ -773,8 +773,8 @@ components:
 
         To specify multiple terms, use a comma-separated string, for example, `"sport, tech"`.
 
-        > **Note**: The `source_name` parameter may return a large number of results, depending on the terms used. 
-        For more precise filtering by specific news domains, use the `sources_url` parameter.
+        **Note**: Depending on the terms used, the `source_name` parameter may return a large number of results. 
+        For more precise filtering, use the `sources_url` parameter.
       name: source_name
       in: query
       required: false
@@ -821,31 +821,34 @@ components:
     FromRank:
       description: |
         The lowest boundary of the rank of a news website to filter by. 
-        Range: `0` to `999999`. 
-        Lower rank means that a source is more popular.
+        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
+        If you set this to `100`, the API includes sources ranked 100 or higher.
       name: from_rank
       in: query
       required: false
       schema:
         type: integer
-        minimum: 0
+        minimum: 1
         maximum: 999999
+        default: 1
         format: int32
       example: 100
 
     ToRank:
       description: |
         The highest boundary of the rank of a news website to filter by. 
-        Range: `0` to `999999`. Lower rank means that a source is more popular.
+        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
+        If you set this to `100`, the API includes sources ranked 100 or lower.
       name: to_rank
       in: query
       required: false
       schema:
         type: integer
-        minimum: 0
+        minimum: 1
         maximum: 999999
+        default: 999999
         format: int32
-      example: 10000
+      example: 100
 
     SortBy:
       description: |
@@ -1075,26 +1078,10 @@ components:
         minimum: 0
       example: 1000
 
-    ClusteringVariable:
-      description: |
-        The article data on which the similarity to be calculated.
-      name: clustering_variable
-      in: query
-      required: false
-      schema:
-        type: string
-        enum:
-          - content
-          - title
-          - summary
-        default: content
-      example: content
-
     ClusteringEnabled:
       description: |
-        If true, enables clustering on articles. 
-        This changes the response format to include clustering information - instead of a list of articles, 
-        you receive a list of clusters that group similar articles together.
+        Determines whether to group similar articles into clusters.
+        If true, the API returns clustered results.
 
         To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
@@ -1105,53 +1092,101 @@ components:
         default: false
       example: true
 
+    ClusteringVariable:
+      description: |
+        Specifies which part of the article to use for determining similarity when clustering.
+
+        Possible values are:
+        - `content`: Uses the full article content (default).
+        - `title`: Uses only the article title.
+        - `summary`: Uses the article summary.
+
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+      name: clustering_variable
+      in: query
+      required: false
+      schema:
+        type: string
+        enum: [content, title, summary]
+        default: content
+      example: content
+
     ClusteringThreshold:
       description: |
-        The threshold for an article to be considered similar.
-        The value can vary from `0.0` to `1.0`.
+        Sets the similarity threshold for grouping articles into clusters.
+        Range: Greater than `0` to `1.0`.
+        A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
+
+        For example:
+        - `0.3`: Results in larger, more diverse clusters.
+        - `0.6`: Balances cluster size and article similarity (default).
+        - `0.9`: Creates smaller, tightly related clusters.
+
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_threshold
       in: query
       required: false
       schema:
         type: number
         format: float
-        minimum: 0.0
+        minimum: 0
+        exclusiveMinimum: true
         maximum: 1.0
         default: 0.6
-      example: 0.7
+      example: 0.6
 
     IncludeNlpData:
       description: |
-        If true, includes an NLP layer with each article. 
+        If true, includes an NLP layer with each article in the response. 
+        This layer provides enhanced information such as theme classification, 
+        article summary, sentiment analysis, tags, and named entity recognition.
 
-        Available only if NLP is enabled for your API key.
+        The NLP layer includes:
+        - Theme: General topic of the article.
+        - Summary: A concise overview of the article content.
+        - Sentiment: Separate scores for title and content (range: -1 to 1).
+        - Named entities: Identified persons (PER), organizations (ORG), locations (LOC), and miscellaneous entities (MISC).
+        - IPTC tags: Standardized news category tags.
+        - IAB tags: Content categories for digital advertising.
+
+        **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: include_nlp_data
       in: query
       required: false
       schema:
         type: boolean
+        default: false
       example: true
 
     HasNlp:
       description: |
-        If true, filters data to include only articles with an NLP layer. 
+        If true, filters the results to include only articles with an NLP layer. 
+        This allows you to focus on articles that have been processed with advanced NLP techniques.
 
-        Available only if NLP is enabled for your API key.
+        **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: has_nlp
       in: query
       required: false
       schema:
         type: boolean
+        default: false
       example: true
 
     Theme:
       description: |
-        A general topic of the article. Topic labeling is based on the actual content of an article. 
-        To select multiple themes, use a comma-separated string. For example, `Finance,Tech`.
+        Filters articles based on their general topic, as determined by NLP analysis.
+        To select multiple themes, use a comma-separated string. For example, `"Finance, Tech"`.
 
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
+        **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        Available only if NLP is enabled for your API key.
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
+
       name: theme
       in: query
       required: false
@@ -1161,10 +1196,12 @@ components:
 
     NotTheme:
       description: |
-        Inverse of the `theme` parameter. Filters articles based on their general topic.
-        To exclude multiple themes, use a comma-separated string. For example, `Crime,Tech`.
+        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. 
+        To exclude multiple themes, use a comma-separated string. For example, `"Crime, Tech"`.
 
-        Available only if NLP is enabled for your API key.
+        **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: not_theme
       in: query
       required: false
@@ -1174,12 +1211,12 @@ components:
 
     OrgEntityName:
       description: |
-        The organization name(s) mentioned in articles.
-        To specify multiple organizations, use a comma-separated string. For example, `Apple,Microsoft`.
+        Filters articles that mention specific organization names, as identified by NLP analysis.
+        To specify multiple organizations, use a comma-separated string. For example, `"Apple, Microsoft"`.
+
+        **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
       name: ORG_entity_name
       in: query
       required: false
@@ -1192,15 +1229,18 @@ components:
         multiple-entities:
           summary: Multiple entities
           value: "Apple,Microsoft"
+        count-based:
+          summary: Count-based filter
+          value: "COUNT('Apple', 2, 'gt')"
 
     PerEntityName:
       description: |
-        The person names mentioned in articles.
-        To specify multiple names, use a comma-separated string. For example, `Elon Musk,Jeff Bezos`.
+        Filters articles that mention specific person names, as identified by NLP analysis.
+        To specify multiple names, use a comma-separated string. For example, `"Elon Musk, Jeff Bezos"`.
+
+        **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
       name: PER_entity_name
       in: query
       required: false
@@ -1213,15 +1253,18 @@ components:
         multiple-entities:
           summary: Multiple entities
           value: "Elon Musk,Jeff Bezos"
+        count-based:
+          summary: Count-based filter
+          value: "COUNT('Elon Musk', 3, 'gt')"
 
     LocEntityName:
       description: |
-        The locations mentioned in articles.
-        To specify multiple locations, use a comma-separated string. For example, `California,New York`.
+        Filters articles that mention specific location names, as identified by NLP analysis.
+        To specify multiple locations, use a comma-separated string. For example, `"California, New York"`.
+
+        **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
       name: LOC_entity_name
       in: query
       required: false
@@ -1234,15 +1277,19 @@ components:
         multiple-entities:
           summary: Multiple entities
           value: "California,New York"
+        count-based:
+          summary: Count-based filter
+          value: "COUNT('California', 2, 'eq')"
 
     MiscEntityName:
       description: |
-        Other named entities that do not fall under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string. For example, `Bitcoin,Blockchain`.
+        Filters articles that mention other named entities not falling under person, organization, 
+        or location categories. Includes events, nationalities, products, works of art, and more.
+        To specify multiple entities, use a comma-separated string. For example, `"Bitcoin, Blockchain"`.
+
+        **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
       name: MISC_entity_name
       in: query
       required: false
@@ -1255,12 +1302,22 @@ components:
         multiple-entities:
           summary: Multiple entities
           value: "Bitcoin,Blockchain"
+        count-based:
+          summary: Count-based filter
+          value: "COUNT('Bitcoin', 1, 'gt')"
 
     TitleSentimentMin:
       description: |
-        The minimum title sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the minimum sentiment score of their titles.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: title_sentiment_min
       in: query
       required: false
@@ -1273,9 +1330,16 @@ components:
 
     TitleSentimentMax:
       description: |
-        The maximum title sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the maximum sentiment score of their titles.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: title_sentiment_max
       in: query
       required: false
@@ -1288,9 +1352,16 @@ components:
 
     ContentSentimentMin:
       description: |
-        The minimum content sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the minimum sentiment score of their content.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: content_sentiment_min
       in: query
       required: false
@@ -1303,9 +1374,16 @@ components:
 
     ContentSentimentMax:
       description: |
-        The maximum content sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the maximum sentiment score of their content.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       name: content_sentiment_max
       in: query
       required: false
@@ -1318,55 +1396,65 @@ components:
 
     IptcTags:
       description: |
-        The IPTC tag ID(s) to include articles by media topic.
-        To specify multiple IPTC tags, use a comma-separated string. For example, `20000199, 20000209`.
+        Filters articles based on IPTC (International Press Telecommunications Council) media topic tags.
+        To specify multiple IPTC tags, use a comma-separated string of tag IDs. For example, `"20000199, 20000209"`.
+
+        **Note**: The `iptc_tags` parameter is only available if tags are included in your subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
-
-        Available only if tags are enabled for your API key.
       name: iptc_tags
       in: query
       required: false
       schema:
         type: string
-      example: 20000199, 20000209
+      example: 20000199,20000209
 
     NotIptcTags:
       description: |
-        The IPTC tag ID(s) to exclude articles by media topic.
-        To specify multiple IPTC tags, use a comma-separated string. For example, `20000205, 20000209`.
+        Inverse of the `iptc_tags` parameter. Excludes articles based on IPTC (International Press Telecommunications Council) media topic tags.
+        To specify multiple IPTC tags to exclude, use a comma-separated string of tag IDs. For example, `"20000205, 20000209"`.
+
+        **Note**: The `not_iptc_tags` parameter is only available if tags are included in your subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
-
-        Available only if tags are enabled for your API key.
       name: not_iptc_tags
       in: query
       required: false
       schema:
         type: string
-      example: 20000205, 20000209
+      example: 20000205,20000209
 
     IabTags:
       description: |
-        The IAB categories to filter articles by.
-        To specify multiple IAB categories, use a comma-separated string. For example, `Business, Events`.
+        Filters articles based on IAB (Interactive Advertising Bureau) content categories.
+        These tags provide a standardized taxonomy for digital advertising content categorization.
+        To specify multiple IAB categories, use a comma-separated string. For example, `"Business, Events"`.
+
+        **Note**: The `iab_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       name: iab_tags
       in: query
       required: false
       schema:
         type: string
-      example: Business, Events
+      example: Business,Events
 
     NotIabTags:
       description: |
-        The IAB categories to exclude articles by. 
-        To specify multiple IAB categories, use a comma-separated string. For example, `Agriculture, Metals`.
+        Inverse of the `iab_tags` parameter. Excludes articles based on IAB (Interactive Advertising Bureau) content categories.
+        These tags provide a standardized taxonomy for digital advertising content categorization.
+        To specify multiple IAB categories to exclude, use a comma-separated string. For example, `"Agriculture, Metals"`.
+
+        **Note**: The `not_iab_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       name: not_iab_tags
       in: query
       required: false
       schema:
         type: string
-      example: Agriculture
+      example: Agriculture,Metals
 
     ExcludeDuplicates:
       description: |
@@ -1431,7 +1519,7 @@ components:
         To specify multiple links, use a comma-separated string. 
         For example, `https://example.com/article1, https://example.com/article2`.
 
-        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
       in: query
       required: true
@@ -1450,7 +1538,7 @@ components:
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
         To specify multiple IDs, use a comma-separated string. For example, `1234567890abcdef, abcdef1234567890`.
 
-        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
       in: query
       required: true
@@ -1525,7 +1613,7 @@ components:
       description: |
         The domain(s) of the news publication to search for. 
 
-        > **Caution**:  When specifying the `source_url` parameter, 
+        **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
       name: source_url
       in: query
@@ -1808,10 +1896,10 @@ components:
                 $ref: "#/components/schemas/Page"
               page_size:
                 $ref: "#/components/schemas/PageSize"
-              clustering_variable:
-                $ref: "#/components/schemas/ClusteringVariable"
               clustering_enabled:
                 $ref: "#/components/schemas/ClusteringEnabled"
+              clustering_variable:
+                $ref: "#/components/schemas/ClusteringVariable"
               clustering_threshold:
                 $ref: "#/components/schemas/ClusteringThreshold"
               include_nlp_data:
@@ -1922,10 +2010,10 @@ components:
                 $ref: "#/components/schemas/Page"
               page_size:
                 $ref: "#/components/schemas/PageSize"
-              clustering_variable:
-                $ref: "#/components/schemas/ClusteringVariable"
               clustering_enabled:
                 $ref: "#/components/schemas/ClusteringEnabled"
+              clustering_variable:
+                $ref: "#/components/schemas/ClusteringVariable"
               clustering_threshold:
                 $ref: "#/components/schemas/ClusteringThreshold"
               include_nlp_data:
@@ -3366,8 +3454,8 @@ components:
         To specify multiple terms, use a comma-separated string or an array of strings.
         For example, `"sport, tech"` or `["sport", "tech"]`.
 
-        > **Note**: The `source_name` parameter may return a large number of results, depending on the terms used. 
-        For more precise filtering by specific news domains, use the `sources_url` parameter.
+        **Note**: Depending on the terms used, the `source_name` parameter may return a large number of results. 
+        For more precise filtering, use the `sources_url` parameter.
       example: ["sport", "tech"]
 
     ParentUrl:
@@ -3392,24 +3480,27 @@ components:
 
     FromRank:
       type: integer
-      minimum: 0
+      minimum: 1
       maximum: 999999
+      default: 1
       format: int32
       description: |
         The lowest boundary of the rank of a news website to filter by. 
-        Range: `0` to `999999`. 
-        Lower rank means that a source is more popular.
+        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
+        If you set this to `100`, the API includes sources ranked 100 or higher.
       example: 100
 
     ToRank:
       type: integer
-      minimum: 0
+      minimum: 1
       maximum: 999999
+      default: 999999
       format: int32
       description: |
         The highest boundary of the rank of a news website to filter by. 
-        Range: `0` to `999999`. Lower rank means that a source is more popular.
-      example: 10000
+        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
+        If you set this to `100`, the API includes sources ranked 100 or lower.
+      example: 100
 
     SortBy:
       type: string
@@ -3569,126 +3660,180 @@ components:
         To be used for avoiding articles with large content.
       example: 1000
 
+    ClusteringEnabled:
+      type: boolean
+      default: false
+      description: |
+        Determines whether to group similar articles into clusters.
+        If true, the API returns clustered results.
+
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+      example: true
+
     ClusteringVariable:
       type: string
       enum:
         - content
         - title
         - summary
+      default: content
       description: |
-        The article data on which the similarity to be calculated.
-      example: content
+        Specifies which part of the article to use for determining similarity when clustering.
 
-    ClusteringEnabled:
-      type: boolean
-      default: false
-      description: |
-        If true, enables clustering on articles. 
-        This changes the response format to include clustering information - instead of a list of articles, 
-        you receive a list of clusters that group similar articles together.
+        Possible values are:
+        - `content`: Uses the full article content (default).
+        - `title`: Uses only the article title.
+        - `summary`: Uses the article summary.
 
         To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
-      example: true
+      example: content
 
     ClusteringThreshold:
       type: number
       format: float
-      minimum: 0.0
+      minimum: 0
+      exclusiveMinimum: true
       maximum: 1.0
       default: 0.6
       description: |
-        The threshold for an article to be considered similar.
-        The value can vary from `0.0` to `1.0`.
-      example: 0.7
+        Sets the similarity threshold for grouping articles into clusters.
+        Range: Greater than `0` to `1.0`.
+        A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
+
+        For example:
+        - `0.3`: Results in larger, more diverse clusters.
+        - `0.6`: Balances cluster size and article similarity (default).
+        - `0.9`: Creates smaller, tightly related clusters.
+
+        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+      example: 0.6
 
     IncludeNlpData:
       type: boolean
+      default: false
       description: |
-        If true, includes an NLP layer with each article.
+        If true, includes an NLP layer with each article in the response. 
+        This layer provides enhanced information such as theme classification, 
+        article summary, sentiment analysis, tags, and named entity recognition.
 
-        Available only if NLP is enabled for your API key.
+        The NLP layer includes:
+        - Theme: General topic of the article.
+        - Summary: A concise overview of the article content.
+        - Sentiment: Separate scores for title and content (range: -1 to 1).
+        - Named entities: Identified persons (PER), organizations (ORG), 
+          locations (LOC), and miscellaneous entities (MISC).
+        - IPTC tags: Standardized news category tags.
+        - IAB tags: Content categories for digital advertising.
+
+        **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
     HasNlp:
       type: boolean
+      default: false
       description: |
-        If true, filters data to include only articles with an NLP layer. 
+        If true, filters the results to include only articles with an NLP layer. 
+        This allows you to focus on articles that have been processed with advanced NLP techniques.
 
-        Available only if NLP is enabled for your API key.
+        **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
     Theme:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        A general topic of the article. Topic labeling is based on the actual content of an article. 
-        To select multiple themes, use a comma-separated string. 
-        For example, `Finance,Tech`.
+        Filters articles based on their general topic, as determined by NLP analysis.
+        To select multiple themes, use a comma-separated string or an array of strings. For example, `"Finance, Tech"` or `["Finance", "Tech"]`.
 
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
+        **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        Available only if NLP is enabled for your API key.
-      example: Business,Finance
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
+      example: ["Business", "Finance"]
 
     NotTheme:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        Inverse of the `theme` parameter. Filters articles based on their general topic.
-        To exclude multiple themes, use a comma-separated string. 
-        For example, `Crime,Tech`.
+        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. 
+        To exclude multiple themes, use a comma-separated string or an array of strings. For example, `"Crime, Tech"` or `["Crime", "Tech"]`.
 
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`. 
+        **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
 
-        Available only if NLP is enabled for your API key.
-      example: Crime
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+      example: ["Crime"]
 
     OrgEntityName:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        The organization name(s) mentioned in articles.
-        To specify multiple organizations, use a comma-separated string. 
-        For example, `Apple,Microsoft`.
+        Filters articles that mention specific organization names, as identified by NLP analysis.
+        To specify multiple organizations, use a comma-separated string or an array of strings. For example, `"Apple, Microsoft"` or `["Apple", "Microsoft"]`.
+
+        **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
-      example: Apple
+      example: ["Apple", "Microsoft"]
 
     PerEntityName:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        The person names mentioned in articles.
-        To specify multiple names, use a comma-separated string. 
-        For example, `Elon Musk,Jeff Bezos`.
+        Filters articles that mention specific person names, as identified by NLP analysis.
+        To specify multiple names, use a comma-separated string or an array of strings. For example, `"Elon Musk, Jeff Bezos"` or `["Elon Musk", "Jeff Bezos"]`.
+
+        **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
-      example: Elon Musk
+      example: ["Elon Musk", "Jeff Bezos"]
 
     LocEntityName:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        The locations mentioned in articles.
-        To specify multiple locations, use a comma-separated string. 
-        For example, `California,New York`.
+        Filters articles that mention specific location names, as identified by NLP analysis.
+        To specify multiple locations, use a comma-separated string or an array of strings. For example, `"California, New York"` or `["California", "New York"]`.
+
+        **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
-      example: California
+      example: ["California", "New York"]
 
     MiscEntityName:
-      type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
       description: |
-        Other named entities that do not fall under person, organization, or location categories. 
-        Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string. 
-        For example, `Bitcoin,Blockchain`.
+        Filters articles that mention other named entities not falling under person, organization, 
+        or location categories. Includes events, nationalities, products, works of art, and more.
+        To specify multiple entities, use a comma-separated string or an array of strings. For example, `"Bitcoin, Blockchain"` or `["Bitcoin", "Blockchain"]`.
+
+        **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
-
-        Available only if NLP is enabled for your API key.
-      example: Bitcoin
+      example: ["Bitcoin", "Blockchain"]
 
     TitleSentimentMin:
       type: number
@@ -3696,9 +3841,16 @@ components:
       minimum: -1.0
       maximum: 1.0
       description: |
-        The minimum title sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the minimum sentiment score of their titles.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     TitleSentimentMax:
@@ -3707,9 +3859,16 @@ components:
       minimum: -1.0
       maximum: 1.0
       description: |
-        The maximum title sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the maximum sentiment score of their titles.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     ContentSentimentMin:
@@ -3718,9 +3877,16 @@ components:
       minimum: -1.0
       maximum: 1.0
       description: |
-        The minimum content sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the minimum sentiment score of their content.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     ContentSentimentMax:
@@ -3729,9 +3895,16 @@ components:
       minimum: -1.0
       maximum: 1.0
       description: |
-        The maximum content sentiment score. Range is `-1.0` to `1.0`. 
+        Filters articles based on the maximum sentiment score of their content.
 
-        Available only if NLP is enabled for your API key.
+        Range is `-1.0` to `1.0`, where:
+        - Negative values indicate negative sentiment.
+        - Positive values indicate positive sentiment.
+        - Values close to 0 indicate neutral sentiment.
+
+        **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
+
+        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     IptcTags:
@@ -3741,11 +3914,13 @@ components:
           items:
             type: string
       description: |
-        The IPTC tag ID(s) to include articles by media topic.
-        To specify multiple IPTC tags, use a comma-separated string or an array of strings.
+        Filters articles based on IPTC (International Press Telecommunications Council) media topic tags.
+        To specify multiple IPTC tags, use a comma-separated string or an array of strings. 
         For example, `"20000199, 20000209"` or `["20000199", "20000209"]`.
 
-        Available only if tags are enabled for your API key.
+        **Note**: The `iptc_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       example: ["20000199", "20000209"]
 
     NotIptcTags:
@@ -3755,11 +3930,12 @@ components:
           items:
             type: string
       description: |
-        The IPTC tag ID(s) to exclude articles by media topic.
-        To specify multiple IPTC tags, use a comma-separated string or an array of strings.
-        For example, `"20000205, 20000209"` or `["20000205", "20000209"]`.
+        Inverse of the `iptc_tags` parameter. Excludes articles based on IPTC (International Press Telecommunications Council) media topic tags.
+        To specify multiple IPTC tags to exclude, use a comma-separated string or an array of strings. For example, `"20000205, 20000209"` or `["20000205", "20000209"]`.
 
-        Available only if tags are enabled for your API key.
+        **Note**: The `not_iptc_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       example: ["20000205", "20000209"]
 
     IabTags:
@@ -3769,9 +3945,14 @@ components:
           items:
             type: string
       description: |
-        The IAB categories to filter articles by.
-        To specify multiple IAB categories, use a comma-separated string or an array of strings.
+        Filters articles based on IAB (Interactive Advertising Bureau) content categories.
+        These tags provide a standardized taxonomy for digital advertising content categorization.
+        To specify multiple IAB categories, use a comma-separated string or an array of strings. 
         For example, `"Business, Events"` or `["Business", "Events"]`.
+
+        **Note**: The `iab_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       example: ["Business", "Events"]
 
     NotIabTags:
@@ -3781,9 +3962,14 @@ components:
           items:
             type: string
       description: |
-        The IAB categories to exclude articles by.
-        To specify multiple IAB categories, use a comma-separated string or an array of strings.
+        Inverse of the `iab_tags` parameter. Excludes articles based on IAB (Interactive Advertising Bureau) content categories.
+        These tags provide a standardized taxonomy for digital advertising content categorization.
+        To specify multiple IAB categories to exclude, use a comma-separated string or an array of strings. 
         For example, `"Agriculture, Metals"` or `["Agriculture", "Metals"]`.
+
+        **Note**: The `not_iab_tags` parameter is only available if tags are included in your subscription plan.
+
+        To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       example: ["Agriculture", "Metals"]
 
     ExcludeDuplicates:
@@ -3847,7 +4033,7 @@ components:
         For example, `"5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"` 
         or `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`.
 
-        > **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
 
     IncludeSimilarDocuments:
@@ -3899,7 +4085,7 @@ components:
         use a comma-separated string or an array of strings. 
         For example, `"bbc.com, nytimes.com"` or `["bbc.com", "nytimes.com"]`
 
-        > **Caution**:  When specifying the `source_url` parameter, 
+        **Caution**:  When specifying the `source_url` parameter, 
         you can only use `include_additional_info` as an extra parameter.
       example: bbc.com
 
