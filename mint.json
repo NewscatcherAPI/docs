@@ -25,7 +25,7 @@
     {
       "name": "FAQ",
       "icon": "question",
-      "url": "https://www.newscatcherapi.com/faq"
+      "url": "https://www.newscatcherapi.com/#section-faq"
     },
     {
       "name": "Case studies",
@@ -41,23 +41,23 @@
   "tabs": [
     {
       "name": "Documentation",
-      "version": "v2",
-      "url": "v2/documentation"
-    },
-    {
-      "name": "Documentation",
       "version": "v3",
       "url": "v3/documentation"
     },
     {
       "name": "API Reference",
+      "version": "v3",
+      "url": "v3/api-reference"
+    },
+    {
+      "name": "Documentation",
       "version": "v2",
-      "url": "v2/api-reference"
+      "url": "v2/documentation"
     },
     {
       "name": "API Reference",
-      "version": "v3",
-      "url": "v3/api-reference"
+      "version": "v2",
+      "url": "v2/api-reference"
     },
     {
       "name": "Event Intelligence",
@@ -69,98 +69,6 @@
     }
   ],
   "navigation": [
-    {
-      "group": "Get started",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/get-started/overview",
-        "v2/documentation/get-started/quickstart"
-      ]
-    },
-    {
-      "group": "Guides and concepts",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/guides-and-concepts/how-newscatcher-works",
-        "v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api",
-        "v2/documentation/guides-and-concepts/use-news-api-v2-in-postman"
-      ]
-    },
-    {
-      "group": "How to",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/how-to/search-for-person-company-product",
-        "v2/documentation/how-to/scroll-through-pages",
-        "v2/documentation/how-to/search-by-date-time",
-        "v2/documentation/how-to/get-more-than-10000-articles"
-      ]
-    },
-    {
-      "group": "Tutorials",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/tutorials/export-news-into-csv-with-python",
-        "v2/documentation/tutorials/build-news-aggregator"
-      ]
-    },
-    {
-      "group": "PyGoogleNews",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/pygooglenews/overview",
-        "v2/documentation/pygooglenews/installation-quickstart",
-        "v2/documentation/pygooglenews/functions-classes",
-        "v2/documentation/pygooglenews/special-query-terms",
-        "v2/documentation/pygooglenews/advanced-querying-search-examples",
-        "v2/documentation/pygooglenews/proxies"
-      ]
-    },
-    {
-      "group": "FAQ",
-      "version": "v2",
-      "pages": [
-        "v2/documentation/faq/overview",
-        "v2/documentation/faq/product-faq",
-        "v2/documentation/faq/company-faq"
-      ]
-    },
-    {
-      "group": "Overview",
-      "version": "v2",
-      "pages": [
-        "v2/api-reference/overview/introduction",
-        "v2/api-reference/overview/authentication",
-        "v2/api-reference/overview/rate-limits-quotas"
-      ]
-    },
-    {
-      "group": "Endpoints",
-      "version": "v2",
-      "pages": [
-        {
-          "group": "Search",
-          "pages": [
-            "v2/api-reference/endpoints/search/search-news-get",
-            "v2/api-reference/endpoints/search/search-news-post"
-          ]
-        },
-        {
-          "group": "Latest headlines",
-          "pages": [
-            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get",
-            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-post"
-          ]
-        },
-        {
-          "group": "Sources",
-          "pages": [
-            "v2/api-reference/endpoints/sources/get-top-news-sources-get",
-            "v2/api-reference/endpoints/sources/get-top-news-sources-post"
-          ]
-        }
-      ]
-    },
     {
       "group": "Get started",
       "version": "v3",
@@ -283,6 +191,98 @@
         "v3/api-reference/libraries/java",
         "v3/api-reference/libraries/go",
         "v3/api-reference/libraries/csharp"
+      ]
+    },
+    {
+      "group": "Get started",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/get-started/overview",
+        "v2/documentation/get-started/quickstart"
+      ]
+    },
+    {
+      "group": "Guides and concepts",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/guides-and-concepts/how-newscatcher-works",
+        "v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api",
+        "v2/documentation/guides-and-concepts/use-news-api-v2-in-postman"
+      ]
+    },
+    {
+      "group": "How to",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/how-to/search-for-person-company-product",
+        "v2/documentation/how-to/scroll-through-pages",
+        "v2/documentation/how-to/search-by-date-time",
+        "v2/documentation/how-to/get-more-than-10000-articles"
+      ]
+    },
+    {
+      "group": "Tutorials",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/tutorials/export-news-into-csv-with-python",
+        "v2/documentation/tutorials/build-news-aggregator"
+      ]
+    },
+    {
+      "group": "PyGoogleNews",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/pygooglenews/overview",
+        "v2/documentation/pygooglenews/installation-quickstart",
+        "v2/documentation/pygooglenews/functions-classes",
+        "v2/documentation/pygooglenews/special-query-terms",
+        "v2/documentation/pygooglenews/advanced-querying-search-examples",
+        "v2/documentation/pygooglenews/proxies"
+      ]
+    },
+    {
+      "group": "FAQ",
+      "version": "v2",
+      "pages": [
+        "v2/documentation/faq/overview",
+        "v2/documentation/faq/product-faq",
+        "v2/documentation/faq/company-faq"
+      ]
+    },
+    {
+      "group": "Overview",
+      "version": "v2",
+      "pages": [
+        "v2/api-reference/overview/introduction",
+        "v2/api-reference/overview/authentication",
+        "v2/api-reference/overview/rate-limits-quotas"
+      ]
+    },
+    {
+      "group": "Endpoints",
+      "version": "v2",
+      "pages": [
+        {
+          "group": "Search",
+          "pages": [
+            "v2/api-reference/endpoints/search/search-news-get",
+            "v2/api-reference/endpoints/search/search-news-post"
+          ]
+        },
+        {
+          "group": "Latest headlines",
+          "pages": [
+            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get",
+            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-post"
+          ]
+        },
+        {
+          "group": "Sources",
+          "pages": [
+            "v2/api-reference/endpoints/sources/get-top-news-sources-get",
+            "v2/api-reference/endpoints/sources/get-top-news-sources-post"
+          ]
+        }
       ]
     }
   ],
