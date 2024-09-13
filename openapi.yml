@@ -653,9 +653,9 @@ components:
         The article fields to search in. 
         To search in multiple fields, use a comma-separated string. For example, `title,summary`.
 
-        Available options: `title`, `summary`, `content`.
+        **Note**: The `summary` option is available if NLP is enabled in your plan.
 
-        > **Note:** The `summary` option is available if NLP is enabled in your plan.
+        Available options: `title`, `summary`, `content`.
       name: search_in
       in: query
       required: false
@@ -748,13 +748,21 @@ components:
 
     PredefinedSources:
       description: |
-        Predefined top sources per country. Format: start with the word `top`, 
-        followed by the number of desired sources, and then the two-letter country 
-        code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-        For example, `top 100 US`, `top 33 AT`, `top 5 GB`.
+        Predefined top sources per country. 
 
-        Multiple countries can be specified with custom numbers as a comma-separated strings.
-        For example, `top 50 US, top 20 GB`, `top 33 AT, top 50 IT`.
+        Format: start with the word `top`, followed by the number of desired sources, 
+        and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+
+        Examples: 
+        - `"top 100 US"`
+        - `"top 33 AT"`
+        - `"top 5 GB"`       
+
+        Multiple countries can be specified with custom numbers as a comma-separated string. 
+
+        Examples: 
+        - `"top 50 US, top 20 GB"`
+        - `"top 33 AT, top 50 IT"`
       name: predefined_sources
       in: query
       required: false
@@ -990,10 +998,12 @@ components:
 
     AllLinks:
       description: |
-        The desired URL(s) mentioned in the article to search for.
-        To specify multiple URLs, use a comma-separated string. For example, `washingtonpost.com,wsj.com`.
+        Searches for articles mentioning specific complete URLs.
+        For multiple URLs, use a comma-separated string.
 
-        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
+        Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
+
+        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
       name: all_links
       in: query
       required: false
@@ -1002,10 +1012,31 @@ components:
       examples:
         single-link:
           summary: Single link
-          value: "https://www.washingtonpost.com"
+          value: "https://aiindex.stanford.edu/report"
         multiple-links:
           summary: Multiple links
-          value: "washingtonpost.com,wsj.com"
+          value: "https://aiindex.stanford.edu/report, https://www.stateof.ai"
+
+    AllDomainLinks:
+      description: |
+        Searches for articles mentioning specific domain URLs.
+        For multiple domains, use a comma-separated string.
+
+        Example: `"who.int, nih.gov"`
+
+        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+      name: all_domain_links
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        single-domain-url:
+          summary: Single domain URL
+          value: "nvidia.com"
+        multiple-domain-urls:
+          summary: Multiple domain URLs
+          value: "who.int,nih.gov"
 
     AuthorName:
       description: |
@@ -1034,25 +1065,6 @@ components:
         multiple-author-names:
           summary: Multiple author names
           value: "John Doe, Jane Doe"
-
-    AllDomainLinks:
-      description: |
-        The domain URLs that are mentioned in the article to search for.
-        To specify multiple domain URLs, use a comma-separated string. 
-
-        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
-      name: all_domain_links
-      in: query
-      required: false
-      schema:
-        type: string
-      examples:
-        single-domain-url:
-          summary: Single domain URL
-          value: "washingtonpost.com"
-        multiple-domain-urls:
-          summary: Multiple domain URLs
-          value: "washingtonpost.com,wsj.com"
 
     WordCountMin:
       description: |
@@ -3360,9 +3372,9 @@ components:
         The article fields to search in. 
         To search in multiple fields, use a comma-separated string. For example, `title,summary`.
 
-        Available options: `title`, `summary`, `content`.
+        **Note**: The `summary` option is available if NLP is enabled in your plan.
 
-        > **Note:** The `summary` option is available if NLP is enabled in your plan.
+        Available options: `title`, `summary`, `content`.
       example: title,content
 
     Countries:
@@ -3428,13 +3440,21 @@ components:
           items:
             type: string
       description: |
-        Predefined top sources per country. Format: start with the word `top`, 
-        followed by the number of desired sources, and then the two-letter country 
-        code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-        For example, `top 100 US`, `top 33 AT`, `top 5 GB`.        
+        Predefined top sources per country. 
+
+        Format: start with the word `top`, followed by the number of desired sources, 
+        and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+
+        Examples: 
+        - `"top 100 US"`
+        - `"top 33 AT"`
+        - `"top 5 GB"`       
 
         Multiple countries can be specified with custom numbers as a comma-separated string or an array of strings. 
-        For example, `"top 50 US, top 20 GB"`, `["top 50 US", "top 20 GB"]`.
+
+        Examples: 
+        - `"top 50 US, top 20 GB"`
+        - `["top 50 US", "top 20 GB"]`
       example: ["top 50 US", "top 20 GB"]
 
     SourceName:
@@ -3605,12 +3625,45 @@ components:
           items:
             type: string
       description: |
-        The desired URL(s) mentioned in the article to search for.
-        To specify multiple URLs, use a comma-separated string or an array of strings.
-        For example, `"washingtonpost.com, wsj.com"` or `["washingtonpost.com", "wsj.com"]`.
+        Searches for articles mentioning specific complete URLs.
+        For multiple URLs, use a comma-separated string or an array of strings.
 
-        To learn more, see the [Search by URL](/v3/documentation/how-to/search-by-url) page.
-      example: ["washingtonpost.com", "wsj.com"]
+        Examples: 
+        - `"https://aiindex.stanford.edu/report/, https://www.stateof.ai/"`
+        - `["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]`
+
+        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+      example:
+        string-input:
+          summary: Comma-separated string
+          value: "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
+        array-input:
+          summary: Array of strings
+          value:
+            ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
+
+    AllDomainLinks:
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      description: |
+        Searches for articles mentioning specific domain URLs.
+        For multiple domains, use a comma-separated string or an array of strings.
+
+        Examples: 
+        - `"who.int, nih.gov"`
+        - `["who.int", "nih.gov"]`
+
+        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+      example:
+        string-input:
+          summary: Comma-separated string
+          value: "who.int, nih.gov"
+        array-input:
+          summary: Array of strings
+          value: ["who.int", "nih.gov"]
 
     AuthorName:
       type: string
@@ -3629,20 +3682,6 @@ components:
         To exclude articles by specific authors, use a comma-separated string or an array of strings. 
         For example, `"John Doe, Jane Doe"` or `["John Doe", "Jane Doe"]`.
       example: ["John Doe", "Jane Doe"]
-
-    AllDomainLinks:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
-      description: |
-        The domain URLs that are mentioned in the article to search for.
-        To specify multiple domain URLs, use a comma-separated string or an array of strings. 
-        For example, `"washingtonpost.com, wsj.com"` or `["washingtonpost.com", "wsj.com"]`.
-
-        To learn more, see [Search by URL](/v3/documentation/how-to/search-by-url).
-      example: ["washingtonpost.com", "wsj.com"]
 
     WordCountMin:
       type: integer

@@ -1,7 +1,234 @@
 ---
 title: How to search articles by URL
 sidebarTitle: Search by URL
-description: Finding articles referencing specific URLs or domains.
+description:
+  Find articles that mention specific URLs or domains using News API v3
 ---
 
-Coming soon ...
+## Overview
+
+News API v3 offers powerful URL-based search capabilities, allowing you to find
+articles that mention specific URLs or domains. This feature is handy for
+tracking website mentions, monitoring competitors, or analyzing link patterns in
+news articles.
+
+The API provides two main parameters for URL-based searches:
+
+- `all_links`: Searches for articles mentioning specific complete URLs.
+- `all_domain_links`: Searches for articles mentioning specific domain URLs.
+
+Using these parameters, you can refine your searches and gain valuable insights
+from news articles on the web.
+
+## Before you start
+
+Before you begin, ensure you have:
+
+- An active API key for NewsCatcher News API v3
+- Basic knowledge of making API requests
+- Python or another tool for making HTTP requests (cURL, Postman, or a
+  programming language with HTTP capabilities)
+
+URL-based search is available on the following endpoints:
+
+- `/search`
+- `/latest_headlines`
+- `/authors`
+- `/search_similar`
+- `/aggregation_count`
+
+<Note>
+  In `GET` requests, you can specify multiple URLs/domains as comma-separated
+  strings. `POST` requests support both comma-separated strings and arrays of
+  strings.
+</Note>
+
+## Steps
+
+<Steps>
+  <Step title="Understand URL search parameters">
+
+    - `all_links`: Use this parameter to search for articles that mention specific
+    complete URLs. This is useful when you want to find articles linking to exact
+    pages.
+    - `all_domain_links`: Use this parameter to search for articles that mention
+    specific domain URLs. This is helpful when you want to find articles linking
+    to any page within a domain.
+
+  </Step>
+  <Step title="Construct your query">
+
+    Here's an example of a basic query using the `all_domain_links` parameter:
+
+    ```json
+    {
+      "q": "AI",
+      "all_domain_links": "nvidia.com",
+      "lang": "en"
+    }
+    ```
+
+    This query:
+
+    - Searches for articles about AI.
+    - Looks for mentions of the NVIDIA website.
+    - Limits results to English language articles.
+
+  </Step>
+  <Step title="Make an API request">
+
+    Here's a Python example demonstrating how to make a POST request with the above
+    query:
+
+    ```python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    URL = "https://v3-api.newscatcherapi.com/api/search"
+    HEADERS = {"x-api-token": API_KEY}
+
+    PAYLOAD = {
+        "q": "AI",
+        "all_domain_links": "nvidia.com",
+        "lang": "en"
+    }
+
+    try:
+        response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch articles: {e}")
+    ```
+
+  </Step>
+  <Step title="Analyze the results">
+
+    The API returns a JSON response. Here's a simplified example focusing on
+    URL-related fields:
+
+    ```json
+    {
+    "status": "ok",
+    "total_hits": 264,
+    "page": 1,
+    "total_pages": 3,
+    "page_size": 100,
+    "articles": [
+        {
+        "title": "NVIDIA 'Powering Advanced AI' Is The New Tagline For GeForce RTX GPUs & AI PC Platforms",
+        "author": "Hassan Mujtaba",
+        "published_date": "2024-09-02",
+        "link": "https://wccftech.com/nvidia-powering-advanced-ai-new-tagline-geforce-rtx-gpus-ai-pc-platforms",
+        "domain_url": "wccftech.com",
+        "description": "NVIDIA has silently updated its GeForce RTX GPUs & AI PC platform badges to include a new tagline which is \"Powering Advanced AI\".",
+        "content": "NVIDIA has updated its GeForce RTX GPU badges with a new tagline, 'Powering Advanced AI,' to highlight its AI capabilities. The company continues to lead in AI applications with technologies like DLSS and ChatRTX. This new branding is already being used by OEMs, showcasing NVIDIA's AI performance in various sectors beyond gaming...",
+        "word_count": 341,
+        "all_links": [
+            "https://www.nvidia.com",
+            "https://www.amazon.com/dp/B082L36ZRY?tag=twea-20",
+            "https://www.facebook.com/TweakTown",
+            "https://www.threads.net/@tweaktown"
+            // ... other links
+        ],
+        "all_domain_links": [
+            "techpowerup.com",
+            "threads.net",
+            "youtube.com",
+            "linksynergy.com",
+            "nvidia.com"
+            // ... other domain links
+        ]
+        // ... other fields
+        }
+        // ... other articles
+    ],
+    "user_input": {
+        "q": "AI",
+        "lang": ["en"],
+        "all_domain_links": ["nvidia.com"]
+        // ... other fields
+    }
+    }
+    ```
+
+  </Step>
+  <Step title="Refine your URL search">
+
+    To improve your search results and gain more specific insights, consider these
+    practical examples:
+
+    <AccordionGroup>
+      <Accordion title="Tracking AI reports and their impact">
+
+    ```json
+    {
+    "q": "AI report",
+    "all_links": [
+        "https://aiindex.stanford.edu/report/",
+        "https://www.stateof.ai/",
+        "https://www2.deloitte.com/us/en/pages/consulting/articles/state-of-generative-ai-in-enterprise.html"
+    ],
+    "from_": "2024-01-01",
+    "lang": "en"
+    }
+    ```
+
+    This query tracks mentions of specific AI reports, helping you understand their
+    impact and how they're being discussed in the media.
+
+      </Accordion>
+      <Accordion title="Analyzing AI in specific industries">
+
+    ```json
+    {
+    "q": "AI AND (healthcare OR medicine)",
+    "all_domain_links": ["who.int", "nih.gov"],
+    "all_links": ["https://www.nature.com/articles/s41591-023-02448-8"],
+    "lang": "en",
+    "from_": "2024-01-01"
+    }
+    ```
+
+    This query combines industry-specific keywords with relevant domain links and a
+    specific research article (Large language models in medicine) to track AI's
+    impact in healthcare.
+
+      </Accordion>
+      <Accordion title="Tracking AI policy and regulation">
+
+    ```json
+    {
+    "q": "AI regulation",
+    "all_domain_links": ["europa.eu", "whitehouse.gov", "gov.uk"],
+    "lang": "en",
+    "from_": "2024-01-01"
+    }
+    ```
+
+    This query helps monitor AI-related policy discussions and announcements from
+    major government entities.
+      </Accordion>
+    </AccordionGroup>
+
+  </Step>
+</Steps>
+
+## Best practices
+
+- Use `all_links` to find mentions of specific pages or articles.
+- Use `all_domain_links` to track mentions of a website in general, regardless
+  of the specific page.
+- Combine URL search with other parameters to create more targeted queries.
+- Use date ranges to focus on recent developments or track changes over time.
+- Be aware that very broad domain searches might return a large number of
+  results. Use additional filters to narrow down your search.
+- Regularly update your queries to track evolving topics and include new
+  relevant URLs or domains.
+
+## See also
+
+- [Advanced querying techniques](/v3/documentation/guides-and-concepts/advanced-querying)
+- [How to optimize search with API parameters](/v3/documentation/how-to/optimize-search)
+- [API Reference: Search endpoint](/v3/api-reference/endpoints/search/search-articles-post)
