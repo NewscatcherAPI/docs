@@ -902,13 +902,19 @@ components:
 
     From:
       description: |
-        The starting point in time to search from. By default, the publication date of the article is used. 
-        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        The starting point in time to search from. 
+        Accepts date-time strings in ISO 8601 format and plain text strings. 
+        The default time zone is UTC. 
 
-        Available formats:
-        - `YYYY/mm/dd`
-        - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago`
+        Formats with examples:
+        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+        - YYYY-MM-dd: `2024-07-01`
+        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+        - YYYY/mm/dd: `2024/07/01`
+        - English phrases: `1 day ago`, `today`
+
+        **Note**: By default, applied to the publication date of the article. 
+        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: from_
       in: query
       required: false
@@ -916,7 +922,7 @@ components:
         oneOf:
           - type: string
             format: date-time
-            example: 2024-06-01T00:00:00
+            example: 2024-07-01T00:00:00
           - type: string
             example: 1 day ago
       examples:
@@ -929,13 +935,19 @@ components:
 
     To:
       description: |
-        The ending point in time to search up to. By default, the publication date of the article is used. 
-        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        The ending point in time to search up to. 
+        Accepts date-time strings in ISO 8601 format and plain text strings. 
+        The default time zone is UTC. 
 
-        Available formats:
-        - `YYYY/mm/dd`
-        - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago`.
+        Formats with examples:
+        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+        - YYYY-MM-dd: `2024-07-01`
+        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+        - YYYY/mm/dd: `2024/07/01`
+        - English phrases: `1 day ago`, `today`
+
+        **Note**: By default, applied to the publication date of the article. 
+        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: to_
       in: query
       required: false
@@ -3553,36 +3565,46 @@ components:
       oneOf:
         - type: string
           format: date-time
-          example: 2023/12/31 23:59:59
+          example: 2024-07-01T00:00:00
         - type: string
           example: 1 day ago
       description: |
         The starting point in time to search from. 
-        By default, the publication date of the article is used. 
-        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        Accepts date-time strings in ISO 8601 format and plain text strings. 
+        The default time zone is UTC. 
 
-        Available formats:
-        - `YYYY/mm/dd`
-        - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago`
+        Formats with examples:
+        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+        - YYYY-MM-dd: `2024-07-01`
+        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+        - YYYY/mm/dd: `2024/07/01`
+        - English phrases: `1 day ago`, `today`
+
+        **Note**: By default, applied to the publication date of the article. 
+        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       example: 2021/01/01
 
     To:
       oneOf:
         - type: string
           format: date-time
-          example: 2023/12/31 23:59:59
+          example: 2024-01-01T00:00:00
         - type: string
           example: 1 day ago
       description: |
         The ending point in time to search up to. 
-        By default, the publication date of the article is used. 
-        To use the article parse date instead, set `by_parse_date` to `true`. The default time zone is UTC.
+        Accepts date-time strings in ISO 8601 format and plain text strings. 
+        The default time zone is UTC. 
 
-        Available formats:
-        - `YYYY/mm/dd`
-        - `YYYY/mm/dd HH:MM:SS`
-        - English phrases like `1 day ago`.
+        Formats with examples:
+        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+        - YYYY-MM-dd: `2024-07-01`
+        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+        - YYYY/mm/dd: `2024/07/01`
+        - English phrases: `1 day ago`, `today`
+
+        **Note**: By default, applied to the publication date of the article. 
+        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       example: 2021/12/31
 
     PublishedDatePrecision:
