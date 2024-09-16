@@ -780,9 +780,6 @@ components:
         phrase, or outlet name, such as `"sport"`, `"hello world"`, or `"new york times"`.
 
         To specify multiple terms, use a comma-separated string, for example, `"sport, tech"`.
-
-        **Note**: Depending on the terms used, the `source_name` parameter may return a large number of results. 
-        For more precise filtering, use the `sources_url` parameter.
       name: source_name
       in: query
       required: false
@@ -3473,9 +3470,6 @@ components:
 
         To specify multiple terms, use a comma-separated string or an array of strings.
         For example, `"sport, tech"` or `["sport", "tech"]`.
-
-        **Note**: Depending on the terms used, the `source_name` parameter may return a large number of results. 
-        For more precise filtering, use the `sources_url` parameter.
       example: ["sport", "tech"]
 
     ParentUrl:
