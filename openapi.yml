@@ -998,7 +998,7 @@ components:
 
     AllLinks:
       description: |
-        Searches for articles mentioning specific complete URLs.
+        The complete URL(s) mentioned in the article.
         For multiple URLs, use a comma-separated string.
 
         Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
@@ -1019,7 +1019,7 @@ components:
 
     AllDomainLinks:
       description: |
-        Searches for articles mentioning specific domain URLs.
+        The domain(s) mentioned in the article.
         For multiple domains, use a comma-separated string.
 
         Example: `"who.int, nih.gov"`
@@ -3625,7 +3625,7 @@ components:
           items:
             type: string
       description: |
-        Searches for articles mentioning specific complete URLs.
+        The complete URL(s) mentioned in the article.
         For multiple URLs, use a comma-separated string or an array of strings.
 
         Examples: 
@@ -3649,7 +3649,7 @@ components:
           items:
             type: string
       description: |
-        Searches for articles mentioning specific domain URLs.
+        The domain(s) mentioned in the article.
         For multiple domains, use a comma-separated string or an array of strings.
 
         Examples: 
