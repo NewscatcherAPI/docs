@@ -187,8 +187,8 @@ paths:
         - $ref: "#/components/parameters/NotLang"
         - $ref: "#/components/parameters/Countries"
         - $ref: "#/components/parameters/NotCountries"
-        - $ref: "#/components/parameters/Sources"
         - $ref: "#/components/parameters/PredefinedSources"
+        - $ref: "#/components/parameters/Sources"
         - $ref: "#/components/parameters/NotSources"
         - $ref: "#/components/parameters/NotAuthorName"
         - $ref: "#/components/parameters/RankedOnly"
@@ -254,8 +254,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/AuthorName"
         - $ref: "#/components/parameters/NotAuthorName"
-        - $ref: "#/components/parameters/Sources"
         - $ref: "#/components/parameters/PredefinedSources"
+        - $ref: "#/components/parameters/Sources"
         - $ref: "#/components/parameters/NotSources"
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/NotLang"
@@ -457,11 +457,11 @@ paths:
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/Countries"
         - $ref: "#/components/parameters/PredefinedSources"
+        - $ref: "#/components/parameters/SourceName"
+        - $ref: "#/components/parameters/SourceUrl"
         - $ref: "#/components/parameters/IncludeAdditionalInfo"
         - $ref: "#/components/parameters/FromRank"
         - $ref: "#/components/parameters/ToRank"
-        - $ref: "#/components/parameters/SourceName"
-        - $ref: "#/components/parameters/SourceUrl"
       responses:
         "200":
           $ref: "#/components/responses/SourcesSuccessfulResponse"
@@ -1771,10 +1771,10 @@ components:
                 $ref: "#/components/schemas/AuthorName"
               not_author_name:
                 $ref: "#/components/schemas/NotAuthorName"
-              sources:
-                $ref: "#/components/schemas/Sources"
               predefined_sources:
                 $ref: "#/components/schemas/PredefinedSources"
+              sources:
+                $ref: "#/components/schemas/Sources"
               not_sources:
                 $ref: "#/components/schemas/NotSources"
               lang:
@@ -1878,10 +1878,10 @@ components:
                 $ref: "#/components/schemas/Countries"
               not_countries:
                 $ref: "#/components/schemas/NotCountries"
-              sources:
-                $ref: "#/components/schemas/Sources"
               predefined_sources:
                 $ref: "#/components/schemas/PredefinedSources"
+              sources:
+                $ref: "#/components/schemas/Sources"
               not_sources:
                 $ref: "#/components/schemas/NotSources"
               not_author_name:
@@ -2236,16 +2236,16 @@ components:
                 $ref: "#/components/schemas/Countries"
               predefined_sources:
                 $ref: "#/components/schemas/PredefinedSources"
+              source_name:
+                $ref: "#/components/schemas/SourceName"
+              source_url:
+                $ref: "#/components/schemas/SourceUrl"
               include_additional_info:
                 $ref: "#/components/schemas/IncludeAdditionalInfo"
               from_rank:
                 $ref: "#/components/schemas/FromRank"
               to_rank:
                 $ref: "#/components/schemas/ToRank"
-              source_name:
-                $ref: "#/components/schemas/SourceName"
-              source_url:
-                $ref: "#/components/schemas/SourceUrl"
             example:
               predefined_sources:
                 - top 50 US
