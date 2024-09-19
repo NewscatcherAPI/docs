@@ -3,12 +3,14 @@ title: Errors
 description: Quick reference guide for common errors in News API v3
 ---
 
-This article provides a quick reference for the most common errors you might
-encounter while using the News API v3. For detailed troubleshooting steps and
-best practices, refer to the
-[Error handling](/v3/documentation/troubleshooting/error-handling) guide.
+NewsAPI v3 uses standard HTTP codes to indicate request success or failure. 2xx
+codes mean success, 4xx codes indicate user-related failures, and 5xx codes
+indicate infrastructure issues.
 
 ## Common error codes
+
+The following table provides a quick reference for the most common errors you
+might encounter while using the News API v3:
 
 | Status code | Status                | Description                                                                                             | Quick solution                                                                                                                        |
 | ----------- | --------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,3 +28,6 @@ best practices, refer to the
 - Use exponential backoff for retries on rate-limited errors (`429`).
 - Validate request data against API documentation to avoid validation errors
   (`422`).
+
+For detailed troubleshooting steps and best practices, refer to the
+[Error handling](/v3/documentation/troubleshooting/error-handling) guide.
