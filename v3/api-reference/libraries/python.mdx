@@ -1,6 +1,190 @@
 ---
-title: Python
+title: Python SDK for NewsCatcher News API v3
+sidebarTitle: Python
 description: News API v3 Python SDK
 ---
 
-Coming soon …
+## Requirements
+
+- Python 3.7 or higher
+
+## Installation
+
+To install the NewsCatcher News API v3 Python SDK, use pip:
+
+```bash
+pip install newscatcherapi-python-sdk==6.0.12
+```
+
+## Getting started
+
+Here's a basic example of how to use the SDK to search for articles:
+
+```python
+from pprint import pprint
+from newscatcherapi_client import Newscatcher, ApiException
+
+newscatcher = Newscatcher(
+    api_key="YOUR_API_KEY",
+)
+
+try:
+    # [Get] Search
+    get_response = newscatcher.search.get(
+        q="tech"
+    )
+    print(get_response)
+except ApiException as e:
+    print("Exception when calling SearchApi.get: %s\n" % e)
+```
+
+## Async support
+
+The SDK supports asynchronous operations. To use async methods, prepend `a` to
+any method name:
+
+```python
+import asyncio
+from pprint import pprint
+from newscatcherapi_client import Newscatcher, ApiException
+
+newscatcher = Newscatcher(
+    api_key="YOUR_API_KEY",
+)
+
+async def main():
+    try:
+        # [Get] Search
+        get_response = await newscatcher.search.aget(
+            q="tech",
+        )
+        print(get_response)
+    except ApiException as e:
+        print("Exception when calling SearchApi.get: %s\n" % e)
+
+asyncio.run(main())
+```
+
+## Raw HTTP response
+
+To access raw HTTP response values, use the `.raw` namespace:
+
+```python
+from pprint import pprint
+from newscatcherapi_client import Newscatcher, ApiException
+
+newscatcher = Newscatcher(api_key="YOUR_API_KEY")
+
+try:
+    # [Get] Search
+    get_response = newscatcher.search.raw.get(
+        q="tech",
+    )
+    pprint(get_response.body)
+    pprint(get_response.headers)
+    pprint(get_response.status)
+    pprint(get_response.round_trip_time)
+except ApiException as e:
+    print("Exception when calling SearchApi.get: %s\n" % e)
+```
+
+## Endpoints
+
+The SDK provides access to various News API v3 endpoints through the methods of
+the `Newscatcher` class:
+
+- `Newscatcher.search`: Search for articles.
+- `Newscatcher.latest_headlines`: Retrieve the latest headlines.
+- `Newscatcher.authors`: Search for articles by author.
+- `Newscatcher.search_link`: Search for articles by URL or ID.
+- `Newscatcher.search_similar`: Find similar articles.
+- `Newscatcher.sources`: Retrieve information about news sources.
+- `Newscatcher.subscription`: Get information about your subscription.
+
+Each endpoint supports both `GET` and `POST` requests. You can use them as
+follows:
+
+```python
+# GET request
+response = Newscatcher.search.get(q="tech")
+
+# POST request
+response = Newscatcher.search.post(q="tech")
+```
+
+## Error handling
+
+The SDK uses the `ApiException` class to handle API errors. When an error
+occurs, `ApiException` provides detailed information about the error. Here's an
+example of how to catch and handle these exceptions:
+
+```python
+from pprint import pprint
+from newscatcherapi_client import Newscatcher, ApiException
+
+newscatcher = Newscatcher(api_key="YOUR_API_KEY")
+
+try:
+    # Intentionally causing a validation error
+    response = newscatcher.search.get(q="tech", from_rank=0)
+except ApiException as e:
+    print(f"An error occurred: {e}")
+    print("\nError details:")
+    print(f"Status code: {e.status}")
+    print(f"Reason: {e.reason}")
+    print(f"Error message: {e.body.get('message')}")
+    print(f"Error status: {e.body.get('status')}")
+    print(f"\nAdditional Information:")
+    print(f"Headers: {e.headers}")
+    print(f"Round trip time: {e.round_trip_time}")
+```
+
+Example output:
+
+```bash
+An error occurred: (422)
+Reason: Unprocessable Entity
+HTTP response headers: HTTPHeaderDict({'Date': 'Fri, 20 Sep 2024 08:49:02 GMT', 'Content-Type': 'application/json', 'Content-Length': '87', 'Connection': 'keep-alive', 'x-process-time': '0.02510356903076172', 'correlation-id': '4f36b415-1f7b-4287-b4f9-ce0c63560757', 'CF-Cache-Status': 'DYNAMIC', 'Server': 'cloudflare', 'CF-RAY': '8c608f565b0e2d97-KBP'})
+HTTP response body: {'message': 'Rank must be greater than 0', 'status_code': 422, 'status': 'Validation error'}
+
+Error details:
+Status code: 422
+Reason: Unprocessable Entity
+Error message: Rank must be greater than 0
+Error status: Validation error
+
+Additional Information:
+Headers: HTTPHeaderDict({'Date': 'Fri, 20 Sep 2024 08:49:02 GMT', 'Content-Type': 'application/json', 'Content-Length': '87', 'Connection': 'keep-alive', 'x-process-time': '0.02510356903076172', 'correlation-id': '4f36b415-1f7b-4287-b4f9-ce0c63560757', 'CF-Cache-Status': 'DYNAMIC', 'Server': 'cloudflare', 'CF-RAY': '8c608f565b0e2d97-KBP'})
+Round trip time: 0.5238039493560791
+```
+
+This information can help debug and understand the specific nature of the error.
+
+### Understanding error response
+
+When an error occurs, you can access the following information from the
+`ApiException`:
+
+- `ApiException.status`: The HTTP status code of the error (for example, 422 for
+  validation errors).
+- `ApiException.reason`: A brief description of the HTTP status (for example,
+  "Unprocessable Entity").
+- `ApiException.body`: A dictionary containing detailed error information:
+  - `message`: A specific error message explaining the issue.
+  - `status`: The error status (for example, "Validation error").
+  - `status_code`: The numeric status code (same as `ApiException.status`).
+- `ApiException.headers`: HTTP response headers, which include:
+  - `Date`: Timestamp of the response.
+  - `Content-Type`: The response content type (usually "application/json").
+  - `Content-Length`: Length of the response body.
+  - `x-process-time`: The time taken to process the request on the server side.
+  - `correlation-id`: A unique identifier for the request.
+  - `CF-Cache-Status`: Cloudflare cache status.
+  - `CF-RAY`: Cloudflare Ray ID for the request.
+- `ApiException.round_trip_time`: The total time taken for the request and
+  response in seconds.
+
+## Additional resources
+
+- [API Reference](/v3/api-reference/introduction)
+- [PyPI Package](https://pypi.org/project/newscatcherapi-python-sdk/)

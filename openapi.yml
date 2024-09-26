@@ -1780,13 +1780,13 @@ components:
                 $ref: "#/components/schemas/Theme"
               not_theme:
                 $ref: "#/components/schemas/NotTheme"
-              org_entity_name:
+              ORG_entity_name:
                 $ref: "#/components/schemas/OrgEntityName"
-              per_entity_name:
+              PER_entity_name:
                 $ref: "#/components/schemas/PerEntityName"
-              loc_entity_name:
+              LOC_entity_name:
                 $ref: "#/components/schemas/LocEntityName"
-              misc_entity_name:
+              MISC_entity_name:
                 $ref: "#/components/schemas/MiscEntityName"
               title_sentiment_min:
                 $ref: "#/components/schemas/TitleSentimentMin"
@@ -1976,13 +1976,13 @@ components:
                 $ref: "#/components/schemas/Theme"
               not_theme:
                 $ref: "#/components/schemas/NotTheme"
-              org_entity_name:
+              ORG_entity_name:
                 $ref: "#/components/schemas/OrgEntityName"
-              per_entity_name:
+              PER_entity_name:
                 $ref: "#/components/schemas/PerEntityName"
-              loc_entity_name:
+              LOC_entity_name:
                 $ref: "#/components/schemas/LocEntityName"
-              misc_entity_name:
+              MISC_entity_name:
                 $ref: "#/components/schemas/MiscEntityName"
               title_sentiment_min:
                 $ref: "#/components/schemas/TitleSentimentMin"
@@ -2090,13 +2090,13 @@ components:
                 $ref: "#/components/schemas/Theme"
               not_theme:
                 $ref: "#/components/schemas/NotTheme"
-              org_entity_name:
+              ORG_entity_name:
                 $ref: "#/components/schemas/OrgEntityName"
-              per_entity_name:
+              PER_entity_name:
                 $ref: "#/components/schemas/PerEntityName"
-              loc_entity_name:
+              LOC_entity_name:
                 $ref: "#/components/schemas/LocEntityName"
-              misc_entity_name:
+              MISC_entity_name:
                 $ref: "#/components/schemas/MiscEntityName"
               title_sentiment_min:
                 $ref: "#/components/schemas/TitleSentimentMin"

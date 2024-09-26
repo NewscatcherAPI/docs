@@ -1,9 +1,9 @@
 ---
-title: Advanced Querying Search Examples
+title: Advanced querying search examples
 description: Advanced examples for using pygooglenews
 ---
 
-#### **Example 1. Search for articles that mention** **`boeing`** **and do not mention** **`airbus`**
+## Example 1. Search for articles that mention `boeing` and do not mention `airbus`
 
 ```python
 from pygooglenews import GoogleNews
@@ -16,8 +16,7 @@ print(s['feed'].title)
 # "boeing -airbus" - Google News
 ```
 
-
-#### **Example 2. Search for articles that mention** **`boeing`** **in title**
+## Example 2. Search for articles that mention `boeing` in title
 
 ```python
 from pygooglenews import GoogleNews
@@ -30,8 +29,7 @@ print(s['feed'].title)
 # "intitle:boeing" - Google News
 ```
 
-
-#### **Example 3. Search for articles that mention** **`boeing**` **in title and got published over the past hour**
+## Example 3. Search for articles that mention `boeing` in title and got published over the past hour
 
 ```python
 from pygooglenews import GoogleNews
@@ -44,8 +42,7 @@ print(s['feed'].title)
 # "intitle:boeing when:1h" - Google News
 ```
 
-
-#### **Example 4. Search for articles that mention** **`boeing`** **or** `**airbus**`
+## Example 4. Search for articles that mention `boeing` or `airbus`
 
 ```python
 from pygooglenews import GoogleNews

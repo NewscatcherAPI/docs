@@ -1,13 +1,15 @@
 ---
-title: Scroll Through Pages
+title: Scroll through pages
 description: Learn how to iterate through found pages and extract articles
 ---
-Whenever you make an API call using _/v2/search_ or _/v2/latest\_headlines_ endpoints_,_ we give you key information about your search. Here is an example of a _search_ API call:
+
+Whenever you make an API call using _/v2/search_ or _/v2/latest_headlines_
+endpoints*,* we give you key information about your search. Here is an example
+of a _search_ API call:
 
 ```bash
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q="Elon%20Musk&countries=in,GB&from=13%20days%20ago&page_size=50&page=1' -H 'x-api-key: your_key_1'
 ```
-
 
 The output:
 
@@ -20,19 +22,19 @@ The output:
     "articles": [ ...
 ```
 
-
 `total_hits` tells you how many articles are found.
 
-`total_pages` indicates how many API calls you will have to make in order to get these articles.
+`total_pages` indicates how many API calls you will have to make in order to get
+these articles.
 
 **One API call can bring a maximum of 100 articles.**
 
-You can increase the `page_size` parameter for your search to make fewer calls and get more data.
+You can increase the `page_size` parameter for your search to make fewer calls
+and get more data.
 
 ```bash
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q="Elon%20Musk&countries=in,GB&from=13%20days%20ago&page_size=100&page=1' -H 'x-api-key: your_key_1'
 ```
-
 
 gives
 
@@ -45,10 +47,13 @@ gives
     "articles": [ ...
 ```
 
+Based on the information above, we can say that given the `page_size` and being
+on the **1st page**, we are seeing all found articles **from 1 to 100 out
+of 1300.**
 
-Based on the information above, we can say that given the `page_size` and being on the **1st page**, we are seeing all found articles **from 1 to 100 out of 1300.**
+By incrementing the `page` parameter to **2**, I will get all articles **from
+101 to 200 out of 1300**. You get the logic.
 
-By incrementing the `page` parameter to **2**, I will get all articles **from 101 to 200 out of 1300**. You get the logic.
 <Info>
     To summarize, your goal is to iterate through all found pages and extract articles.
 
@@ -56,24 +61,25 @@ By incrementing the `page` parameter to **2**, I will get all articles **from 10
 
 The whole process should be divided into 2 parts:
 
-*   Make 1 call and identify the total number of pages in `total_pages`
-    
-*   Increment `page` input until the `total_pages` value to get all articles.
-    
+- Make 1 call and identify the total number of pages in `total_pages`
+- Increment `page` input until the `total_pages` value to get all articles.
 
-Python (SDK)
-----------------
+## Python (SDK)
 
-The Python library can be installed using `pip install` launched from the terminal. You can find all the details either on [PyPi website](https://pypi.org/project/newscatcherapi/) or our [GitHub Repository](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python).
+The Python library can be installed using `pip install` launched from the
+terminal. You can find all the details either on
+[PyPi website](https://pypi.org/project/newscatcherapi/) or our
+[GitHub Repository](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python).
 
 ```bash
 pip install newscatcherapi
 ```
 
-
 When installed, the package can be directly called from the Python application.
 
-We prepared separate functions `get_search_all_pages` and `get_latest_headlines_all_pages` to simplify the process of extracting all articles.
+We prepared separate functions `get_search_all_pages` and
+`get_latest_headlines_all_pages` to simplify the process of extracting all
+articles.
 
 ```python
 from newscatcherapi import NewsCatcherApiClient
@@ -89,9 +95,7 @@ all_articles = newscatcherapi.get_search_all_pages(
                                          page=1)
 ```
 
-
-Python (requests)
----------------------
+## Python (requests)
 
 ```python
 # Preinstalled packages

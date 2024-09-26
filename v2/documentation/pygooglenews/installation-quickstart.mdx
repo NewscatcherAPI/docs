@@ -1,14 +1,14 @@
 ---
-title: Installation & Quickstart
+title: Installation and quickstart
 ---
-### **Installation**
+
+## Installation
 
 ```
 $ pip install pygooglenews --upgrade
 ```
 
-
-### **Quickstart**
+## Quickstart
 
 ```
 from pygooglenews import GoogleNews
@@ -16,31 +16,28 @@ from pygooglenews import GoogleNews
 gn = GoogleNews()
 ```
 
-
-#### **Top Stories**
+### Top stories
 
 ```bash
 top = gn.top_news()
 ```
 
-#### **Stories by Topic**
+### Stories by topic
 
 ```bash
 business = gn.topic_headlines('business')
 ```
 
-
-#### **Geolocation Specific Stories**
+#### Geolocation Specific Stories
 
 ```bash
 headquaters = gn.geo_headlines('San Fran')
 ```
 
-
-#### **Stories by a Query Search**
+#### Stories by a Query Search
 
 ```bash
-# search for the best matching articles that mention MSFT and 
+# search for the best matching articles that mention MSFT and
 # do not mention AAPL (over the past 6 month
 search = gn.search('MSFT -APPL', when = '6m')
 ```

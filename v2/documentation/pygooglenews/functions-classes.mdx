@@ -1,9 +1,9 @@
 ---
-title: Functions & Classes
+title: Functions and classes
 description: Learn how to use pygooglenews in full
 ---
 
-### **GoogleNews Class**
+### GoogleNews Class
 
 ```python
 from pygooglenews import GoogleNews
@@ -11,70 +11,68 @@ from pygooglenews import GoogleNews
 gn = GoogleNews(lang = 'en', country = 'US')
 ```
 
-
-To get access to all the functions, you first have to initiate the `GoogleNews` class.
+To get access to all the functions, you first have to initiate the `GoogleNews`
+class.
 
 It has 2 required variables: `lang` and `country`
 
-You can try any combination of those 2, however, it does not exist for all. Only the combinations that are supported by GoogleNews will work. Check the official Google News page to check what is covered:
+You can try any combination of those 2, however, it does not exist for all. Only
+the combinations that are supported by GoogleNews will work. Check the official
+Google News page to check what is covered:
 
-On the bottom left side of the Google News page, you may find a `Language & region` section where you can find all of the supported combinations.
+On the bottom left side of the Google News page, you may find a
+`Language & region` section where you can find all of the supported
+combinations.
 
 For example, for `country=UA` (Ukraine), there are 2 languages supported:
 
-*   `lang=uk` Ukrainian
-    
-*   `lang=ru` Russian
-    
+- `lang=uk` Ukrainian
+- `lang=ru` Russian
 
-* * *
+---
 
-### **Top Stories**
+### Top Stories
 
 ```bash
 top = gn.top_news(proxies=None, scraping_bee = None)
 ```
 
+`top_news()` returns the top stories for the selected country and language that
+are defined in `GoogleNews` class. The returned object contains `feed`
+(FeedParserDict) and `entries` list of articles found with all data parsed.
 
-`top_news()` returns the top stories for the selected country and language that are defined in `GoogleNews` class. The returned object contains `feed` (FeedParserDict) and `entries` list of articles found with all data parsed.
+---
 
-* * *
-
-### **Stories by Topic**
+### Stories by Topic
 
 ```bash
 business = gn.topic_headlines('BUSINESS', proxies=None, scraping_bee = None)
 ```
 
-
-The returned object contains `feed` (FeedParserDict) and `entries` list of articles found with all data parsed.
+The returned object contains `feed` (FeedParserDict) and `entries` list of
+articles found with all data parsed.
 
 Accepted topics are:
 
-*   `WORLD`
-    
-*   `NATION`
-    
-*   `BUSINESS`
-    
-*   `TECHNOLOGY`
-    
-*   `ENTERTAINMENT`
-    
-*   `SCIENCE`
-    
-*   `SPORTS`
-    
-*   `HEALTH`
-    
+- `WORLD`
+- `NATION`
+- `BUSINESS`
+- `TECHNOLOGY`
+- `ENTERTAINMENT`
+- `SCIENCE`
+- `SPORTS`
+- `HEALTH`
 
 However, you can find some other topics that are also supported by Google News.
 
-For example, if you search for `corona` in the search tab of `en` + `US` you will find `COVID-19` as a topic.
+For example, if you search for `corona` in the search tab of `en` + `US` you
+will find `COVID-19` as a topic.
 
-The URL looks like this: `https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZqY0hsNUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen`
+The URL looks like this:
+`https://news.google.com/topics/CAAqIggKIhxDQkFTRHdvSkwyMHZNREZqY0hsNUVnSmxiaWdBUAE?hl=en-US&gl=US&ceid=US%3Aen`
 
-We have to copy the text after `topics/` and before `?`, then you can use it as an input for the `top_news()` function.
+We have to copy the text after `topics/` and before `?`, then you can use it as
+an input for the `top_news()` function.
 
 ```python
 from pygooglenews import GoogleNews
@@ -84,18 +82,18 @@ covid = gn.topic_headlines('CAAqIggKIhxDQkFTRHdvSkwyMHZNREZqY0hsNUVnSmxiaWdBUAE'
 ```
 
 <Warning>
-    **However, be aware that this topic will be unique for each language/country combination.**
+    However, be aware that this topic will be unique for each language/country combination.
 
 </Warning>
 
-* * *
+---
 
-### **Stories by Geolocation**
+### Stories by Geolocation
 
 ```python
 gn = GoogleNews('uk', 'UA')
 kyiv = gn.geo_headlines('kyiv', proxies=None, scraping_bee = None)
-# or 
+# or
 kyiv = gn.geo_headlines('kiev', proxies=None, scraping_bee = None)
 # or
 kyiv = gn.geo_headlines('киев', proxies=None, scraping_bee = None)
@@ -103,10 +101,11 @@ kyiv = gn.geo_headlines('киев', proxies=None, scraping_bee = None)
 kyiv = gn.geo_headlines('Київ', proxies=None, scraping_bee = None)
 ```
 
+The returned object contains `feed` (FeedParserDict) and `entries` list of
+articles found with all data parsed.
 
-The returned object contains `feed` (FeedParserDict) and `entries` list of articles found with all data parsed.
-
-All of the above variations will return the same feed of the latest news about Kyiv, Ukraine:
+All of the above variations will return the same feed of the latest news about
+Kyiv, Ukraine:
 
 ```
 geo['feed'].title
@@ -114,65 +113,73 @@ geo['feed'].title
 # 'Київ - Останні - Google Новини'
 ```
 
+It is language-agnostic, however, it does not guarantee that the feed for any
+specific place will exist. For example, if you want to find the feed on `LA` or
+`Los Angeles` you can do it with `GoogleNews('en', 'US')`.
 
-It is language-agnostic, however, it does not guarantee that the feed for any specific place will exist. For example, if you want to find the feed on `LA` or `Los Angeles` you can do it with `GoogleNews('en', 'US')`.
+The main (`en`, `US`) Google News client will most likely find the feed about
+the most places.
 
-The main (`en`, `US`) Google News client will most likely find the feed about the most places.
+---
 
-* * *
-
-#### **Stories by a Query**
+#### Stories by a Query
 
 ```
 gn.search(query: str, helper = True, when = None, from_ = None, to_ = None, proxies=None, scraping_bee=None)
 ```
 
+The returned object contains `feed` (FeedParserDict) and `entries` list of
+articles found with all data parsed.
 
-The returned object contains `feed` (FeedParserDict) and `entries` list of articles found with all data parsed.
-
-Google News search itself is a complex function that has inherited some features from the standard Google Search.
+Google News search itself is a complex function that has inherited some features
+from the standard Google Search.
 
 [The official reference on what could be inserted](https://developers.google.com/custom-search/docs/xml_results)
 
-The biggest obstacle that you might have is to write the URL-escaping input. To ease this process, `helper = True` is turned on by default.
+The biggest obstacle that you might have is to write the URL-escaping input. To
+ease this process, `helper = True` is turned on by default.
 
 `helper` uses `urllib.parse.quote_plus` to automatically convert the input.
 
 For example:
 
-*   `'New York metro opening'` --> `'New+York+metro+opening'`
-    
-*   `'AAPL -MSFT'` --> `'AAPL+-MSFT'`
-    
-*   `'"Tokyo Olimpics date changes"'` --> `'%22Tokyo+Olimpics+date+changes%22'`
-    
+- `'New York metro opening'` --> `'New+York+metro+opening'`
+- `'AAPL -MSFT'` --> `'AAPL+-MSFT'`
+- `'"Tokyo Olimpics date changes"'` --> `'%22Tokyo+Olimpics+date+changes%22'`
 
-You can turn it off and write your own query in case you need it by `helper = False`
+You can turn it off and write your own query in case you need it by
+`helper = False`
 
-`when` parameter (`str`) sets the time range for the published datetime. I could not find any documentation regarding this option, but here is what I deducted:
+`when` parameter (`str`) sets the time range for the published datetime. I could
+not find any documentation regarding this option, but here is what I deducted:
 
-*   `h` for hours.(For me, worked for up to `101h`). `when=12h` will search for only the articles matching the `search` criteria and published for the last 12 hours
-    
-*   `d` for days
-    
-*   `m` for a amonth (For me, worked for up to `48m`)
-    
+- `h` for hours.(For me, worked for up to `101h`). `when=12h` will search for
+  only the articles matching the `search` criteria and published for the last 12
+  hours
+- `d` for days
+- `m` for a amonth (For me, worked for up to `48m`)
 
-I did not set any hard limit here. You may try put here anything. Probably, it will work. However, I would like to warn you that wrong inputs will not lead to an error. Instead, the `when` parameter will be ignored by the Google.
+I did not set any hard limit here. You may try put here anything. Probably, it
+will work. However, I would like to warn you that wrong inputs will not lead to
+an error. Instead, the `when` parameter will be ignored by the Google.
 
-`from_` and `to_` accept the following format of date: `%Y-%m-%d` For example, `2020-07-01`
+`from_` and `to_` accept the following format of date: `%Y-%m-%d` For example,
+`2020-07-01`
 
-### **Output Body**
+### Output Body
 
 All 4 functions return the `dictionary` that has 2 sub-objects:
 
-*   `feed` - contains the information on the feed metadata
-    
-*   `entries` - contains the parsed articles
-    
+- `feed` - contains the information on the feed metadata
+- `entries` - contains the parsed articles
 
-Both are inherited from the [Feedparser](https://github.com/kurtmckee/feedparser). The only change is that each dictionary under `entries` also contains `sub_articles` which are the similar articles found in the description. Usually, it is non-empty for `top_news()` and `topic_headlines()` feeds.
+Both are inherited from the
+[Feedparser](https://github.com/kurtmckee/feedparser). The only change is that
+each dictionary under `entries` also contains `sub_articles` which are the
+similar articles found in the description. Usually, it is non-empty for
+`top_news()` and `topic_headlines()` feeds.
 
 <Tip>
-**Tip** To check what is the found feed's name just check the `title` under the `feed` dictionary
+  Tip To check what is the found feed's name just check the `title` under the
+  `feed` dictionary
 </Tip>

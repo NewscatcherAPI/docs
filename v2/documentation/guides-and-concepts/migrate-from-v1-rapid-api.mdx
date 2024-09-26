@@ -1,56 +1,60 @@
 ---
 title: Migrate from V1/RapidAPI
-description: Starting September 2021, we will onboard new users via our own [internal API Management platform](https://app.newscatcherapi.com/dashboard/). 
+description:
+  Starting September 2021, we will onboard new users via our own [internal API
+  Management platform](https://app.newscatcherapi.com/dashboard/).
 ---
 
-What's new?
----------------
+## What's new?
 
-Migrating on our own Managing Platform is a well-considered step that goes align with **V2** of Our **News API.**
+Migrating on our own Managing Platform is a well-considered step that goes align
+with **V2** of Our **News API.**
 
 In V2 we improved:
 
-*   **Extraction Algorithms**. We now are able to extract news from almost any website.
-    
-*   Over **60 000** news sources. Compare to 30 000 in V1.
-    
-*   Around **1 million a day**. Compare to 400k in V1.
-    
-*   **New Parameters**.
-    
-*   **New output variables** are given for each article. `published_date_precision`, `is_opinion`, `twitter_account`
-    
+- **Extraction Algorithms**. We now are able to extract news from almost any
+  website.
+- Over **60 000** news sources. Compare to 30 000 in V1.
+- Around **1 million a day**. Compare to 400k in V1.
+- **New Parameters**.
+- **New output variables** are given for each article.
+  `published_date_precision`, `is_opinion`, `twitter_account`
 
-New Parameters
-------------------
+## New parameters
 
 `published_date_precision` There are 3 types of date precision we define:
 
-*   `full` — day and time of an article is correctly identified with the appropriate timezone
-    
-*   `timezone unknown` — day and time of an article is correctly identified without timezone
-    
-*   `date` — only the day is identified without an exact time
-    
+- `full` — day and time of an article is correctly identified with the
+  appropriate timezone
+- `timezone unknown` — day and time of an article is correctly identified
+  without timezone
+- `date` — only the day is identified without an exact time
 
-`countries` and `not_countries` are now used instead of `country` and now multiple countries can be searched for.
+`countries` and `not_countries` are now used instead of `country` and now
+multiple countries can be searched for.
 
 `lang` and `not_lang` are also available now.
 
-How to migrate
-------------------
+## How to migrate
 
-If you want to migrate, you **do not need a RapidAPI User** account anymore. Everything will be managed by our own platform.
+If you want to migrate, you **do not need a RapidAPI User** account anymore.
+Everything will be managed by our own platform.
 
-- [x]   Go to our [internal API Management platform](https://app.newscatcherapi.com/dashboard/) and create a new account
+- [x] Go to our
+      [internal API Management platform](https://app.newscatcherapi.com/dashboard/)
+      and create a new account
 
-- [x]   By default, you will be subscribed to a Free Account 1 000 API calls (10 000 if you put your business mail)
-    
-- [x]   Here is how your Account page will look like when logged in:
-    
+- [x] By default, you will be subscribed to a Free Account 1 000 API calls (10
+      000 if you put your business mail)
+- [x] Here is how your Account page will look like when logged in:
+
 ![](/images/migrate-v1.png)
 
-*   Once you have an API key, you can start making API calls on at `https://api.newscatcherapi.com/v2/search`. Do not forget to put into headers => **x-api-key: \<YOUR\_API\_KEY>.** Check our [Authentication page](https://docs.newscatcherapi.com/api-docs/authentication) if something is not clear to you.
-    
-*   If you want to upgrade to Paid Plan, from your account page you should see an "_Upgrade_" button. If you do not, just contact us at `mailto:artem@newscatcherapi.com`
-    
+- Once you have an API key, you can start making API calls on at
+  `https://api.newscatcherapi.com/v2/search`. Do not forget to put into headers
+  => **x-api-key: \<YOUR_API_KEY>.** Check our
+  [Authentication page](https://docs.newscatcherapi.com/api-docs/authentication)
+  if something is not clear to you.
+- If you want to upgrade to Paid Plan, from your account page you should see an
+  "_Upgrade_" button. If you do not, just contact us at
+  `mailto:artem@newscatcherapi.com`
