@@ -1,13 +1,15 @@
 ---
-title: Search For Person/Company/Product 
+title: Search for person/company/product
 description: Learn to use different techniques when searching for a proper noun
 ---
-Looking for news mentioning a specific **Person**, **Company** or **Product** is a common application for our users.
 
-Use the following recommendations to maximize your chances of getting the most relevant results using our News API.
+Looking for news mentioning a specific **Person**, **Company** or **Product** is
+a common application for our users.
 
-Advice #1: Always Use Double Quotes (**`"`**) In **`q`** Parameter
-----------------------------------------------------------------------
+Use the following recommendations to maximize your chances of getting the most
+relevant results using our News API.
+
+## Advice #1: Always use double quotes (**`"`**) in **`q`** parameter
 
 Use double quotes (**`"`**) for the **exact match**.
 
@@ -17,24 +19,29 @@ _I am looking for articles about Elon Musk._
 
 **Query to do it**
 
-When you want to search for articles that mention `Elon Musk` you should do the following query:
+When you want to search for articles that mention `Elon Musk` you should do the
+following query:
 
-If you write `q=Elon Musk` then, it will be treated as `q=Elon AND Musk`. In that case, every article that mentions both `elon` and `musk` somewhere in the text will match.
+If you write `q=Elon Musk` then, it will be treated as `q=Elon AND Musk`. In
+that case, every article that mentions both `elon` and `musk` somewhere in the
+text will match.
 
-Advice #2: Use All Available Operators In `q` Parameter To Search With More Context Related Articles
---------------------------------------------------------------------------------------------------------
+## Advice #2: Use all available operators In `q` parameter to search with more context-related articles
 
 Here are the Operators that can help you narrow down your search.
 
 ### `AND`
 
-**`AND`** operator makes tokens from both sides to be present in the text of an article.
+**`AND`** operator makes tokens from both sides to be present in the text of an
+article.
 
-**`AND`** is the default operator. When your `**q**` input is more than 1 word, `**AND**` operator is added between each word behind the scenes.
+**`AND`** is the default operator. When your `**q**` input is more than 1 word,
+`**AND**` operator is added between each word behind the scenes.
 
 **Example of the search intent**
 
-_I am looking for articles where_ _**all three**_ _Apple, Microsoft, and Tesla company names are mentioned_
+_I am looking for articles where_ _**all three**_ _Apple, Microsoft, and Tesla
+company names are mentioned_
 
 **Query to do it**
 
@@ -42,20 +49,21 @@ _I am looking for articles where_ _**all three**_ _Apple, Microsoft, and Tesla c
 q=Apple AND Microsoft AND Tesla
 ```
 
-
 Since `AND` is the default operator, these two queries are exactly the same:
 
 **`q=Apple AND Microsoft AND Tesla`**
 
 **`q=Apple Microsoft Tesla`**
 
-### **`OR`**
+### `OR`
 
-**`OR`** operator means that either the left or the right sides of `OR` have to be satisfied.
+**`OR`** operator means that either the left or the right sides of `OR` have to
+be satisfied.
 
 **Example of the search intent**
 
-_I am looking for an article where_ _**at least one**_ _of these wealthy men Elon Musk, Tim Cook, Bill Gates is mentioned._
+_I am looking for an article where_ _**at least one**_ _of these wealthy men
+Elon Musk, Tim Cook, Bill Gates is mentioned._
 
 **Query to do it**
 
@@ -63,14 +71,15 @@ _I am looking for an article where_ _**at least one**_ _of these wealthy men Elo
 q="Elon Musk" OR "Tim Cook" OR "Bill Gates"
 ```
 
-
 ### Round brackets `()`
 
-`AND` and `OR` operators can be used together. You can also logically group a set of words or phrases by using round brackets `()`
+`AND` and `OR` operators can be used together. You can also logically group a
+set of words or phrases by using round brackets `()`
 
 **Example of the search intent**
 
-_I am looking for articles where either Elon Musk is mentioned with_ _**either**_ _Starlink_ _**or**_ _Tesla._
+_I am looking for articles where either Elon Musk is mentioned with_
+_**either**_ _Starlink_ _**or**_ _Tesla._
 
 **Query to do it**
 
@@ -78,14 +87,14 @@ _I am looking for articles where either Elon Musk is mentioned with_ _**either**
 q="Elon Musk" AND (Starlink OR Tesla)
 ```
 
-
 ### `NOT`
 
 Use `NOT` operator when you want the token from its right to **not be present**.
 
 **Example of the search intent**
 
-_I am looking for articles about Apple and MacBook product series, but I do not want any news related to iPhone or IPad_
+_I am looking for articles about Apple and MacBook product series, but I do not
+want any news related to iPhone or IPad_
 
 **Query to do it**
 
@@ -93,16 +102,22 @@ _I am looking for articles about Apple and MacBook product series, but I do not 
 q=Apple AND MacBook NOT (IPhone OR IPad)
 ```
 
+### More examples
 
-### More Examples
-
-The more operator and logical combinations you use, the more relevant results you get.
+The more operator and logical combinations you use, the more relevant results
+you get.
 
 Let's look at some more examples
 
 **Example of the search intent**
 
-_I am looking for articles about Apple company. "Apple" as a word, can have multiple definitions. So, when I search for the word "Apple", I want to have some other words related to Apple in this case, like their products: MacBook, iPhone, IPad, or executive Chiefs, like Tim Cook, Katherine Adams, Eddy Cue. I add to the search "Apple Inc" as well because I am pretty sure it is about Apple company. I do not want to have any other big tech company mentioned in the article, so I filter out Microsoft, Amazon, Tencent, and Facebook._
+_I am looking for articles about Apple company. "Apple" as a word, can have
+multiple definitions. So, when I search for the word "Apple", I want to have
+some other words related to Apple in this case, like their products: MacBook,
+iPhone, IPad, or executive Chiefs, like Tim Cook, Katherine Adams, Eddy Cue. I
+add to the search "Apple Inc" as well because I am pretty sure it is about Apple
+company. I do not want to have any other big tech company mentioned in the
+article, so I filter out Microsoft, Amazon, Tencent, and Facebook._
 
 **Query to do it**
 
@@ -110,16 +125,19 @@ _I am looking for articles about Apple company. "Apple" as a word, can have mult
 q=(Apple AND (MacBook OR iPhone OR IPad OR "Tim Cook" OR "Katherine Adams" OR "Eddy Cue")) OR "Apple Inc" NOT (Microsoft OR Amazon OR Tencent OR Facebook)
 ```
 
-
 We have around **60 000 news sources**, but not all of them are relevant to you.
 
 ### `[sources]`
 
-Use `[sources]` parameter to filter down your search to the articles coming only from mentioned news sources.
+Use `[sources]` parameter to filter down your search to the articles coming only
+from mentioned news sources.
 
 **Example of the search intent**
 
-_I am looking for business-related articles about "Elon Musk". Personally, I have already seen relevant news coming from businessinsuder.com, businessjournaldaily.com, businessreport.com. I want to have articles only from these sources._
+_I am looking for business-related articles about "Elon Musk". Personally, I
+have already seen relevant news coming from businessinsuder.com,
+businessjournaldaily.com, businessreport.com. I want to have articles only from
+these sources._
 
 **Parameters to use**
 
@@ -128,14 +146,16 @@ q="Elon Musk"
 sources=businessinsider.com,businessjournaldaily.com,businessreport.com
 ```
 
-
 ### `[not_sources]`
 
 Use `[not_sources]` parameter to exclude concrete news domains from your search.
 
 **Example of the search intent**
 
-_I am looking for business-related articles about "Elon Musk". I am not aware of any business-related news source. But, I am sure that news coming from gossipbucket.com, hollywoodlife.com, or hollywoodreporter.com is not the type of news I would like to get. So I exclude these news domains._
+_I am looking for business-related articles about "Elon Musk". I am not aware of
+any business-related news source. But, I am sure that news coming from
+gossipbucket.com, hollywoodlife.com, or hollywoodreporter.com is not the type of
+news I would like to get. So I exclude these news domains._
 
 **Parameters to use**
 
@@ -144,24 +164,27 @@ q="Elon Musk"
 sources=gossipbucket.com,hollywoodlife.com,hollywoodreporter.com
 ```
 
-
 ### `_/v2/sources_` endpoint
 
-Use our `_/v2/sources_` endpoint to get a list of news sources available in our database. So, this can give you a hint of where to look for. On [this](https://docs.newscatcherapi.com/api-docs/endpoints/sources) page, you will find more info about this endpoint.
+Use our `_/v2/sources_` endpoint to get a list of news sources available in our
+database. So, this can give you a hint of where to look for. On
+[this](https://docs.newscatcherapi.com/api-docs/endpoints/sources) page, you
+will find more info about this endpoint.
 
 **Example of the search intent**
 
-_I would like to search for "Elon Musk" in business-related news sources. But I do not know any business-oriented source._
+_I would like to search for "Elon Musk" in business-related news sources. But I
+do not know any business-oriented source._
 
 **Make a call with /v2/sources endpoint**
 
-Check the ["Your First Call"](/v2-code-snippets/your-first-call) section to know how to make a call.
+Check the ["Your First Call"](/v2-code-snippets/your-first-call) section to know
+how to make a call.
 
 ```
 https://api.newscatcherapi.com
 /v2/sources?topic=business&lang=en&countries=US
 ```
-
 
 **Results from the call**
 
@@ -188,7 +211,6 @@ https://api.newscatcherapi.com
 }
 ```
 
-
 **Parameters to use**
 
 Get the first five sources a put them into the sources parameter
@@ -198,22 +220,21 @@ q="Elon Musk"
 sources=forbes.com,yahoo.com,apnews.com,businessinsider.com,cnbc.com
 ```
 
+In `/v2/sources` endpoint the list of news sources is sorted by the number of
+articles for the last 24 hours.
 
-In `/v2/sources` endpoint the list of news sources is sorted by the number of articles for the last 24 hours.
+## Advice #4: Use `to_rank` Or `from_rank` To Vary From Global News Sources To More Local Once
 
-Advice #4: Use `to_rank` Or `from_rank` To Vary From Global News Sources To More Local Once
------------------------------------------------------------------------------------------------
+Our `rank` parameter is based on the
+[Majestic Million Rank system](https://blog.ultimate-uk.com/what-is-the-majestic-million).
+The smaller the rank, the more popular the news domain. The "popularity" is
+measured by the number of backlinks and referrers on the web. Some examples of
+ranks:
 
-Our `rank` parameter is based on the [Majestic Million Rank system](https://blog.ultimate-uk.com/what-is-the-majestic-million). The smaller the rank, the more popular the news domain. The "popularity" is measured by the number of backlinks and referrers on the web. Some examples of ranks:
-
-*   nytimes.com => 40
-    
-*   reuters.com => 86
-    
-*   china.com.cn => 962
-    
-*   stthomassource.com => 120496
-    
+- nytimes.com => 40
+- reuters.com => 86
+- china.com.cn => 962
+- stthomassource.com => 120496
 
 **Example of the search intent**
 
@@ -221,15 +242,16 @@ _I am looking for articles about Microsoft Patents. I trust only global media_.
 
 **Parameters to use**
 
-``` bash
+```bash
 q=Microsoft AND patent
 to_rank=10000
 ```
 
-
 **Example of the search intent**
 
-_I am looking for articles about Microsoft Patents. I am not interested in the most popular news sources like Forbes or Washington Post_. _I am curious to know what other small media posted._
+_I am looking for articles about Microsoft Patents. I am not interested in the
+most popular news sources like Forbes or Washington Post_. _I am curious to know
+what other small media posted._
 
 **Parameters to use**
 
@@ -239,12 +261,14 @@ ranked_only=False
 from_rank=100000
 ```
 
+By default, `ranked_only` parameter is set to `True`. It means that if a news
+domain is not in the Majestic List, we will attribute the value 999,999 to this
+domain. If you want to get articles from these unranked domains, you should set
+`ranked_only=False`
 
-By default, `ranked_only` parameter is set to `True`. It means that if a news domain is not in the Majestic List, we will attribute the value 999,999 to this domain. If you want to get articles from these unranked domains, you should set `ranked_only=False`
-
-Contact Us To Get Help
---------------------------
+## Contact us to get help
 
 A well-configured query is the best way to get the most relevant results.
 
-If you need any private suggestions or advice, do not hesitate to contact us at `team [at] newscatcherapi.com`.
+If you need any private suggestions or advice, do not hesitate to contact us at
+`team [at] newscatcherapi.com`.

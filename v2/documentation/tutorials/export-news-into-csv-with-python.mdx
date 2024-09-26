@@ -1,16 +1,14 @@
 ---
-title: Export News into a CSV with Python
-description: In this tutorial, you’ll learn how to extract data from NewsCatcher News API and write it into a CSV file.
+title: Export news into a CSV with Python
+description:
+  In this tutorial, you'll learn how to extract data from NewsCatcher News API
+  and write it into a CSV file.
 ---
 
+## Requirements
 
-Requirements
-----------------
-
-*   Python 3
-    
-*   Preinstalled packages:
-    
+- Python 3
+- Preinstalled packages:
 
 ```
 requests==2.24.0
@@ -21,38 +19,29 @@ pandas==1.3.2
 You can copy paste packages name and version and put them into separated file "requirements.txt". Then, using terminal, install with a signle command
 
 ```
-pip install -r requirements.txt 
+pip install -r requirements.txt
 ```
+
 </Info>
 
-Steps to accomplish
------------------------
+## Steps to accomplish
 
-1.  Prepare the environment
-    
-2.  Make an API call
-    
-3.  Extract all found news articles
-    
-4.  Export data to CSV file
-    
-    1.  From Python Dictionary
-        
-    2.  From Pandas table
-        
-    
+1. Prepare the environment
+2. Make an API call
+3. Extract all found news articles
+4. Export data to CSV file:
+   - From Python Dictionary
+   - From Pandas table
 
-1\. Prepare the environment
--------------------------------
+### 1. Prepare the environment
 
 This step consists of:
 
-*   import packages
-    
-*   set environmental variables (API Key, URL of the News API, etc)
-    
-*   define a correct work folder
+- import packages
 
+
+- set environmental variables (API Key, URL of the News API, etc)
+- define a correct work folder
 
 The following code illustrates the above steps:
 
@@ -64,11 +53,9 @@ import csv
 import os
 import json
 
-
 # Preinstalled packages
 import requests
 import pandas
-
 
 
 # Define desired work folder, where you want to save your .csv files
@@ -87,16 +74,19 @@ X_API_KEY = 'PUT_YOUR_API_KEY'
 <Info>
 Receive your API key by registering at [app.newscatcherapi.com](https://app.newscatcherapi.com/auth/login)
 
-
 </Info>
 
+### 2. Make API call
 
-2\. Make an API call
-------------------------
+Let's take it easy and try to make a single call. For example, we would like to
+look for all mentions of 3 popular cryptocurrencies **Bitcoin,** **Ethereum,**
+and **Dogecoin.**
 
-Let's take it easy and try to make a single call. For example, we would like to look for all mentions of 3 popular cryptocurrencies **Bitcoin,** **Ethereum,** and **Dogecoin.**
-
-In order to make a call, we need to set _headers_ and _parameters. In parameters,_ I am also filtering on **articles in English** as well as narrow down the search top 10 000 the **most trustful news sources** based on [_rank_ variable](/faq/product-faq#what-is-the-rank-parameter-how-do-you-calculate-it) . **Default timeperiod is set to 1 week**, so no need to define this parameter.
+In order to make a call, we need to set _headers_ and _parameters. In
+parameters,_ I am also filtering on **articles in English** as well as narrow
+down the search top 10 000 the **most trustful news sources** based on
+[_rank_ variable](/faq/product-faq#what-is-the-rank-parameter-how-do-you-calculate-it)
+. **Default timeperiod is set to 1 week**, so no need to define this parameter.
 
 ```python
 # Put your API key to headers in order to be authorized to perform a call
@@ -124,30 +114,44 @@ else:
 ```
 
 <Info>
-If the _status\_code_ is not 200, the error message should give you a clear idea of what was wrong
+  If the _status\_code_ is not 200, the error message should give you a clear
+  idea of what was wrong
 </Info>
 Here are the results that we received:
 
-As you can see, we found **253 articles** mentioning all three popular cryptocurrencies in one article. Another parameter worth looking at is _"total\_pages"_. It shows how many API calls you will have to make in order to extract all found news articles. We will use it later in the guide. Besides, you can explore further by looking at each article separately. All of them are stored in _"articles"_ JSON Key.
+As you can see, we found **253 articles** mentioning all three popular
+cryptocurrencies in one article. Another parameter worth looking at is
+_"total_pages"_. It shows how many API calls you will have to make in order to
+extract all found news articles. We will use it later in the guide. Besides, you
+can explore further by looking at each article separately. All of them are
+stored in _"articles"_ JSON Key.
 
-### (Optional) Visualize data with _pandas_ package
+#### (Optional) Visualize data with pandas package
 
-To be able to look at all 100 articles at the same time, let's create a pandas table from the _"articles"_ Key.
+To be able to look at all 100 articles at the same time, let's create a pandas
+table from the _"articles"_ Key.
 
 ```
 # Import data into pandas
 pandas_table = pd.DataFrame(results['articles'])
 ```
-<Frame caption = "Article represented by a pandas table">![](/images/export-news1.avif)</Frame>
 
-Now, you can have a closer look at the first 100 articles, before extracting the remaining.
+<Frame caption="Article represented by a pandas table">
+  ![](/images/export-news1.avif)
+</Frame>
 
-3\. Extract All Found News Articles
----------------------------------------
+Now, you can have a closer look at the first 100 articles, before extracting the
+remaining.
 
-At this stage, we are already confident that an API call returns expected results. The next step is to extract all found news articles using _"total\_pages"_ value.
+### 3. Extract all news articles found
 
-One thing to keep in mind is that I am using **Free Trial API Key**, where the frequency of API calls is limited to **1 call/second**. So, to not be penalized for overuse, I make my code wait for one second between each call.
+At this stage, we are already confident that an API call returns expected
+results. The next step is to extract all found news articles using
+_"total_pages"_ value.
+
+One thing to keep in mind is that I am using **Free Trial API Key**, where the
+frequency of API calls is limited to **1 call/second**. So, to not be penalized
+for overuse, I make my code wait for one second between each call.
 
 ```js
 # Variable to store all found news articles
@@ -192,47 +196,53 @@ while True:
 print(f'Number of extracted articles => {str(len(all_news_articles))}')
 ```
 
+In summary, we iterate through all available pages, extract news articles and
+store them in one variable called _"all_news_article"_. We also add used
+parameters to each article, so when exploring you can see where it comes from.
+You can always delete this part of code if you do not want to have this
+information in your CSV file.
 
-In summary, we iterate through all available pages, extract news articles and store them in one variable called _"all\_news\_article"_. We also add used parameters to each article, so when exploring you can see where it comes from. You can always delete this part of code if you do not want to have this information in your CSV file.
+#### (Optional) Having multiple queries
 
-### (Optional) Having multiple queries
-
-Imagine that you want to extract news data from **multiple queries at one time**. So, instead of searching for articles where all 3 popular cryptocurrencies are mentioned, you would like to look for each of them separately and adding "business" as a topic. In this case, you will have multiple parameters and you will have to add one more iteration.
+Imagine that you want to extract news data from **multiple queries at one
+time**. So, instead of searching for articles where all 3 popular
+cryptocurrencies are mentioned, you would like to look for each of them
+separately and adding "business" as a topic. In this case, you will have
+multiple parameters and you will have to add one more iteration.
 
 Here is how the _params_ variable looks like:
 
 ```js
 params = [
-    {
-        'q': 'Bitcoin',
-        'lang': 'en',
-        'to_rank': 10000,
-        'topic': "business",
-        'page_size': 100,
-        'page': 1
-    },
-    {
-        'q': 'Ethereum',
-        'lang': 'en',
-        'to_rank': 10000,
-        'topic': "business",
-        'page_size': 100,
-        'page': 1
-    },
-    {
-        'q': 'Dogecoin',
-        'lang': 'en',
-        'to_rank': 10000,
-        'topic': "business",
-        'page_size': 100,
-        'page': 1
-    }
-]
-
+  {
+    q: "Bitcoin",
+    lang: "en",
+    to_rank: 10000,
+    topic: "business",
+    page_size: 100,
+    page: 1,
+  },
+  {
+    q: "Ethereum",
+    lang: "en",
+    to_rank: 10000,
+    topic: "business",
+    page_size: 100,
+    page: 1,
+  },
+  {
+    q: "Dogecoin",
+    lang: "en",
+    to_rank: 10000,
+    topic: "business",
+    page_size: 100,
+    page: 1,
+  },
+];
 ```
 
-
-In the code, we added one more iteration and put _"separated\_param"_ inside _requests.get_ function.
+In the code, we added one more iteration and put _"separated_param"_ inside
+_requests.get_ function.
 
 ```js
 # Variable to store all found news articles, mp stands for "multiple queries"
@@ -242,7 +252,7 @@ all_news_articles_mp = []
 for separated_param in params:
 
     print(f'Query in use => {str(separated_param)}')
-    
+
     while True:
         # Wait for 1 second between each call
         time.sleep(1)
@@ -277,8 +287,12 @@ for separated_param in params:
 print(f'Number of extracted articles => {str(len(all_news_articles_mp))}')
 ```
 
-
-One more important thing is to **deduplicate results**. Right now we extract articles from 3 different queries. But, as we saw before, there can be mentions of all 3 of them in the same article. So different queries can bring the same articles. That is why we have _"\_id"_ value generated for each article. ID is created by decoding both _title_ and _clean\_url_ (Web Domain Name of the News Source).
+One more important thing is to **deduplicate results**. Right now we extract
+articles from 3 different queries. But, as we saw before, there can be mentions
+of all 3 of them in the same article. So different queries can bring the same
+articles. That is why we have _"\_id"_ value generated for each article. ID is
+created by decoding both _title_ and _clean_url_ (Web Domain Name of the News
+Source).
 
 Here is how you can deduplicate results in Python:
 
@@ -294,11 +308,9 @@ for article in all_news_articles_mp:
         all_news_articles.append(article)
 ```
 
+### 4. Export data to CSV file
 
-4\. Export Data to CSV file
--------------------------------
-
-### 4.1 From Python dictionary
+#### 4.1 From Python dictionary
 
 You can save a file directly from the dictionary generated previously:
 
@@ -311,8 +323,7 @@ with open('extracted_news_articles.csv', 'w', encoding="utf-8", newline='') as c
     writer.writerows(all_news_articles)
 ```
 
-
-### 4.2 From Pandas table
+#### 4.2 From Pandas table
 
 Or create a Pandas table, check the results and then generate a CSV:
 

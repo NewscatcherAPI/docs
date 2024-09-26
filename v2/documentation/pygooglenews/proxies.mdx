@@ -4,11 +4,15 @@ title: Proxies
 
 ## How to use pygooglenews with [ScrapingBee](https://www.scrapingbee.com/?fpr=artem26)
 
-Every function has `scrapingbee` parameter. It accepts your [ScrapingBee](https://www.scrapingbee.com/?fpr=artem26) API key that will be used to get the response from Google's servers.
+Every function has `scrapingbee` parameter. It accepts your
+[ScrapingBee](https://www.scrapingbee.com/?fpr=artem26) API key that will be
+used to get the response from Google's servers.
 
-You can take a look at what exactly is happening in the source code: check for `__scaping_bee_request()` function under GoogleNews class
+You can take a look at what exactly is happening in the source code: check for
+`__scaping_bee_request()` function under GoogleNews class
 
-Pay attention to the concurrency of each plan at [ScrapingBee](https://www.scrapingbee.com/?fpr=artem26)
+Pay attention to the concurrency of each plan at
+[ScrapingBee](https://www.scrapingbee.com/?fpr=artem26)
 
 How to use example:
 
@@ -19,16 +23,15 @@ gn = GoogleNews()
 gn.top_news(scraping_bee = 'I5SYNPRFZI41WHVQWWUT0GNXFMO104343E7CXFIISR01E2V8ETSMXMJFK1XNKM7FDEEPUPRM0FYAHFF5')
 ```
 
-
-* * *
+---
 
 ### How to use pygooglenews with proxies
 
-So, if you have your own HTTP/HTTPS proxy(s) that you want to use to make requests to Google, that's how you do it:
+So, if you have your own HTTP/HTTPS proxy(s) that you want to use to make
+requests to Google, that's how you do it:
 
 ```python
 gn = GoogleNews()
 
 gn.top_news(proxies = {'https':'34.91.135.38:80'})
 ```
-

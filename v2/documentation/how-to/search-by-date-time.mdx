@@ -1,22 +1,35 @@
 ---
-title: Search By Date & Time
-description: Learn how to filter your search results by their publication date and time
+title: Search by date & time
+description:
+  Learn how to filter your search results by their publication date and time
 ---
-While searching for news articles you'll often need to filter out the results by their publication date. The articles returned by our News API have their publication date and time as an attribute : `published_date`. Using this information you can further drill down in your search queries on the [`v2/search`](https://docs.newscatcherapi.com/api-docs/endpoints/search-news) and [`v2/latest_headlines`](https://docs.newscatcherapi.com/api-docs/endpoints/latest-headlines) endpoints.
 
-`/search`
--------------
+While searching for news articles you'll often need to filter out the results by
+their publication date. The articles returned by our News API have their
+publication date and time as an attribute : `published_date`. Using this
+information you can further drill down in your search queries on the
+[`v2/search`](https://docs.newscatcherapi.com/api-docs/endpoints/search-news)
+and
+[`v2/latest_headlines`](https://docs.newscatcherapi.com/api-docs/endpoints/latest-headlines)
+endpoints.
 
-The `/search` endpoint has two parameters, `to` and `from`, that enable you to filter your news search results by their publication dates.
+## `/search`
 
-Let's say, you want to understand the general perception of the new Tesla UI update. To achieve this you'll need to fetch the articles published around the time the update was pushed to the cars. If you decide on the date range of _2021/12/01_ to _2022/31/01,_ you would use the `to` and `from` parameters to make a request like_:_
+The `/search` endpoint has two parameters, `to` and `from`, that enable you to
+filter your news search results by their publication dates.
+
+Let's say, you want to understand the general perception of the new Tesla UI
+update. To achieve this you'll need to fetch the articles published around the
+time the update was pushed to the cars. If you decide on the date range of
+_2021/12/01_ to _2022/31/01,_ you would use the `to` and `from` parameters to
+make a request like*:*
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?lang=en&from=2021/12/01&q=Tesla%20AND%20UI&to=2022/01/31' -H 'x-api-key: your_key_1'
 ```
 
 <Info>
-The default timezone for the **_`to`_** and **_`from`_** parameters is UTC.
+  The default timezone for the **_`to`_** and **_`from`_** parameters is UTC.
 </Info>
 
 Which would yield articles such as:
@@ -52,7 +65,7 @@ Which would yield articles such as:
             "_score": 25.722795,
             "_id": "3370867de514b0c3e5b5587c596bbd40"
         },
-        ... 
+        ...
             ],
         "q": "Tesla AND UI",
         "search_in": [
@@ -80,17 +93,19 @@ Which would yield articles such as:
 ```
 
 <Info>
-In our Python SDK, the _to_ and _from_ parameter names are replaced by _**to\_**_ and _**from\_**_ to avoid clashes with Python keywords.
+  In our Python SDK, the _to_ and _from_ parameter names are replaced by
+  _**to\_**_ and _**from\_**_ to avoid clashes with Python keywords.
 </Info>
 
-### Search Using Phrases
+### Search using phrases
 
-You can use simple phrases like '_three months ago'_ and _'6 weeks ago'_ instead of specifying the date & time explicitly. For example, _'Tesla UI'_ related news articles can be searched as follows:
+You can use simple phrases like '_three months ago'_ and _'6 weeks ago'_ instead
+of specifying the date & time explicitly. For example, _'Tesla UI'_ related news
+articles can be searched as follows:
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?lang=en&from=three%20months%20ago&q=Tesla%20AND%20UI&to=6%20weeks%20ago' -H 'x-api-key: your_key_1'
 ```
-
 
 ```javascript
 {
@@ -123,27 +138,38 @@ curl -XGET 'https://api.newscatcherapi.com/v2/search?lang=en&from=three%20months
             "_score": 25.722795,
             "_id": "3370867de514b0c3e5b5587c596bbd40"
         },
-        ... 
+        ...
             ],
-        ... 
+        ...
 }
 ```
 
+Querying with phrases returns a slightly different set of news articles, this is
+because our simple phrases aren't as granular as using specific dates. It's hard
+to precisely look for a complex time period time. For instance, it's easier to
+simply use the date `_2021/07/18_`_,_ as opposed to
+`'7 months and 27 days ago'`. And if you want to specify the time, things get
+even more complicated.
 
-Querying with phrases returns a slightly different set of news articles, this is because our simple phrases aren't as granular as using specific dates. It's hard to precisely look for a complex time period time. For instance, it's easier to simply use the date `_2021/07/18_`_,_ as opposed to `'7 months and 27 days ago'`. And if you want to specify the time, things get even more complicated.
 <Info>
-If you want to learn how to make more detailed queries using date/time phrases, check out the [_dateparser_](https://dateparser.readthedocs.io/en/latest/#) module docs.
+  If you want to learn how to make more detailed queries using date/time
+  phrases, check out the
+  [_dateparser_](https://dateparser.readthedocs.io/en/latest/#) module docs.
 </Info>
-Also, the phrases are relative to the time of the request. Therefore, if you make a query using phrases today, and use it to fetch news articles again next week, you'll get different results. On the other hand, if you use the dates you'll get the same set of news articles.
+Also, the phrases are relative to the time of the request. Therefore, if you make
+a query using phrases today, and use it to fetch news articles again next week, you'll
+get different results. On the other hand, if you use the dates you'll get the same
+set of news articles.
 
-### Making Better Queries
+### Making better queries
 
-The _'Tesla UI'_ search query is very specific so the number of results isn't that high. But if you were to make a similar search for a broader term like '_Apple_', you would run into the API result limit of 10,000 articles:
+The _'Tesla UI'_ search query is very specific so the number of results isn't
+that high. But if you were to make a similar search for a broader term like
+'_Apple_', you would run into the API result limit of 10,000 articles:
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2022/31/01' -H 'x-api-key: your_key_1'
 ```
-
 
 ```
 {
@@ -170,57 +196,63 @@ curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/1
 }
 ```
 
-
-To work around this limit, it's recommended to break down your query time intervals into smaller chunks of time like a month, a fortnight, a week, or even a day depending on the query. In the case of the previous _'Apple'_ query, you will need to break it down into individual days to fetch all the results for the two month time period:
+To work around this limit, it's recommended to break down your query time
+intervals into smaller chunks of time like a month, a fortnight, a week, or even
+a day depending on the query. In the case of the previous _'Apple'_ query, you
+will need to break it down into individual days to fetch all the results for the
+two month time period:
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2021/12/02' -H 'x-api-key: your_key_1
 ```
 
-
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/02&to=2021/12/03' -H 'x-api-key: your_key_1
 ```
-
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/03&to=2021/12/04' -H 'x-api-key: your_key_1
 ```
 
-
 and so on.
 
-### Date Precision
+### Date precision
 
-One thing to keep in mind when searching by date is the `published_date_precision` attribute. There are three types of date precision defined in our News API:
+One thing to keep in mind when searching by date is the
+`published_date_precision` attribute. There are three types of date precision
+defined in our News API:
 
-1.  **`"full"`** — day and time of an article is correctly identified with the appropriate timezone
-    
-2.  **`"timezone unknown"`** — day and time of an article is correctly identified without timezone
-    
+1.  **`"full"`** — day and time of an article is correctly identified with the
+    appropriate timezone
+2.  **`"timezone unknown"`** — day and time of an article is correctly
+    identified without timezone
 3.  **`"date"`** — only the day is identified without an exact time
-    
 
-The date and time of all articles with full precision is converted into UTC. And all articles without the timezone information are treated as if they are published in the UTC timezone. This may cause some minor issues but the percentage of articles without the timezone information is tiny and it's only becoming smaller.
+The date and time of all articles with full precision is converted into UTC. And
+all articles without the timezone information are treated as if they are
+published in the UTC timezone. This may cause some minor issues but the
+percentage of articles without the timezone information is tiny and it's only
+becoming smaller.
 
-<Frame caption="Distribution of `published_date_precision` attribute">![](/images/date-time.png)</Frame>
+<Frame caption="Distribution of `published_date_precision` attribute">
+  ![](/images/date-time.png)
+</Frame>
 
-`/latest_headlines`
------------------------
+## `/latest_headlines`
 
-The `/latest_headlines` endpoint doesn't have the `to` and `from` parameters. Instead, it has the `when` parameter that dictates the time period starting from which you want to get the articles for. It accepts two forms:
+The `/latest_headlines` endpoint doesn't have the `to` and `from` parameters.
+Instead, it has the `when` parameter that dictates the time period starting from
+which you want to get the articles for. It accepts two forms:
 
 1.  Daily Form `Xd` `7d` => last 7 days time period
-    
 2.  Hourly Form `Xh` `24h` => last 12 hours
-    
 
-So an API request for the articles in the last twelve hours `12h` will yield more and older results than a request for articles from the last one hour `1h`.
+So an API request for the articles in the last twelve hours `12h` will yield
+more and older results than a request for articles from the last one hour `1h`.
 
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=12h' -H 'x-api-key: your_key_1
 ```
-
 
 ```javascript
 {
@@ -239,17 +271,15 @@ curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topi
             "clean_url": "cointelegraph.com",
             ...
         },
-        ... 
+        ...
                 ],
         ...
 }
 ```
 
-
 ```
 curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=1h' -H 'x-api-key: your_key_1
 ```
-
 
 ```javascript
 {
@@ -268,12 +298,16 @@ curl -XGET 'https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topi
             "clean_url": "cointelegraph.com",
             ...
         },
-        ... 
+        ...
                 ],
         ...
 }
 ```
 
 <Info>
-The default time period is the amount of historical data available for your subscription type. For example, for the [free no-card trial](https://newscatcherapi.com/news-api#news-api-pricing), the _**latest\_headlines**_ endpoint will return the articles from the last two weeks.
+  The default time period is the amount of historical data available for your
+  subscription type. For example, for the [free no-card
+  trial](https://newscatcherapi.com/news-api#news-api-pricing), the
+  _**latest\_headlines**_ endpoint will return the articles from the last two
+  weeks.
 </Info>

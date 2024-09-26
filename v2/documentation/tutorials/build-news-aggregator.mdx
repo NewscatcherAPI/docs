@@ -1,27 +1,29 @@
 ---
-title: Build a News Aggregator
-description: This guide takes you through the process of building a news aggregator with the NewsCatcher news API.
+title: Build news aggregator
+description:
+  This guide takes you through the process of building a news aggregator with
+  the NewsCatcher news API.
 ---
-News aggregators can do a lot of things, but at the core of things, they all need to scrape, clean, and organize news information from multiple sources. In this guide, you'll go through the process of building a news aggregator using NewsCatcher's news API(in less than 10 mins).
 
-### Requirements
+News aggregators can do a lot of things, but at the core of things, they all
+need to scrape, clean, and organize news information from multiple sources. In
+this guide, you'll go through the process of building a news aggregator using
+NewsCatcher's news API(in less than 10 mins).
+
+## Requirements
 
 Here's what you'll need to follow along with this guide:
 
-*   URLs of the news outlets you want to aggregate
-    
-*   Python 3
-    
-*   The following Python modules
-    
+- URLs of the news outlets you want to aggregate
+- Python 3
+- The following Python modules
 
 ```
-newscatcherapi 
+newscatcherapi
 tldextract
 ```
 
-
-### Set-Up
+## Setup
 
 Install the required modules using pip:
 
@@ -29,8 +31,7 @@ Install the required modules using pip:
 pip install newscatcherapi tldextract
 ```
 
-
-### Get The Clean URLs
+### Get clean URLs
 
 To get the clean URLs of the news outlets, you can use the following function:
 
@@ -42,14 +43,19 @@ def clean_the_url(url):
     return clean_url
 ```
 
+If you're working with international news outlets and want a specific regional
+website, you can use the `lang` parameter to get it. For example, if you want to
+get the news articles for `'arabic.rt.com'` and `'francais.rt.com'`, you can't
+just use the clean URL because it will be the same for both of them, `'rt.com'`.
 
-If you're working with international news outlets and want a specific regional website, you can use the `lang` parameter to get it. For example, if you want to get the news articles for `'arabic.rt.com'` and `'francais.rt.com'`, you can't just use the clean URL because it will be the same for both of them, `'rt.com'`.
+### Get news articles
 
-### Get The News Articles
+Once you have the clean URLs of the news sources you want to aggregate, you can
+simply pass them as a list to the sources parameter of the `v2/search` endpoint
+to get the articles. And that's it!
 
-Once you have the clean URLs of the news sources you want to aggregate, you can simply pass them as a list to the sources parameter of the `v2/search` endpoint to get the articles. And that's it!
-
-Let's say you wanted to aggregate all news articles from The New York Times and The Guardian published in the last week.
+Let's say you wanted to aggregate all news articles from The New York Times and
+The Guardian published in the last week.
 
 All you would need to do is use the `get_search()` method to fetch the articles:
 
@@ -60,19 +66,18 @@ newscatcherapi = NewsCatcherApiClient(x_api_key='your_key_1')
 
 clean_urls = ['nytimes.com', 'theguardian.com']
 
-aggregated_articles = newscatcherapi.get_search(q='*', 
+aggregated_articles = newscatcherapi.get_search(q='*',
                                 from_ = "1 week ago",
                                 page_size = 100,
                                 sources = clean_urls))
 ```
 
-
-Alternatively, if you're not working with Python you can make a GET request with the clean URLs:
+Alternatively, if you're not working with Python you can make a GET request with
+the clean URLs:
 
 ```bash
 curl -XGET 'https://api.newscatcherapi.com//v2/search?q=*%20page_size=100%20sources=nytimes.com,theguardian.com%20from=1 week ago' -H 'x-api-key: your_key_1'
 ```
-
 
 Which would yield a JSON/Dictionary object that looks like this:
 
@@ -124,11 +129,13 @@ Which would yield a JSON/Dictionary object that looks like this:
 }
 ```
 
-
 You can now extract the articles list from this and use them however you like.
 
-Check out this nifty [crypto news aggregator](https://crypto-news.newscatcherapi.com/) we made.
+Check out this nifty
+[crypto news aggregator](https://crypto-news.newscatcherapi.com/) we made.
 
 ![](/images/news-aggregator.gif)
 
-Did we miss any outlets you need? Reach out to us at [team@newscatcherapi.com](mailto:team@newscatcherapi.com), we'll add it without breaking a sweat.
+Did we miss any outlets you need? Reach out to us at
+[team@newscatcherapi.com](mailto:team@newscatcherapi.com), we'll add it without
+breaking a sweat.
