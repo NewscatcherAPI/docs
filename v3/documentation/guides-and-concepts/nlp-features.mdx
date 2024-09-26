@@ -1,10 +1,411 @@
 ---
-title: Understanding NLP features
+title: NLP features in News API v3
 sidebarTitle: NLP features
-description:
-  Familiarize yourself with the NLP features available in News API v3, including
-  theme classification, sentiment analysis, entity recognition, and clustering
-  for enhancing news search precision and relevance.
+description: Familiarize yourself with the NLP features available in News API v3
 ---
 
-Coming soon ...
+This guide explains the Natural Language Processing (NLP) features available in
+News API v3, how to use them, and their practical applications. By leveraging
+these NLP capabilities, you can extract meaningful insights from news data,
+enhancing your analysis, research, and application development.
+
+## Understanding NLP layer
+
+When processing news, we summarize the article content, categorize articles by
+theme, estimate the overall tone of the writing, and identify important names
+and places mentioned in the text. As a result, we supply each processed article
+with additional NLP information that you can use when making requests via News
+API v3.
+
+The NLP layer in News API v3 consists of the following components:
+
+| Component      | Description                                                              |
+| -------------- | ------------------------------------------------------------------------ |
+| Theme          | General topic or category of the article                                 |
+| Summary        | Concise overview of the article's content                                |
+| Sentiment      | Separate scores for title and content sentiment                          |
+| Named Entities | Identified persons, organizations, locations, and miscellaneous entities |
+| IPTC Tags      | Standardized news category tags                                          |
+| IAB Tags       | Content categories for digital advertising                               |
+
+### Including NLP data in API responses
+
+To include the NLP layer in your API responses, use these parameters:
+
+- `include_nlp_data` (boolean): Set to `true` to include the NLP layer for each
+  article.
+- `has_nlp` (boolean): Set to `true` to filter results to include only articles
+  with an NLP layer.
+
+### Code example
+
+Here's how you can make a request to include NLP data in your search results
+using Python:
+
+```python nlp_request.py
+import requests
+import json
+import os
+
+# Configuration
+API_KEY = os.getenv("NEWSCATCHER_API_KEY")  # Set your API key as an environment variable
+if not API_KEY:
+    raise ValueError("API key not found. Please set the NEWSCATCHER_API_KEY environment variable.")
+
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+PAYLOAD = {
+    "q": "artificial intelligence",
+    "lang": "en",
+    "include_nlp_data": True,
+    "has_nlp": True
+}
+
+try:
+    # Fetch articles using POST method
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()  # Check if the request was successful
+
+    # Print the raw JSON response
+    print(json.dumps(response.json(), indent=2))
+
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+Here's a snippet of what you might see in the response, focusing on the NLP data
+for a single article:
+
+```json response.json
+{
+  "status": "ok",
+  "total_hits": 10000,
+  "page": 1,
+  "total_pages": 100,
+  "page_size": 100,
+  "articles": [
+    {
+      "title": "Enterprise Artificial Intelligence Market Is Booming Worldwide with I Amazon Web Services, IBM Corporation",
+      "author": "",
+      "published_date": "2024-09-20 11:23:20",
+      // ... other article details ...
+      "nlp": {
+        "theme": "Business, Tech",
+        "summary": "The Enterprise Artificial Intelligence market size is estimated to increase by USD at a CAGR of 32.00% during the forecast period (2024-2030). The report includes historic market data from 2024 to 2030. The current market value is pegged at USD. The key players profiled in the report are Amazon Web Services, IBM Corporation, Microsoft Corporation, Oracle Corporation, Intel Corporation, Alphabet, SAP SE, C3.ai, Inc., DataRobot, Inc, Hewlett Packard Enterprise, Wipro Limited, and NVidia Corporat.",
+        "sentiment": {
+          "title": 0.9972,
+          "content": 0.784
+        },
+        "ner_PER": [
+          {
+            "entity_name": "Nidhi Bhawsar",
+            "count": 1
+          }
+        ],
+        "ner_ORG": [
+          {
+            "entity_name": "HTF MI",
+            "count": 1
+          },
+          {
+            "entity_name": "Amazon Web Services, Inc.",
+            "count": 1
+          },
+          {
+            "entity_name": "IBM Corporation",
+            "count": 1
+          }
+          // ... other organizations ...
+        ],
+        "ner_MISC": [
+          {
+            "entity_name": "Artificial Intelligence",
+            "count": 3
+          },
+          {
+            "entity_name": "Enterprise Artificial Intelligence Market",
+            "count": 1
+          }
+          // ... other miscellaneous entities ...
+        ],
+        "ner_LOC": [
+          {
+            "entity_name": "PUNE",
+            "count": 1
+          },
+          {
+            "entity_name": "MAHARASHTRA",
+            "count": 1
+          },
+          {
+            "entity_name": "INDIA",
+            "count": 1
+          }
+        ],
+        "iptc_tags_name": [
+          "science and technology / technology and engineering / information technology and computer science / artificial intelligence",
+          "economy, business and finance / products and services / business service / shipping and postal service"
+        ],
+        "iptc_tags_id": [
+          "20000763",
+          "13000000",
+          "20000291",
+          "20000756",
+          "20000209",
+          "04000000",
+          "20001371",
+          "20001298"
+        ],
+        "iab_tags_name": [
+          "Technology & Computing / Artificial Intelligence",
+          "Business and Finance / Business / Business I.T.",
+          "Technology & Computing / Robotics"
+        ]
+      }
+    }
+    // ... other articles ...
+  ]
+}
+```
+
+This response shows the rich NLP data available for each article, including
+theme classification, summary, sentiment analysis, named entity recognition, and
+content tagging. Let's examine each of these components.
+
+## Theme classification
+
+Theme classification categorizes articles into predefined topics, allowing for
+efficient filtering and organization of news content.
+
+### Available themes
+
+News API v3 supports the following themes:
+
+- `Business`
+- `Economics`
+- `Entertainment`
+- `Finance`
+- `Health`
+- `Politics`
+- `Science`
+- `Sports`
+- `Tech`
+- `Crime`
+- `Lifestyle`
+- `Automotive`
+- `Travel`
+- `Weather`
+- `General`
+
+### Filtering by theme
+
+Use the `theme` and `not_theme` parameters to filter articles based on their
+classified themes:
+
+- `theme` (string): Includes articles matching the specified theme(s).
+- `not_theme` (string): Excludes articles matching the specified theme(s).
+
+Example:
+
+```json
+{
+  "q": "electric vehicles",
+  "theme": "Automotive,Tech",
+  "not_theme": "Entertainment"
+}
+```
+
+This query returns articles about electric vehicles categorized under Automotive
+or Tech themes, excluding Entertainment.
+
+## Article summarization
+
+Article summarization provides concise overviews of article content, allowing
+for quick understanding without reading the full text.
+
+### Using summaries in searches and clustering
+
+You can use summaries in your searches and clustering:
+
+- In searches, use the `search_in` parameter:
+
+  ```json
+  {
+    "q": "climate change",
+    "search_in": "summary",
+    "lang": "en"
+  }
+  ```
+
+  This query searches for `climate change` within article summaries, potentially
+  yielding more relevant results than searching the full content.
+
+- For clustering, use summaries as the clustering variable:
+
+  ```json
+  {
+    "q": "renewable energy",
+    "clustering_enabled": true,
+    "clustering_variable": "summary"
+  }
+  ```
+
+  This approach can lead to more concise and focused clusters. For more
+  information on clustering, see
+  [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+
+## Sentiment analysis
+
+Sentiment analysis determines the emotional tone of an article. News API v3
+provides sentiment scores for both the title and content, ranging from -1
+(negative) to 1 (positive).
+
+### Filtering by sentiment
+
+Filter articles based on sentiment scores using these parameters:
+
+- `title_sentiment_min` and `title_sentiment_max` (float): Filter by title
+  sentiment
+- `content_sentiment_min` and `content_sentiment_max` (float): Filter by content
+  sentiment
+
+Example:
+
+```json
+{
+  "q": "climate change",
+  "content_sentiment_min": 0.2,
+  "content_sentiment_max": 1.0,
+  "lang": "en"
+}
+```
+
+This query returns articles about climate change with a positive content
+sentiment (scores between 0.2 and 1.0).
+
+## Named Entity Recognition (NER)
+
+NER identifies and categorizes named entities within the text. News API v3
+recognizes four types of entities:
+
+- `PER_entity_name` (string): Person names.
+- `ORG_entity_name` (string): Organization names.
+- `LOC_entity_name` (string): Location names.
+- `MISC_entity_name` (string): Miscellaneous entities cover named entities
+  outside of the person, organization, or location categories, such as events,
+  nationalities, products, and works of art.
+
+These parameters support boolean operators (`AND`, `OR`, `NOT`), proximity
+search with `NEAR`, and count-based filtering.
+
+Example of a NER query:
+
+```json
+{
+  "q": "tech industry",
+  "ORG_entity_name": "Apple OR Microsoft",
+  "PER_entity_name": "\"Tim Cook\" OR \"Satya Nadella\"",
+  "include_nlp_data": true
+}
+```
+
+This query searches for articles about the tech industry that mention Apple or
+Microsoft as organizations and Tim Cook or Satya Nadella as persons.
+
+To learn more about NER, see
+[How to search by entity](/v3/documentation/how-to/search-by-entity).
+
+## Content tagging
+
+Content tagging provides standardized categorization of news articles, enhancing
+searchability and enabling more precise content filtering.
+
+### IPTC tags
+
+IPTC (International Press Telecommunications Council) tags are a standardized
+set of news categories. They offer a hierarchical classification system for news
+content.
+
+To filter articles by IPTC tags use the following parameters:
+
+- `iptc_tags` (string): Includes articles with specified IPTC tags.
+- `not_iptc_tags` (string): Excludes articles with specified IPTC tags.
+
+Example:
+
+```json
+{
+  "q": "artificial intelligence",
+  "iptc_tags": "20000002",
+  "lang": "en"
+}
+```
+
+This query searches for AI-related articles tagged with specific IPTC category,
+`20000002` encodes arts and entertainment.
+
+For a complete IPTC Media Topic NewsCodes list, visit the
+[IPTC website](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
+
+### IAB tags
+
+IAB (Interactive Advertising Bureau) tags provide a standardized taxonomy for
+digital advertising content.
+
+To filter articles by IAB tags use the following parameters:
+
+- `iab_tags` (string): Includes articles with specified IAB tags.
+- `not_iab_tags` (string): Excludes articles with specified IAB tags.
+
+Example:
+
+```json
+{
+  "q": "finance",
+  "iab_tags": "Business,Investing",
+  "not_iab_tags": "Personal Finance",
+  "lang": "en"
+}
+```
+
+This query returns finance-related articles categorized under `Business` or
+`Investing` but not `Personal Finance`.
+
+For more information on IAB Content Taxonomy, visit the
+[IAB Tech Lab website](https://iabtechlab.com/standards/content-taxonomy/).
+
+## Use cases
+
+NLP features in News API v3 enable various applications across industries:
+
+| Application              | Description                                                 | Example use case                                                                           |
+| ------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| Brand Monitoring         | Track mentions, analyze sentiment and identify influencers. | A tech company monitoring public perception of their latest product launch.                |
+| Competitive Intelligence | Monitor competitors' activities and public perception.      | An automotive manufacturer tracking mentions of competitors' electric vehicle initiatives. |
+| Market Research          | Analyze trends, consumer sentiment, and emerging topics.    | A financial services firm identifying emerging fintech trends.                             |
+| Political Analysis       | Track political figures and analyze public opinion.         | A political campaign monitoring sentiment around key policy issues.                        |
+| Financial Analysis       | Monitor market sentiment and track company mentions.        | An investment firm analyzing sentiment around potential acquisition targets.               |
+| Academic Research        | Conduct large-scale analysis of media coverage.             | A researcher studying media bias in climate change reporting.                              |
+| Content Curation         | Automatically filter and categorize news content.           | A news aggregator app personalizing content for users based on interests.                  |
+| Trend Forecasting        | Identify emerging trends across industries.                 | A consulting firm predicting future technology adoption trends.                            |
+
+## Best practices
+
+To maximize the effectiveness of NLP features in News API v3:
+
+- Start with broader queries and gradually refine using NLP parameters.
+- Combine multiple NLP parameters for precise results.
+- Use entity recognition with boolean operators to refine searches.
+- Experiment with sentiment thresholds to find the right balance for your use
+  case.
+- Leverage theme classification and content tags to quickly filter large volumes
+  of news data.
+- Regularly review and update your queries to adapt to changing news landscapes.
+
+## Related resources
+
+- [How to use boolean operators](/v3/documentation/how-to/use-boolean-operators)
+- [Proximity search with NEAR](/v3/documentation/how-to/search-with-near)
+- [How to search by entity](/v3/documentation/how-to/search-by-entity)
+- [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles)
+- [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication)
