@@ -125,6 +125,10 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AdditionalDomainInfo"
+        - $ref: "#/components/parameters/IsNewsDomain"
+        - $ref: "#/components/parameters/NewsDomainType"
+        - $ref: "#/components/parameters/NewsType"
         - $ref: "#/components/parameters/WordCountMin"
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
@@ -460,6 +464,9 @@ paths:
         - $ref: "#/components/parameters/SourceName"
         - $ref: "#/components/parameters/SourceUrl"
         - $ref: "#/components/parameters/IncludeAdditionalInfo"
+        - $ref: "#/components/parameters/IsNewsDomain"
+        - $ref: "#/components/parameters/NewsDomainType"
+        - $ref: "#/components/parameters/NewsType"
         - $ref: "#/components/parameters/FromRank"
         - $ref: "#/components/parameters/ToRank"
       responses:
@@ -1228,7 +1235,7 @@ components:
 
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
 
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
 
       name: theme
       in: query
@@ -1668,6 +1675,9 @@ components:
         - `nb_articles_for_7d`: The number of articles published by the source in the last week.
         - `country`: Source country of origin.
         - `rank`: SEO rank.
+        - `is_news_domain`: Boolean indicating if the source is a news domain.
+        - `news_domain_type`: Type of news domain (e.g., "Original Content").
+        - `news_type`: Category of news (e.g., "General News Outlets").
       name: include_additional_info
       in: query
       required: false
@@ -1702,6 +1712,73 @@ components:
           - day
           - hour
       example: day
+
+    # New parameters
+    AdditionalDomainInfo:
+      name: additional_domain_info
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: |
+        If true, includes additional domain information in the response for each article:
+        - `is_news_domain`: Boolean indicating if the source is a news domain.
+        - `news_domain_type`: Type of news domain (e.g., "Original Content").
+        - `news_type`: Category of news (e.g., "News and Blogs").
+      example: true
+
+    IsNewsDomain:
+      name: is_news_domain
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: |
+        If true, filters results to include only news domains.
+      example: true
+
+    NewsDomainType:
+      description: |
+        Filters results based on the news domain type.
+        Possible values are:
+        - `Original Content`: Sources that produce their own content.
+        - `Aggregator`: Sources that collect content from various other sources.
+        - `Press Releases`: Sources primarily publishing press releases.
+        - `Republisher`: Sources that republish content from other sources.
+        - `Other`: Sources that don't fit into main categories.
+      name: news_domain_type
+      in: query
+      required: false
+      schema:
+        type: string
+        enum:
+          - Original Content
+          - Aggregator
+          - Press Releases
+          - Republisher
+          - Other
+      example: "Original Content"
+
+    NewsType:
+      description: |
+        Filters results based on the news type.
+        Multiple types can be specified using a comma-separated string.
+
+        Example: `"General News Outlets,Tech News and Updates"`
+
+        For a complete list of available news types, see our [documentation](#).
+      name: news_type
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        single-type:
+          summary: Single news type
+          value: "General News Outlets"
+        multiple-types:
+          summary: Multiple news types
+          value: "General News Outlets,Tech News and Updates"
 
   requestBodies:
     AggregationRequestBody:
@@ -2068,6 +2145,14 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              additional_domain_info:
+                $ref: "#/components/schemas/AdditionalDomainInfo"
+              is_news_domain:
+                $ref: "#/components/schemas/IsNewsDomain"
+              news_domain_type:
+                $ref: "#/components/schemas/NewsDomainType"
+              news_type:
+                $ref: "#/components/schemas/NewsType"
               word_count_min:
                 $ref: "#/components/schemas/WordCountMin"
               word_count_max:
@@ -2126,6 +2211,8 @@ components:
                 - en
               from_: 2024/01/01
               to_: 2024/06/30
+              additional_domain_info: true
+              is_news_domain: true
 
     SearchLinkRequestBody:
       description:
@@ -2296,6 +2383,12 @@ components:
                 $ref: "#/components/schemas/SourceUrl"
               include_additional_info:
                 $ref: "#/components/schemas/IncludeAdditionalInfo"
+              is_news_domain:
+                $ref: "#/components/schemas/IsNewsDomain"
+              news_domain_type:
+                $ref: "#/components/schemas/NewsDomainType"
+              news_type:
+                $ref: "#/components/schemas/NewsType"
               from_rank:
                 $ref: "#/components/schemas/FromRank"
               to_rank:
@@ -2303,7 +2396,10 @@ components:
             example:
               predefined_sources:
                 - top 50 US
-              additional_info: true
+              include_additional_info: true
+              is_news_domain: true
+              news_domain_type: "Original Content"
+              news_type: "General News Outlets"
 
   responses:
     AggregationSuccessfulResponse:
@@ -2761,6 +2857,30 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
+        additional_domain_info:
+          $ref: "#/components/schemas/dto_AdditionalDomainInfo"
+
+    dto_AdditionalDomainInfo:
+      title: Additional Domain Info
+      description: Additional information about the domain of the article.
+      type: object
+      properties:
+        is_news_domain:
+          title: Is News Domain
+          description: Indicates whether the domain is a news domain.
+          type: boolean
+        news_type:
+          title: News Type
+          description: The type of news content provided by the domain.
+          type: string
+        news_domain_type:
+          title: News Domain Type
+          description: The type of news domain.
+          type: string
+      example:
+        is_news_domain: true
+        news_type: "News and Blogs"
+        news_domain_type: "Original Content"
 
     # Latest Headlines related schemas for the response object
     ClusteringSearchResponse:
@@ -3276,12 +3396,10 @@ components:
           description: The logo of the news source.
           type: string
         additional_info:
-          title: Additional Info
-          description: Additional information about the news source.
           $ref: "#/components/schemas/AdditionalSourceInfo"
 
     AdditionalSourceInfo:
-      title: AdditionalSourceInfo
+      title: Additional source info
       description:
         The data model for additional information about a news source.
       type: object
@@ -3300,6 +3418,25 @@ components:
           title: Rank
           description: The SEO rank of the news source.
           type: integer
+        is_news_domain:
+          title: Is News Domain
+          description: Indicates whether the source is a news domain.
+          type: boolean
+        news_domain_type:
+          title: News Domain Type
+          description: The type of news domain.
+          type: string
+        news_type:
+          title: News Type
+          description: The category of news provided by the source.
+          type: string
+      example:
+        nb_articles_for_7d: 153
+        country: "US"
+        rank: 117
+        is_news_domain: true
+        news_domain_type: "Original Content"
+        news_type: "General News Outlets"
 
     # Subscription related schema for the response object
     SubscriptionResponse:
@@ -3887,7 +4024,7 @@ components:
 
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
 
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
+        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
 
     NotTheme:
@@ -4241,6 +4378,9 @@ components:
         - `nb_articles_for_7d`: The number of articles published by the source in the last week.
         - `country`: Source country of origin.
         - `rank`: SEO rank.
+        - `is_news_domain`: Boolean indicating if the source is a news domain.
+        - `news_domain_type`: Type of news domain (e.g., "Original Content").
+        - `news_type`: Category of news (e.g., "General News Outlets").
       example: true
 
     SourceUrl:
@@ -4271,6 +4411,58 @@ components:
         - `day`: Aggregates results by day.
         - `hour`: Aggregates results by hour.
       example: day
+
+    # New params
+    NewsDomainType:
+      type: string
+      enum:
+        - Original Content
+        - Aggregator
+        - Press Releases
+        - Republisher
+        - Other
+      description: |
+        Filters results based on the news domain type.
+        Possible values are:
+        - `Original Content`: Sources that produce their own content.
+        - `Aggregator`: Sources that collect content from various other sources.
+        - `Press Releases`: Sources primarily publishing press releases.
+        - `Republisher`: Sources that republish content from other sources.
+        - `Other`: Sources that don't fit into main categories.
+      example: "Original Content"
+
+    NewsType:
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      description: |
+        Filters results based on the news type.
+        Multiple types can be specified using a comma-separated string or an array of strings.
+
+        Examples:
+        - `"General News Outlets,Tech News and Updates"`
+        - `["General News Outlets", "Tech News and Updates"]`
+
+        For a complete list of available news types, see our [documentation](#).
+
+      example: ["General News Outlets", "Tech News and Updates"]
+
+    AdditionalDomainInfo:
+      type: boolean
+      description: |
+        If true, includes additional domain information in the response for each article:
+        - `is_news_domain`: Boolean indicating if the source is a news domain.
+        - `news_domain_type`: Type of news domain (e.g., "Original Content").
+        - `news_type`: Category of news (e.g., "News and Blogs").
+      example: true
+
+    IsNewsDomain:
+      type: boolean
+      description: |
+        If true, filters results to include only news domains.
+      example: true
 
   securitySchemes:
     ApiKeyAuth:
