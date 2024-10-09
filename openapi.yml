@@ -1766,7 +1766,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see our [documentation](#)
+        For a complete list of available news types, see our [documentation](#).
       name: news_type
       in: query
       required: false
@@ -4445,39 +4445,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see our [documentation](#)
-
-        Available types include:
-        - Tech News and Updates
-        - Sports News and Blogs
-        - News and Blogs
-        - E-commerce and Product Information
-        - Educational News
-        - Press Releases
-        - Corporate News
-        - Gaming News and Blogs
-        - Entertainment and Media News
-        - Health and Medical News
-        - Government and Municipal News
-        - Real Estate News
-        - Automotive News and Blogs
-        - News Aggregators
-        - Fashion and Lifestyle
-        - Local News and Community Events
-        - Music and Radio
-        - Reviews
-        - Blogs and Magazines
-        - Political News
-        - Non-Profit and Organization News
-        - Event News
-        - General News Outlets
-        - Gambling News
-        - Travel and Lifestyle
-        - Finance and Investment
-        - Other
-        - Specific News Type
-        - Pure News Outlet
-        - Corporate News Section
+        For a complete list of available news types, see our [documentation](#).
 
       example: ["General News Outlets", "Tech News and Updates"]
 
