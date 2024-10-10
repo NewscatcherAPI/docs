@@ -24,7 +24,7 @@ info:
       content quality and relevancy.
 
     For detailed documentation, integration guides, and SDKs, visit our
-    [developer portal](https://docs.newscatcherapi.com/).
+    [developer portal](https://newscatcherapi.com/docs).
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
     name: Maksym Sugonyaka
@@ -32,7 +32,7 @@ info:
   version: 3.2.16
 externalDocs:
   description: Find out more about NewsCatcher News API
-  url: https://docs.newscatcherapi.com/
+  url: https://newscatcherapi.com/docs
 
 servers:
   - url: https://v3-api.newscatcherapi.com
@@ -47,48 +47,48 @@ tags:
     externalDocs:
       description:
         Search for articles by keyword, language, country, source, and more.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/search-news
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/search/search-articles-get
   - name: LatestHeadlines
     description: Operations to retrieve latest headlines.
     externalDocs:
       description:
         Retrieve the latest headlines since a specified date, with filtering
         options.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-latest-headlines
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get
   - name: Authors
     description: Operations to search by author.
     externalDocs:
       description: Search for articles by author.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-authors
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/authors/search-articles-by-author-get
   - name: SearchLink
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-search-by-link
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get
   - name: SearchSimilar
     description: Operations to find similar articles.
     externalDocs:
       description: Find articles similar to a given query.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-search-similar
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/searchsimilar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
       description:
         Retrieve the list of available sources, filtered by language and
         country.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-sources
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/sources/retrieve-sources-get
   - name: Aggregation
     description: Operations to aggregate news counts.
     externalDocs:
       description:
         Aggregate news counts based on specified criteria such as keyword,
         language, country, source, and more.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-aggregation
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get
   - name: Subscription
     description: Operations to get subscription info.
     externalDocs:
       description: Retrieve information about your subscription plan.
-      url: https://docs.newscatcherapi.com/api-docs/endpoints-1/v3-subscription
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get
 
 paths:
   /api/search:
@@ -625,7 +625,7 @@ components:
 
         Example: `"en, es"`
 
-        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       name: lang
       in: query
       required: false
@@ -647,7 +647,7 @@ components:
 
         Example: `"fr, de"`
 
-        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format)
+        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       name: not_lang
       in: query
       required: false
@@ -693,7 +693,7 @@ components:
 
         Example: `"US, CA"`
 
-        To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format)
+        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
@@ -715,7 +715,7 @@ components:
 
         Example:`"US, CA"`
 
-        To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format)
+        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       name: not_countries
       in: query
       required: false
@@ -1766,7 +1766,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see our [documentation](#).
+        For a complete list of available news types, see [Enumerated parameters > News type](/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
       name: news_type
       in: query
       required: false
@@ -3541,7 +3541,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
+        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     NotLang:
@@ -3559,7 +3559,7 @@ components:
         - `"fr,de"`
         - `["fr", "de"]`
 
-        To learn more, see [Language format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#language-format).
+        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       example: ["fr", "de"]
 
     SearchIn:
@@ -3591,7 +3591,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
+        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     NotCountries:
@@ -3609,7 +3609,7 @@ components:
         - `"UK,FR"`
         - `["UK", "FR"]`
 
-        To learn more, see [Country format](https://docs.newscatcherapi.com/api-docs/endpoints-1/debugging#countries-format).
+        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       example: ["UK", "FR"]
 
     Sources:
@@ -4445,7 +4445,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see our [documentation](#).
+        For a complete list of available news types, see [Enumerated parameters > News type](/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
 
       example: ["General News Outlets", "Tech News and Updates"]
 
