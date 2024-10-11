@@ -1,0 +1,178 @@
+---
+title: Enumerated parameters
+description: Allowed values for API parameters with a fixed set of options
+---
+
+## Language (`lang` and `not_lang`)
+
+The `lang` and `not_lang` parameters accept two-letter ISO 639-1 language codes.
+You can use these parameters to include or exclude articles in specific
+languages.
+
+<Warning>
+  We distinguish Chinese (China) and Chinese (Taiwan) languages, using `cn` and
+  `tw`, respectively. This is the only difference between our codes and the ISO
+  639-1 standard.
+</Warning>
+
+### Commonly used language codes
+
+| Code | Language         |
+| ---- | ---------------- |
+| ar   | Arabic           |
+| cn   | Chinese (China)  |
+| de   | German           |
+| en   | English          |
+| es   | Spanish          |
+| fr   | French           |
+| it   | Italian          |
+| ja   | Japanese         |
+| pt   | Portuguese       |
+| tw   | Chinese (Taiwan) |
+| uk   | Ukrainian        |
+
+### Supported language codes
+
+```
+af,ar,bg,bn,ca,cs,cy,cn,da,de,el,en,es,et,fa,fi,fr,gu,he,hi,hr,hu,id,it,ja,kn,ko,lt,lv,mk,ml,mr,ne,nl,no,pa,pl,pt,ro,ru,sk,sl,so,sq,sv,sw,ta,te,th,tl,tr,tw,uk,ur,vi
+```
+
+For a description of supported language codes, see the
+[ISO 639-1 code table](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+
+### Usage examples
+
+GET requests:
+
+- To search for articles in English: `lang=en`
+- To search for articles in English and Spanish: `lang=en,es`
+- To exclude articles in French: `not_lang=fr`
+
+POST requests:
+
+- To search for articles in English and Spanish:
+  ```json
+  {
+    "lang": ["en", "es"]
+  }
+  ```
+- To exclude articles in French and German:
+  ```json
+  {
+    "not_lang": ["fr", "de"]
+  }
+  ```
+
+## Country (`country` and `not_country`)
+
+The `country` and `not_country` parameters accept two-letter ISO 3166-1 alpha-2
+country codes. You can use these parameters to include or exclude articles from
+specific countries.
+
+### Commonly used country codes
+
+| Code | Country        |
+| ---- | -------------- |
+| AU   | Australia      |
+| BR   | Brazil         |
+| CA   | Canada         |
+| DE   | Germany        |
+| FR   | France         |
+| GB   | United Kingdom |
+| IN   | India          |
+| JP   | Japan          |
+| UA   | Ukraine        |
+| US   | United States  |
+
+For a complete list of supported country codes, refer to the
+[ISO 3166-1 alpha-2 code table](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements).
+
+### Usage examples
+
+GET requests:
+
+- To search for articles from the United States: `country=US`
+- To search for articles from the United States and United Kingdom:
+  `country=US,GB`
+- To exclude articles from Canada: `not_country=CA`
+
+POST requests:
+
+- To search for articles from the United States and United Kingdom:
+  ```json
+  {
+    "country": ["US", "GB"]
+  }
+  ```
+- To exclude articles from Canada and Australia:
+  ```json
+  {
+    "not_country": ["CA", "AU"]
+  }
+  ```
+
+## News Type (`news_type`)
+
+The `news_type` parameter filters results based on the type of news source. It
+accepts one or more of the following values:
+
+- Tech News and Updates
+- Sports News and Blogs
+- News and Blogs
+- E-commerce and Product Information
+- Educational News
+- Press Releases
+- Corporate News
+- Gaming News and Blogs
+- Entertainment and Media News
+- Health and Medical News
+- Government and Municipal News
+- Real Estate News
+- Automotive News and Blogs
+- News Aggregators
+- Fashion and Lifestyle
+- Local News and Community Events
+- Music and Radio
+- Reviews
+- Blogs and Magazines
+- Political News
+- Non-Profit and Organization News
+- Event News
+- General News Outlets
+- Gambling News
+- Travel and Lifestyle
+- Finance and Investment
+- Specific News Type
+- Pure News Outlet
+- Corporate News Section
+- Other
+
+### Usage examples
+
+GET requests:
+
+- To search for tech news: `news_type=Tech News and Updates`
+- To search for both general news and tech news:
+  `news_type=General News Outlets,Tech News and Updates`
+
+POST requests:
+
+- To search for tech news and sports news:
+  ```json
+  {
+    "news_type": ["Tech News and Updates", "Sports News and Blogs"]
+  }
+  ```
+
+## Additional notes
+
+- For GET requests, when specifying multiple values for a parameter, use a
+  comma-separated string.
+- For POST requests, you can specify multiple values using a comma-separated
+  string or an array of strings.
+- Parameter values are case-sensitive. Always use the exact spelling and
+  capitalization as listed in this document.
+- For parameters not listed in this document, refer to the specific endpoint
+  documentation in the API Reference.
+- The maximum number of values that can be specified for each parameter may be
+  limited. Refer to the API documentation for specific limits.
