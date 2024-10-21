@@ -1020,7 +1020,7 @@ components:
     ## Article object schema, used for `articles` in `ArticleSearchResponseDto`
     ## Added the `AssociatedTownEntity` and the `NlpDataEntity` with the related schemas:
     ArticleResultEntity:
-      title: ArticleResult
+      title: Article Result
       description:
         The data model representing a single article in the search results.
       type: object
@@ -1334,10 +1334,10 @@ components:
             type: string
           description: A list of available local news sources.
         user_input:
-          $ref: "#/components/schemas/SourcesResultEntity"
+          $ref: "#/components/schemas/SourcesUserInputDto"
 
-    SourcesResultEntity:
-      title: Sources Result
+    SourcesUserInputDto:
+      title: Sources User Input
       description: The user input parameters used to search local news sources.
       type: object
       properties:
