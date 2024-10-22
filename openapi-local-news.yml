@@ -103,8 +103,8 @@ paths:
         - LatestHeadlines
       summary: Retrieve latest headlines
       description:
-        Retrieves the most recent local news headlines for specific locations
-        and time period.
+        Retrieves the most recent news headlines for the specific locations and
+        times. You can filter results by language, source, theme, and more.
       operationId: LatestHeadlines_post
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
@@ -132,8 +132,8 @@ paths:
         - Sources
       summary: Retrieve sources
       description:
-        Obtain a list of available local news sources, filterable by language,
-        country, and theme.
+        Retrieves the list of local news sources available in the database.
+        Filterable by language, country, and theme.
       operationId: Sources_post
       requestBody:
         $ref: "#/components/requestBodies/SourceRequestBody"
