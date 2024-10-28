@@ -625,7 +625,7 @@ components:
 
         Example: `"en, es"`
 
-        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       name: lang
       in: query
       required: false
@@ -647,7 +647,7 @@ components:
 
         Example: `"fr, de"`
 
-        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       name: not_lang
       in: query
       required: false
@@ -693,7 +693,7 @@ components:
 
         Example: `"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
@@ -715,7 +715,7 @@ components:
 
         Example:`"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       name: not_countries
       in: query
       required: false
@@ -1766,7 +1766,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated-parameters#news-type-news-type).
       name: news_type
       in: query
       required: false
@@ -3541,7 +3541,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     NotLang:
@@ -3559,7 +3559,7 @@ components:
         - `"fr,de"`
         - `["fr", "de"]`
 
-        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["fr", "de"]
 
     SearchIn:
@@ -3591,7 +3591,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     NotCountries:
@@ -3609,7 +3609,7 @@ components:
         - `"UK,FR"`
         - `["UK", "FR"]`
 
-        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["UK", "FR"]
 
     Sources:
@@ -4445,7 +4445,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated-parameters#news-type-news-type).
 
       example: ["General News Outlets", "Tech News and Updates"]
 
