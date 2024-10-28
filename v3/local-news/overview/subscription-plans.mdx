@@ -1,0 +1,101 @@
+---
+title: Local News API subscription plans
+sidebarTitle: Subscription plans
+description:
+  Select a Local News API plan that matches your needs - from standard NLP
+  analysis to advanced AI-powered location features.
+---
+
+<Note>
+  Each plan includes multi-language support, article clustering, NLP analysis,
+  town association methods, and comprehensive metadata. Plans differ in their
+  specialized features and processing capabilities.
+</Note>
+
+## Available plans
+
+<Tabs>
+  <Tab title="Standard">
+    **Plan ID**: `v3_local_news_nlp`
+
+    Standard plan provides comprehensive NLP capabilities for content analysis and monitoring:
+
+    <Check>Access complete article metadata and clustering</Check>
+    <Check>Categorize content across 15+ themes (Business, Tech, Politics, and more)</Check>
+    <Check>Detect named entities (PER, ORG, LOC, MISC)</Check>
+    <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
+    <Check>Get AI-generated article summaries</Check>
+    <Check>Use 5 town association methods for precise location matching</Check>
+    <Check>Make up to 250,000 API calls monthly</Check>
+
+  </Tab>
+  <Tab title="Embeddings">
+    **Plan ID**: `v3_local_news_nlp_embeddings`
+
+    Embeddings plan adds vector embeddings for advanced content analysis:
+
+    <Check>Access all Standard NLP features</Check>
+    <Check>Get 1024-dimensional vector embeddings through `nlp.new_embeddings`</Check>
+    <Check>Use the multilingual-e5-large model for embeddings generation</Check>
+    <Check>Enable semantic search in your applications</Check>
+    <Check>Build similarity-based news aggregations</Check>
+    <Check>Make up to 25,000 API calls monthly</Check>
+
+  </Tab>
+  <Tab title="AI Extraction">
+    **Plan ID**: `v3_local_news_ai_extraction_nlp`
+
+    AI Extraction plan adds AI-powered location features:
+
+    <Check>Access all Standard NLP features</Check>
+    <Check>Extract towns from article content using AI</Check>
+    <Check>Validate locations automatically</Check>
+    <Check>Get town information through `ai_associated_town` in responses</Check>
+    <Check>Filter content using the `search_in_ai_associated_town` parameter</Check>
+    <Check>Access AI town data starting from September 24, 2024</Check>
+    <Check>Make up to 250,000 API calls monthly</Check>
+
+  </Tab>
+</Tabs>
+
+## Technical specifications
+
+| Feature                 | Standard | Embeddings | AI Extraction |
+| ----------------------- | -------- | ---------- | ------------- |
+| **API Limits**          |
+| Monthly API Calls       | 250,000  | 25,000     | 250,000       |
+| Rate Limit (calls/sec)  | 5        | 5          | 5             |
+| Max Sources per Request | 2,000    | 2,000      | 2,000         |
+| Historical Data Access  | 30 days  | 30 days    | 30 days       |
+| **Core Features**       |
+| Article Metadata        | ✓        | ✓          | ✓             |
+| Multi-language Support  | ✓        | ✓          | ✓             |
+| Clustering              | ✓        | ✓          | ✓             |
+| **NLP Features**        |
+| Theme Analysis          | ✓        | ✓          | ✓             |
+| Entity Recognition      | ✓        | ✓          | ✓             |
+| Sentiment Analysis      | ✓        | ✓          | ✓             |
+| Vector Embeddings       | -        | ✓          | -             |
+| **Location Features**   |
+| Location Filtering      | ✓        | ✓          | ✓             |
+| AI Location Extraction  | -        | -          | ✓             |
+| Location Validation     | -        | -          | ✓             |
+
+<Warning>
+  To prevent service interruptions, implement rate limiting in your application
+  to stay within the 5 requests per second limit.
+</Warning>
+
+## Support
+
+If you need help selecting a plan, contact our team:
+
+- For pricing and sales:
+  [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
+- For technical questions:
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
+
+<Tip>
+  Visit the [pricing page](https://www.newscatcherapi.com/pricing) to start your
+  subscription.
+</Tip>
