@@ -1,0 +1,305 @@
+---
+title: Introduction to Local News API
+sidebarTitle: Introduction
+description: Local News API features and capabilities
+---
+
+## What is Local News API?
+
+Local News API provides precise access to location-specific news content
+worldwide. Building upon News API v3's robust foundation, it adds specialized
+features for geographic news discovery and analysis. Whether developing local
+news applications, analyzing regional trends, or tracking city-specific
+coverage, Local News API helps you efficiently work with geographically focused
+news data.
+
+## Key features
+
+- AI-powered location recognition and validation
+- Advanced querying with boolean operators and proximity search
+- Multiple town association methods for precise location matching
+- NLP-enriched content for deeper analysis
+- Articles clustering
+- Multi-language support
+- High volume data retrieval (up to 1000 articles per request)
+
+## Available plans
+
+Local News API offers three subscription tiers, each with specific capabilities:
+
+| Plan                | API Calls     | Rate Limit | Historical Data | Key Capabilities                                          |
+| ------------------- | ------------- | ---------- | --------------- | --------------------------------------------------------- |
+| Standard NLP        | 250,000/month | 5/second   | 30 days         | NLP analysis, clustering, town association                |
+| NLP with Embeddings | 25,000/month  | 5/second   | 30 days         | Standard NLP features + text embeddings                   |
+| AI Extraction NLP   | 250,000/month | 5/second   | 30 days         | Standard NLP features + AI town extraction and validation |
+
+<Note>
+  All plans include comprehensive NLP capabilities and support up to 2000
+  sources per request. For detailed information about, visit the [Subscription
+  plans](/v3/local-news/overview/subscription-plans) page.
+</Note>
+
+## Base URL
+
+You must send all the API requests to the following base URL:
+
+```bash
+https://local-news.newscatcherapi.com
+```
+
+## Endpoints
+
+| Endpoint                | Method | Description                              | Use Case                                                     |
+| ----------------------- | ------ | ---------------------------------------- | ------------------------------------------------------------ |
+| `/api/search`           | POST   | Full-text search with location filtering | Find articles matching specific criteria for given locations |
+| `/api/latest_headlines` | POST   | Recent articles by location              | Monitor latest news for specific towns or regions            |
+| `/api/search_by`        | POST   | Direct article lookup                    | Retrieve specific articles using URLs, IDs, or RSS GUIDs     |
+| `/api/sources`          | POST   | Available news sources                   | Discover local news providers by region                      |
+
+## Request Format
+
+Include your API key in the `x-api-token` header for each request. All requests
+must use HTTPS.
+
+<CodeGroup>
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://local-news.newscatcherapi.com/api/search"
+HEADERS = {
+    "x-api-token": API_KEY,
+    "Content-Type": "application/json"
+}
+
+PAYLOAD = {
+    "q": "venture capital",
+    "associated_towns": [{
+        "name": "San Francisco, California"
+    }],
+    "lang": "en",
+    "from_": "7 days ago"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST \
+  'https://local-news.newscatcherapi.com/api/search' \
+  -H 'x-api-token: YOUR_API_KEY_HERE' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "q": "venture capital",
+    "associated_towns": [{
+      "name": "San Francisco, California"
+    }],
+    "lang": "en",
+    "from_": "7 days ago"
+  }'
+```
+
+</CodeGroup>
+
+## Response format
+
+All API responses are JSON objects containing articles and metadata. The key
+response fields include:
+
+<ResponseField name="status" type="string">
+  The status of the request.
+</ResponseField>
+
+<ResponseField name="total_hits" type="integer">
+  The total number of articles matching the query.
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  The current page number.
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  The total number of available pages.
+</ResponseField>
+
+<ResponseField name="page_size" type="integer">
+  The number of articles per page.
+</ResponseField>
+
+<ResponseField name="articles" type="array">
+  An array of article objects, each containing location-specific metadata and content.
+
+  <Expandable title="properties">
+    <ResponseField name="id" type="string">
+      The unique identifier for the article.
+    </ResponseField>
+
+    <ResponseField name="associated_town" type="array">
+      A list of towns associated with the article, including association methods.
+    </ResponseField>
+
+    <ResponseField name="ai_associated_town" type="array">
+      Towns identified through AI analysis of the article content.
+    </ResponseField>
+
+    <ResponseField name="title" type="string">
+      The title of the article.
+    </ResponseField>
+
+    <ResponseField name="content" type="string">
+      The full content of the article.
+    </ResponseField>
+
+    <ResponseField name="nlp" type="object">
+      NLP analysis data including sentiment, themes, and named entities.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_input" type="object">
+  The parameters used in your request for verification and debugging.
+</ResponseField>
+
+<Note>
+  For detailed descriptions of all available response fields, refer to the
+  specific endpoint documentation in the [Endpoints](/v3/local-news/endpoints/)
+  section.
+</Note>
+
+### Example request
+
+Here's a sample search for venture capital news in San Francisco:
+
+```json Request
+{
+  "q": "venture capital",
+  "associated_towns": [
+    {
+      "name": "San Francisco, California"
+    }
+  ],
+  "lang": "en",
+  "from_": "7 days ago"
+}
+```
+
+### Example response
+
+```json Response
+{
+  "status": "ok",
+  "total_hits": 5,
+  "page": 1,
+  "total_pages": 1,
+  "page_size": 100,
+  "articles": [
+    {
+      "id": "dabf25a5cbee2705f1ab866eeafdc835",
+      "associated_town": [
+        {
+          "ai_validated": true,
+          "name": "San Francisco, California",
+          "description": ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
+        }
+      ],
+      "ai_associated_town": null,
+      "score": 17.720953,
+      "title": "Tech company to move headquarters from San Francisco to Texas",
+      "author": "Aayush Gupta",
+      "link": "https://www.bizjournals.com/sanfrancisco/news/2024/10/24/simplilearn-kumar-plano-san-francisco-headquarters.html",
+      "description": "The company offers a variety of online training programs for those interested in working in the tech industry, including programming, cybersecurity, digital marketing and artificial intelligence.",
+      "media": "https://media.bizj.us/view/img/11514132/042712369*1200xx5184-2916-0-270.jpg",
+      "content": "A global digital education company is relocating its U.S headquarters from downtown San Francisco to North Texas...",
+      "authors": ["Aayush Gupta"],
+      "published_date_precision": "full",
+      "published_date": "2024-10-24 18:40:00",
+      "updated_date": null,
+      "updated_date_precision": null,
+      "is_opinion": false,
+      "twitter_account": null,
+      "domain_url": "bizjournals.com",
+      "parent_url": "https://www.bizjournals.com/sanfrancisco",
+      "word_count": 391,
+      "rank": 503,
+      "country": "US",
+      "rights": "bizjournals.com",
+      "language": "en",
+      "nlp": {
+        "theme": ["Business", "Tech"],
+        "summary": "Simplilearn Solutions Pvt. Ltd. is relocating its U.S headquarters from downtown San Francisco to Plano, Texas. The new HQ will be located at 5851 Legacy Circle in Legacy Town Center.",
+        "sentiment": {
+          "title": 0.0,
+          "content": 0.9911
+        },
+        "ner_PER": [
+          {
+            "entity_name": "Krishna Kumar",
+            "count": 1
+          }
+        ],
+        "ner_ORG": [
+          {
+            "entity_name": "Simplilearn",
+            "count": 4
+          }
+        ],
+        "ner_MISC": [
+          {
+            "entity_name": "NYSE",
+            "count": 1
+          }
+        ],
+        "ner_LOC": [
+          {
+            "entity_name": "San Francisco",
+            "count": 2
+          },
+          {
+            "entity_name": "Texas",
+            "count": 1
+          }
+        ]
+      },
+      "paid_content": false
+    }
+    // ... other articles
+  ],
+  "user_input": {
+    "q": "venture capital",
+    "associated_towns": [
+      {
+        "name": "San Francisco, California"
+      }
+    ],
+    "lang": "en",
+    "from_": "7 days ago"
+  }
+}
+```
+
+## Getting started
+
+To start using Local News API:
+
+1. [Contact our sales team](https://www.newscatcherapi.com/pricing) to discuss
+   your needs and obtain an API key.
+2. Once you have your API key, check out our Quick start guide to make your
+   first API call.
+3. Explore [Documentation](https://newscatcherapi.com/docs/v3/local-news) to
+   unlock the full potential of the API.
+
+For detailed information about request parameters and response formats, refer to
+the specific endpoint documentation in this API reference.
+
+The Local News API is your gateway to precise, location-specific news content.
+Whether you're building local news applications, analyzing regional trends, or
+tracking city-specific coverage, we're here to help you navigate the world of
+local news data.

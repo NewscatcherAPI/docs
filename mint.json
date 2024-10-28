@@ -23,11 +23,6 @@
   },
   "anchors": [
     {
-      "name": "FAQ",
-      "icon": "question",
-      "url": "https://www.newscatcherapi.com/#section-faq"
-    },
-    {
       "name": "Case studies",
       "icon": "file",
       "url": "https://www.newscatcherapi.com/case-studies"
@@ -36,6 +31,11 @@
       "name": "Blog",
       "icon": "newspaper",
       "url": "https://www.newscatcherapi.com/blog"
+    },
+    {
+      "name": "FAQ",
+      "icon": "question",
+      "url": "https://www.newscatcherapi.com/#section-faq"
     }
   ],
   "tabs": [
@@ -48,6 +48,11 @@
       "name": "API Reference",
       "version": "v3",
       "url": "v3/api-reference"
+    },
+    {
+      "name": "Local News",
+      "version": "v3",
+      "url": "v3/local-news"
     },
     {
       "name": "Documentation",
@@ -192,6 +197,42 @@
         "v3/api-reference/libraries/java",
         "v3/api-reference/libraries/go",
         "v3/api-reference/libraries/csharp"
+      ]
+    },
+    {
+      "group": "Overview",
+      "version": "v3",
+      "pages": [
+        "v3/local-news/overview/introduction",
+        "v3/local-news/overview/quickstart",
+        "v3/local-news/overview/town-association-methods",
+        "v3/local-news/overview/subscription-plans"
+      ]
+    },
+    {
+      "group": "Endpoints",
+      "version": "v3",
+      "pages": [
+        {
+          "group": "Search",
+          "pages": ["v3/local-news/endpoints/search/search-articles-post"]
+        },
+        {
+          "group": "Latest headlines",
+          "pages": [
+            "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post"
+          ]
+        },
+        {
+          "group": "Sources",
+          "pages": ["v3/local-news/endpoints/sources/retrieve-sources-post"]
+        },
+        {
+          "group": "Search by",
+          "pages": [
+            "v3/local-news/endpoints/search-by/search-articles-by-identifiers-post"
+          ]
+        }
       ]
     },
     {
