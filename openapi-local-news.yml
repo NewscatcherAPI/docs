@@ -34,7 +34,7 @@ externalDocs:
   url: https://newscatcherapi.com/docs/v3/local-news
 
 servers:
-  - url: https://local-news.newscatcherapi.xyz
+  - url: https://local-news.newscatcherapi.com
     description: Local News API production server
 
 security:
@@ -521,8 +521,6 @@ components:
         - `"Finance, Tech"`
         - `["Finance", "Tech"]`
 
-        **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
@@ -542,8 +540,6 @@ components:
         - `"Apple, Microsoft"`
         - `["Apple", "Microsoft"]`
 
-        **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
       example: ["Apple", "Microsoft"]
 
@@ -561,8 +557,6 @@ components:
         - `"Elon Musk, Jeff Bezos"`
         - `["Elon Musk", "Jeff Bezos"]`
 
-        **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
       example: ["Elon Musk", "Jeff Bezos"]
 
@@ -579,8 +573,6 @@ components:
         Examples: 
         - `"California, New York"`
         - `["California", "New York"]`
-
-        **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
       example: ["California", "New York"]
@@ -600,8 +592,6 @@ components:
         - `"Bitcoin, Blockchain"`
         - `["Bitcoin", "Blockchain"]`
 
-        **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
       example: ["Bitcoin", "Blockchain"]
 
@@ -617,8 +607,6 @@ components:
         - Negative values indicate negative sentiment.
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
@@ -636,8 +624,6 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
@@ -654,8 +640,6 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
@@ -671,8 +655,6 @@ components:
         - Negative values indicate negative sentiment.
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
@@ -709,7 +691,7 @@ components:
         Each town entity contains information about a specific town 
         and the association methods to be used for searching.
 
-        **Note**: This parameter is required for local news searches.
+        **Note**: The `associated_towns` parameter is required for local news searches.
 
         To learn more, see [Town association methods](/v3/local-news/overview/town-association-methods).
       example:
@@ -719,7 +701,7 @@ components:
         - name: "Los Angeles, California"
           ai_validated: true
           description:
-            ["HYPER_LOCAL_SOURCES_INCLUDE_QUERY", "LOCAL_SOURCES_EXCLUDE_QUERY"]
+            ["HYPERLOCAL_SOURCES_INCLUDE_QUERY", "LOCAL_SOURCES_EXCLUDE_QUERY"]
 
     SearchInAiAssociatedTown:
       type: boolean
@@ -729,7 +711,7 @@ components:
         If true, the API searches for articles mentioning AI-extracted towns 
         and towns specified in the `associated_towns` parameter.
 
-        **Note**: This parameter is only available for the `v3_local_news_ai_extraction_nlp` plan.
+        **Note**: The `search_in_ai_associated_town` parameter is only available for the `v3_local_news_ai_extraction_nlp` plan.
         Data for AI-associated towns is only available from September 24, 2024, onwards.
       example: true
 
@@ -756,8 +738,8 @@ components:
           items:
             type: string
             enum:
-              - HYPER_LOCAL_SOURCES_EXCLUDE_QUERY
-              - HYPER_LOCAL_SOURCES_INCLUDE_QUERY
+              - HYPERLOCAL_SOURCES_EXCLUDE_QUERY
+              - HYPERLOCAL_SOURCES_INCLUDE_QUERY
               - LOCAL_SOURCES_EXCLUDE_QUERY
               - CITY_STATE_COUNTY_QUERY
               - NEAR_CITY_STATE_QUERY
@@ -766,14 +748,14 @@ components:
             These methods determine how the API searches for articles related to this town.
 
             Available association methods:
-            - `HYPER_LOCAL_SOURCES_EXCLUDE_QUERY`: Searches hyper-local sources, excluding state names and IDs.
-            - `HYPER_LOCAL_SOURCES_INCLUDE_QUERY`: Performs an exact match of the city name in the title or content.
+            - `HYPERLOCAL_SOURCES_EXCLUDE_QUERY`: Searches hyperlocal sources, excluding state names and IDs.
+            - `HYPERLOCAL_SOURCES_INCLUDE_QUERY`: Performs an exact match of the city name in the title or content.
             - `LOCAL_SOURCES_EXCLUDE_QUERY`: Searches local sources, excluding state names and IDs.
             - `CITY_STATE_COUNTY_QUERY`: Conducts a global search using city, state, and county combinations.
             - `NEAR_CITY_STATE_QUERY`: Performs a proximity search, finding city and state within 15 words of each other.
 
             To learn more, see [Town association methods](/v3/local-news/overview/town-association-methods).
-          example: ["HYPER_LOCAL_SOURCES_INCLUDE_QUERY"]
+          example: ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
 
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
     Q:
@@ -845,8 +827,6 @@ components:
         To search in multiple fields, use a comma-separated string. 
 
         Example: `"title, summary"`
-
-        **Note**: The `summary` option is available if NLP is enabled in your plan.
 
         Available options: `title`, `summary`, `content`.
       example: title,content
@@ -1175,6 +1155,16 @@ components:
           description: A brief AI-generated summary of the article content.
         sentiment:
           $ref: "#/components/schemas/SentimentScores"
+        new_embedding:
+          type: array
+          items:
+            type: number
+            format: float
+          description: |
+            A dense 1024-dimensional vector representation of the article content, generated using 
+            the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
+
+            **Note**: The `new_embedding` field is only available in the `v3_local_news_nlp_embeddings` subscription plan.
         ner_PER:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
