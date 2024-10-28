@@ -609,7 +609,7 @@ components:
         - Use `AND`, `OR`, and `NOT` to refine search results. 
           For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying).
+        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
       name: q
       in: query
       required: true
@@ -625,7 +625,7 @@ components:
 
         Example: `"en, es"`
 
-        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       name: lang
       in: query
       required: false
@@ -647,7 +647,7 @@ components:
 
         Example: `"fr, de"`
 
-        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       name: not_lang
       in: query
       required: false
@@ -693,7 +693,7 @@ components:
 
         Example: `"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
@@ -715,7 +715,7 @@ components:
 
         Example:`"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       name: not_countries
       in: query
       required: false
@@ -1038,7 +1038,7 @@ components:
 
         Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
 
-        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](/docs/v3/documentation/how-to/search-by-url).
       name: all_links
       in: query
       required: false
@@ -1059,7 +1059,7 @@ components:
 
         Example: `"who.int, nih.gov"`
 
-        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](/docs/v3/documentation/how-to/search-by-url).
       name: all_domain_links
       in: query
       required: false
@@ -1131,7 +1131,7 @@ components:
         Determines whether to group similar articles into clusters.
         If true, the API returns clustered results.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
@@ -1149,7 +1149,7 @@ components:
         - `title`: Uses only the article title.
         - `summary`: Uses the article summary.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_variable
       in: query
       required: false
@@ -1170,7 +1170,7 @@ components:
         - `0.6`: Balances cluster size and article similarity (default).
         - `0.9`: Creates smaller, tightly related clusters.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_threshold
       in: query
       required: false
@@ -1199,7 +1199,7 @@ components:
 
         **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: include_nlp_data
       in: query
       required: false
@@ -1215,7 +1215,7 @@ components:
 
         **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: has_nlp
       in: query
       required: false
@@ -1233,7 +1233,7 @@ components:
 
         **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
 
@@ -1253,7 +1253,7 @@ components:
 
         **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: not_theme
       in: query
       required: false
@@ -1270,7 +1270,7 @@ components:
 
         **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       name: ORG_entity_name
       in: query
       required: false
@@ -1296,7 +1296,7 @@ components:
 
         **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       name: PER_entity_name
       in: query
       required: false
@@ -1322,7 +1322,7 @@ components:
 
         **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       name: LOC_entity_name
       in: query
       required: false
@@ -1349,7 +1349,7 @@ components:
 
         **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       name: MISC_entity_name
       in: query
       required: false
@@ -1377,7 +1377,7 @@ components:
 
         **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: title_sentiment_min
       in: query
       required: false
@@ -1399,7 +1399,7 @@ components:
 
         **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: title_sentiment_max
       in: query
       required: false
@@ -1421,7 +1421,7 @@ components:
 
         **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: content_sentiment_min
       in: query
       required: false
@@ -1443,7 +1443,7 @@ components:
 
         **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: content_sentiment_max
       in: query
       required: false
@@ -1529,7 +1529,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
+        To learn more, see [Articles deduplication](/docs/v3/documentation/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
       in: query
       required: false
@@ -1766,7 +1766,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
       name: news_type
       in: query
       required: false
@@ -3523,7 +3523,7 @@ components:
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
         - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying).
+        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
       example: technology AND (Apple OR Microsoft) NOT Google
 
     Lang:
@@ -3541,7 +3541,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     NotLang:
@@ -3559,7 +3559,7 @@ components:
         - `"fr,de"`
         - `["fr", "de"]`
 
-        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       example: ["fr", "de"]
 
     SearchIn:
@@ -3591,7 +3591,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     NotCountries:
@@ -3609,7 +3609,7 @@ components:
         - `"UK,FR"`
         - `["UK", "FR"]`
 
-        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       example: ["UK", "FR"]
 
     Sources:
@@ -3854,7 +3854,7 @@ components:
         - `"https://aiindex.stanford.edu/report/, https://www.stateof.ai/"`
         - `["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]`
 
-        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](/docs/v3/documentation/how-to/search-by-url).
       example:
         string-input:
           summary: Comma-separated string
@@ -3878,7 +3878,7 @@ components:
         - `"who.int, nih.gov"`
         - `["who.int", "nih.gov"]`
 
-        For more details, see [Search by URL](/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](/docs/v3/documentation/how-to/search-by-url).
       example:
         string-input:
           summary: Comma-separated string
@@ -3931,7 +3931,7 @@ components:
         Determines whether to group similar articles into clusters.
         If true, the API returns clustered results.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
 
     ClusteringVariable:
@@ -3949,7 +3949,7 @@ components:
         - `title`: Uses only the article title.
         - `summary`: Uses the article summary.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: content
 
     ClusteringThreshold:
@@ -3969,7 +3969,7 @@ components:
         - `0.6`: Balances cluster size and article similarity (default).
         - `0.9`: Creates smaller, tightly related clusters.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: 0.6
 
     IncludeNlpData:
@@ -3991,7 +3991,7 @@ components:
 
         **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
     HasNlp:
@@ -4003,7 +4003,7 @@ components:
 
         **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
     Theme:
@@ -4022,7 +4022,7 @@ components:
 
         **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
@@ -4043,7 +4043,7 @@ components:
 
         **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: ["Crime"]
 
     OrgEntityName:
@@ -4062,7 +4062,7 @@ components:
 
         **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Apple", "Microsoft"]
 
     PerEntityName:
@@ -4081,7 +4081,7 @@ components:
 
         **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Elon Musk", "Jeff Bezos"]
 
     LocEntityName:
@@ -4100,7 +4100,7 @@ components:
 
         **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["California", "New York"]
 
     MiscEntityName:
@@ -4120,7 +4120,7 @@ components:
 
         **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Bitcoin", "Blockchain"]
 
     TitleSentimentMin:
@@ -4138,7 +4138,7 @@ components:
 
         **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     TitleSentimentMax:
@@ -4156,7 +4156,7 @@ components:
 
         **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     ContentSentimentMin:
@@ -4174,7 +4174,7 @@ components:
 
         **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     ContentSentimentMax:
@@ -4192,7 +4192,7 @@ components:
 
         **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     IptcTags:
@@ -4279,7 +4279,7 @@ components:
         If true, excludes duplicate and highly similar articles from the search results. 
         If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication).
+        To learn more, see [Articles deduplication](/docs/v3/documentation/guides-and-concepts/articles-deduplication).
       example: true
 
     When:
@@ -4445,7 +4445,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](/docs/v3/api-reference/overview/enumerated_parameters#news-type-news-type).
 
       example: ["General News Outlets", "Tech News and Updates"]
 
