@@ -429,7 +429,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     Sources:
@@ -504,7 +504,7 @@ components:
         Determines whether to group similar articles into clusters.
         If true, the API returns clustered results.
 
-        To learn more, see [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
 
     Theme:
@@ -521,7 +521,7 @@ components:
         - `"Finance, Tech"`
         - `["Finance", "Tech"]`
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
@@ -540,7 +540,7 @@ components:
         - `"Apple, Microsoft"`
         - `["Apple", "Microsoft"]`
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Apple", "Microsoft"]
 
     PerEntityName:
@@ -557,7 +557,7 @@ components:
         - `"Elon Musk, Jeff Bezos"`
         - `["Elon Musk", "Jeff Bezos"]`
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Elon Musk", "Jeff Bezos"]
 
     LocEntityName:
@@ -574,7 +574,7 @@ components:
         - `"California, New York"`
         - `["California", "New York"]`
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["California", "New York"]
 
     MiscEntityName:
@@ -592,7 +592,7 @@ components:
         - `"Bitcoin, Blockchain"`
         - `["Bitcoin", "Blockchain"]`
 
-        To learn more, see [Search by entity](/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: ["Bitcoin", "Blockchain"]
 
     TitleSentimentMin:
@@ -608,7 +608,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     TitleSentimentMax:
@@ -624,7 +624,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     ContentSentimentMin:
@@ -640,7 +640,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: -0.5
 
     ContentSentimentMax:
@@ -656,7 +656,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: 0.5
 
     WordCountMin:
@@ -693,7 +693,7 @@ components:
 
         **Note**: The `associated_towns` parameter is required for local news searches.
 
-        To learn more, see [Town association methods](/v3/local-news/overview/town-association-methods).
+        To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
       example:
         - name: "New York City, New York"
           ai_validated: true
@@ -754,7 +754,7 @@ components:
             - `CITY_STATE_COUNTY_QUERY`: Conducts a global search using city, state, and county combinations.
             - `NEAR_CITY_STATE_QUERY`: Performs a proximity search, finding city and state within 15 words of each other.
 
-            To learn more, see [Town association methods](/v3/local-news/overview/town-association-methods).
+            To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
           example: ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
 
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
@@ -768,7 +768,7 @@ components:
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
         - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying).
+        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
       example: technology AND (Apple OR Microsoft) NOT Google
 
     From:
@@ -875,7 +875,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     ## Search By params: `SearchByRequestDto` inherits `BaseModel` + has three new params:

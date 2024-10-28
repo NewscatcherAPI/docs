@@ -7,14 +7,14 @@ info:
     In other words, we're like Google for the news part of the web, which you can access as a source of data.
 
     Some useful links:
-    - [How NewsCatcher Works](https://docs.newscatcherapi.com/knowledge-base/how-newscatcher-works)
+    - [How NewsCatcher Works](https://newscatcherapi.com/docs/v2/documentation/guides-and-concepts/how-newscatcher-works)
     - [GitHub for the Python SDK](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python)
   contact:
     email: team@newscatcherapi.com
   version: 1.0.1
 externalDocs:
   description: Find out more about NewsCatcher
-  url: https://docs.newscatcherapi.com/
+  url: https://newscatcherapi.com/docs/
 servers:
   - url: https://api.newscatcherapi.com/v2
 security:
@@ -24,24 +24,26 @@ tags:
     description: Search for specific news articles
     externalDocs:
       description: Find out more about searching news articles
-      url: https://docs.newscatcherapi.com/api-docs/endpoints/search-news
+      url: https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/search/search-news-get
   - name: latest_headlines
     description: Get lastest news articles
     externalDocs:
       description: Find out more about getting the latest news articles
-      url: https://docs.newscatcherapi.com/api-docs/endpoints/latest-headlines
+      url: https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get
   - name: sources
     description: Get the list of top news sources supported by NewsCatcher.
     externalDocs:
       description: Find out more about getting a list of sources
-      url: https://docs.newscatcherapi.com/api-docs/endpoints/sources
+      url: https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/sources/get-top-news-sources-get
 paths:
   /search:
     get:
       tags:
         - search
       summary: Search news
-      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Searches for articles based on specified criteria such as keyword,
+        language, country, source, and more.
       operationId: Search_get
       parameters:
         - $ref: "#/components/parameters/q"
@@ -103,7 +105,9 @@ paths:
       tags:
         - search
       summary: Search news
-      description: Searches for articles based on specified criteria such as keyword, language, country, source, and more.
+      description:
+        Searches for articles based on specified criteria such as keyword,
+        language, country, source, and more.
       operationId: Search_post
       requestBody:
         content:
@@ -152,7 +156,8 @@ paths:
       tags:
         - latest_headlines
       summary: Get latest headlines
-      description: Retrieves the latest headlines given any topic, country, or language.
+      description:
+        Retrieves the latest headlines given any topic, country, or language.
       operationId: LatestHeadlines_get
       parameters:
         - $ref: "#/components/parameters/lang"
@@ -207,7 +212,8 @@ paths:
       tags:
         - latest_headlines
       summary: Get latest headlines
-      description: Retrieves the latest headlines given any topic, country, or language.
+      description:
+        Retrieves the latest headlines given any topic, country, or language.
       operationId: LatestHeadlines_post
       requestBody:
         content:
@@ -725,7 +731,9 @@ components:
           example: "en"
         not_lang:
           type: string
-          description: The language to exclude from the search results. Inverse to the `lang` parameter.
+          description:
+            The language to exclude from the search results. Inverse to the
+            `lang` parameter.
           enum:
             [
               "af",
@@ -797,11 +805,15 @@ components:
             - `date`: Only the day is identified without an exact time.
         from:
           type: string
-          description: The start date for the search in `YYYY/mm/dd` format. The default timezone is UTC.  Defaults to the past week.
+          description:
+            The start date for the search in `YYYY/mm/dd` format. The default
+            timezone is UTC.  Defaults to the past week.
           example: "2021/05/06"
         to:
           type: string
-          description: The end date for the search in `YYYY/mm/dd` format. The default timezone is UTC.
+          description:
+            The end date for the search in `YYYY/mm/dd` format. The default
+            timezone is UTC.
           example: "2021/05/06"
         search_in:
           type: string
@@ -1064,7 +1076,9 @@ components:
           example: "en"
         not_lang:
           type: string
-          description: The language to exclude from the search results. Inverse to the `lang` parameter.
+          description:
+            The language to exclude from the search results. Inverse to the
+            `lang` parameter.
           enum:
             [
               "af",
@@ -1390,7 +1404,8 @@ components:
             description: The authors of the article.
           is_opinion:
             type: boolean
-            description: True if the article is an opinion piece; false otherwise.
+            description:
+              True if the article is an opinion piece; false otherwise.
           twitter_account:
             type: string
             description: The Twitter account associated with the article.
