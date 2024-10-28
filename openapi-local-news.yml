@@ -429,7 +429,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated_parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     Sources:
@@ -875,7 +875,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated_parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     ## Search By params: `SearchByRequestDto` inherits `BaseModel` + has three new params:
