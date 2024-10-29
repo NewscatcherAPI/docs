@@ -20,3 +20,9 @@ node_modules/
 # Build artifacts
 build/
 dist/
+
+### Python ###
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
