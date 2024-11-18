@@ -1,6 +1,334 @@
 ---
-title: Java
-description: News API v3 Java SDK
+title: Java SDK for NewsCatcher News API v3
+sidebarTitle: Java
+description:
+  Java client library for the NewsCatcher News API with Android support
 ---
 
-Coming soon …
+A Java SDK for the NewsCatcher News API v3, featuring robust error handling,
+comprehensive Android support, and flexible configuration options for enterprise
+applications.
+
+## Requirements
+
+- Java 1.8+
+- Maven (3.8.3+)/Gradle (7.2+)
+
+### Android requirements
+
+If using this library in an Android application:
+
+- Android 8.0+ (API Level 26+)
+
+## Installation
+
+### Maven users
+
+Add this dependency to your project's POM:
+
+```xml
+<dependency>
+  <groupId>com.konfigthis.newscatcherapi</groupId>
+  <artifactId>newscatcherapi-java-sdk</artifactId>
+  <version>6.0.13</version>
+  <scope>compile</scope>
+</dependency>
+```
+
+### Gradle users
+
+Add this dependency to your `build.gradle`:
+
+```groovy
+// build.gradle
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+   implementation "com.konfigthis.newscatcherapi:newscatcherapi-java-sdk:6.0.13"
+}
+```
+
+### Android configuration
+
+1. Set minimum SDK version in your `build.gradle`:
+
+```groovy
+android {
+    defaultConfig {
+        minSdk 26
+    }
+}
+```
+
+2. Add internet permissions to your `AndroidManifest.xml`:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>
+```
+
+### Manual installation
+
+Generate the JAR by executing:
+
+```bash
+mvn clean package
+```
+
+Then manually install the following JARs:
+
+- `target/newscatcherapi-java-sdk-6.0.13.jar`
+- `target/lib/*.jar`
+
+## Core features
+
+### Initialize client
+
+```java
+import com.konfigthis.newscatcherapi.client.Newscatcher;
+import com.konfigthis.newscatcherapi.client.Configuration;
+
+Configuration configuration = new Configuration();
+configuration.host = "https://v3-api.newscatcherapi.com";
+configuration.apiKey = "YOUR_API_KEY";
+
+Newscatcher client = new Newscatcher(configuration);
+```
+
+### Search articles
+
+```java
+// Regular search
+SearchResponse result = client.search.get("technology")
+    .lang("en")
+    .includeNlpData(true)
+    .execute();
+
+// Clustered search
+SearchResponse clusterResults = client.search.get("AI technology")
+    .lang("en")
+    .clusteringEnabled(true)
+    .clusteringThreshold(0.6)
+    .includeNlpData(true)
+    .execute();
+```
+
+### Latest headlines
+
+```java
+LatestHeadlinesResponse headlines = client.latestHeadlines.get()
+    .lang("en")
+    .countries("US")
+    .clusteringEnabled(true)
+    .includeNlpData(true)
+    .execute();
+```
+
+### Author search
+
+```java
+AuthorResponse authorArticles = client.authors.get("Sam Altman")
+    .includeNlpData(true)
+    .execute();
+```
+
+### Similar articles
+
+```java
+SimilarResponse similar = client.searchSimilar.get("SpaceX launch")
+    .includeNlpData(true)
+    .execute();
+```
+
+### Get sources
+
+```java
+SourceResponse sources = client.sources.get()
+    .lang("en")
+    .execute();
+```
+
+### Check subscription
+
+```java
+SubscriptionResponse subscription = client.subscription.get().execute();
+```
+
+## Advanced features
+
+### HTTP response access
+
+Access detailed HTTP response information:
+
+```java
+ApiResponse<SearchResponse> response = client.search.get("tech")
+    .executeWithHttpInfo();
+
+System.out.println("Status code: " + response.getStatusCode());
+System.out.println("Headers: " + response.getHeaders());
+System.out.println("Round trip time: " + response.getRoundTripTime());
+```
+
+### SSL configuration
+
+```java
+Configuration config = new Configuration();
+config.setVerifyingSsl(true);
+config.setSslCaCert(yourCertificateInputStream);
+
+Newscatcher client = new Newscatcher(config);
+```
+
+## Error handling
+
+The SDK uses `ApiException` for comprehensive error handling:
+
+```java
+try {
+    SearchResponse result = client.search.get("tech news").execute();
+} catch (ApiException e) {
+    System.err.println("Status code: " + e.getStatusCode());
+    System.err.println("Response body: " + e.getResponseBody());
+    System.err.println("Headers: " + e.getResponseHeaders());
+    System.err.println("Round trip time: " + e.getRoundTripTime());
+}
+```
+
+## Utilities
+
+### Rate limit handler
+
+```java
+public class RateLimitHandler {
+    public static <T> T withRetry(Callable<T> operation, int maxRetries, long delay)
+        throws Exception {
+        int retries = 0;
+        while (true) {
+            try {
+                return operation.call();
+            } catch (ApiException e) {
+                if (e.getStatusCode() == 429 && retries < maxRetries) {
+                    retries++;
+                    Thread.sleep(delay * (long)Math.pow(2, retries));
+                    continue;
+                }
+                throw e;
+            }
+        }
+    }
+}
+
+// Usage
+SearchResponse result = RateLimitHandler.withRetry(
+    () -> client.search.get("tech").execute(),
+    3,
+    1000
+);
+```
+
+### Pagination handler
+
+```java
+public class PaginationHandler {
+    public static List<Article> getAllResults(Newscatcher client, String query,
+        int maxPages) throws ApiException {
+        List<Article> results = new ArrayList<>();
+
+        for (int page = 1; page <= maxPages; page++) {
+            SearchResponse response = client.search.get(query)
+                .page(page)
+                .pageSize(100)
+                .execute();
+
+            results.addAll(response.getArticles());
+
+            if (page >= response.getTotalPages()) break;
+        }
+
+        return results;
+    }
+}
+```
+
+## Android-specific considerations
+
+### Threading
+
+When making API calls on Android, ensure you're not on the main thread:
+
+```java
+// Using Android Coroutines
+private suspend fun searchArticles() {
+    withContext(Dispatchers.IO) {
+        try {
+            val result = client.search.get("tech news").execute()
+            // Handle result
+        } catch (e: ApiException) {
+            // Handle error
+        }
+    }
+}
+
+// Using AsyncTask (legacy)
+new AsyncTask<Void, Void, SearchResponse>() {
+    @Override
+    protected SearchResponse doInBackground(Void... params) {
+        try {
+            return client.search.get("tech news").execute();
+        } catch (ApiException e) {
+            // Handle error
+            return null;
+        }
+    }
+}.execute();
+```
+
+### Memory management
+
+For Android applications, consider implementing a caching strategy:
+
+```java
+public class ResponseCache {
+    private static final long CACHE_DURATION = TimeUnit.MINUTES.toMillis(5);
+    private final Map<String, CachedResponse> cache = new HashMap<>();
+
+    public synchronized SearchResponse getOrFetch(
+            Newscatcher client,
+            String query,
+            long maxAge
+    ) throws ApiException {
+        CachedResponse cached = cache.get(query);
+        if (cached != null && !cached.isExpired(maxAge)) {
+            return cached.response;
+        }
+
+        SearchResponse fresh = client.search.get(query).execute();
+        cache.put(query, new CachedResponse(fresh));
+        return fresh;
+    }
+
+    private static class CachedResponse {
+        final SearchResponse response;
+        final long timestamp;
+
+        CachedResponse(SearchResponse response) {
+            this.response = response;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        boolean isExpired(long maxAge) {
+            return System.currentTimeMillis() - timestamp > maxAge;
+        }
+    }
+}
+```
+
+## Additional resources
+
+- [API Reference](/v3/api-reference/endpoints/search/search-articles-get)
+- [Maven Central](https://central.sonatype.com/artifact/com.konfigthis.newscatcherapi/newscatcherapi-java-sdk)
