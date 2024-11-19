@@ -1,0 +1,137 @@
+---
+title: News API v3 subscription plans
+sidebarTitle: Subscription plans
+description:
+  Select a News API v3 plan that matches your needs - from basic news monitoring
+  to advanced AI-powered content analysis.
+---
+
+<Note>
+  Each plan includes support for multiple languages, advanced querying
+  capabilities, and comprehensive metadata. Plans differ in their specialized
+  features and processing capabilities.
+</Note>
+
+## Available plans
+
+<Tabs>
+  <Tab title="Basic">
+    **Plan ID**: `v3_basic`
+
+    Entry-level plan with access to all core functionality:
+
+    <Check>Access all API endpoints with comprehensive metadata</Check>
+    <Check>Retrieve up to 1,000 articles per request</Check>
+    <Check>Filter by article type (headline, opinion, paid content)</Check>
+    <Check>Use URL and domain link filtering</Check>
+    <Check>Access predefined top sources by country</Check>
+    <Check>Filter by news domain type and source metadata</Check>
+    <Check>Access historical data since July 2023</Check>
+
+  </Tab>
+  <Tab title="NLP">
+    **Plan ID**: `v3_nlp`
+
+    Standard NLP plan adds comprehensive content analysis capabilities:
+
+    <Check>Access all Basic plan features</Check>
+    <Check>Categorize content across 17 themes (Business, Tech, Politics, and more)</Check>
+    <Check>Detect named entities (PER, ORG, LOC, MISC)</Check>
+    <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
+    <Check>Get AI-generated article summaries</Check>
+    <Check>Enable article clustering with customizable thresholds</Check>
+    <Check>Use content deduplication</Check>
+
+  </Tab>
+  <Tab title="IPTC Tags">
+    **Plan ID**: `v3_nlp_iptc_tags`
+
+    IPTC Tags plan adds standardized content categorization:
+
+    <Check>Access all NLP plan features</Check>
+    <Check>Use IPTC media topic tags for standardized news categorization</Check>
+    <Check>Access IAB content categories for digital advertising</Check>
+    <Check>Enable hierarchical topic structures</Check>
+    <Check>Implement industry-standard content taxonomy</Check>
+    <Check>Enhanced content targeting capabilities</Check>
+
+  </Tab>
+  <Tab title="Embeddings">
+    **Plan ID**: `v3_nlp_embeddings`
+
+    Embeddings plan adds vector embeddings for advanced analysis:
+
+    <Check>Access all IPTC Tags plan features</Check>
+    <Check>Get 1024-dimensional vector embeddings via `nlp.new_embeddings`</Check>
+    <Check>Use multilingual-e5-large model for embeddings</Check>
+    <Check>Enable semantic similarity comparison</Check>
+    <Check>Build advanced content clustering</Check>
+    <Check>Implement recommendation systems</Check>
+
+  </Tab>
+</Tabs>
+
+## Technical specifications
+
+| Feature                | Basic | NLP | IPTC Tags | Embeddings |
+| ---------------------- | ----- | --- | --------- | ---------- |
+| **Core Features**      |
+| All API Endpoints      | ✓     | ✓   | ✓         | ✓          |
+| 1000 Articles/Request  | ✓     | ✓   | ✓         | ✓          |
+| Source Classification  | ✓     | ✓   | ✓         | ✓          |
+| URL Filtering          | ✓     | ✓   | ✓         | ✓          |
+| Historical Data Access | ✓     | ✓   | ✓         | ✓          |
+| **NLP Features**       |
+| Theme Classification   | -     | ✓   | ✓         | ✓          |
+| Entity Recognition     | -     | ✓   | ✓         | ✓          |
+| Sentiment Analysis     | -     | ✓   | ✓         | ✓          |
+| Article Clustering     | -     | ✓   | ✓         | ✓          |
+| Content Deduplication  | -     | ✓   | ✓         | ✓          |
+| **Advanced Features**  |
+| IPTC Media Topics      | -     | -   | ✓         | ✓          |
+| IAB Categories         | -     | -   | ✓         | ✓          |
+| Vector Embeddings      | -     | -   | -         | ✓          |
+
+## Custom solutions
+
+Beyond our standard plans, we offer specialized enterprise solutions:
+
+- **Custom Tags**: Implement organization-specific taxonomy for content
+  classification.
+- **Entity Resolution**: Cut through multiple mentions of similarly-named
+  companies and individuals by resolving unique identifiers and providing
+  precise entity matching.
+- **Events Intelligence**: Track, deduplicate, and analyze events across
+  multiple sources while extracting standardized information about participants,
+  locations, and timelines.
+- **Insights Engine**: Identify market opportunities through tracking product
+  releases and industry trends.
+
+<Warning>
+  To ensure uninterrupted service, implement appropriate rate limiting in your
+  application based on your plan's specifications.
+</Warning>
+
+## Next steps
+
+1. Review feature documentation:
+   - [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
+   - [Clustering](/v3/documentation/guides-and-concepts/clustering-news-articles)
+   - [Custom tagging](/v3/documentation/guides-and-concepts/custom-tagging)
+2. Explore the [API Reference](/v3/api-reference)
+3. Visit the [pricing page](https://www.newscatcherapi.com/pricing) to start
+   your subscription
+
+## Support
+
+Need help selecting a plan? Contact our team:
+
+- For pricing and sales:
+  [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
+- For technical questions:
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
+
+<Tip>
+  All plans include a free trial period. Contact our sales team to discuss your
+  specific needs and try out the features.
+</Tip>
