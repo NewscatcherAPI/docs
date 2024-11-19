@@ -80,7 +80,8 @@
       "pages": [
         "v3/documentation/get-started/overview",
         "v3/documentation/get-started/quickstart",
-        "v3/documentation/get-started/libraries"
+        "v3/documentation/get-started/libraries",
+        "v3/documentation/get-started/news-api-v3-subscription-plans"
       ]
     },
     {
@@ -90,7 +91,16 @@
         "v3/documentation/guides-and-concepts/advanced-querying",
         "v3/documentation/guides-and-concepts/nlp-features",
         "v3/documentation/guides-and-concepts/clustering-news-articles",
-        "v3/documentation/guides-and-concepts/articles-deduplication"
+        "v3/documentation/guides-and-concepts/articles-deduplication",
+        "/v3/documentation/guides-and-concepts/custom-tagging"
+      ]
+    },
+    {
+      "group": "Migration",
+      "version": "v3",
+      "pages": [
+        "v3/documentation/migration/api-changes-v2-vs-v3",
+        "v3/documentation/migration/migration-guide"
       ]
     },
     {
@@ -206,7 +216,7 @@
         "v3/local-news/overview/introduction",
         "v3/local-news/overview/quickstart",
         "v3/local-news/overview/town-association-methods",
-        "v3/local-news/overview/subscription-plans"
+        "v3/local-news/overview/local-news-api-subscription-plans"
       ]
     },
     {
