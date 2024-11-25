@@ -104,6 +104,7 @@ paths:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/SearchIn"
         - $ref: "#/components/parameters/PredefinedSources"
+        - $ref: "#/components/parameters/SourceName"
         - $ref: "#/components/parameters/Sources"
         - $ref: "#/components/parameters/NotSources"
         - $ref: "#/components/parameters/Lang"
@@ -150,9 +151,9 @@ paths:
         - $ref: "#/components/parameters/ContentSentimentMax"
         - $ref: "#/components/parameters/IptcTags"
         - $ref: "#/components/parameters/NotIptcTags"
-        - $ref: "#/components/parameters/SourceName"
         - $ref: "#/components/parameters/IabTags"
         - $ref: "#/components/parameters/NotIabTags"
+        - $ref: "#/components/parameters/CustomTags"
         - $ref: "#/components/parameters/ExcludeDuplicates"
       responses:
         "200":
@@ -225,6 +226,7 @@ paths:
         - $ref: "#/components/parameters/NotIptcTags"
         - $ref: "#/components/parameters/IabTags"
         - $ref: "#/components/parameters/NotIabTags"
+        - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
           $ref: "#/components/responses/LatestHeadlinesSuccessfulResponse"
@@ -296,6 +298,7 @@ paths:
         - $ref: "#/components/parameters/NotIptcTags"
         - $ref: "#/components/parameters/IabTags"
         - $ref: "#/components/parameters/NotIabTags"
+        - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
           $ref: "#/components/responses/AuthorsSuccessfulResponse"
@@ -426,6 +429,7 @@ paths:
         - $ref: "#/components/parameters/ContentSentimentMax"
         - $ref: "#/components/parameters/IptcTags"
         - $ref: "#/components/parameters/NotIptcTags"
+        - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
           $ref: "#/components/responses/SearchSimilarSuccessfulResponse"
@@ -1524,6 +1528,28 @@ components:
         type: string
       example: Agriculture,Metals
 
+    CustomTags:
+      description: |
+        Filters articles based on custom taxonomy tags specific to your organization.
+        Each taxonomy is a custom-built classification system tailored to your specific needs
+        and is accessible only with your API key.
+
+        To specify the taxonomy and its tags, use the following pattern: 
+
+        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, 
+
+        where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tag names.
+
+        Example: `custom_tags.my_taxonomy=Tag1,Tag2,Tag3`
+
+        To learn more, see the [Custom tags](/docs/v3/documentation/guides-and-concepts/custom-tags).
+      name: custom_tags
+      in: query
+      required: false
+      schema:
+        type: string
+      example: "Tag1,Tag2,Tag3"
+
     ExcludeDuplicates:
       description: |
         If true, excludes duplicate and highly similar articles from the search results. 
@@ -1978,6 +2004,8 @@ components:
                 $ref: "#/components/schemas/IabTags"
               not_iab_tags:
                 $ref: "#/components/schemas/NotIabTags"
+              custom_tags:
+                $ref: "#/components/schemas/CustomTags"
             example:
               author_name: Joanna Stern
               lang: en
@@ -2077,6 +2105,8 @@ components:
                 $ref: "#/components/schemas/IabTags"
               not_iab_tags:
                 $ref: "#/components/schemas/NotIabTags"
+              custom_tags:
+                $ref: "#/components/schemas/CustomTags"
             example:
               lang: en
               predefined_sources:
@@ -2103,6 +2133,8 @@ components:
                 $ref: "#/components/schemas/SearchIn"
               predefined_sources:
                 $ref: "#/components/schemas/PredefinedSources"
+              source_name:
+                $ref: "#/components/schemas/SourceName"
               sources:
                 $ref: "#/components/schemas/Sources"
               not_sources:
@@ -2195,12 +2227,12 @@ components:
                 $ref: "#/components/schemas/IptcTags"
               not_iptc_tags:
                 $ref: "#/components/schemas/NotIptcTags"
-              source_name:
-                $ref: "#/components/schemas/SourceName"
               iab_tags:
                 $ref: "#/components/schemas/IabTags"
               not_iab_tags:
                 $ref: "#/components/schemas/NotIabTags"
+              custom_tags:
+                $ref: "#/components/schemas/CustomTags"
               exclude_duplicates:
                 $ref: "#/components/schemas/ExcludeDuplicates"
             example:
@@ -2356,6 +2388,8 @@ components:
                 $ref: "#/components/schemas/IptcTags"
               not_iptc_tags:
                 $ref: "#/components/schemas/NotIptcTags"
+              custom_tags:
+                $ref: "#/components/schemas/CustomTags"
             example:
               q: artificial intelligence
               include_similar_documents: true
@@ -4272,6 +4306,31 @@ components:
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       example: ["Agriculture", "Metals"]
+
+    CustomTags:
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      description: |
+        Filters articles based on custom taxonomy tags specific to your organization.
+        Each taxonomy is a custom-built classification system tailored to your specific needs
+        and is accessible only with your API key.
+
+        To specify taxonomy and its tags, use the following pattern:
+
+        - `"custom_tags.taxonomy": "Tag1,Tag2,Tag3"`,
+
+        where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tags. 
+        For multiple tags, use a comma-separated string or an array of strings.
+
+        Examples:
+        - `"custom_tags.my_taxonomy": "Tag1,Tag2,Tag3"`
+        - `"custom_tags.my_taxonomy": ["Tag1", "Tag2", "Tag3"]`
+
+        To learn more, see the [Custom tags](/docs/v3/documentation/guides-and-concepts/custom-tags).
+      example: ["Tag1", "Tag2", "Tag3"]
 
     ExcludeDuplicates:
       type: boolean
