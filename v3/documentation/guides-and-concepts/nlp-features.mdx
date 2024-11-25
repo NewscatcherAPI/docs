@@ -19,14 +19,19 @@ API v3.
 
 The NLP layer in News API v3 consists of the following components:
 
-| Component      | Description                                                              |
-| -------------- | ------------------------------------------------------------------------ |
-| Theme          | General topic or category of the article                                 |
-| Summary        | Concise overview of the article's content                                |
-| Sentiment      | Separate scores for title and content sentiment                          |
-| Named Entities | Identified persons, organizations, locations, and miscellaneous entities |
-| IPTC Tags      | Standardized news category tags                                          |
-| IAB Tags       | Content categories for digital advertising                               |
+| Component      | Description                                                              | Plan Requirement  |
+| -------------- | ------------------------------------------------------------------------ | ----------------- |
+| Theme          | General topic or category of the article                                 | v3_nlp            |
+| Summary        | Concise overview of the article's content                                | v3_nlp            |
+| Sentiment      | Separate scores for title and content sentiment                          | v3_nlp            |
+| Named Entities | Identified persons, organizations, locations, and miscellaneous entities | v3_nlp            |
+| IPTC Tags      | Standardized news category tags                                          | v3_nlp_iptc_tags  |
+| IAB Tags       | Content categories for digital advertising                               | v3_nlp_iptc_tags  |
+| Custom Tags    | Organization-specific classification system                              | All v3 NLP plans  |
+| Embeddings     | 1024-dimensional vector representation for semantic similarity           | v3_nlp_embeddings |
+
+To learn more about plan features and requirements, see
+[Subscription plans](/v3/documentation/get-started/news-api-v3-subscription-plans).
 
 ### Including NLP data in API responses
 
@@ -316,10 +321,12 @@ Microsoft as organizations and Tim Cook or Satya Nadella as persons.
 To learn more about NER, see
 [How to search by entity](/v3/documentation/how-to/search-by-entity).
 
-## Content tagging
+## Tagging
 
-Content tagging provides standardized categorization of news articles, enhancing
-searchability and enabling more precise content filtering.
+Content tagging provides a standardized categorization of news articles,
+enhancing searchability and enabling more precise content filtering. IPTC and
+IAB tags are available in the `v3_nlp_iptc_tags` plan. Custom tags are developed
+upon request and are available in all NLP plans.
 
 ### IPTC tags
 
@@ -374,6 +381,74 @@ This query returns finance-related articles categorized under `Business` or
 
 For more information on IAB Content Taxonomy, visit the
 [IAB Tech Lab website](https://iabtechlab.com/standards/content-taxonomy/).
+
+### Custom tags
+
+Custom tags help you classify and filter articles based on your organization's
+taxonomy. Each taxonomy is organization-specific and protected by your API key,
+ensuring your custom classification system remains secure and private. We
+develop and integrate this solution upon your request. Simply provide us with
+your tags and their descriptions.
+
+To filter articles by your taxonomy tags, use the `custom_tags` parameter
+following this pattern:
+
+- `"custom_tags.taxonomy": "Tag1,Tag2,Tag3"`,
+
+where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tags.
+
+To specify multiple tags:
+
+- For `GET` requests, use a comma-separated string.
+- For `POST` requests, use a comma-separated string or an array of strings.
+
+Example:
+
+```json
+{
+  "q": "market trends",
+  "custom_tags.my_taxonomy": ["Tag1", "Tag2", "Tag3"],
+  "lang": "en"
+}
+```
+
+For implementation details and examples, see
+[Custom tags](/v3/documentation/guides-and-concepts/custom-tags).
+
+## Embeddings
+
+Vector embeddings provide a powerful way to represent article content as
+numerical vectors, enabling advanced semantic analysis and similarity
+comparisons. Available exclusively with the `v3_nlp_embeddings` plan, each
+article is processed through the
+[multilingual-e5-large model](https://huggingface.co/intfloat/multilingual-e5-large)
+to generate its vector representation.
+
+The embedding is available in the `new_embedding` field as an array of 1024
+numbers. Here's an example of how it appears in the API response:
+
+```json
+{
+  "articles": [
+    {
+      "title": "AI Breakthrough in Healthcare",
+      "nlp": {
+        "new_embedding": [0.023, -0.156, 0.789, ...], // 1024-dimensional vector
+        // ... other NLP fields
+      }
+    }
+  ]
+}
+```
+
+These high-dimensional vectors capture the semantic meaning of articles,
+enabling various advanced applications:
+
+- Semantic search: Find articles with similar meanings, not just matching
+  keywords.
+- Content recommendation: Suggest related articles based on semantic similarity.
+- Topic clustering: Group articles by meaning using vector similarity.
+- Machine learning: Train models using these dense numerical representations.
 
 ## Use cases
 
