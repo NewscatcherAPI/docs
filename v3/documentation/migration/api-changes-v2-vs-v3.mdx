@@ -202,7 +202,7 @@ Requires the `v3_nlp_iptc_tags` subscription plan.
   Custom tags are available in all the NLP plans as a custom solution that
   provides tailored content classification using your organization's taxonomy.
   For implementation details and examples, see [Custom
-  tagging](/v3/documentation/guides-and-concepts/custom-tagging).
+  tags](/v3/documentation/guides-and-concepts/custom-tags).
 </Note>
 ## Response changes v2 vs v3
 
@@ -241,9 +241,12 @@ The following fields are available in all v3 plans:
 
 #### Natural language processing (NLP) object
 
-Available for all NLP plans (v3_nlp plan or higher) when
-`include_nlp_data=true`. All fields are part of the `nlp` object in the
-response.
+NLP object is a part of article object and vailable for all NLP plans (`v3_nlp`
+plan or higher) when `include_nlp_data=true`.
+
+| Field | Type     | Description                                                           |
+| ----- | -------- | --------------------------------------------------------------------- |
+| `nlp` | `object` | Natural Language Processing analysis results for the article content. |
 
 **Article understanding**
 
@@ -433,8 +436,7 @@ implementation details, see the
 5. For advanced features:
    - Learn about
      [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
-   - Explore
-     [Custom tagging](/v3/documentation/guides-and-concepts/custom-tagging)
+   - Explore [Custom tags](/v3/documentation/guides-and-concepts/custom-tags)
    - Understand
      [Clustering](/v3/documentation/guides-and-concepts/clustering-news-articles)
      capabilities
