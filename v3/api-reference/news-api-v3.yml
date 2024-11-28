@@ -54,7 +54,7 @@ tags:
       description:
         Retrieve the latest headlines since a specified date, with filtering
         options.
-      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get
   - name: Authors
     description: Operations to search by author.
     externalDocs:
@@ -64,12 +64,12 @@ tags:
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
-      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get
   - name: SearchSimilar
     description: Operations to find similar articles.
     externalDocs:
       description: Find articles similar to a given query.
-      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/searchsimilar/search-similar-articles-get
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/search-similar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
