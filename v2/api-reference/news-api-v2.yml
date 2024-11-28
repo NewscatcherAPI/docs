@@ -29,7 +29,7 @@ tags:
     description: Get lastest news articles
     externalDocs:
       description: Find out more about getting the latest news articles
-      url: https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get
+      url: https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/latest-headlines/get-latest-headlines-get
   - name: sources
     description: Get the list of top news sources supported by NewsCatcher.
     externalDocs:
