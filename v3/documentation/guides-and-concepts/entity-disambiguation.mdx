@@ -1,0 +1,164 @@
+---
+title: Entity disambiguation
+sidebarTitle: Entity disambiguation
+description:
+  Cut through the clutter with precision - ensure every article pinpoints the
+  exact company or individual you're tracking.
+---
+
+## Introduction
+
+Ever tried tracking news about a company only to get flooded with articles about
+similarly named businesses? You're not alone. In today's complex media
+landscape, many companies share names, making it challenging to track the
+specific one you care about. That's where entity disambiguation comes in.
+
+## What is entity disambiguation?
+
+Entity disambiguation is an advanced process that helps you cut through the
+noise and precisely identify the companies you want to track in news articles.
+The challenge isn't just about finding articles that mention a company name —
+it's about ensuring those articles are actually about your target company.
+
+Here's the core problem entity disambiguation solves:
+
+- Many companies share the same or similar names.
+- Unique identifiers like domain URLs, social media handles, or founder names
+  aren't always mentioned.
+- Simple keyword searches can return a mix of relevant and irrelevant results.
+
+Entity disambiguation addresses these challenges by:
+
+- Using sophisticated language processing to accurately identify specific
+  companies.
+- Leveraging multiple identifiers to confirm article relevance.
+- Providing flexible filtering options to match your precision needs.
+- Ensuring you get news only about the companies you care about.
+
+## How does it work?
+
+Our entity disambiguation system uses a multi-step process to accurately
+identify company mentions in news articles. Let's break down how it works.
+
+### Smart article retrieval
+
+The process begins with sophisticated article retrieval that combines:
+
+- Company's legal name
+- Website URL
+- Clean name from the Clearbit API
+
+For companies with names that might be common words, the system follows these
+steps:
+
+1. Search the full company name over a week-long period.
+2. If results exceed 10,000, categorize the name as a common word.
+3. Limit searches to the `ner_ORG` field for better precision.
+
+For example, for a company named "Riot":
+
+```json
+ORG_entity_name: "\"riot\" OR \"riot.com\" OR \"Riot\""
+```
+
+### Filter flag creation
+
+The system creates flags based on company identifiers found in articles:
+
+- `is_domain_present`: Company's domain URL mention
+- `is_company_name_present_in_title`: Company name in the article title
+- `is_company_name_present_in_ai_generated_summary`: Company name in AI summary
+- `is_alias_present_in_content`: Company aliases in content
+- `is_alias_present_in_title`: Company aliases in title
+- `founder_present`: Company founder mention
+- `founder_present_percent`: Percentage of founders mentioned
+
+### Semantic similarity analysis
+
+A crucial component is calculating the similarity between article text and
+company descriptions:
+
+1. Converts both company description and article sentences into vector
+   embeddings.
+2. Uses cosine similarity to measure semantic relatedness.
+3. Produces similarity scores ranging from 0 (unrelated) to 1 (identical).
+
+This analysis adds fields to the `entity_disambiguation` object:
+
+- `average_cosine_similarity`: Mean similarity across all relevant sentences
+- `highest_cosine_similarity`: Highest similarity score found
+- `relevant_sentences`: Array of relevant sentences with similarity scores
+
+<Note>
+  Higher cosine similarity scores indicate stronger semantic similarity to the
+  company's description, helping prioritize the most relevant articles.
+</Note>
+
+## Data structure and delivery
+
+### Response format
+
+Each article object includes entity disambiguation data in this format:
+
+```json
+{
+  "title": "Implementing Neural Networks in TensorFlow (and PyTorch)",
+  // ... (other standard article fields)
+  "entity_disambiguation": {
+    "average_cosine_similarity": 0.3923861011862755,
+    "highest_cosine_similarity": 0.4942742586135864,
+    "relevant_sentences": [
+      {
+        "sentence": "TensorFlow is a comprehensive ecosystem of tools, libraries, and community resources for building and deploying machine learning applications.",
+        "cosine_similarity": 0.4942742586135864
+      }
+      // ... (other relevant sentences)
+    ],
+    "founder_present": null,
+    "founder_present_percent": null,
+    "is_domain_present": true,
+    "is_company_name_present_in_title": true,
+    "is_company_name_present_in_ai_generated_summary": true,
+    "is_alias_present_in_content": true,
+    "is_alias_present_in_title": true
+  },
+  "company_name": "TensorFlow",
+  "company_aliases": "TensorFlow",
+  "cluster_id": "16552780591689057479"
+}
+```
+
+### Delivery method
+
+Data is delivered via AWS S3 bucket dumps. By default, new "folders" (S3 key
+prefixes) are created daily, containing the latest data for all monitored
+companies. Customized delivery frequencies can be arranged to meet client needs.
+
+## Use cases
+
+Entity disambiguation is particularly valuable for:
+
+- **Financial Services**: Get precise news about specific companies for informed
+  investment decisions.
+- **Public Relations**: Track accurate media mentions of client companies.
+- **Legal and Compliance**: Monitor relevant news about specific client
+  companies.
+- **Investment Firms**: Track news about portfolio companies without noise.
+- **Corporate Communications**: Monitor accurate media coverage.
+- **Regulatory Bodies**: Track specific companies under jurisdiction.
+
+## Benefits
+
+| Benefit                | Description                                                    |
+| ---------------------- | -------------------------------------------------------------- |
+| Improved Accuracy      | Receive only relevant articles about your target companies.    |
+| Time Savings           | Eliminate manual sorting of ambiguous results.                 |
+| Customizable Filtering | Set your own criteria using the provided disambiguation flags. |
+| Comprehensive Coverage | Get complete news coverage without irrelevant content.         |
+| Enhanced Analysis      | Make better decisions based on clean, relevant data.           |
+
+## Related concepts
+
+- [Vector Embeddings](https://www.elastic.co/what-is/vector-embedding)
+- [Cosine Similarity](https://en.wikipedia.org/wiki/Cosine_similarity)
+- [Named Entity Recognition](https://en.wikipedia.org/wiki/Named-entity_recognition)

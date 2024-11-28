@@ -89,10 +89,11 @@
       "version": "v3",
       "pages": [
         "v3/documentation/guides-and-concepts/advanced-querying",
-        "v3/documentation/guides-and-concepts/nlp-features",
         "v3/documentation/guides-and-concepts/clustering-news-articles",
         "v3/documentation/guides-and-concepts/articles-deduplication",
-        "/v3/documentation/guides-and-concepts/custom-tags"
+        "v3/documentation/guides-and-concepts/nlp-features",
+        "v3/documentation/guides-and-concepts/custom-tags",
+        "v3/documentation/guides-and-concepts/entity-disambiguation"
       ]
     },
     {
