@@ -1,0 +1,153 @@
+---
+title: Advanced querying in News API v2
+sidebarTitle: Advanced querying
+description:
+  Learn advanced querying techniques to enhance the precision and relevance of
+  your searches.
+---
+
+## Query parameter `q`
+
+In case you're not the type of developer who will read through the entire
+section, here're 3 most important rules that you have to follow:
+
+1. Be aware that, by default, tokens (keywords you're searching for) passed into
+   the q parameter are split with `AND` operator. This means each token has to
+   be present in the text at least once. For example, `q=Apple Microsoft` will
+   be read as `q=Apple AND Microsoft`
+
+2. Always use double quotes `"` when you search for companies, person names,
+   etc. For example, if you want to find articles where `Tim Cook` is mentioned,
+   you should pass `q="Tim Cook"` not `q=Tim Cook`
+
+3. Make sure that what you pass into the q parameter is
+   [URL-encoded](https://en.wikipedia.org/wiki/Percent-encoding).
+
+4. While making your first calls, check the `user_input` list in the JSON that
+   we return to you. Make sure our API saw your keywords as you intended.
+
+## Exact Match with "double quotes"
+
+Use double quotes `"` for the exact match.
+
+When you want to search for articles that mention Tim Cook you should do the
+following query:
+
+```bash
+q="Tim Cook"
+```
+
+If you write `q=Tim Cook` then it will be treated as `q=Tim AND Cook`. In that
+case, every article that mentions `tim` and `cook` will match.
+
+Moreover, if you specify `lang=en` that will also match the articles with
+`cooking`, `cooked`, and other stems of the word `cook`.
+
+## Boolean: `AND`
+
+`AND` operator makes tokens from both sides to be present in the text.
+
+`AND` is the default operator. When your q input is more than 1 word, `AND`
+operator is added between each word behind the scenes. Therefore,
+`q=Apple Microsoft Tesla` is the same as `q=Apple AND Microsoft AND Tesla`
+
+For example, if we want both `Microsoft` and `Tesla` to be present in the
+returned news articles, the `q` parameter should look as follows:
+
+```bash
+q=Microsoft AND Tesla
+```
+
+or
+
+```bash
+q=Microsoft && Tesla
+```
+
+## Boolean: `OR`
+
+`OR` can also be written as ||
+
+`OR` operator means that either the left or the right sides of `OR` have to be
+satisfied.
+
+You should use Grouping when you want to logically group a set of tokens. For
+example:
+
+```bash
+q=(Apple AND Cook) OR (Microsoft AND Gates)
+```
+
+or
+
+```bash
+q=(Apple && Cook) || (Microsoft && Gates)
+```
+
+## Boolean: `NOT`
+
+`NOT` can also be written as !
+
+Use `NOT` operator when you want the token from its right not to be present. For
+example, if we want to search for articles about Microsoft and not about Tesla,
+the `q` parameter should look as follows:
+
+```bash
+q=Microsoft NOT Tesla
+```
+
+or
+
+```bash
+q=Microsoft !Tesla
+```
+
+## MUST (MUST NOT)
+
+Follow these `MUST` rules:
+
+- Prepend a token with a `+` (plus sign) if it MUST appear in the searched text.
+- Make sure that your API call is URL encoded. Check the `user_input` object in
+  the Response Body to see how our back end saw your request.
+- Remember that a `+` (plus sign) will be escaped by default in many situations.
+  Therefore, we recommend using its URL-encoded version: `%2B`
+
+Follow these `NOT MUST` rules:
+
+- Prepend a token with a `-` (minus sign) if it MUST NOT appear in the searched
+  text. For example, if we want to search for news articles that contain Elon
+  Musk but not Grimes, we have to write:
+
+```bash
+q=Elon Musk -Grimes
+```
+
+But wait, the query above will also match the documents where only `Elon` or
+`Musk` are present. Shouldn't we write `+Elon +Musk -Grimes`?
+
+If we write `+Elon +Musk -Grimes` that means that `Elon` and `Musk` should be
+present in the text, however, not in that particular. The "correct" query should
+look like this:
+
+```bash
+q="Elon Musk" -Grimes
+```
+
+In this case, we will search for an exact match of `"Elon Musk"` , plus,
+`Grimes` must not be present.
+
+<Note>
+  In general, you should always put person and company names in quotes.
+</Note>
+
+## Wildcards `*` and `?`
+
+- Use `*` to match any string in any quantity.
+- Use `?` to match any string exactly once.
+
+For example, we want to search for articles that mention `Microsort` and any
+C-level officers:
+
+```bash
+q=Microsoft +C?O
+```
