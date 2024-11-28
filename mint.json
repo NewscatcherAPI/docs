@@ -65,8 +65,8 @@
       "url": "v2/api-reference"
     },
     {
-      "name": "Event Intelligence",
-      "url": "event-intelligence"
+      "name": "Events",
+      "url": "events"
     },
     {
       "name": "Glossary",
@@ -150,8 +150,8 @@
         {
           "group": "Latest headlines",
           "pages": [
-            "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-get",
-            "v3/api-reference/endpoints/latestheadlines/retrieve-latest-headlines-post"
+            "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
+            "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post"
           ]
         },
         {
@@ -164,15 +164,15 @@
         {
           "group": "Search by link",
           "pages": [
-            "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-get",
-            "v3/api-reference/endpoints/searchlink/search-articles-by-links-or-ids-post"
+            "v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get",
+            "v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post"
           ]
         },
         {
           "group": "Search similar",
           "pages": [
-            "v3/api-reference/endpoints/searchsimilar/search-similar-articles-get",
-            "v3/api-reference/endpoints/searchsimilar/search-similar-articles-post"
+            "v3/api-reference/endpoints/search-similar/search-similar-articles-get",
+            "v3/api-reference/endpoints/search-similar/search-similar-articles-post"
           ]
         },
         {
@@ -259,7 +259,8 @@
       "pages": [
         "v2/documentation/guides-and-concepts/how-newscatcher-works",
         "v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api",
-        "v2/documentation/guides-and-concepts/use-news-api-v2-in-postman"
+        "v2/documentation/guides-and-concepts/use-news-api-v2-in-postman",
+        "v2/documentation/guides-and-concepts/advanced-querying-in-v2"
       ]
     },
     {
@@ -324,8 +325,8 @@
         {
           "group": "Latest headlines",
           "pages": [
-            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-get",
-            "v2/api-reference/endpoints/latest_headlines/get-latest-headlines-post"
+            "v2/api-reference/endpoints/latest-headlines/get-latest-headlines-get",
+            "v2/api-reference/endpoints/latest-headlines/get-latest-headlines-post"
           ]
         },
         {
