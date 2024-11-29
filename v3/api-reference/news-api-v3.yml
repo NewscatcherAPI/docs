@@ -158,8 +158,21 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
     post:
       tags:
         - Search
@@ -173,8 +186,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /api/latest_headlines:
     get:
@@ -230,8 +255,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/LatestHeadlinesSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - LatestHeadlines
@@ -245,8 +282,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/LatestHeadlinesSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /api/authors:
     get:
@@ -301,9 +350,21 @@ paths:
         - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
-          $ref: "#/components/responses/AuthorsSuccessfulResponse"
+          $ref: "#/components/responses/AuthorsSearchResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - Authors
@@ -316,9 +377,21 @@ paths:
         $ref: "#/components/requestBodies/AuthorsRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/AuthorsSuccessfulResponse"
+          $ref: "#/components/responses/AuthorsSearchResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /api/search_by_link:
     get:
@@ -363,8 +436,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchLinkSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - SearchLink
@@ -376,8 +461,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchLinkSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   # Search Similar is the hidden endpoint, discuss with Maksym and Aditia.
   /api/search_similar:
@@ -433,8 +530,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchSimilarSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     # Search Similar POST
     post:
       tags:
@@ -449,8 +558,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchSimilarSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   /api/sources:
     get:
@@ -476,8 +597,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SourcesSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
     post:
       tags:
@@ -492,8 +625,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SourcesSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   # Aggregation count
   /api/aggregation_count:
@@ -551,11 +696,21 @@ paths:
         - $ref: "#/components/parameters/AggregationBy"
       responses:
         "200":
-          $ref: "#/components/responses/AggregationSuccessfulResponse"
+          $ref: "#/components/responses/AggregationCountResponse"
         "400":
-          $ref: "#/components/responses/FailedAggregationResponse"
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - Aggregation
@@ -568,11 +723,21 @@ paths:
         $ref: "#/components/requestBodies/AggregationRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/AggregationSuccessfulResponse"
+          $ref: "#/components/responses/AggregationCountResponse"
         "400":
-          $ref: "#/components/responses/FailedAggregationResponse"
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
   # Subscriptions
   /api/subscription:
@@ -585,8 +750,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SubscriptionSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
     post:
       tags:
         - Subscription
@@ -596,8 +773,20 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SubscriptionSuccessfulResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/ValidationErrorResponse"
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   parameters:
@@ -2436,28 +2625,27 @@ components:
               news_type: "General News Outlets"
 
   responses:
-    AggregationSuccessfulResponse:
-      description: A successful response containing aggregation results.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/AggregationResponse"
-    FailedAggregationResponse:
-      description: No matches found for the search criteria.
-      content:
-        application/json:
-          schema:
-            $ref: "#/components/schemas/FailedAggregationResponse"
-
-    AuthorsSuccessfulResponse:
+    AggregationCountResponse:
       description:
-        A successful response containing a list of authors that match the search
-        criteria.
+        A successful response containing aggregation count results that match
+        the search criteria. If no matches, returns a failded aggregation
+        response according to the defined schema.
       content:
         application/json:
           schema:
-            title: Response Authors Get
-            anyOf:
+            oneOf:
+              - $ref: "#/components/schemas/AggregationResponse"
+              - $ref: "#/components/schemas/FailedAggregationResponse"
+
+    AuthorsSearchResponse:
+      description:
+        A successful search response contains a list of authors that match the
+        search criteria. If no matches, returns a failded search response
+        according to the defined schema.
+      content:
+        application/json:
+          schema:
+            oneOf:
               - $ref: "#/components/schemas/dto__responses__author_search_response__SearchResponse"
               - $ref: "#/components/schemas/dto__responses__author_search_response__FailedSearchResponse"
 
@@ -2468,10 +2656,11 @@ components:
       content:
         application/json:
           schema:
-            title: Response Latestheadlines Get
-            anyOf:
+            oneOf:
               - $ref: "#/components/schemas/LatestHeadlinesResponse"
-              - $ref: "#/components/schemas/ClusteringSearchResponse"
+              - allOf:
+                  - $ref: "#/components/schemas/ClusteringSearchResponse"
+                title: Clustered Latest Headlines Response
 
     SearchSuccessfulResponse:
       description:
@@ -2481,8 +2670,7 @@ components:
       content:
         application/json:
           schema:
-            title: Response Search Get
-            anyOf:
+            oneOf:
               - $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
               - $ref: "#/components/schemas/ClusteringSearchResponse"
 
@@ -2493,17 +2681,21 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
+            allOf:
+              - $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
+              - description:
+                  The response model for the `Search by link`` request is
+                  similar to the Search response model.
 
     SearchSimilarSuccessfulResponse:
       description:
         A successful response containing articles similar to the specified
-        query. The response may include clustering information if enabled.
+        query. If no matches, returns a failded search response according to the
+        defined schema.
       content:
         application/json:
           schema:
-            title: Response Searchsimilar Get
-            anyOf:
+            oneOf:
               - $ref: "#/components/schemas/dto__responses__more_like_this_response__SearchResponse"
               - $ref: "#/components/schemas/dto__responses__more_like_this_response__FailedSearchResponse"
 
@@ -2525,20 +2717,88 @@ components:
           schema:
             $ref: "#/components/schemas/SubscriptionResponse"
 
-    ValidationErrorResponse:
-      description:
-        A response indicating that there were validation errors with the
-        provided input parameters.
+    # Errors
+    BadRequestError:
+      description: Bad request
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/HTTPValidationError"
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid JSON in request body"
+            status_code: 400
+            status: "Bad request"
+
+    UnauthorizedError:
+      description: Unauthorized - Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid api key: INVALID_API_KEY"
+            status_code: 401
+            status: "Unauthorized"
+
+    ForbiddenError:
+      description: Forbidden - Server refuses action
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message:
+              "Your plan request date range cannot be greater than 400 days"
+            status_code: 403
+            status: "Forbidden"
+
+    RequestTimeoutError:
+      description: Request timeout
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Request timed out after 30 seconds"
+            status_code: 408
+            status: "Request timeout"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid date format"
+            status_code: 422
+            status: "Validation error"
+
+    RateLimitError:
+      description: Too many requests - Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Max API requests concurrency reached"
+            status_code: 429
+            status: "Too many requests"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: "Internal Server Error"
 
   schemas:
     # Aggregation related schemas for the response object
     AggregationResponse:
-      title: AggregationResponse
-      description: The response model for a successful aggregation request.
+      title: Aggregation Response
+      description:
+        The response model for a successful `Aggregation count` request.
       required:
         - status
         - total_hits
@@ -2585,8 +2845,8 @@ components:
           type: object
 
     FailedAggregationResponse:
-      title: FailedAggregationResponse
-      description: The response model for a failed aggregation request.
+      title: Failed Aggregation Response
+      description: The response model for a failed `Aggregation count` request.
       required:
         - status
         - total_hits
@@ -2635,8 +2895,8 @@ components:
 
     # Authors related schemas for the response object
     dto__responses__author_search_response__SearchResponse:
-      title: SearchResponse
-      description: The response model for a successful author search.
+      title: Authors Search Response
+      description: The response model for a successful `Authors` search request.
       required:
         - total_hits
         - page
@@ -2681,8 +2941,8 @@ components:
           type: object
 
     dto__responses__author_search_response__FailedSearchResponse:
-      title: FailedSearchResponse
-      description: The response model for a failed author search.
+      title: Failed Authors Search Response
+      description: The response model for a failed `Authors` search request.
       required:
         - user_input
       type: object
@@ -2918,8 +3178,10 @@ components:
 
     # Latest Headlines related schemas for the response object
     ClusteringSearchResponse:
-      title: ClusteringSearchResponse
-      description: The response model for a search with clustering enabled.
+      title: Clustered Search Response
+      description:
+        The response model when clustering is enabled, grouping similar articles
+        into clusters. Applies to the `Search` and `Latest headlines` requests.
       required:
         - total_hits
         - page
@@ -2993,8 +3255,8 @@ components:
             $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
 
     LatestHeadlinesResponse:
-      title: LatestHeadlinesResponse
-      description: The response model for the latest headlines.
+      title: Latest Headlines Response
+      description: The response model for the `Latest headlines` request.
       required:
         - total_hits
         - page
@@ -3039,10 +3301,10 @@ components:
           type: object
 
     # Search related schemas for the response object
-    # Note: The ClusteringSearchResponse and Cluster schemas are the same as in Latest Headlines
+    # Note: Search and Latest Headlines share the ClusteringSearchResponse and Cluster schemas.
     dto__responses__search_response__SearchResponse:
-      title: SearchResponse
-      description: The response model for a search request.
+      title: Search Response
+      description: The response model for the `Search` request.
       required:
         - total_hits
         - page
@@ -3091,9 +3353,8 @@ components:
 
     # Search Similar related schemas for the response object
     dto__responses__more_like_this_response__SearchResponse:
-      title: SearchResponse
-      description:
-        The response model for a successful search for similar articles.
+      title: Search Similar Response
+      description: The response model for a successful `Search similar` request.
       required:
         - total_hits
         - page
@@ -3138,8 +3399,8 @@ components:
           type: object
 
     dto__responses__more_like_this_response__FailedSearchResponse:
-      title: FailedSearchResponse
-      description: The response model for a failed search for similar articles.
+      title: Failed Search Similar Response
+      description: The response model for a failed `Search similar` request.
       required:
         - user_input
       type: object
@@ -3184,9 +3445,10 @@ components:
           type: object
 
     dto__responses__more_like_this_response__ArticleResult:
-      title: ArticleResult
+      title: Search Similar Article Object
       description:
-        The data model for an article result in the search for similar articles.
+        The data model for an article result in the `Search similar` articles
+        request.
       required:
         - title
         - link
@@ -3353,10 +3615,10 @@ components:
           default: []
 
     SimilarDocument:
-      title: SimilarDocument
+      title: Similar Document
       description:
-        The data model for a similar document in the search for similar
-        articles.
+        The data model for a similar document in the `Search similar` articles
+        request.
       required:
         - id
         - score
@@ -3383,10 +3645,10 @@ components:
 
     # Sources related schemas for the response object
     SourceResponse:
-      title: SourceResponse
+      title: Sources Response
       description:
-        The response model for a successful retrieval of news sources matching
-        the specified criteria.
+        The response model for a successful `Sources` request retrieving news
+        sources matching the specified criteria.
       required:
         - message
         - sources
@@ -3411,7 +3673,7 @@ components:
           type: object
 
     SourceInfo:
-      title: SourceInfo
+      title: Source Info
       description: The data model for information about a news source.
       required:
         - domain_url
@@ -3433,7 +3695,7 @@ components:
           $ref: "#/components/schemas/AdditionalSourceInfo"
 
     AdditionalSourceInfo:
-      title: Additional source info
+      title: Additional Source Info
       description:
         The data model for additional information about a news source.
       type: object
@@ -3474,9 +3736,9 @@ components:
 
     # Subscription related schema for the response object
     SubscriptionResponse:
-      title: SubscriptionResponse
+      title: Subscription Response
       description:
-        The response model for a successful retrieval of subscription plan
+        Response model for a successful `Subscription` request retrieving plan
         information.
       required:
         - active
@@ -3514,37 +3776,23 @@ components:
             subscription plan.
           type: integer
 
-    # Validation Error response related schemas
-    HTTPValidationError:
-      title: HTTPValidationError
+    # Error response
+    Error:
       type: object
       properties:
-        detail:
-          title: Detail
-          type: array
-          items:
-            $ref: "#/components/schemas/ValidationError"
-    ValidationError:
-      title: ValidationError
+        message:
+          type: string
+          description: A detailed description of the error.
+        status_code:
+          type: integer
+          description: The HTTP status code of the error.
+        status:
+          type: string
+          description: A short description of the status code.
       required:
-        - loc
-        - msg
-        - type
-      type: object
-      properties:
-        loc:
-          title: Location
-          type: array
-          items:
-            anyOf:
-              - type: string
-              - type: integer
-        msg:
-          title: Message
-          type: string
-        type:
-          title: Error Type
-          type: string
+        - message
+        - status_code
+        - status
 
     # Parameters to use in Request Bodies
     Q:
