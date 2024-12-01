@@ -239,11 +239,6 @@ components:
                 title: Latest Headlines Response
                 description: |
                   The response model for the `Latest headlines` request.
-
-                  Response field behavior:
-                  - Required fields are guaranteed to be present and non-null. 
-                  - Optional fields may be `null`/`undefined` if the data couldn't be 
-                  extracted during processing.
               - allOf:
                   - $ref: "#/components/schemas/ClusteringSearchResponseDto"
                 title: Clustered Latest Headlines Response
@@ -265,13 +260,6 @@ components:
             allOf:
               - $ref: "#/components/schemas/ArticleSearchResponseDto"
             title: Search By Response
-            description: |
-              The response model for the `Search by` request.
-
-              Response field behavior:
-              - Required fields are guaranteed to be present and non-null. 
-              - Optional fields may be `null`/`undefined` if the data couldn't be 
-              extracted during processing.
 
     # Errors
     Error400:
@@ -1018,13 +1006,16 @@ components:
     ArticleSearchResponseDto:
       title: Search Response
       description: |
-        The response model for the `Search` request, including search results
-        and metadata.
+        The response model for the `Search`, `Latest headlines`, 
+        and `Search by` requests, including search results and metadata.
 
         Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
-        processing.
+        - Optional fields may be `null`/`undefined` if the data couldn't be
+        extracted during processing.
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1270,9 +1261,12 @@ components:
         into clusters. Applies to the `Search` and `Latest headlines` requests.
 
         Response field behavior:
-        - Required fields are guaranteed to be present and non-null.
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
-        processing.
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be
+        extracted during processing.
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
