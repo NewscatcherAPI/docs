@@ -110,7 +110,7 @@ paths:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchResponse"
+          $ref: "#/components/responses/LatestHeadlinesResponse"
         "400":
           $ref: "#/components/responses/Error400"
         "401":
@@ -166,7 +166,7 @@ paths:
         $ref: "#/components/requestBodies/SearchByRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchResponse"
+          $ref: "#/components/responses/SearchByResponse"
         "400":
           $ref: "#/components/responses/Error400"
         "401":
@@ -213,7 +213,6 @@ components:
             $ref: "#/components/schemas/SourcesRequestDto"
 
   responses:
-    # Success
     SearchResponse:
       description:
         A successful response containing articles that match the specified
@@ -226,12 +225,53 @@ components:
               - $ref: "#/components/schemas/ArticleSearchResponseDto"
               - $ref: "#/components/schemas/ClusteringSearchResponseDto"
 
+    LatestHeadlinesResponse:
+      description:
+        A successful response containing the latest headlines since the
+        specified time. The response may include clustering information if
+        enabled.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - allOf:
+                  - $ref: "#/components/schemas/ArticleSearchResponseDto"
+                title: Latest Headlines Response
+                description: |
+                  The response model for the `Latest headlines` request.
+
+                  Response field behavior:
+                  - Required fields are guaranteed to be present and non-null. 
+                  - Optional fields may be `null`/`undefined` if the data couldn't be 
+                  extracted during processing.
+              - allOf:
+                  - $ref: "#/components/schemas/ClusteringSearchResponseDto"
+                title: Clustered Latest Headlines Response
+
     SourcesResponse:
       description: Successful response containing the list of sources
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/SourcesResponseDto"
+
+    SearchByResponse:
+      description: |
+        A successful response containing articles that match the
+        specified search criteria.
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: "#/components/schemas/ArticleSearchResponseDto"
+            title: Search By Response
+            description: |
+              The response model for the `Search by` request.
+
+              Response field behavior:
+              - Required fields are guaranteed to be present and non-null. 
+              - Optional fields may be `null`/`undefined` if the data couldn't be 
+              extracted during processing.
 
     # Errors
     Error400:
@@ -314,6 +354,10 @@ components:
     BaseRequestDto:
       type: object
       properties:
+        associated_towns:
+          $ref: "#/components/schemas/AssociatedTowns"
+        search_in_ai_associated_town:
+          $ref: "#/components/schemas/SearchInAiAssociatedTown"
         lang:
           $ref: "#/components/schemas/Lang"
         sources:
@@ -322,10 +366,16 @@ components:
           $ref: "#/components/schemas/NotSources"
         parent_url:
           $ref: "#/components/schemas/ParentUrl"
+        is_paid_content:
+          $ref: "#/components/schemas/IsPaidContent"
         page:
           $ref: "#/components/schemas/Page"
         page_size:
           $ref: "#/components/schemas/PageSize"
+        word_count_min:
+          $ref: "#/components/schemas/WordCountMin"
+        word_count_max:
+          $ref: "#/components/schemas/WordCountMax"
         clustering:
           $ref: "#/components/schemas/ClusteringEnabled"
         theme:
@@ -346,20 +396,11 @@ components:
           $ref: "#/components/schemas/ContentSentimentMin"
         content_sentiment_max:
           $ref: "#/components/schemas/ContentSentimentMax"
-        word_count_min:
-          $ref: "#/components/schemas/WordCountMin"
-        word_count_max:
-          $ref: "#/components/schemas/WordCountMax"
-        is_paid_content:
-          $ref: "#/components/schemas/IsPaidContent"
-        associated_towns:
-          $ref: "#/components/schemas/AssociatedTowns"
-        search_in_ai_associated_town:
-          $ref: "#/components/schemas/SearchInAiAssociatedTown"
+      required:
+        - associated_towns
 
     SearchRequestDto:
       allOf:
-        - $ref: "#/components/schemas/BaseRequestDto"
         - type: object
           properties:
             q:
@@ -372,17 +413,15 @@ components:
               $ref: "#/components/schemas/SearchIn"
             sort_by:
               $ref: "#/components/schemas/SortBy"
-          required:
-            - search_in
-            - sort_by
+        - $ref: "#/components/schemas/BaseRequestDto"
 
     LatestHeadlinesRequestDto:
       allOf:
-        - $ref: "#/components/schemas/BaseRequestDto"
         - type: object
           properties:
             when:
               $ref: "#/components/schemas/When"
+        - $ref: "#/components/schemas/BaseRequestDto"
 
     SourcesRequestDto:
       type: object
@@ -691,8 +730,6 @@ components:
         Each town entity contains information about a specific town 
         and the association methods to be used for searching.
 
-        **Note**: The `associated_towns` parameter is required for local news searches.
-
         To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
       example:
         - name: "New York City, New York"
@@ -760,6 +797,7 @@ components:
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
     Q:
       type: string
+      default: "*"
       description: |
         The keyword(s) to search for in articles. 
         Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
@@ -845,7 +883,7 @@ components:
         - `rank`: The results from the highest-ranked sources first.
       example: date
 
-    ## Latest headlines: LatestHeadlinesReqestDto
+    ## Latest headlines: LatestHeadlinesReqestDto parameters
     When:
       type: string
       default: 7d
@@ -979,9 +1017,14 @@ components:
     ## Uses `ArticleResultEntity` as a model for the `articles` object.
     ArticleSearchResponseDto:
       title: Search Response
-      description:
-        Response object for article search queries, including search results and
-        metadata.
+      description: |
+        The response model for the `Search` request, including search results
+        and metadata.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
+        processing.
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1003,6 +1046,8 @@ components:
       title: Article Result
       description:
         The data model representing a single article in the search results.
+        Required fields are always non-null. Optional fields may be
+        `null`/`undefined` if data extraction is unsuccessful.
       type: object
       required:
         - id
@@ -1217,12 +1262,17 @@ components:
             type: integer
             description: The number of times this entity appears in the article.
 
-    ## Clustering response
+    ## Clustered response schemas
     ClusteringSearchResponseDto:
-      title: Clustering Search Response
-      description:
-        Response object for article search queries with clustering, including
-        search results and metadata.
+      title: Clustered Search Response
+      description: |
+        The response model when clustering is enabled, grouping similar articles
+        into clusters. Applies to the `Search` and `Latest headlines` requests.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
+        processing.
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1305,10 +1355,16 @@ components:
               type: integer
               description: The rank of the article within its cluster.
 
-    ## Source response
+    ## Sources response schemas
     SourcesResponseDto:
       title: Sources Response
-      description: The response model for the sources request.
+      description: |
+        The response model for the `Sources` request.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
+        processing.
       type: object
       required:
         - message
@@ -1353,7 +1409,7 @@ components:
                 type: string
           description: The theme(s) of the retrieved sources.
 
-    # Error schemas
+    # Error schema
     Error:
       type: object
       properties:
