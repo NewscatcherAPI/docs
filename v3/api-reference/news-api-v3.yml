@@ -2904,10 +2904,10 @@ components:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-         - To access article properties, use array index notation. For example, 
-        `articles[n].title`, where `n` is the zero-based index of the article object
-        in the `articles` response array (0, 1, 2, etc.).
-         - The `nlp` property within the article object `articles[n].nlp` 
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
       required:
         - status
@@ -3307,10 +3307,10 @@ components:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-         - To access article properties, use array index notation. For example, 
-        `articles[n].title`, where `n` is the zero-based index of the article object
-        in the `articles` response array (0, 1, 2, etc.).
-         - The `nlp` property within the article object `articles[n].nlp` 
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
       required:
         - status
@@ -3394,10 +3394,10 @@ components:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-         - To access article properties, use array index notation. For example, 
-        `articles[n].title`, where `n` is the zero-based index of the article object
-        in the `articles` response array (0, 1, 2, etc.).
-         - The `nlp` property within the article object `articles[n].nlp` 
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
       required:
         - status
@@ -3455,10 +3455,10 @@ components:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-         - To access article properties, use array index notation. For example, 
-        `articles[n].title`, where `n` is the zero-based index of the article object
-        in the `articles` response array (0, 1, 2, etc.).
-         - The `nlp` property within the article object `articles[n].nlp` 
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
       required:
         - status
@@ -3517,10 +3517,10 @@ components:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-         - To access article properties, use array index notation. For example, 
-        `articles[n].title`, where `n` is the zero-based index of the article object
-        in the `articles` response array (0, 1, 2, etc.).
-         - The `nlp` property within the article object `articles[n].nlp` 
+        - To access article properties in the `articles` response array, 
+        use array index notation. For example, `articles[n].title`, where `n` 
+        is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
       required:
         - status
