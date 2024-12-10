@@ -83,19 +83,19 @@ paths:
         "200":
           $ref: "#/components/responses/SearchResponse"
         "400":
-          $ref: "#/components/responses/Error400"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/Error401"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          $ref: "#/components/responses/Error403"
+          $ref: "#/components/responses/ForbiddenError"
         "408":
-          $ref: "#/components/responses/Error408"
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/Error422"
+          $ref: "#/components/responses/ValidationError"
         "429":
-          $ref: "#/components/responses/Error429"
+          $ref: "#/components/responses/RateLimitError"
         "500":
-          $ref: "#/components/responses/Error500"
+          $ref: "#/components/responses/InternalServerError"
 
   /api/latest_headlines:
     post:
@@ -112,19 +112,19 @@ paths:
         "200":
           $ref: "#/components/responses/LatestHeadlinesResponse"
         "400":
-          $ref: "#/components/responses/Error400"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/Error401"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          $ref: "#/components/responses/Error403"
+          $ref: "#/components/responses/ForbiddenError"
         "408":
-          $ref: "#/components/responses/Error408"
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/Error422"
+          $ref: "#/components/responses/ValidationError"
         "429":
-          $ref: "#/components/responses/Error429"
+          $ref: "#/components/responses/RateLimitError"
         "500":
-          $ref: "#/components/responses/Error500"
+          $ref: "#/components/responses/InternalServerError"
 
   /api/sources:
     post:
@@ -141,19 +141,19 @@ paths:
         "200":
           $ref: "#/components/responses/SourcesResponse"
         "400":
-          $ref: "#/components/responses/Error400"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/Error401"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          $ref: "#/components/responses/Error403"
+          $ref: "#/components/responses/ForbiddenError"
         "408":
-          $ref: "#/components/responses/Error408"
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/Error422"
+          $ref: "#/components/responses/ValidationError"
         "429":
-          $ref: "#/components/responses/Error429"
+          $ref: "#/components/responses/RateLimitError"
         "500":
-          $ref: "#/components/responses/Error500"
+          $ref: "#/components/responses/InternalServerError"
 
   /api/search_by:
     post:
@@ -168,19 +168,19 @@ paths:
         "200":
           $ref: "#/components/responses/SearchByResponse"
         "400":
-          $ref: "#/components/responses/Error400"
+          $ref: "#/components/responses/BadRequestError"
         "401":
-          $ref: "#/components/responses/Error401"
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
-          $ref: "#/components/responses/Error403"
+          $ref: "#/components/responses/ForbiddenError"
         "408":
-          $ref: "#/components/responses/Error408"
+          $ref: "#/components/responses/RequestTimeoutError"
         "422":
-          $ref: "#/components/responses/Error422"
+          $ref: "#/components/responses/ValidationError"
         "429":
-          $ref: "#/components/responses/Error429"
+          $ref: "#/components/responses/RateLimitError"
         "500":
-          $ref: "#/components/responses/Error500"
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   requestBodies:
@@ -262,7 +262,7 @@ components:
             title: Search By Response
 
     # Errors
-    Error400:
+    BadRequestError:
       description: Bad request
       content:
         application/json:
@@ -273,7 +273,7 @@ components:
             status_code: 400
             status: "Bad request"
 
-    Error401:
+    UnauthorizedError:
       description: Unauthorized - Authentication failed
       content:
         application/json:
@@ -284,7 +284,7 @@ components:
             status_code: 401
             status: "Unauthorized"
 
-    Error403:
+    ForbiddenError:
       description: Forbidden - Server refuses action
       content:
         application/json:
@@ -296,7 +296,7 @@ components:
             status_code: 403
             status: "Forbidden"
 
-    Error408:
+    RequestTimeoutError:
       description: Request timeout
       content:
         application/json:
@@ -307,7 +307,7 @@ components:
             status_code: 408
             status: "Request timeout"
 
-    Error422:
+    ValidationError:
       description: Validation error
       content:
         application/json:
@@ -318,7 +318,7 @@ components:
             status_code: 422
             status: "Validation error"
 
-    Error429:
+    RateLimitError:
       description: Too many requests - Rate limit exceeded
       content:
         application/json:
@@ -329,7 +329,7 @@ components:
             status_code: 429
             status: "Too many requests"
 
-    Error500:
+    InternalServerError:
       description: Internal server error
       content:
         text/plain:
@@ -1026,6 +1026,7 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/ArticleResultEntity"
+              default: []
             user_input:
               title: User Input
               description: The user input parameters for the search.
@@ -1050,7 +1051,6 @@ components:
         - published_date
         - is_opinion
         - rank
-        - score
       properties:
         id:
           type: string
@@ -1167,6 +1167,8 @@ components:
           description:
             A list of search patterns used to associate the town with the
             article.
+      required:
+        - name
 
     AiAssociatedTownEntity:
       type: object
@@ -1204,27 +1206,26 @@ components:
         ner_PER:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for person entities (individuals'
-                names).
+          description:
+            Named Entity Recognition for person entities (individuals' names).
         ner_ORG:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for organization entities (company
-                names, institutions).
+          description:
+            Named Entity Recognition for organization entities (company names,
+            institutions).
         ner_MISC:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for miscellaneous entities (events,
-                nationalities, products).
+          description:
+            Named Entity Recognition for miscellaneous entities (events,
+            nationalities, products).
         ner_LOC:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for location entities (cities,
-                countries, geographic features).
+          description:
+            Named Entity Recognition for location entities (cities, countries,
+            geographic features).
 
     SentimentScores:
       type: object
