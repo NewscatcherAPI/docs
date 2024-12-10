@@ -26,7 +26,6 @@ description:
     <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
     <Check>Get AI-generated article summaries</Check>
     <Check>Use 5 town association methods for precise location matching</Check>
-    <Check>Make up to 250,000 API calls monthly</Check>
 
   </Tab>
   <Tab title="Embeddings">
@@ -39,7 +38,6 @@ description:
     <Check>Use the multilingual-e5-large model for embeddings generation</Check>
     <Check>Enable semantic search in your applications</Check>
     <Check>Build similarity-based news aggregations</Check>
-    <Check>Make up to 25,000 API calls monthly</Check>
 
   </Tab>
   <Tab title="AI Extraction">
@@ -53,38 +51,27 @@ description:
     <Check>Get town information through `ai_associated_town` in responses</Check>
     <Check>Filter content using the `search_in_ai_associated_town` parameter</Check>
     <Check>Access AI town data starting from September 24, 2024</Check>
-    <Check>Make up to 250,000 API calls monthly</Check>
 
   </Tab>
 </Tabs>
 
 ## Technical specifications
 
-| Feature                 | Standard | Embeddings | AI Extraction |
-| ----------------------- | -------- | ---------- | ------------- |
-| **API Limits**          |
-| Monthly API Calls       | 250,000  | 25,000     | 250,000       |
-| Rate Limit (calls/sec)  | 5        | 5          | 5             |
-| Max Sources per Request | 2,000    | 2,000      | 2,000         |
-| Historical Data Access  | 30 days  | 30 days    | 30 days       |
-| **Core Features**       |
-| Article Metadata        | ✓        | ✓          | ✓             |
-| Multi-language Support  | ✓        | ✓          | ✓             |
-| Clustering              | ✓        | ✓          | ✓             |
-| **NLP Features**        |
-| Theme Analysis          | ✓        | ✓          | ✓             |
-| Entity Recognition      | ✓        | ✓          | ✓             |
-| Sentiment Analysis      | ✓        | ✓          | ✓             |
-| Vector Embeddings       | -        | ✓          | -             |
-| **Location Features**   |
-| Location Filtering      | ✓        | ✓          | ✓             |
-| AI Location Extraction  | -        | -          | ✓             |
-| Location Validation     | -        | -          | ✓             |
-
-<Warning>
-  To prevent service interruptions, implement rate limiting in your application
-  to stay within the 5 requests per second limit.
-</Warning>
+| Feature                | Standard | Embeddings | AI Extraction |
+| ---------------------- | -------- | ---------- | ------------- |
+| **Core Features**      |
+| Article Metadata       | ✓        | ✓          | ✓             |
+| Multi-language Support | ✓        | ✓          | ✓             |
+| Clustering             | ✓        | ✓          | ✓             |
+| **NLP Features**       |
+| Theme Analysis         | ✓        | ✓          | ✓             |
+| Entity Recognition     | ✓        | ✓          | ✓             |
+| Sentiment Analysis     | ✓        | ✓          | ✓             |
+| Vector Embeddings      | -        | ✓          | -             |
+| **Location Features**  |
+| Location Filtering     | ✓        | ✓          | ✓             |
+| AI Location Extraction | -        | -          | ✓             |
+| Location Validation    | -        | -          | ✓             |
 
 ## Support
 
