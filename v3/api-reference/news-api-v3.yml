@@ -3204,27 +3204,26 @@ components:
         ner_PER:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for person entities (individuals'
-                names).
+          description:
+            Named Entity Recognition for person entities (individuals' names).
         ner_ORG:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for organization entities (company
-                names, institutions).
+          description:
+            Named Entity Recognition for organization entities (company names,
+            institutions).
         ner_MISC:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for miscellaneous entities (events,
-                nationalities, products).
+          description:
+            Named Entity Recognition for miscellaneous entities (events,
+            nationalities, products).
         ner_LOC:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
-            - description:
-                Named Entity Recognition for location entities (cities,
-                countries, geographic features).
+          description:
+            Named Entity Recognition for location entities (cities, countries,
+            geographic features).
         iptc_tags_name:
           type: array
           items:
