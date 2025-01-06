@@ -1806,7 +1806,7 @@ components:
         **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
       in: query
-      required: true
+      required: false
       schema:
         type: string
       examples:
@@ -1827,7 +1827,7 @@ components:
         **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
       in: query
-      required: true
+      required: false
       schema:
         type: string
       examples:
@@ -2443,9 +2443,6 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - ids
-              - links
             properties:
               ids:
                 $ref: "#/components/schemas/Ids"
