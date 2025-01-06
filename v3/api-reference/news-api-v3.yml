@@ -3010,7 +3010,7 @@ components:
         - link
         - domain_url
         - full_domain_url
-        - extraction_data
+        - parent_url
         - rank
         - content
         - id
@@ -3085,9 +3085,9 @@ components:
           title: Paid Content
           description: Indicates if the article is paid content.
           type: boolean
-        extraction_data:
-          title: Extraction Data
-          description: The data extracted from the article.
+        parent_url:
+          title: Parent URL
+          description: The categorical URL of the article.
           type: string
         country:
           title: Country
@@ -3623,7 +3623,7 @@ components:
         - link
         - domain_url
         - full_domain_url
-        - extraction_data
+        - parent_url
         - rank
         - content
         - id
@@ -3698,9 +3698,9 @@ components:
           title: Paid Content
           description: Indicates if the article is paid content.
           type: boolean
-        extraction_data:
-          title: Extraction Data
-          description: The data extracted from the article.
+        parent_url:
+          title: Parent URL
+          description: The categorical URL of the article.
           type: string
         country:
           title: Country
