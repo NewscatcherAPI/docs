@@ -3179,9 +3179,7 @@ components:
       description: Natural Language Processing data for the article.
       properties:
         theme:
-          type: array
-          items:
-            type: string
+          type: string
           description: The themes or categories identified in the article.
         summary:
           type: string
