@@ -3080,7 +3080,7 @@ components:
         is_headline:
           title: Is Headline
           description: Indicates if the article is a headline.
-          type: string
+          type: boolean
         paid_content:
           title: Paid Content
           description: Indicates if the article is paid content.
@@ -3693,7 +3693,7 @@ components:
         is_headline:
           title: Is Headline
           description: Indicates if the article is a headline.
-          type: string
+          type: boolean
         paid_content:
           title: Paid Content
           description: Indicates if the article is paid content.
