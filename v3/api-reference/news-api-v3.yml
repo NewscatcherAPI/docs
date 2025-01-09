@@ -401,7 +401,7 @@ paths:
       description:
         Searches for articles based on specified links or IDs. You can filter
         results by date range.
-      operationId: SearchLink_get
+      operationId: search_url_get
       parameters:
         - $ref: "#/components/parameters/Ids"
         - $ref: "#/components/parameters/Links"
