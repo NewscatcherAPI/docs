@@ -2,29 +2,16 @@ openapi: 3.0.2
 info:
   title: NewsCatcher News API v3
   description: |
-    The NewsCatcher News API v3 provides streamlined access to vast global news
-    content tailored specifically for developers and data scientists. This version
-    introduces significant enhancements, including advanced Natural Language
-    Processing (NLP) capabilities, which enable more sophisticated searches and
-    content analysis. It's designed to integrate seamlessly into various
-    applications, from data analytics platforms to AI-driven news aggregation
-    services.
+    The NewsCatcher News API v3 provides streamlined access to vast global news content tailored specifically for developers and data scientists. This version introduces significant enhancements, including advanced Natural Language Processing (NLP) capabilities, which enable more sophisticated searches and content analysis. It's designed to integrate seamlessly into various applications, from data analytics platforms to AI-driven news aggregation services.
 
     ## Key Features
 
-    - **NLP Enhancements**: Each article is enriched with NLP features such as
-      theme classification, sentiment analysis, and named entity recognition,
-      offering deeper insights and refined search capabilities.
-    - **Advanced Search Filters**: Perform searches based on specific parameters,
-      such as language, publication date, and detailed content type.
-    - **Article Clustering**: Group similar articles to reduce noise and focus on
-      unique content, enhancing the efficiency of news aggregation.
-    - **Deduplication**: Automatically identify and exclude duplicate articles to
-      ensure that each dataset contains only unique news entries, optimizing
-      content quality and relevancy.
+    - **NLP Enhancements**: Each article is enriched with NLP features such as theme classification, sentiment analysis, and named entity recognition, offering deeper insights and refined search capabilities.
+    - **Advanced Search Filters**: Perform searches based on specific parameters, such as language, publication date, and detailed content type.
+    - **Article Clustering**: Group similar articles to reduce noise and focus on unique content, enhancing the efficiency of news aggregation.
+    - **Deduplication**: Automatically identify and exclude duplicate articles to ensure that each dataset contains only unique news entries, optimizing content quality and relevancy.
 
-    For detailed documentation, integration guides, and SDKs, visit our
-    [developer portal](https://newscatcherapi.com/docs).
+    For detailed documentation, integration guides, and SDKs, visit our [developer portal](https://newscatcherapi.com/docs).
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
     name: Maksym Sugonyaka
@@ -792,8 +779,7 @@ components:
   parameters:
     Q:
       description: |
-        The keyword(s) to search for in articles. 
-        Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
+        The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
 
         - For an exact match, use double quotes. For example, `"technology news"`.
         - Use `*` to search for any keyword.
@@ -812,9 +798,7 @@ components:
 
     Lang:
       description: |
-        The language(s) of the search. 
-        The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To select multiple languages, use a comma-separated string. 
+        The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string. 
 
         Example: `"en, es"`
 
@@ -834,9 +818,7 @@ components:
 
     NotLang:
       description: |
-        The language(s) to exclude from the search. 
-        The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To exclude multiple languages, use a comma-separated string. 
+        The language(s) to exclude from the search. The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To exclude multiple languages, use a comma-separated string. 
 
         Example: `"fr, de"`
 
@@ -856,8 +838,7 @@ components:
 
     SearchIn:
       description: |
-        The article fields to search in.
-        To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. To search in multiple fields, use a comma-separated string. 
 
         Example: `"title, summary"`
 
@@ -880,9 +861,7 @@ components:
 
     Countries:
       description: |
-        The countries where the news publisher is located. 
-        The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To select multiple countries, use a comma-separated string.
+        The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string.
 
         Example: `"US, CA"`
 
@@ -902,9 +881,7 @@ components:
 
     NotCountries:
       description: |
-        The publisher location countries to exclude from the search. 
-        The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To exclude multiple countries, use a comma-separated string. 
+        The publisher location countries to exclude from the search. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To exclude multiple countries, use a comma-separated string. 
 
         Example:`"US, CA"`
 
@@ -924,9 +901,7 @@ components:
 
     Sources:
       description: |
-        One or more news sources to narrow down the search. The format must be a domain URL. 
-        Subdomains, such as `finance.yahoo.com`, are also acceptable.
-        To specify multiple sources, use a comma-separated string.
+        One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable.To specify multiple sources, use a comma-separated string.
 
         Examples:
         - `"nytimes.com"`
@@ -946,8 +921,7 @@ components:
 
     NotSources:
       description: |
-        The news sources to exclude from the search.
-        To exclude multiple sources, use a comma-separated string. 
+        The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string. 
 
         Example: `"cnn.com, wsj.com"`
       name: not_sources
@@ -965,19 +939,13 @@ components:
 
     PredefinedSources:
       description: |
-        Predefined top sources per country. 
+        Predefined top news sources per country. 
 
-        Format: start with the word `top`, followed by the number of desired sources, 
-        and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Multiple countries with the number of top sources can be specified as a comma-separated string.
 
         Examples: 
         - `"top 100 US"`
         - `"top 33 AT"`
-        - `"top 5 GB"`       
-
-        Multiple countries can be specified with custom numbers as a comma-separated string. 
-
-        Examples: 
         - `"top 50 US, top 20 GB"`
         - `"top 33 AT, top 50 IT"`
       name: predefined_sources
@@ -989,15 +957,11 @@ components:
 
     SourceName:
       description: |
-        Specifies terms to search within the source names.
-        To specify multiple terms, use a comma-separated string.
+        Word or phrase to search within the source names. To specify multiple values, use a comma-separated string.
 
         Example: `"sport, tech"`
 
-        **Note**: The search does not require an exact match and returns all sources that include 
-        the specified terms anywhere in their names. You can use any word, phrase, or outlet name,
-        such as `"sport"`, or `"new york times"`. For example, using `"sport"` as a term returns 
-        sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
+        **Note**: The search doesn't require an exact match and returns sources containing the specified terms in their names. You can use any word or phrase, like `"sport"` or `"new york times"`. For example, `"sport"` returns sources such as `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
       name: source_name
       in: query
       required: false
@@ -1013,8 +977,7 @@ components:
 
     ParentUrl:
       description: |
-        The categorical URL(s) to filter your search.
-        To filter your search by multiple categorical URLs, use a comma-separated string.
+        The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string.
 
         Example: `"wsj.com/politics, wsj.com/tech"`
       name: parent_url
@@ -1032,8 +995,7 @@ components:
 
     RankedOnly:
       description: |
-        If true, limits the search to sources ranked in the top 1 million online websites. 
-        If false, includes unranked sources which are assigned a rank of 999999.
+        If true, limits the search to sources ranked in the top 1 million online websites. If false, includes unranked sources which are assigned a rank of 999999.
       name: ranked_only
       in: query
       required: false
@@ -1044,9 +1006,7 @@ components:
 
     FromRank:
       description: |
-        The lowest boundary of the rank of a news website to filter by. 
-        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
-        If you set this to `100`, the API includes sources ranked 100 or higher.
+        The lowest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       name: from_rank
       in: query
       required: false
@@ -1060,9 +1020,7 @@ components:
 
     ToRank:
       description: |
-        The highest boundary of the rank of a news website to filter by. 
-        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
-        If you set this to `100`, the API includes sources ranked 100 or lower.
+        The highest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       name: to_rank
       in: query
       required: false
@@ -1094,8 +1052,7 @@ components:
 
     PageSize:
       description: |
-        The number of articles to return per page. 
-        Range: `1` to `1000`.
+        The number of articles to return per page.
       name: page_size
       in: query
       required: false
@@ -1108,8 +1065,9 @@ components:
 
     Page:
       description: |
-        The page number to scroll through the results. 
-        This parameter is used to paginate: scroll through results because one API response cannot return more than 1000 articles.
+        The page number to scroll through the results. Use for pagination, as a single API response can return up to 1,000 articles. 
+
+        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/v3/documentation/how-to/paginate-large-datasets).
       name: page
       in: query
       required: false
@@ -1121,9 +1079,7 @@ components:
 
     From:
       description: |
-        The starting point in time to search from. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
@@ -1132,8 +1088,7 @@ components:
         - YYYY/mm/dd: `2024/07/01`
         - English phrases: `1 day ago`, `today`
 
-        **Note**: By default, applied to the publication date of the article. 
-        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
+        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: from_
       in: query
       required: false
@@ -1154,9 +1109,7 @@ components:
 
     To:
       description: |
-        The ending point in time to search up to. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
@@ -1165,8 +1118,7 @@ components:
         - YYYY/mm/dd: `2024/07/01`
         - English phrases: `1 day ago`, `today`
 
-        **Note**: By default, applied to the publication date of the article. 
-        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
+        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: to_
       in: query
       required: false
@@ -1204,8 +1156,7 @@ components:
 
     ByParseDate:
       description: |
-        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. 
-        Additionally, the `parse_date` variable is added to the output list for each article.
+        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output list for each article.
       name: by_parse_date
       in: query
       required: false
@@ -1226,8 +1177,7 @@ components:
 
     AllLinks:
       description: |
-        The complete URL(s) mentioned in the article.
-        For multiple URLs, use a comma-separated string.
+        The complete URL(s) mentioned in the article. For multiple URLs, use a comma-separated string.
 
         Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
 
@@ -1247,8 +1197,7 @@ components:
 
     AllDomainLinks:
       description: |
-        The domain(s) mentioned in the article.
-        For multiple domains, use a comma-separated string.
+        The domain(s) mentioned in the article. For multiple domains, use a comma-separated string.
 
         Example: `"who.int, nih.gov"`
 
@@ -1278,8 +1227,7 @@ components:
 
     NotAuthorName:
       description: |
-        The list of author names to exclude from your search.
-        To exclude articles by specific authors, use a comma-separated string.
+        The list of author names to exclude from your search. To exclude articles by specific authors, use a comma-separated string.
 
         Example: `"John Doe, Jane Doe"`
       name: not_author_name
@@ -1297,8 +1245,7 @@ components:
 
     WordCountMin:
       description: |
-        The minimum number of words an article must contain. 
-        To be used for avoiding articles with small content.
+        The minimum number of words an article must contain. To be used for avoiding articles with small content.
       name: word_count_min
       in: query
       required: false
@@ -1309,8 +1256,7 @@ components:
 
     WordCountMax:
       description: |
-        The maximum number of words an article can contain. 
-        To be used for avoiding articles with large content.
+        The maximum number of words an article can contain. To be used for avoiding articles with large content.
       name: word_count_max
       in: query
       required: false
@@ -1321,8 +1267,7 @@ components:
 
     ClusteringEnabled:
       description: |
-        Determines whether to group similar articles into clusters.
-        If true, the API returns clustered results.
+        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
 
         To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
@@ -1354,9 +1299,7 @@ components:
 
     ClusteringThreshold:
       description: |
-        Sets the similarity threshold for grouping articles into clusters.
-        Range: Greater than `0` to `1.0`.
-        A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
+        Sets the similarity threshold for grouping articles into clusters. A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
 
         Examples:
         - `0.3`: Results in larger, more diverse clusters.
@@ -1378,9 +1321,7 @@ components:
 
     IncludeNlpData:
       description: |
-        If true, includes an NLP layer with each article in the response. 
-        This layer provides enhanced information such as theme classification, 
-        article summary, sentiment analysis, tags, and named entity recognition.
+        If true, includes an NLP layer with each article in the response. This layer provides enhanced information such as theme classification, article summary, sentiment analysis, tags, and named entity recognition.
 
         The NLP layer includes:
         - Theme: General topic of the article.
@@ -1403,8 +1344,7 @@ components:
 
     HasNlp:
       description: |
-        If true, filters the results to include only articles with an NLP layer. 
-        This allows you to focus on articles that have been processed with advanced NLP techniques.
+        If true, filters the results to include only articles with an NLP layer. This allows you to focus on articles that have been processed with advanced NLP techniques.
 
         **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
 
@@ -1419,8 +1359,7 @@ components:
 
     Theme:
       description: |
-        Filters articles based on their general topic, as determined by NLP analysis.
-        To select multiple themes, use a comma-separated string.
+        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string.
 
         Example: `"Finance, Tech"`
 
@@ -1439,8 +1378,7 @@ components:
 
     NotTheme:
       description: |
-        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. 
-        To exclude multiple themes, use a comma-separated string. 
+        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string. 
 
         Example: `"Crime, Tech"`
 
@@ -1456,8 +1394,7 @@ components:
 
     OrgEntityName:
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis.
-        To specify multiple organizations, use a comma-separated string. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string. 
 
         Example: `"Apple, Microsoft"`
 
@@ -1482,8 +1419,7 @@ components:
 
     PerEntityName:
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis.
-        To specify multiple names, use a comma-separated string. 
+        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string. 
 
         Example: `"Elon Musk, Jeff Bezos"`
 
@@ -1508,8 +1444,7 @@ components:
 
     LocEntityName:
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis.
-        To specify multiple locations, use a comma-separated string. 
+        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string. 
 
         Example: `"California, New York"`
 
@@ -1534,9 +1469,7 @@ components:
 
     MiscEntityName:
       description: |
-        Filters articles that mention other named entities not falling under person, organization, 
-        or location categories. Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string. 
 
         Example: `"Bitcoin, Blockchain"`
 
@@ -1649,8 +1582,7 @@ components:
 
     IptcTags:
       description: |
-        Filters articles based on IPTC (International Press Telecommunications Council) media topic tags.
-        To specify multiple IPTC tags, use a comma-separated string of tag IDs. 
+        Filters articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags, use a comma-separated string of tag IDs. 
 
         Example: `"20000199, 20000209"`
 
@@ -1666,8 +1598,7 @@ components:
 
     NotIptcTags:
       description: |
-        Inverse of the `iptc_tags` parameter. Excludes articles based on IPTC (International Press Telecommunications Council) media topic tags.
-        To specify multiple IPTC tags to exclude, use a comma-separated string of tag IDs. 
+        Inverse of the `iptc_tags` parameter. Excludes articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags to exclude, use a comma-separated string of tag IDs. 
 
         Example: `"20000205, 20000209"`
 
@@ -1683,9 +1614,7 @@ components:
 
     IabTags:
       description: |
-        Filters articles based on IAB (Interactive Advertising Bureau) content categories.
-        These tags provide a standardized taxonomy for digital advertising content categorization.
-        To specify multiple IAB categories, use a comma-separated string. 
+        Filters articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string. 
 
         Example: `"Business, Events"`
 
@@ -1701,9 +1630,7 @@ components:
 
     NotIabTags:
       description: |
-        Inverse of the `iab_tags` parameter. Excludes articles based on IAB (Interactive Advertising Bureau) content categories.
-        These tags provide a standardized taxonomy for digital advertising content categorization.
-        To specify multiple IAB categories to exclude, use a comma-separated string. 
+        Inverse of the `iab_tags` parameter. Excludes articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories to exclude, use a comma-separated string. 
 
         Example: `"Agriculture, Metals"`
 
@@ -1719,17 +1646,11 @@ components:
 
     CustomTags:
       description: |
-        Filters articles based on custom taxonomy tags specific to your organization.
-        Each taxonomy is a custom-built classification system tailored to your specific needs
-        and is accessible only with your API key.
+        Filters articles based on provided taxonomy that is tailored to your specific needs and is accessible only with your API key. To specify tags, use the following pattern: 
 
-        To specify the taxonomy and its tags, use the following pattern: 
+        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, where `taxonomy` is the taxonomy name and `Tag1,Tag2,Tag3` is a comma-separated list of tags.
 
-        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, 
-
-        where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tag names.
-
-        Example: `custom_tags.my_taxonomy=Tag1,Tag2,Tag3`
+        Example: `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
 
         To learn more, see the [Custom tags](/docs/v3/documentation/guides-and-concepts/custom-tags).
       name: custom_tags
@@ -1741,8 +1662,7 @@ components:
 
     ExcludeDuplicates:
       description: |
-        If true, excludes duplicate and highly similar articles from the search results. 
-        If false, returns all relevant articles, including duplicates. 
+        If true, excludes duplicate and highly similar articles from the search results. If false, returns all relevant articles, including duplicates. 
 
         To learn more, see [Articles deduplication](/docs/v3/documentation/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
@@ -1755,6 +1675,7 @@ components:
     When:
       description: |
         The time period for which you want to get the latest headlines.
+
         Format examples:
         - `7d`: Last seven days
         - `30d`: Last 30 days
@@ -1776,8 +1697,7 @@ components:
 
     IsOpinion:
       description: |
-        If true, returns only opinion pieces. 
-        If false, excludes opinion-based articles and returns news only.
+        If true, returns only opinion pieces. If false, excludes opinion-based articles and returns news only.
       name: is_opinion
       in: query
       required: false
@@ -1787,8 +1707,7 @@ components:
 
     IsPaidContent:
       description: |
-        If false, returns only articles that have publicly available complete content. 
-        Some publishers partially block content, so this setting ensures that only full articles are retrieved.
+        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       name: is_paid_content
       in: query
       required: false
@@ -1798,12 +1717,11 @@ components:
 
     Links:
       description: |
-        The article link or list of article links to search for. 
-        To specify multiple links, use a comma-separated string. 
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string. 
 
         Example: `"https://example.com/article1, https://example.com/article2"`
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
       in: query
       required: false
@@ -1819,12 +1737,11 @@ components:
 
     Ids:
       description: |
-        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
-        To specify multiple IDs, use a comma-separated string. 
+        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string. 
 
         Example: `"1234567890abcdef, abcdef1234567890"`
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
       in: query
       required: false
@@ -1873,8 +1790,7 @@ components:
 
     NerName:
       description: |
-        The name of person, organization, location, product or other named entity to search for.
-        To specify multiple names use a comma-separated string. 
+        The name of person, organization, location, product or other named entity to search for. To specify multiple names use a comma-separated string. 
 
         Example: `"Tesla, Amazon"`
       name: ner_name
@@ -1938,8 +1854,8 @@ components:
       description: |
         If true, includes additional domain information in the response for each article:
         - `is_news_domain`: Boolean indicating if the source is a news domain.
-        - `news_domain_type`: Type of news domain (e.g., "Original Content").
-        - `news_type`: Category of news (e.g., "News and Blogs").
+        - `news_domain_type`: Type of news domain (e.g., `"Original Content"`).
+        - `news_type`: Category of news (e.g., `"News and Blogs"`).
       example: true
 
     IsNewsDomain:
@@ -1954,8 +1870,7 @@ components:
 
     NewsDomainType:
       description: |
-        Filters results based on the news domain type.
-        Possible values are:
+        Filters results based on the news domain type. Possible values are:
         - `Original Content`: Sources that produce their own content.
         - `Aggregator`: Sources that collect content from various other sources.
         - `Press Releases`: Sources primarily publishing press releases.
@@ -1976,8 +1891,7 @@ components:
 
     NewsType:
       description: |
-        Filters results based on the news type.
-        Multiple types can be specified using a comma-separated string.
+        Filters results based on the news type. Multiple types can be specified using a comma-separated string.
 
         Example: `"General News Outlets,Tech News and Updates"`
 
@@ -2452,8 +2366,7 @@ components:
                 type: string
                 default: 1 month ago
                 description: |
-                  The starting point in time to search from. The publication date of the article is used. 
-                  The default time zone is UTC.
+                  The starting point in time to search from. The publication date of the article is used. The default time zone is UTC.
                   Available formats:
                   - `YYYY/mm/dd`
                   - `YYYY/mm/dd HH:MM:SS`
@@ -2462,8 +2375,7 @@ components:
                 type: string
                 default: now
                 description: |
-                  The ending point in time to search up to. The publication date of the article is used. 
-                  The default time zone is UTC.
+                  The ending point in time to search up to. The publication date of the article is used. The default time zone is UTC.
                   Available formats:
                   - `YYYY/mm/dd`
                   - `YYYY/mm/dd HH:MM:SS`
@@ -2791,9 +2703,7 @@ components:
     AggregationResponse:
       title: Aggregation Response
       description: |
-        The response model for a successful `Aggregation count` request.
-
-        Response field behavior:
+        The response model for a successful `Aggregation count` request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
@@ -2895,9 +2805,7 @@ components:
     dto__responses__author_search_response__SearchResponse:
       title: Authors Search Response
       description: |
-        The response model for a successful `Authors` search request.
-
-        Response field behavior:
+        The response model for a successful `Authors` search request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
@@ -3192,8 +3100,7 @@ components:
             type: number
             format: float
           description: |
-            A dense 1024-dimensional vector representation of the article content, generated using 
-            the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
+            A dense 1024-dimensional vector representation of the article content, generated using  the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
 
             **Note**: The `new_embedding` field is only available in the `v3_local_news_nlp_embeddings` subscription plan.
         ner_PER:
@@ -3224,22 +3131,19 @@ components:
           items:
             type: string
           description: |
-            IPTC media topic taxonomy paths identified in the article content.
-            Each path represents a hierarchical category following the IPTC standard.
+            IPTC media topic taxonomy paths identified in the article content. Each path represents a hierarchical category following the IPTC standard.
         iptc_tags_id:
           type: array
           items:
             type: string
           description: |
-            IPTC media topic numeric codes identified in the article content.
-            These codes correspond to the standardized IPTC media topic taxonomy.
+            IPTC media topic numeric codes identified in the article content. These codes correspond to the standardized IPTC media topic taxonomy.
         iab_tags_name:
           type: array
           items:
             type: string
           description: |
-            IAB content taxonomy paths identified in the article content.
-            Each path represents a hierarchical category following the IAB content standard.
+            IAB content taxonomy paths identified in the article content. Each path represents a hierarchical category following the IAB content standard.
 
     SentimentScores:
       type: object
@@ -3294,10 +3198,7 @@ components:
     ClusteringSearchResponse:
       title: Clustered Search Response
       description: |
-        The response model when clustering is enabled, grouping similar articles
-        into clusters. Applies to the `Search` and `Latest headlines` requests.
-
-        Response field behavior:
+        The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search` and `Latest headlines` requests. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
@@ -3382,9 +3283,7 @@ components:
     LatestHeadlinesResponse:
       title: Latest Headlines Response
       description: |
-        The response model for the `Latest headlines` request.
-
-        Response field behavior:
+        The response model for the `Latest headlines` request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
@@ -3442,18 +3341,11 @@ components:
     dto__responses__search_response__SearchResponse:
       title: Search Response
       description: |
-        The response model for the `Search` and `Search by link` requests, 
-        including search results and metadata.
-
-        Response field behavior:
+        The response model for the `Search` and `Search by link` requests, including search results and metadata. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` 
-        is only available with NLP-enabled subscription plans.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
       required:
         - status
         - total_hits
@@ -3505,17 +3397,11 @@ components:
     dto__responses__more_like_this_response__SearchResponse:
       title: Search Similar Response
       description: |
-        The response model for a successful `Search similar` request.
-
-        Response field behavior:
+        The response model for a successful `Search similar` request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` 
-        is only available with NLP-enabled subscription plans.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
       required:
         - status
         - total_hits
@@ -3609,10 +3495,7 @@ components:
     dto__responses__more_like_this_response__ArticleResult:
       title: Search Similar Article Object
       description: |
-        The data model for an article result in the `Search similar` articles
-        request.
-
-        Response field behavior:
+        The data model for an article result in the `Search similar` articles request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
@@ -3814,13 +3697,9 @@ components:
     SourceResponse:
       title: Sources Response
       description: |
-        The response model for a successful `Sources` request retrieving news
-        sources matching the specified criteria.
-
-        Response field behavior:
+        The response model for a successful `Sources` request retrieving news sources matching the specified criteria. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
       required:
         - message
         - sources
@@ -3910,10 +3789,7 @@ components:
     SubscriptionResponse:
       title: Subscription Response
       description: |
-        Response model for a successful `Subscription` request retrieving plan
-        information.
-
-        Response field behavior:
+        Response model for a successful `Subscription` request retrieving plan information. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't 
         be extracted during processing.
@@ -3980,8 +3856,8 @@ components:
     Q:
       type: string
       description: |
-        The keyword(s) to search for in articles. 
-        Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
+        The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
+
         - For an exact match, use double quotes. For example, `"technology news"`.
         - Use `*` to search for any keyword.
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
@@ -3997,9 +3873,7 @@ components:
           items:
             type: string
       description: |
-        The language(s) of the search. 
-        The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To select multiple languages, use a comma-separated string or an array of strings.
+        The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
         Examples:
         - `"en,es"`
@@ -4015,9 +3889,7 @@ components:
           items:
             type: string
       description: |
-        The language(s) to exclude from the search. 
-        The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To exclude multiple languages, use a comma-separated string or an array of strings.
+        The language(s) to exclude from the search. The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To exclude multiple languages, use a comma-separated string or an array of strings.
 
         Examples:
         - `"fr,de"`
@@ -4030,8 +3902,7 @@ components:
       type: string
       default: title,content
       description: |
-        The article fields to search in. 
-        To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. To search in multiple fields, use a comma-separated string. 
 
         Example: `"title, summary"`
 
@@ -4047,9 +3918,7 @@ components:
           items:
             type: string
       description: |
-        The countries where the news publisher is located. 
-        The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To select multiple countries, use a comma-separated string or an array of strings.
+        The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
         Examples:
         - `"US,CA"`
@@ -4065,9 +3934,7 @@ components:
           items:
             type: string
       description: |
-        The publisher location countries to exclude from the search. 
-        The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To exclude multiple countries, use a comma-separated string or an array of strings.
+        The publisher location countries to exclude from the search. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To exclude multiple countries, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"UK,FR"`
@@ -4083,9 +3950,7 @@ components:
           items:
             type: string
       description: |
-        One or more news sources to narrow down the search. The format must be a domain URL. 
-        Subdomains, such as `finance.yahoo.com`, are also acceptable. 
-        To specify multiple sources, use a comma-separated string or an array of strings.
+        One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable. To specify multiple sources, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"nytimes.com, theguardian.com"`
@@ -4099,8 +3964,7 @@ components:
           items:
             type: string
       description: |
-        The news sources to exclude from the search.
-        To exclude multiple sources, use a comma-separated string or an array of strings.
+        The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"cnn.com, wsj.com"`
@@ -4114,19 +3978,13 @@ components:
           items:
             type: string
       description: |
-        Predefined top sources per country. 
+        Predefined top news sources per country. 
 
-        Format: start with the word `top`, followed by the number of desired sources, 
-        and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
+        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Multiple countries with the number of top sources can be specified as a comma-separated string or an array of strings. 
 
         Examples: 
         - `"top 100 US"`
         - `"top 33 AT"`
-        - `"top 5 GB"`       
-
-        Multiple countries can be specified with custom numbers as a comma-separated string or an array of strings. 
-
-        Examples: 
         - `"top 50 US, top 20 GB"`
         - `["top 50 US", "top 20 GB"]`
       example: ["top 50 US", "top 20 GB"]
@@ -4138,17 +3996,13 @@ components:
           items:
             type: string
       description: |
-        Specifies terms to search within the source names.
-        To specify multiple terms, use a comma-separated string or an array of strings.
+        Specifies terms to search within the source names. To specify multiple terms, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"sport, tech"`
         - `["sport", "tech"]`
 
-        **Note**: The search does not require an exact match and returns all sources that include 
-        the specified terms anywhere in their names. You can use any word, phrase, or outlet name,
-        such as `"sport"`, or `"new york times"`. For example, using `"sport"` as a term returns 
-        sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
+        **Note**: The search does not require an exact match and returns all sources that include the specified terms anywhere in their names. You can use any word, phrase, or outlet name, such as `"sport"`, or `"new york times"`. For example, using `"sport"` as a term returns sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
       example: ["sport", "tech"]
 
     ParentUrl:
@@ -4158,8 +4012,7 @@ components:
           items:
             type: string
       description: |
-        The categorical URL(s) to filter your search.
-        To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
+        The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"wsj.com/politics,wsj.com/tech"`
@@ -4170,8 +4023,7 @@ components:
       type: boolean
       default: true
       description: |
-        If true, limits the search to sources ranked in the top 1 million online websites. 
-        If false, includes unranked sources which are assigned a rank of 999999.
+        If true, limits the search to sources ranked in the top 1 million online websites. If false, includes unranked sources which are assigned a rank of 999999.
       example: true
 
     FromRank:
@@ -4181,9 +4033,7 @@ components:
       default: 1
       format: int32
       description: |
-        The lowest boundary of the rank of a news website to filter by. 
-        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
-        If you set this to `100`, the API includes sources ranked 100 or higher.
+        The lowest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       example: 100
 
     ToRank:
@@ -4193,9 +4043,7 @@ components:
       default: 999999
       format: int32
       description: |
-        The highest boundary of the rank of a news website to filter by. 
-        Range: `1` to `999999`, where a lower rank indicates a more popular source. 
-        If you set this to `100`, the API includes sources ranked 100 or lower.
+        The highest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       example: 100
 
     SortBy:
@@ -4218,8 +4066,7 @@ components:
       maximum: 1000
       default: 100
       description: |
-        The number of articles to return per page. 
-        Range: `1` to `1000`.
+        The number of articles to return per page.
       example: 50
 
     Page:
@@ -4227,8 +4074,9 @@ components:
       minimum: 1
       default: 1
       description: |
-        The page number to scroll through the results. 
-        This parameter is used to paginate: scroll through results because one API response cannot return more than 1000 articles.
+        The page number to scroll through the results. Use for pagination, as a single API response can return up to 1,000 articles. 
+
+        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/v3/documentation/how-to/paginate-large-datasets).
       example: 2
 
     From:
@@ -4239,9 +4087,7 @@ components:
         - type: string
           example: 1 day ago
       description: |
-        The starting point in time to search from. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
@@ -4250,8 +4096,7 @@ components:
         - YYYY/mm/dd: `2024/07/01`
         - English phrases: `1 day ago`, `today`
 
-        **Note**: By default, applied to the publication date of the article. 
-        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
+        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       example: 2021/01/01
 
     To:
@@ -4262,9 +4107,7 @@ components:
         - type: string
           example: 1 day ago
       description: |
-        The ending point in time to search up to. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
@@ -4273,8 +4116,7 @@ components:
         - YYYY/mm/dd: `2024/07/01`
         - English phrases: `1 day ago`, `today`
 
-        **Note**: By default, applied to the publication date of the article. 
-        To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
+        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       example: 2021/12/31
 
     PublishedDatePrecision:
@@ -4294,8 +4136,7 @@ components:
       type: boolean
       default: false
       description: |
-        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. 
-        Additionally, the `parse_date` variable is added to the output list for each article.
+        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output list for each article.
       example: true
 
     IsHeadline:
@@ -4311,8 +4152,7 @@ components:
           items:
             type: string
       description: |
-        The complete URL(s) mentioned in the article.
-        For multiple URLs, use a comma-separated string or an array of strings.
+        The complete URL(s) mentioned in the article. For multiple URLs, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"https://aiindex.stanford.edu/report/, https://www.stateof.ai/"`
@@ -4335,8 +4175,7 @@ components:
           items:
             type: string
       description: |
-        The domain(s) mentioned in the article.
-        For multiple domains, use a comma-separated string or an array of strings.
+        The domain(s) mentioned in the article. For multiple domains, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"who.int, nih.gov"`
@@ -4364,8 +4203,7 @@ components:
           items:
             type: string
       description: |
-        The list of author names to exclude from your search.
-        To exclude articles by specific authors, use a comma-separated string or an array of strings. 
+        The list of author names to exclude from your search. To exclude articles by specific authors, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"John Doe, Jane Doe"`
@@ -4376,8 +4214,7 @@ components:
       type: integer
       minimum: 0
       description: |
-        The minimum number of words an article must contain. 
-        To be used for avoiding articles with small content.
+        The minimum number of words an article must contain. To be used for avoiding articles with small content.
       example: 300
 
     WordCountMax:
@@ -4392,8 +4229,7 @@ components:
       type: boolean
       default: false
       description: |
-        Determines whether to group similar articles into clusters.
-        If true, the API returns clustered results.
+        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
 
         To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
@@ -4406,9 +4242,7 @@ components:
         - summary
       default: content
       description: |
-        Specifies which part of the article to use for determining similarity when clustering.
-
-        Possible values are:
+        Specifies which part of the article to use for determining similarity when clustering. Possible values are:
         - `content`: Uses the full article content (default).
         - `title`: Uses only the article title.
         - `summary`: Uses the article summary.
@@ -4424,9 +4258,7 @@ components:
       maximum: 1.0
       default: 0.6
       description: |
-        Sets the similarity threshold for grouping articles into clusters.
-        Range: Greater than `0` to `1.0`.
-        A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
+        Sets the similarity threshold for grouping articles into clusters. A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
 
         For example:
         - `0.3`: Results in larger, more diverse clusters.
@@ -4440,16 +4272,13 @@ components:
       type: boolean
       default: false
       description: |
-        If true, includes an NLP layer with each article in the response. 
-        This layer provides enhanced information such as theme classification, 
-        article summary, sentiment analysis, tags, and named entity recognition.
+        If true, includes an NLP layer with each article in the response.  This layer provides enhanced information such as theme classification, article summary, sentiment analysis, tags, and named entity recognition.
 
         The NLP layer includes:
         - Theme: General topic of the article.
         - Summary: A concise overview of the article content.
         - Sentiment: Separate scores for title and content (range: -1 to 1).
-        - Named entities: Identified persons (PER), organizations (ORG), 
-          locations (LOC), and miscellaneous entities (MISC).
+        - Named entities: Identified persons (PER), organizations (ORG), locations (LOC), and miscellaneous entities (MISC).
         - IPTC tags: Standardized news category tags.
         - IAB tags: Content categories for digital advertising.
 
@@ -4462,8 +4291,7 @@ components:
       type: boolean
       default: false
       description: |
-        If true, filters the results to include only articles with an NLP layer. 
-        This allows you to focus on articles that have been processed with advanced NLP techniques.
+        If true, filters the results to include only articles with an NLP layer. This allows you to focus on articles that have been processed with advanced NLP techniques.
 
         **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
 
@@ -4477,8 +4305,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles based on their general topic, as determined by NLP analysis.
-        To select multiple themes, use a comma-separated string or an array of strings. 
+        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Finance, Tech"`
@@ -4498,8 +4325,7 @@ components:
           items:
             type: string
       description: |
-        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. 
-        To exclude multiple themes, use a comma-separated string or an array of strings. 
+        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Crime, Tech"`
@@ -4517,8 +4343,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis.
-        To specify multiple organizations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Apple, Microsoft"`
@@ -4536,8 +4361,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis.
-        To specify multiple names, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Elon Musk, Jeff Bezos"`
@@ -4555,8 +4379,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis.
-        To specify multiple locations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"California, New York"`
@@ -4574,9 +4397,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, 
-        or location categories. Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string or an array of strings. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Bitcoin, Blockchain"`
@@ -4666,8 +4487,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles based on IPTC (International Press Telecommunications Council) media topic tags.
-        To specify multiple IPTC tags, use a comma-separated string or an array of strings. 
+        Filters articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"20000199, 20000209"`
@@ -4685,8 +4505,7 @@ components:
           items:
             type: string
       description: |
-        Inverse of the `iptc_tags` parameter. Excludes articles based on IPTC (International Press Telecommunications Council) media topic tags.
-        To specify multiple IPTC tags to exclude, use a comma-separated string or an array of strings. 
+        Inverse of the `iptc_tags` parameter. Excludes articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags to exclude, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"20000205, 20000209"`
@@ -4704,9 +4523,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles based on IAB (Interactive Advertising Bureau) content categories.
-        These tags provide a standardized taxonomy for digital advertising content categorization.
-        To specify multiple IAB categories, use a comma-separated string or an array of strings. 
+        Filters articles based on Interactive Advertising Bureau (IAB) content categories.These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Business, Events"`
@@ -4724,9 +4541,7 @@ components:
           items:
             type: string
       description: |
-        Inverse of the `iab_tags` parameter. Excludes articles based on IAB (Interactive Advertising Bureau) content categories.
-        These tags provide a standardized taxonomy for digital advertising content categorization.
-        To specify multiple IAB categories to exclude, use a comma-separated string or an array of strings. 
+        Inverse of the `iab_tags` parameter. Excludes articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories to exclude, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Agriculture, Metals"`
@@ -4744,20 +4559,13 @@ components:
           items:
             type: string
       description: |
-        Filters articles based on custom taxonomy tags specific to your organization.
-        Each taxonomy is a custom-built classification system tailored to your specific needs
-        and is accessible only with your API key.
+        Filters articles based on provided taxonomy that is tailored to your specific needs and is accessible only with your API key. To specify tags, use the following pattern: 
 
-        To specify taxonomy and its tags, use the following pattern:
-
-        - `"custom_tags.taxonomy": "Tag1,Tag2,Tag3"`,
-
-        where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tags. 
-        For multiple tags, use a comma-separated string or an array of strings.
+        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, where `taxonomy` is the taxonomy name and `Tag1,Tag2,Tag3` are comma-separated tags. For POST requests, you can also specify tags as an array of strings.
 
         Examples:
-        - `"custom_tags.my_taxonomy": "Tag1,Tag2,Tag3"`
-        - `"custom_tags.my_taxonomy": ["Tag1", "Tag2", "Tag3"]`
+        - `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
+        - `"custom_tags.industry": ["Manufacturing", "Supply Chain", "Logistics"]`
 
         To learn more, see the [Custom tags](/docs/v3/documentation/guides-and-concepts/custom-tags).
       example: ["Tag1", "Tag2", "Tag3"]
@@ -4765,8 +4573,7 @@ components:
     ExcludeDuplicates:
       type: boolean
       description: |
-        If true, excludes duplicate and highly similar articles from the search results. 
-        If false, returns all relevant articles, including duplicates. 
+        If true, excludes duplicate and highly similar articles from the search results. If false, returns all relevant articles, including duplicates. 
 
         To learn more, see [Articles deduplication](/docs/v3/documentation/guides-and-concepts/articles-deduplication).
       example: true
@@ -4776,6 +4583,7 @@ components:
       default: 7d
       description: |
         The time period for which you want to get the latest headlines.
+
         Format examples:
         - `7d`: Last seven days
         - `30d`: Last 30 days
@@ -4792,8 +4600,7 @@ components:
     IsPaidContent:
       type: boolean
       description: |
-        If false, returns only articles that have publicly available complete content. 
-        Some publishers partially block content, so this setting ensures that only full articles are retrieved.
+        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       example: false
 
     Links:
@@ -4803,14 +4610,13 @@ components:
           items:
             type: string
       description: |
-        The article link or list of article links to search for. 
-        To specify multiple links, use a comma-separated string or an array of strings.
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"https://nytimes.com/article1, https://bbc.com/article2"`
         - `["https://nytimes.com/article1", "https://bbc.com/article2"]`
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: https://nytimes.com/article1
 
     Ids:
@@ -4820,14 +4626,13 @@ components:
           items:
             type: string
       description: |
-        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. 
-        To specify multiple IDs, use a comma-separated string or an array of strings.
+        The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"` 
         - `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`
 
-        **Note**: You can use either the `links` or the `ids` parameter, but not both at the same time.
+        **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
 
     IncludeSimilarDocuments:
@@ -4854,8 +4659,7 @@ components:
     NerName:
       type: string
       description: |
-        The name of person, organization, location, product or other named entity to search for.
-        To specify multiple names use a comma-separated string. 
+        The name of person, organization, location, product or other named entity to search for. To specify multiple names use a comma-separated string. 
 
         Example: `"Tesla, Amazon"`
       example: Tesla,Amazon
@@ -4886,8 +4690,7 @@ components:
         - `"bbc.com, nytimes.com"`
         - `["bbc.com", "nytimes.com"]`
 
-        **Caution**:  When specifying the `source_url` parameter, 
-        you can only use `include_additional_info` as an extra parameter.
+        **Caution**:  When specifying the `source_url` parameter, you can only use `include_additional_info` as an extra parameter.
       example: bbc.com
 
     AggregationBy:
@@ -4911,8 +4714,7 @@ components:
         - Republisher
         - Other
       description: |
-        Filters results based on the news domain type.
-        Possible values are:
+        Filters results based on the news domain type. Possible values are:
         - `Original Content`: Sources that produce their own content.
         - `Aggregator`: Sources that collect content from various other sources.
         - `Press Releases`: Sources primarily publishing press releases.
@@ -4927,8 +4729,7 @@ components:
           items:
             type: string
       description: |
-        Filters results based on the news type.
-        Multiple types can be specified using a comma-separated string or an array of strings.
+        Filters results based on the news type. Multiple types can be specified using a comma-separated string or an array of strings.
 
         Examples:
         - `"General News Outlets,Tech News and Updates"`
@@ -4943,8 +4744,8 @@ components:
       description: |
         If true, includes additional domain information in the response for each article:
         - `is_news_domain`: Boolean indicating if the source is a news domain.
-        - `news_domain_type`: Type of news domain (e.g., "Original Content").
-        - `news_type`: Category of news (e.g., "News and Blogs").
+        - `news_domain_type`: Type of news domain (e.g., `"Original Content"`).
+        - `news_type`: Category of news (e.g., `"News and Blogs"`).
       example: true
 
     IsNewsDomain:
