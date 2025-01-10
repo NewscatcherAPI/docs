@@ -396,28 +396,34 @@ paths:
           in: query
           required: false
           schema:
-            type: string
+            allOf:
+              - $ref: "#/components/schemas/From"
             default: 1 month ago
-          description: |
-            The starting point in time to search from. The publication date of the article is used. 
-            The default time zone is UTC.
-            Available formats:
-            - `YYYY/mm/dd`
-            - `YYYY/mm/dd HH:MM:SS`
-            - English phrases like `1 day ago`.
+            description: |
+              The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
+
+              Formats with examples:
+              - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+              - YYYY-MM-dd: `2024-07-01`
+              - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+              - YYYY/mm/dd: `2024/07/01`
+              - English phrases: `1 day ago`, `today`
         - name: to_
           in: query
           required: false
           schema:
-            type: string
+            allOf:
+              - $ref: "#/components/schemas/To"
             default: now
-          description: |
-            The ending point in time to search up to. The publication date of the article is used. 
-            The default time zone is UTC.
-            Available formats:
-            - `YYYY/mm/dd`
-            - `YYYY/mm/dd HH:MM:SS`
-            - English phrases like `1 day ago`.
+            description: |
+              The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
+
+              Formats with examples:
+              - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+              - YYYY-MM-dd: `2024-07-01`
+              - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+              - YYYY/mm/dd: `2024/07/01`
+              - English phrases: `1 day ago`, `today`
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
@@ -1156,7 +1162,7 @@ components:
 
     ByParseDate:
       description: |
-        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output list for each article.
+        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output for each article object.
       name: by_parse_date
       in: query
       required: false
@@ -2363,23 +2369,31 @@ components:
               links:
                 $ref: "#/components/schemas/Links"
               from_:
-                type: string
+                allOf:
+                  - $ref: "#/components/schemas/From"
                 default: 1 month ago
                 description: |
-                  The starting point in time to search from. The publication date of the article is used. The default time zone is UTC.
-                  Available formats:
-                  - `YYYY/mm/dd`
-                  - `YYYY/mm/dd HH:MM:SS`
-                  - English phrases like `1 day ago`.
+                  The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
+
+                  Formats with examples:
+                  - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+                  - YYYY-MM-dd: `2024-07-01`
+                  - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+                  - YYYY/mm/dd: `2024/07/01`
+                  - English phrases: `1 day ago`, `today`
               to_:
-                type: string
+                allOf:
+                  - $ref: "#/components/schemas/To"
                 default: now
                 description: |
-                  The ending point in time to search up to. The publication date of the article is used. The default time zone is UTC.
-                  Available formats:
-                  - `YYYY/mm/dd`
-                  - `YYYY/mm/dd HH:MM:SS`
-                  - English phrases like `1 day ago`.
+                  The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
+
+                  Formats with examples:
+                  - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
+                  - YYYY-MM-dd: `2024-07-01`
+                  - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
+                  - YYYY/mm/dd: `2024/07/01`
+                  - English phrases: `1 day ago`, `today`
               page:
                 $ref: "#/components/schemas/Page"
               page_size:
@@ -4136,7 +4150,7 @@ components:
       type: boolean
       default: false
       description: |
-        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output list for each article.
+        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output for each article object.
       example: true
 
     IsHeadline:
