@@ -2759,12 +2759,47 @@ components:
           description: The aggregation results.
           type: array
           items:
-            type: object
-            additionalProperties: true
+            $ref: "#/components/schemas/AggregationItem"
         user_input:
           title: User Input
           description: The user input parameters for the search.
           type: object
+
+    AggregationItem:
+      title: Aggregation Item
+      description: |
+        A single item in the aggregations array containing a collection of time-based article counts.
+      required:
+        - aggregation_count
+      type: object
+      properties:
+        aggregation_count:
+          type: array
+          description:
+            Array of time frames and their corresponding article counts
+          items:
+            $ref: "#/components/schemas/TimeFrameCount"
+
+    TimeFrameCount:
+      title: Time Frame Count
+      description: |
+        Represents the article count for a specific time frame.
+      required:
+        - time_frame
+        - article_count
+      type: object
+      properties:
+        time_frame:
+          type: string
+          format: date-time
+          description:
+            The timestamp for the aggregation period in format "YYYY-MM-DD
+            HH:mm:ss"
+          example: "2024-12-31 00:00:00"
+        article_count:
+          type: integer
+          description: The number of articles published during this time frame
+          example: 86
 
     FailedAggregationResponse:
       title: Failed Aggregation Response
