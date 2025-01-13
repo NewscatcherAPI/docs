@@ -4,9 +4,7 @@ info:
   description: |
     Discover, analyze, and leverage location-specific news with unparalleled precision!
 
-    The Local News API provides access to local news articles and related information.
-    It offers advanced search capabilities, including AI-assisted town association, NLP analysis, 
-    and clustering of similar articles.
+    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including AI-assisted town association, NLP analysis, and clustering of similar articles.
 
     ## Key features
 
@@ -448,9 +446,7 @@ components:
           items:
             type: string
       description: |
-        The language(s) of the search. 
-        The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code.
-        To select multiple languages, use a comma-separated string or an array of strings.
+        The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
         Examples:
         - `"en,es"`
@@ -466,9 +462,7 @@ components:
           items:
             type: string
       description: |
-        One or more news sources to narrow down the search. The format must be a domain URL. 
-        Subdomains, such as `finance.yahoo.com`, are also acceptable. 
-        To specify multiple sources, use a comma-separated string or an array of strings.
+        One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable. To specify multiple sources, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"nytimes.com, theguardian.com"`
@@ -482,8 +476,7 @@ components:
           items:
             type: string
       description: |
-        The news sources to exclude from the search.
-        To exclude multiple sources, use a comma-separated string or an array of strings.
+        The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"cnn.com, wsj.com"`
@@ -497,8 +490,7 @@ components:
           items:
             type: string
       description: |
-        The categorical URL(s) to filter your search.
-        To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
+        The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
 
         Examples: 
         - `"wsj.com/politics,wsj.com/tech"`
@@ -510,8 +502,7 @@ components:
       minimum: 1
       default: 1
       description: |
-        The page number to scroll through the results. 
-        This parameter is used to paginate: scroll through results because one API response cannot return more than 1000 articles.
+        The page number to scroll through the results. This parameter is used to paginate: scroll through results because one API response cannot return more than 1000 articles.
       example: 2
 
     PageSize:
@@ -520,16 +511,14 @@ components:
       maximum: 1000
       default: 100
       description: |
-        The number of articles to return per page. 
-        Range: `1` to `1000`.
+        The number of articles to return per page. Range: `1` to `1000`.
       example: 100
 
     ClusteringEnabled:
       type: boolean
       default: false
       description: |
-        Determines whether to group similar articles into clusters.
-        If true, the API returns clustered results.
+        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
 
         To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
@@ -541,8 +530,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles based on their general topic, as determined by NLP analysis.
-        To select multiple themes, use a comma-separated string or an array of strings. 
+        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Finance, Tech"`
@@ -560,8 +548,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis.
-        To specify multiple organizations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Apple, Microsoft"`
@@ -577,8 +564,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis.
-        To specify multiple names, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Elon Musk, Jeff Bezos"`
@@ -594,8 +580,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis.
-        To specify multiple locations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"California, New York"`
@@ -611,9 +596,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, 
-        or location categories. Includes events, nationalities, products, works of art, and more.
-        To specify multiple entities, use a comma-separated string or an array of strings. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. 
 
         Examples: 
         - `"Bitcoin, Blockchain"`
@@ -690,23 +673,20 @@ components:
       type: integer
       minimum: 0
       description: |
-        The minimum number of words an article must contain. 
-        To be used for avoiding articles with small content.
+        The minimum number of words an article must contain. To be used for avoiding articles with small content.
       example: 300
 
     WordCountMax:
       type: integer
       minimum: 0
       description: |
-        The maximum number of words an article can contain. 
-        To be used for avoiding articles with large content.
+        The maximum number of words an article can contain. To be used for avoiding articles with large content.
       example: 1000
 
     IsPaidContent:
       type: boolean
       description: |
-        If false, returns only articles that have publicly available complete content. 
-        Some publishers partially block content, so this setting ensures that only full articles are retrieved.
+        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       example: false
 
     AssociatedTowns:
@@ -714,9 +694,7 @@ components:
       items:
         $ref: "#/components/schemas/TownEntity"
       description: |
-        An array of town entities related to the articles. 
-        Each town entity contains information about a specific town 
-        and the association methods to be used for searching.
+        An array of town entities related to the articles. Each town entity contains information about a specific town and the association methods to be used for searching.
 
         To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
       example:
@@ -732,12 +710,9 @@ components:
       type: boolean
       default: false
       description: |
-        Determines whether to include AI-extracted town names in the search. 
-        If true, the API searches for articles mentioning AI-extracted towns 
-        and towns specified in the `associated_towns` parameter.
+        Determines whether to include AI-extracted town names in the search. If true, the API searches for articles mentioning AI-extracted towns and towns specified in the `associated_towns` parameter.
 
-        **Note**: The `search_in_ai_associated_town` parameter is only available for the `v3_local_news_ai_extraction_nlp` plan.
-        Data for AI-associated towns is only available from September 24, 2024, onwards.
+        **Note**: The `search_in_ai_associated_town` parameter is only available for the `v3_local_news_ai_extraction_nlp` plan. Data for AI-associated towns is only available from September 24, 2024, onwards.
       example: true
 
     ## Town Entity schema: has complete docs, used for the requests.
@@ -750,8 +725,7 @@ components:
         name:
           type: string
           description: |
-            The full name of the town, including the state. 
-            Format must be "City, State". For example, `"San Francisco, California"`.
+            The full name of the town, including the state. Format must be "City, State". For example, `"San Francisco, California"`.
           example: "San Francisco, California"
         ai_validated:
           type: boolean
@@ -769,8 +743,7 @@ components:
               - CITY_STATE_COUNTY_QUERY
               - NEAR_CITY_STATE_QUERY
           description: |
-            An array of strings specifying the association methods used for this town. 
-            These methods determine how the API searches for articles related to this town.
+            An array of strings specifying the association methods used for this town. These methods determine how the API searches for articles related to this town.
 
             Available association methods:
             - `HYPERLOCAL_SOURCES_EXCLUDE_QUERY`: Searches hyperlocal sources, excluding state names and IDs.
@@ -787,8 +760,7 @@ components:
       type: string
       default: "*"
       description: |
-        The keyword(s) to search for in articles. 
-        Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
+        The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
         - For an exact match, use double quotes. For example, `"technology news"`.
         - Use `*` to search for any keyword.
         - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
@@ -806,9 +778,7 @@ components:
           example: 1 day ago
       default: 7 days ago
       description: |
-        The starting point in time to search from. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-09-24T00:00:00`
@@ -830,9 +800,7 @@ components:
           example: 1 day ago
       default: now
       description: |
-        The ending point in time to search up to. 
-        Accepts date-time strings in ISO 8601 format and plain text strings. 
-        The default time zone is UTC. 
+        The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
 
         Formats with examples:
         - YYYY-mm-ddTHH:MM:SS: `2024-09-25T00:00:00`
@@ -849,8 +817,7 @@ components:
       type: string
       default: title,content
       description: |
-        The article fields to search in. 
-        To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. To search in multiple fields, use a comma-separated string. 
 
         Example: `"title, summary"`
 
@@ -877,6 +844,7 @@ components:
       default: 7d
       description: |
         The time period for which you want to get the latest headlines.
+
         Format examples:
         - `7d`: Last seven days
         - `30d`: Last 30 days
@@ -893,9 +861,7 @@ components:
           items:
             type: string
       description: |
-        The countries where the news publisher is located. 
-        The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code.
-        To select multiple countries, use a comma-separated string or an array of strings.
+        The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
         Examples:
         - `"US,CA"`
@@ -912,15 +878,13 @@ components:
           items:
             type: string
       description: |
-        The article link or list of article links to search for. 
-        To specify multiple links, use a comma-separated string or an array of strings. 
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings. 
 
         Examples:
         - `"https://example.com/article1, https://example.com/article2"`
         - `["https://example.com/article1", "https://example.com/article2"]`
 
-        **Note**: You can use the `links` parameter in combination with `ids` or `rss_guids`, 
-        but at least one of these parameters must be provided.
+        **Note**: You can use the `links` parameter in combination with `ids` or `rss_guids`, but at least one of these parameters must be provided.
       example: "https://nytimes.com/article1"
 
     Ids:
@@ -930,15 +894,13 @@ components:
           items:
             type: string
       description: |
-        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. 
-        To specify multiple IDs, use a comma-separated string or an array of strings. 
+        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings. 
 
         Examples:
         - `"1234567890abcdef, abcdef1234567890"`
         - `["1234567890abcdef", "abcdef1234567890"]`
 
-        **Note**: You can use the `ids` parameter in combination with `links` or `rss_guids`, 
-        but at least one of these parameters must be provided.
+        **Note**: You can use the `ids` parameter in combination with `links` or `rss_guids`, but at least one of these parameters must be provided.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
 
     RssGuids:
@@ -948,19 +910,16 @@ components:
           items:
             type: string
       description: |
-        The RSS GUID (Globally Unique Identifier) or list of GUIDs to search for. 
-        To specify multiple GUIDs, use a comma-separated string or an array of strings. 
+        The RSS GUID (Globally Unique Identifier) or list of GUIDs to search for. To specify multiple GUIDs, use a comma-separated string or an array of strings. 
 
-        GUIDs are unique identifiers assigned to RSS feed items. 
-        They are often URLs or other unique strings.
+        GUIDs are unique identifiers assigned to RSS feed items. They are often URLs or other unique strings.
 
         Examples:
         - `"https://example.com/article1,https://example.com/article2"`
         - `["https://example.com/article1", "https://example.com/article2"]`
         - `"1234567890abcdef,abcdef1234567890"`
 
-        **Note**: You can use the `rss_guids` parameter in combination with `links` or `ids`, 
-        but at least one of these parameters must be provided.
+        **Note**: You can use the `rss_guids` parameter in combination with `links` or `ids`, but at least one of these parameters must be provided.
       example: ["https://example.com/article1", "https://example.com/article2"]
 
     # Response schemas
@@ -1006,16 +965,12 @@ components:
     ArticleSearchResponseDto:
       title: Search Response
       description: |
-        The response model for the `Search`, `Latest headlines`, 
-        and `Search by` requests, including search results and metadata.
+        The response model for the `Search`, `Latest headlines`, and `Search by` requests, including search results and metadata.
 
         Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be
-        extracted during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1199,8 +1154,7 @@ components:
             type: number
             format: float
           description: |
-            A dense 1024-dimensional vector representation of the article content, generated using 
-            the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
+            A dense 1024-dimensional vector representation of the article content, generated using the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
 
             **Note**: The `new_embedding` field is only available in the `v3_local_news_nlp_embeddings` subscription plan.
         ner_PER:
@@ -1258,16 +1212,12 @@ components:
     ClusteringSearchResponseDto:
       title: Clustered Search Response
       description: |
-        The response model when clustering is enabled, grouping similar articles
-        into clusters. Applies to the `Search` and `Latest headlines` requests.
+        The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search` and `Latest headlines` requests.
 
         Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be
-        extracted during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1333,7 +1283,7 @@ components:
       title: Cluster Article Result
       description:
         Represents an article within a cluster, extending the
-        ArticleResultEntity with cluster-specific properties.
+        `ArticleResultEntity` with cluster-specific properties.
       allOf:
         - $ref: "#/components/schemas/ArticleResultEntity"
         - type: object
@@ -1358,8 +1308,7 @@ components:
 
         Response field behavior:
         - Required fields are guaranteed to be present and non-null.
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during
-        processing.
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
       type: object
       required:
         - message
