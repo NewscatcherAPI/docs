@@ -144,7 +144,7 @@ paths:
         - $ref: "#/components/parameters/ExcludeDuplicates"
       responses:
         "200":
-          $ref: "#/components/responses/SearchSuccessfulResponse"
+          $ref: "#/components/responses/SearchResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -172,7 +172,7 @@ paths:
         $ref: "#/components/requestBodies/SearchRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchSuccessfulResponse"
+          $ref: "#/components/responses/SearchResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -241,7 +241,7 @@ paths:
         - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
-          $ref: "#/components/responses/LatestHeadlinesSuccessfulResponse"
+          $ref: "#/components/responses/SearchResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -268,7 +268,7 @@ paths:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/LatestHeadlinesSuccessfulResponse"
+          $ref: "#/components/responses/SearchResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -337,7 +337,7 @@ paths:
         - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
-          $ref: "#/components/responses/AuthorsSearchResponse"
+          $ref: "#/components/responses/AuthorsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -364,7 +364,7 @@ paths:
         $ref: "#/components/requestBodies/AuthorsRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/AuthorsSearchResponse"
+          $ref: "#/components/responses/AuthorsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -428,7 +428,7 @@ paths:
         - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
-          $ref: "#/components/responses/SearchLinkSuccessfulResponse"
+          $ref: "#/components/responses/SearchLinkResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -453,7 +453,7 @@ paths:
         $ref: "#/components/requestBodies/SearchLinkRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchLinkSuccessfulResponse"
+          $ref: "#/components/responses/SearchLinkResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -522,7 +522,7 @@ paths:
         - $ref: "#/components/parameters/CustomTags"
       responses:
         "200":
-          $ref: "#/components/responses/SearchSimilarSuccessfulResponse"
+          $ref: "#/components/responses/SearchSimilarResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -550,7 +550,7 @@ paths:
         $ref: "#/components/requestBodies/SearchSimilarRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchSimilarSuccessfulResponse"
+          $ref: "#/components/responses/SearchSimilarResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -589,7 +589,7 @@ paths:
         - $ref: "#/components/parameters/ToRank"
       responses:
         "200":
-          $ref: "#/components/responses/SourcesSuccessfulResponse"
+          $ref: "#/components/responses/SourcesResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -617,7 +617,7 @@ paths:
         $ref: "#/components/requestBodies/SourcesRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SourcesSuccessfulResponse"
+          $ref: "#/components/responses/SourcesResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -742,7 +742,7 @@ paths:
       operationId: Subscription_get
       responses:
         "200":
-          $ref: "#/components/responses/SubscriptionSuccessfulResponse"
+          $ref: "#/components/responses/SubscriptionResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -765,7 +765,7 @@ paths:
       operationId: Subscription_post
       responses:
         "200":
-          $ref: "#/components/responses/SubscriptionSuccessfulResponse"
+          $ref: "#/components/responses/SubscriptionResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2557,35 +2557,22 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/AggregationResponse"
-              - $ref: "#/components/schemas/FailedAggregationResponse"
+              - $ref: "#/components/schemas/AggregationCountResponseDto"
+              - $ref: "#/components/schemas/FailedAggregationCountResponseDto"
 
-    AuthorsSearchResponse:
+    AuthorsResponse:
       description:
-        A successful search response contains a list of authors that match the
+        Authors search response containing a list of authors that match the
         search criteria. If no matches, returns a failded search response
         according to the defined schema.
       content:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/dto__responses__author_search_response__SearchResponse"
-              - $ref: "#/components/schemas/dto__responses__author_search_response__FailedSearchResponse"
+              - $ref: "#/components/schemas/SearchResponseDto"
+              - $ref: "#/components/schemas/FailedAuthorsResponseDto"
 
-    LatestHeadlinesSuccessfulResponse:
-      description:
-        A successful response containing the latest headlines since the
-        specified time, with optional clustering information.
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - $ref: "#/components/schemas/LatestHeadlinesResponse"
-              - allOf:
-                  - $ref: "#/components/schemas/ClusteringSearchResponse"
-                title: Clustered Latest Headlines Response
-
-    SearchSuccessfulResponse:
+    SearchResponse:
       description:
         A successful response containing articles that match the specified
         search criteria. The response may include clustering information if
@@ -2594,19 +2581,19 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
-              - $ref: "#/components/schemas/ClusteringSearchResponse"
+              - $ref: "#/components/schemas/SearchResponseDto"
+              - $ref: "#/components/schemas/ClusteredSearchResponseDto"
 
-    SearchLinkSuccessfulResponse:
+    SearchLinkResponse:
       description:
         A successful response containing articles that match the provided links
         or IDs.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/dto__responses__search_response__SearchResponse"
+            $ref: "#/components/schemas/SearchResponseDto"
 
-    SearchSimilarSuccessfulResponse:
+    SearchSimilarResponse:
       description:
         A successful response containing articles similar to the specified
         query. If no matches, returns a failded search response according to the
@@ -2615,26 +2602,26 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/dto__responses__more_like_this_response__SearchResponse"
-              - $ref: "#/components/schemas/dto__responses__more_like_this_response__FailedSearchResponse"
+              - $ref: "#/components/schemas/SearchSimilarResponseDto"
+              - $ref: "#/components/schemas/FailedSearchSimilarResponseDto"
 
-    SourcesSuccessfulResponse:
+    SourcesResponse:
       description:
         A successful response containing a list of news sources that match the
         specified criteria.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SourceResponse"
+            $ref: "#/components/schemas/SourcesResponseDto"
 
-    SubscriptionSuccessfulResponse:
+    SubscriptionResponse:
       description:
         A successful response containing information about the current
         subscription plan.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SubscriptionResponse"
+            $ref: "#/components/schemas/SubscriptionResponseDto"
 
     # Errors
     BadRequestError:
@@ -2713,29 +2700,22 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # Aggregation related schemas for the response object
-    AggregationResponse:
-      title: Aggregation Response
-      description: |
-        The response model for a successful `Aggregation count` request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
+    BaseSearchResponseDto:
+      title: Base Search Response
+      description:
+        The base response model containing common fields for search operations.
       required:
         - status
         - total_hits
         - page
         - total_pages
         - page_size
-        - aggregations
-        - user_input
       type: object
       properties:
         status:
           title: Status
           description: The status of the response.
           type: string
-          default: ok
         total_hits:
           title: Total Hits
           description:
@@ -2754,16 +2734,61 @@ components:
           title: Page Size
           description: The number of articles per page.
           type: integer
-        aggregations:
-          title: Aggregations
-          description: The aggregation results.
+
+    ArticlesDto:
+      title: Articles
+      description: A list of articles matching the search criteria.
+      type: array
+      items:
+        $ref: "#/components/schemas/ArticleEntity"
+      default: []
+
+    ClusteredArticlesDto:
+      type: object
+      required:
+        - clusters_count
+        - clusters
+      properties:
+        clusters_count:
+          title: Clusters Count
+          type: integer
+          description: The number of clusters in the search results.
+        clusters:
           type: array
+          description: A list of clusters found in the search results.
           items:
-            $ref: "#/components/schemas/AggregationItem"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+            $ref: "#/components/schemas/ClusterEntity"
+
+    # Simple generic user input schema
+    UserInputDto:
+      type: object
+      description: The user input parameters for the request.
+      additionalProperties: true
+
+    # Aggregation related schemas for the response object
+    AggregationCountResponseDto:
+      title: Aggregation Response
+      description: |
+        The response model for a successful `Aggregation count` request. Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
+        during processing.
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            aggregations:
+              title: Aggregations
+              description:
+                The aggregation results. Can be either a dictionary or a list of
+                dictionaries.
+              oneOf:
+                - $ref: "#/components/schemas/AggregationItem"
+                - type: array
+                  items:
+                    $ref: "#/components/schemas/AggregationItem"
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
     AggregationItem:
       title: Aggregation Item
@@ -2801,164 +2826,34 @@ components:
           description: The number of articles published during this time frame
           example: 86
 
-    FailedAggregationResponse:
+    FailedAggregationCountResponseDto:
       title: Failed Aggregation Response
       description: The response model for a failed `Aggregation count` request.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description:
-            The status of the response, indicating no matches were found.
-          type: string
-          default: No matches for your search.
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria, always
-            zero in this case.
-          type: integer
-          default: 0
-        page:
-          title: Page
-          description:
-            The current page number of the results, always zero in this case.
-          type: integer
-          default: 0
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria,
-            always zero in this case.
-          type: integer
-          default: 0
-        page_size:
-          title: Page Size
-          description:
-            The number of articles per page, always zero in this case.
-          type: integer
-          default: 0
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
-    # Authors related schemas for the response object
-    dto__responses__author_search_response__SearchResponse:
-      title: Authors Search Response
-      description: |
-        The response model for a successful `Authors` search request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` 
-        is only available with NLP-enabled subscription plans.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - articles
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: ok
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-        articles:
-          title: Articles
-          description: A list of articles matching the search criteria.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
-
-    dto__responses__author_search_response__FailedSearchResponse:
+    FailedAuthorsResponseDto:
       title: Failed Authors Search Response
       description: The response model for a failed `Authors` search request.
-      required:
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description:
-            The status of the response, indicating no matches were found.
-          type: string
-          default: No Matches for your search
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria, always
-            zero in this case.
-          type: integer
-          default: 0
-        page:
-          title: Page
-          description:
-            The current page number of the results, always zero in this case.
-          type: integer
-          default: 0
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria,
-            always zero in this case.
-          type: integer
-          default: 0
-        page_size:
-          title: Page Size
-          description:
-            The number of articles per page, always zero in this case.
-          type: integer
-          default: 0
-        articles:
-          title: Articles
-          description: An empty list of articles, as no matches were found.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
-          default: []
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              title: Articles
+              description: An empty list of articles, as no matches were found.
+              type: array
+              items:
+                type: object
+              default: []
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
-    dto__responses__author_search_response__ArticleResult:
+    ArticleEntity:
       title: Article Object
       description:
         The data model representing a single article in the search results.
@@ -3128,7 +3023,7 @@ components:
               type: string
           default: {}
         additional_domain_info:
-          $ref: "#/components/schemas/dto_AdditionalDomainInfo"
+          $ref: "#/components/schemas/AdditionalDomainInfoEntity"
 
     NlpDataEntity:
       type: object
@@ -3221,7 +3116,7 @@ components:
             type: integer
             description: The number of times this entity appears in the article.
 
-    dto_AdditionalDomainInfo:
+    AdditionalDomainInfoEntity:
       title: Additional Domain Info
       description: Additional information about the domain of the article.
       type: object
@@ -3244,8 +3139,8 @@ components:
         news_domain_type: "Original Content"
 
     # Latest Headlines related schemas for the response object
-    ClusteringSearchResponse:
-      title: Clustered Search Response
+    ClusteredSearchResponseDto:
+      title: Clustered Articles Response
       description: |
         The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search` and `Latest headlines` requests. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
@@ -3256,57 +3151,16 @@ components:
         is the zero-based index of the article object (0, 1, 2, etc.).
         - The `nlp` property within the article object `articles[n].nlp` 
         is only available with NLP-enabled subscription plans.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - clusters_count
-        - clusters
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: ok
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-        clusters_count:
-          title: Clusters Count
-          description: The number of clusters in the search results.
-          type: integer
-        clusters:
-          title: Clusters
-          description: A list of clusters found in the search results.
-          type: array
-          items:
-            $ref: "#/components/schemas/Cluster"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - $ref: "#/components/schemas/ClusteredArticlesDto"
+        - type: object
+          properties:
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
-    Cluster:
-      title: Cluster
+    ClusterEntity:
+      title: Cluster Entity
       description: The data model representing a single cluster of articles.
       required:
         - cluster_id
@@ -3327,123 +3181,28 @@ components:
           description: A list of articles in the cluster.
           type: array
           items:
-            $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
-
-    LatestHeadlinesResponse:
-      title: Latest Headlines Response
-      description: |
-        The response model for the `Latest headlines` request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
-        - To access article properties in the `articles` response array, 
-        use array index notation. For example, `articles[n].title`, where `n` 
-        is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` 
-        is only available with NLP-enabled subscription plans.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - articles
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: ok
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-        articles:
-          title: Articles
-          description: A list of articles matching the search criteria.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+            $ref: "#/components/schemas/ArticleEntity"
 
     # Search related schemas for the response object
-    # Note: Search and Latest Headlines share the ClusteringSearchResponse and Cluster schemas.
-    dto__responses__search_response__SearchResponse:
+    SearchResponseDto:
       title: Search Response
       description: |
-        The response model for the `Search` and `Search by link` requests, including search results and metadata. Response field behavior:
+        The response model for the search requests applies to the `Search`, `Latest Headlines`, `Search by link`, and `Authors` endpoints. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
         - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
         - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - articles
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: ok
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-        articles:
-          title: Articles
-          description: A list of articles matching the search criteria.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__author_search_response__ArticleResult"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
-
-    # Search by Link related schema for the response object is the same as for Search:
-    # $ref: '#/components/schemas/dto__responses__search_response__SearchResponse'
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              $ref: "#/components/schemas/ArticlesDto"
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
     # Search Similar related schemas for the response object
-    dto__responses__more_like_this_response__SearchResponse:
+    SearchSimilarResponseDto:
       title: Search Similar Response
       description: |
         The response model for a successful `Search similar` request. Response field behavior:
@@ -3451,263 +3210,55 @@ components:
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
         - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
         - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
-      required:
-        - status
-        - total_hits
-        - page
-        - total_pages
-        - page_size
-        - articles
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: ok
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-        articles:
-          title: Articles
-          description: A list of articles matching the search criteria.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__more_like_this_response__ArticleResult"
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              title: Articles
+              description: A list of articles matching the search criteria.
+              type: array
+              items:
+                $ref: "#/components/schemas/SimilarArticleEntity"
+              default: []
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
-    dto__responses__more_like_this_response__FailedSearchResponse:
+    FailedSearchSimilarResponseDto:
       title: Failed Search Similar Response
-      description: The response model for a failed `Search similar` request.
-      required:
-        - user_input
-      type: object
-      properties:
-        status:
-          title: Status
-          description: The status of the response.
-          type: string
-          default: No Matches for your search
-        total_hits:
-          title: Total Hits
-          description:
-            The total number of articles matching the search criteria.
-          type: integer
-          default: 0
-        page:
-          title: Page
-          description: The current page number of the results.
-          type: integer
-          default: 0
-        total_pages:
-          title: Total Pages
-          description:
-            The total number of pages available for the given search criteria.
-          type: integer
-          default: 0
-        page_size:
-          title: Page Size
-          description: The number of articles per page.
-          type: integer
-          default: 0
-        articles:
-          title: Articles
-          description: A list of articles matching the search criteria.
-          type: array
-          items:
-            $ref: "#/components/schemas/dto__responses__more_like_this_response__ArticleResult"
-          default: []
-        user_input:
-          title: User Input
-          description: The user input parameters for the search.
-          type: object
+      description: The response model for a failed `Search Similar` request.
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              title: Articles
+              description: An empty list of articles, as no matches were found.
+              type: array
+              items:
+                type: object
+              default: []
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
 
-    dto__responses__more_like_this_response__ArticleResult:
+    SimilarArticleEntity:
       title: Search Similar Article Object
       description: |
         The data model for an article result in the `Search similar` articles request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
         - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
         during processing.
-      required:
-        - title
-        - link
-        - domain_url
-        - full_domain_url
-        - parent_url
-        - rank
-        - content
-        - id
-        - score
-      type: object
-      properties:
-        title:
-          title: Title
-          description: The title of the article.
-          type: string
-        author:
-          title: Author
-          description: The author of the article.
-          type: string
-        authors:
-          title: Authors
-          description: The list of authors of the article.
-          anyOf:
-            - type: array
+      allOf:
+        - $ref: "#/components/schemas/ArticleEntity"
+        - type: object
+          properties:
+            similar_documents:
+              title: Similar Documents
+              description: A list of documents similar to the article.
+              type: array
               items:
-                type: string
-            - type: string
-        journalists:
-          title: Journalists
-          description: The list of journalists of the article.
-          anyOf:
-            - type: array
-              items:
-                type: string
-            - type: string
-        published_date:
-          title: Published Date
-          description: The date when the article was published.
-          type: string
-        published_date_precision:
-          title: Published Date Precision
-          description: The precision of the published date.
-          type: string
-        updated_date:
-          title: Updated Date
-          description: The date when the article was last updated.
-          type: string
-        updated_date_precision:
-          title: Updated Date Precision
-          description: The precision of the updated date.
-          type: string
-        parse_date:
-          title: Parse Date
-          description: The date when the article was parsed.
-          type: string
-        link:
-          title: Link
-          description: The link to the article.
-          type: string
-        domain_url:
-          title: Domain Url
-          description: The domain URL of the article.
-          type: string
-        full_domain_url:
-          title: Full Domain Url
-          description: The full domain URL of the article.
-          type: string
-        name_source:
-          title: Name Source
-          description: The source name of the article.
-          type: string
-        is_headline:
-          title: Is Headline
-          description: Indicates if the article is a headline.
-          type: boolean
-        paid_content:
-          title: Paid Content
-          description: Indicates if the article is paid content.
-          type: boolean
-        parent_url:
-          title: Parent URL
-          description: The categorical URL of the article.
-          type: string
-        country:
-          title: Country
-          description: The country of the article.
-          type: string
-        rights:
-          title: Rights
-          description: The rights associated with the article.
-          type: string
-        rank:
-          title: Rank
-          description: The rank of the article.
-          type: integer
-        media:
-          title: Media
-          description: The media associated with the article.
-          type: string
-        language:
-          title: Language
-          description: The language of the article.
-          type: string
-        description:
-          title: Description
-          description: The description of the article.
-          type: string
-        content:
-          title: Content
-          description: The content of the article.
-          type: string
-        word_count:
-          title: Word Count
-          description: The word count of the article.
-          type: integer
-          default: 0
-        is_opinion:
-          title: Is Opinion
-          description: Indicates if the article is an opinion piece.
-          type: boolean
-        twitter_account:
-          title: Twitter Account
-          description: The Twitter account associated with the article.
-          type: string
-        all_links:
-          title: All Links
-          description: All the links mentioned in the article.
-          anyOf:
-            - type: array
-              items:
-                type: string
-            - type: string
-          default: []
-        all_domain_links:
-          title: All Domain Links
-          description: All the domain links mentioned in the article.
-          anyOf:
-            - type: array
-              items:
-                type: string
-            - type: string
-          default: []
-        nlp:
-          $ref: "#/components/schemas/NlpDataEntity"
-        id:
-          title: Id
-          description: The unique identifier of the article.
-          type: string
-        score:
-          title: Score
-          description: The relevance score of the article.
-          type: number
-        similar_documents:
-          title: Similar Documents
-          description: A list of similar documents to the article.
-          type: array
-          items:
-            $ref: "#/components/schemas/SimilarDocument"
-          default: []
+                $ref: "#/components/schemas/SimilarDocument"
+              default: []
 
     SimilarDocument:
       title: Similar Document
@@ -3739,7 +3290,7 @@ components:
           type: string
 
     # Sources related schemas for the response object
-    SourceResponse:
+    SourcesResponseDto:
       title: Sources Response
       description: |
         The response model for a successful `Sources` request retrieving news sources matching the specified criteria. Response field behavior:
@@ -3831,7 +3382,7 @@ components:
         news_type: "General News Outlets"
 
     # Subscription related schema for the response object
-    SubscriptionResponse:
+    SubscriptionResponseDto:
       title: Subscription Response
       description: |
         Response model for a successful `Subscription` request retrieving plan information. Response field behavior:
