@@ -3657,11 +3657,7 @@ components:
             - type: string
           default: []
         nlp:
-          title: Nlp
-          description:
-            The natural language processing data associated with the article.
-          type: object
-          default: {}
+          $ref: "#/components/schemas/NlpDataEntity"
         id:
           title: Id
           description: The unique identifier of the article.
