@@ -1,0 +1,434 @@
+---
+title: Events API quickstart guide
+sidebarTitle: Quickstart
+description: Get started with Events API.
+---
+
+Transform news into actionable business intelligence with structured events!
+This guide helps you make your first API calls to retrieve structured event data
+from news articles.
+
+## Before you start
+
+Before you begin, make sure you meet these prerequisites:
+
+- An API key (obtain one through our
+  [pricing page](https://www.newscatcherapi.com/pricing))
+- Basic understanding of REST APIs
+- Your preferred HTTP client (curl, Postman, etc.)
+- Basic knowledge of JSON data format
+
+## Get started
+
+<Steps>
+  <Step title="Verify your API access">
+
+    First, let's verify that your API key works and the service is available:
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X GET https://events.newscatcherapi.xyz/api/health \
+      -H "x-api-token: YOUR_API_KEY"
+    ```
+
+    ```python Python
+    import requests
+
+    API_KEY = "YOUR_API_KEY"
+    URL = "https://events.newscatcherapi.xyz/api/health"
+    HEADERS = {"x-api-token": API_KEY}
+
+    try:
+        response = requests.get(URL, headers=HEADERS)
+        response.raise_for_status()
+        print(response.json())
+    except requests.exceptions.RequestException as e:
+        print(f"Health check failed: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY";
+    const URL: string = "https://events.newscatcherapi.xyz/api/health";
+
+    axios
+      .get(URL, {
+        headers: { "x-api-token": API_KEY },
+      })
+      .then((response: AxiosResponse) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(`Health check failed: ${error.message}`);
+      });
+    ```
+
+    </CodeGroup>
+
+    You should receive:
+
+    ```json
+    {
+      "message": "Healthy"
+    }
+    ```
+
+  </Step>
+  <Step title="Check your subscription details">
+
+    Check what event types are available to you:
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X GET https://events.newscatcherapi.xyz/api/subscription \
+      -H "x-api-token: YOUR_API_KEY"
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY"
+    URL = "https://events.newscatcherapi.xyz/api/subscription"
+    HEADERS = {"x-api-token": API_KEY}
+
+    try:
+        response = requests.get(URL, headers=HEADERS)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch subscription details: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY";
+    const URL: string = "https://events.newscatcherapi.xyz/api/subscription";
+
+    axios
+      .get(URL, {
+        headers: { "x-api-token": API_KEY },
+      })
+      .then((response: AxiosResponse) => {
+        console.log(JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        console.error(`Failed to fetch subscription details: ${error.message}`);
+      });
+    ```
+
+    </CodeGroup>
+
+    This shows your subscription status and available events:
+
+    ```json
+    {
+      "active": true,
+      "calls_per_seconds": 5,
+      "plan_name": "events",
+      "usage_assigned_calls": 10000,
+      "usage_remaining_calls": 9959,
+      "additional_info": {
+        "available_events": ["layoff", "data_breach", "fundraising"]
+      }
+    }
+    ```
+
+  </Step>
+
+  <Step title="Explore event fields">
+
+    Before searching, let's see what fields are available for a specific event type:
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X GET "https://events.newscatcherapi.xyz/api/events_info/get_event_fields?event_type=layoff" \
+      -H "x-api-token: YOUR_API_KEY"
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY"
+    URL = "https://events.newscatcherapi.xyz/api/events_info/get_event_fields"
+    HEADERS = {"x-api-token": API_KEY}
+    PARAMS = {"event_type": "layoff"}
+
+    try:
+        response = requests.get(URL, headers=HEADERS, params=PARAMS)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch event fields: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY";
+    const URL: string =
+      "https://events.newscatcherapi.xyz/api/events_info/get_event_fields";
+
+    const params = {
+      event_type: "layoff",
+    };
+
+    axios
+      .get(URL, {
+        headers: { "x-api-token": API_KEY },
+        params: params,
+      })
+      .then((response: AxiosResponse) => {
+        console.log(JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        console.error(`Failed to fetch event fields: ${error.message}`);
+      });
+    ```
+
+    </CodeGroup>
+
+    This returns the fields you can use in your searches:
+
+    ```json
+    {
+      "message": "Success",
+      "count": 12,
+      "fields": {
+        "company_name": {
+          "type": "String",
+          "usage_example": {
+            "company_name": "String Example"
+          }
+        },
+        "event_date": {
+          "type": "Date",
+          "usage_example": {
+            "event_date": {
+              "lte": "now",
+              "gte": "now-1d"
+            }
+          }
+        }
+        // ... other fields
+      }
+    }
+    ```
+
+  </Step>
+  <Step title="Search for events">
+
+    Now let's perform your first event search:
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X POST https://events.newscatcherapi.xyz/api/events_search \
+      -H "x-api-token: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "event_type": "layoff",
+        "attach_articles_data": true,
+        "additional_filters": {
+            "extraction_date": {
+                "gte": "now-1d",
+                "lte": "now"
+            },
+            "layoff.number_of_people_laid_off": {
+                "gte": 10000
+            }
+        }
+    }'
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY"
+    URL = "https://events.newscatcherapi.xyz/api/events_search"
+    HEADERS = {
+        "x-api-token": API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "event_type": "layoff",
+        "attach_articles_data": True,
+        "additional_filters": {
+            "extraction_date": {
+                "gte": "now-1d",
+                "lte": "now"
+            },
+            "layoff.number_of_people_laid_off": {
+                "gte": 10000
+            }
+        }
+    }
+
+    try:
+        response = requests.post(URL, headers=HEADERS, json=payload)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to search events: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY";
+    const URL: string = "https://events.newscatcherapi.xyz/api/events_search";
+
+    interface SearchPayload {
+      event_type: string;
+      attach_articles_data: boolean;
+      additional_filters: {
+        extraction_date: {
+          gte: string;
+          lte: string;
+        };
+        "layoff.number_of_people_laid_off": {
+          gte: number;
+        };
+      };
+    }
+
+    const payload: SearchPayload = {
+      event_type: "layoff",
+      attach_articles_data: true,
+      additional_filters: {
+        extraction_date: {
+          gte: "now-1d",
+          lte: "now",
+        },
+        "layoff.number_of_people_laid_off": {
+          gte: 10000,
+        },
+      },
+    };
+
+    axios
+      .post(URL, payload, {
+        headers: {
+          "x-api-token": API_KEY,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((response: AxiosResponse) => {
+        console.log(JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        console.error(`Failed to search events: ${error.message}`);
+      });
+    ```
+
+    </CodeGroup>
+
+    This searches for recent large layoff events, with over 10,000 people affected,
+    from the last 24 hours. The response will include structured event data and
+    associated articles.
+
+    <Expandable title="Layoff event response example">
+
+      ```json
+      {
+        "message": "Success",
+        "count": 2,
+        "events": [
+          {
+            "id": "n1jk-pQBvyT_ytpRpzBn",
+            "layoff": {
+              "summary": "The Trump administration is planning large-scale layoffs in the federal workforce, with over 65,000 employees accepting a deferred resignation offer. The layoffs are part of the 'Department of Government Efficiency' Workforce Optimization Initiative, which aims to reduce the federal workforce by 5% to 10%.",
+              "layoff_reason": "Workforce optimization initiative",
+              "max_number_of_people_laid_off": 65000,
+              "how_much_related": "Excellent",
+              "is_relevant_for_real_estate": false,
+              "location": [
+                {
+                  "country": "United States",
+                  "city": "Washington",
+                  "raw_location": "Washington, DC",
+                  "county": "District of Columbia",
+                  "state": "Washington"
+                }
+              ],
+              "number_of_people_laid_off": 65000,
+              "percentage_of_people_laid_off": 5,
+              "min_number_of_people_laid_off": 65000
+            },
+            "event_type": "layoff",
+            "global_event_type": "Layoff",
+            "associated_article_ids": ["94496b567dbd387718ab8065dea16c1d"],
+            "extraction_date": "2025-02-12 16:01:16",
+            "event_date": "2021-10-15 00:00:00",
+            "company_name": "Department of Government Efficiency",
+            "articles": [
+              {
+                "link": "https://www.cnn.com/2025/02/12/politics/federal-employees-layoffs-trump/index.html",
+                "id": "94496b567dbd387718ab8065dea16c1d",
+                "title": "DOGE's power expands as federal agencies start planning large-scale layoffs"
+              }
+            ]
+          },
+          {
+            "id": "lFjQ9pQBvyT_ytpR2yrN",
+            "layoff": {
+              "summary": "Meta conducted layoffs on October 10, 2022, affecting 11,000 employees, which is 11% of the company's workforce. The layoffs were a surprise to many employees, including those with strong performance records.",
+              "layoff_reason": "To eliminate underperformers",
+              "max_number_of_people_laid_off": 11000,
+              "how_much_related": "Excellent",
+              "is_relevant_for_real_estate": false,
+              "location": [
+                {
+                  "country": "United States",
+                  "city": "Menlo Park",
+                  "raw_location": "Menlo Park, San Mateo, California, United States",
+                  "county": "San Mateo",
+                  "state": "California"
+                }
+              ],
+              "number_of_people_laid_off": 11000,
+              "percentage_of_people_laid_off": 11,
+              "min_number_of_people_laid_off": 11000
+            },
+            "event_type": "layoff",
+            "global_event_type": "Layoff",
+            "associated_article_ids": ["79f95268b0415c681ecb961f3e371742"],
+            "extraction_date": "2025-02-11 21:01:10",
+            "event_date": "2022-10-10 00:00:00",
+            "company_name": "Meta",
+            "articles": [
+              {
+                "link": "https://digg.com/insider/link/meta-job-cuts-surprise-some-employees-strong-performers",
+                "id": "79f95268b0415c681ecb961f3e371742",
+                "title": "Meta's Job Cuts Surprised Some Employees Who Said They Weren't Low Performers"
+              }
+            ]
+          }
+        ]
+      }
+      ```
+
+      </Expandable>
+
+  </Step>
+</Steps>
+
+## What's next
+
+Now that you've made your first API calls, you can:
+
+- Learn about
+  [Event types and their fields](https://newscatcherapi.com/docs/v3/events/overview/event-types-and-fields)
+- Explore the complete
+  [API reference](https://newscatcherapi.com/docs/v3/events/endpoints/event-fields-get)
+- Set up event monitoring for your specific use case
+
+<Note>Need help? Contact our support team at support@newscatcherapi.com</Note>
