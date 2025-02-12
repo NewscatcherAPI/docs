@@ -159,20 +159,23 @@ paths:
     get:
       tags:
         - Health
-      summary: Health check
-      description: Check if the API is operational
+      summary: Check API health status
+      description: Checks if the API service is operational.
       operationId: getHealth
       responses:
         "200":
-          description: API is operational
+          description: The API service is operational.
           content:
             application/json:
               schema:
                 type: object
+                required:
+                  - message
                 properties:
-                  status:
+                  message:
                     type: string
-                    example: "ok"
+                    description: The health status message.
+                    example: "Healthy"
         "500":
           $ref: "#/components/responses/InternalServerError"
 
