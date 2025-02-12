@@ -235,7 +235,7 @@ components:
               - $ref: "#/components/schemas/FundraisingFieldsResponse"
 
     EventsSearchResponse:
-      description: Search results for events
+      description: Search results containing matched events.
       content:
         application/json:
           schema:
@@ -247,10 +247,15 @@ components:
             properties:
               message:
                 type: string
+                description: The status message of the search operation.
+                example: "Success"
               count:
                 type: integer
+                description: The total number of events returned.
+                example: 25
               events:
                 type: array
+                description: The list of matched events.
                 items:
                   oneOf:
                     - $ref: "#/components/schemas/LayoffEvent"
@@ -637,7 +642,6 @@ components:
                     - $ref: "#/components/schemas/StringFieldType"
                     - description: Company valuation at the time of funding.
 
-    # Base Event Schema
     BaseEvent:
       type: object
       required:
@@ -651,24 +655,144 @@ components:
       properties:
         id:
           type: string
+          description: The unique identifier of the event.
+          example: "n1jk-pQBvyT_ytpRpzBn"
         event_type:
           type: string
+          description: The specific type of the event.
+          enum: [layoff, data_breach, fundraising]
         global_event_type:
           type: string
+          description: The high-level category of the event.
+          enum: [Layoff, DataMonitoring, Finance]
         associated_article_ids:
           type: array
+          description:
+            The identifiers of news articles associated with this event.
           items:
             type: string
         extraction_date:
           type: string
           format: date-time
+          description:
+            The timestamp when the event was extracted from news sources.
         event_date:
           type: string
           format: date-time
+          description: The timestamp when the event occurred.
         company_name:
           type: string
+          description: The name of the company involved in the event.
+        articles:
+          type: array
+          description:
+            The source article data. Only present when attach_articles_data is
+            true in the request.
+          items:
+            $ref: "#/components/schemas/Article"
 
-    # Event-specific response schemas
+    Article:
+      type: object
+      required:
+        - id
+        - title
+        - link
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the article.
+          example: "bdef9020adabf6d39df2d24a94f5bf63"
+        title:
+          type: string
+          description: The title of the article.
+        link:
+          type: string
+          format: uri
+          description: The URL of the article.
+        media:
+          type: string
+          format: uri
+          description: |
+            The URL of the article's featured image. Only present if the article has an associated image.
+
+    LayoffEvent:
+      title: Layoff
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          properties:
+            layoff:
+              type: object
+              required:
+                - number_of_people_laid_off
+                - percentage_of_people_laid_off
+                - min_number_of_people_laid_off
+                - max_number_of_people_laid_off
+                - is_relevant_for_real_estate
+                - summary
+              properties:
+                summary:
+                  type: string
+                  description: The detailed description of the layoff event.
+                max_number_of_people_laid_off:
+                  type: integer
+                  description:
+                    The maximum number of employees affected if a range was
+                    specified.
+                min_number_of_people_laid_off:
+                  type: integer
+                  description:
+                    The minimum number of employees affected if a range was
+                    specified.
+                number_of_people_laid_off:
+                  type: integer
+                  description: The exact number of employees affected.
+                percentage_of_people_laid_off:
+                  type: number
+                  format: float
+                  description: The percentage of total workforce affected.
+                how_much_related:
+                  type: string
+                  enum:
+                    [
+                      "Completely Irrelevant",
+                      "Irrelevant",
+                      "Very Poor",
+                      "Poor",
+                      "Fair",
+                      "Good",
+                      "Very Good",
+                      "Excellent",
+                    ]
+                  description: The relevance rating of the layoff event.
+                is_relevant_for_real_estate:
+                  type: boolean
+                  description:
+                    True if the layoff impacts real estate market; false
+                    otherwise.
+                location:
+                  type: array
+                  description: The locations affected by the layoff.
+                  items:
+                    type: object
+                    properties:
+                      country:
+                        type: string
+                        description: The country where the layoff occurred.
+                      city:
+                        type: string
+                        description: The city where the layoff occurred.
+                      raw_location:
+                        type: string
+                        description:
+                          The unparsed location string from the source.
+                      county:
+                        type: string
+                        description: The county where the layoff occurred.
+                      state:
+                        type: string
+                        description: The state where the layoff occurred.
+
     DataBreachEvent:
       title: Data Breach
       allOf:
@@ -684,21 +808,21 @@ components:
               properties:
                 summary:
                   type: string
-                  description: Summary of the data breach event
+                  description: The detailed description of the data breach.
                 impacted:
                   type: array
+                  description: The types of entities affected by the breach.
                   items:
                     type: string
-                  description: List of entities impacted by the breach
                 data:
                   type: string
-                  description: Description of the breached data
+                  description: The description of compromised data.
                 data_type:
                   type: string
-                  description: Categories of the breached data
+                  description: The classification of compromised data.
                 title:
                   type: string
-                  description: Title of the data breach event
+                  description: The title summarizing the data breach event.
 
     FundraisingEvent:
       title: Fundraising
@@ -708,76 +832,42 @@ components:
           properties:
             fundraising:
               type: object
+              required:
+                - amount
+                - currency
+                - funding_type
               properties:
                 amount:
                   type: number
+                  description: The amount of funding raised.
                 company_description:
                   type: string
+                  description: The description of the funded company.
                 company_legal_name:
                   type: string
+                  description: The legal name of the funded company.
                 funding_type:
                   type: string
+                  description: The type of funding round.
                 currency:
                   type: string
+                  description: The currency of the funding amount in ISO format.
                 founders:
                   type: array
+                  description: The list of company founders.
                   items:
                     type: string
                 investors:
                   type: array
+                  description: The list of investors participating in the round.
                   items:
                     type: string
                 industry:
                   type: string
+                  description: The industry of the funded company.
                 valuation:
                   type: string
-
-    LayoffEvent:
-      title: Layoff
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          properties:
-            layoff:
-              type: object
-              required:
-                - summary
-                - number_of_people_laid_off
-                - percentage_of_people_laid_off
-                - min_number_of_people_laid_off
-                - max_number_of_people_laid_off
-                - is_relevant_for_real_estate
-                - location
-              properties:
-                summary:
-                  type: string
-                max_number_of_people_laid_off:
-                  type: integer
-                min_number_of_people_laid_off:
-                  type: integer
-                number_of_people_laid_off:
-                  type: integer
-                percentage_of_people_laid_off:
-                  type: number
-                how_much_related:
-                  type: string
-                is_relevant_for_real_estate:
-                  type: boolean
-                location:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      country:
-                        type: string
-                      city:
-                        type: string
-                      raw_location:
-                        type: string
-                      county:
-                        type: string
-                      state:
-                        type: string
+                  description: The company valuation at the time of funding.
 
     # Filter Schemas
     DateRangeFilter:
@@ -926,13 +1016,6 @@ components:
         "fundraising.valuation":
           type: string
           description: The valuation of the company at the time of funding.
-
-    # Placeholder for Article schema - used if "attach_articles_data": true
-    Article:
-      type: object
-      description:
-        Article schema to be replaced with the actual implementation from Local
-        News API or News API v3. VALIDATE!
 
     # Events Search Request
 
