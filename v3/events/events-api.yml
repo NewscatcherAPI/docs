@@ -91,7 +91,8 @@ paths:
       tags:
         - Events Search
       summary: Search for events
-      description: Search for events using various parameters and filters
+      description: |
+        Searches for structured event data extracted from news articles. Supports filtering by event type, date ranges, and event-specific fields.
       operationId: searchEvents
       requestBody:
         $ref: "#/components/requestBodies/EventsSearchRequest"
@@ -178,7 +179,7 @@ paths:
 components:
   requestBodies:
     EventsSearchRequest:
-      description: Search parameters for events
+      description: Parameters for searching events.
       required: true
       content:
         application/json:
@@ -192,26 +193,35 @@ components:
               event_type:
                 type: string
                 enum: [layoff, data_breach, fundraising]
+                description: The type of events to retrieve from the database.
               attach_articles_data:
                 type: boolean
+                description:
+                  If true, includes source article data in the response. If
+                  false, returns only event data.
               additional_filters:
                 type: object
-                # Properties depend on event type
+                description:
+                  The event-specific filtering parameters. Required structure
+                  depends on the event_type value.
+                discriminator:
+                  propertyName: event_type
+                  mapping:
+                    layoff: "#/components/schemas/LayoffFilters"
+                    data_breach: "#/components/schemas/DataBreachFilters"
+                    fundraising: "#/components/schemas/FundraisingFilters"
                 oneOf:
                   - $ref: "#/components/schemas/LayoffFilters"
                   - $ref: "#/components/schemas/DataBreachFilters"
                   - $ref: "#/components/schemas/FundraisingFilters"
               additional_article_fields:
                 type: array
+                description:
+                  The additional article fields to include in the response. Only
+                  applicable when attach_articles_data is true.
                 items:
                   type: string
-                example:
-                  [
-                    "description",
-                    "published_date",
-                    "nlp.summary",
-                    "nlp.sentiment",
-                  ]
+                example: ["custom_field"]
 
   responses:
     EventFieldsResponse:
@@ -397,7 +407,7 @@ components:
                 description: Greater than or equal to date
           description: |
             Shows how to use date ranges in search queries.
-            Supports both absolute (YYYY-MM-DD) and relative (now-30d) date formats.
+            Supports both absolute (YYYY-MM-DD) and relative (`now-30d`) date formats.
           example:
             event_date:
               lte: "now"
@@ -772,21 +782,30 @@ components:
     # Filter Schemas
     DateRangeFilter:
       type: object
+      description:
+        A date range filter supporting both absolute and relative date formats.
       properties:
         gte:
           type: string
-          description: Date range in format like "30d", "now-90d"
+          description:
+            The earliest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`30d`, `now-90d`).
         lte:
           type: string
-          description: Date range in format like "now"
+          description:
+            The latest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`now`, `now-30d`).
 
     NumberRangeFilter:
       type: object
+      description: A numeric range filter.
       properties:
         gte:
           type: number
+          description: The minimum value to include in results.
         lte:
           type: number
+          description: The maximum value to include in results.
 
     # Events Filter Schemas
     LayoffFilters:
@@ -795,24 +814,41 @@ components:
       properties:
         company_name:
           type: string
+          description: The name of the company conducting the layoff.
         event_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: The date range when the layoff occurred.
         extraction_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date range when events were extracted from news sources.
         "layoff.how_much_related":
           type: string
+          description: The relevance rating of the layoff event.
         "layoff.layoff_reason":
           type: string
+          description: The stated reason for the layoff.
         "layoff.location":
           type: string
+          description: The location where the layoff occurred.
         "layoff.max_number_of_people_laid_off":
-          $ref: "#/components/schemas/NumberRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The maximum number of affected employees in a range.
         "layoff.min_number_of_people_laid_off":
-          $ref: "#/components/schemas/NumberRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The minimum number of affected employees in a range.
         "layoff.number_of_people_laid_off":
-          $ref: "#/components/schemas/NumberRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The exact number of employees affected.
         "layoff.percentage_of_people_laid_off":
-          $ref: "#/components/schemas/NumberRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The percentage of workforce affected by the layoff.
 
     DataBreachFilters:
       title: Data Breach
@@ -820,20 +856,31 @@ components:
       properties:
         company_name:
           type: string
+          description: The name of the company affected by the data breach.
         event_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: The date range when the breach occurred.
         extraction_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date range when events were extracted from news sources.
         "data_breach.data":
           type: string
+          description: The type of data compromised in the breach.
         "data_breach.data_type":
           type: string
+          description: The classification of compromised data.
         "data_breach.impacted":
           type: string
+          description: The type of entities affected by the breach.
         "data_breach.summary":
           type: string
+          description: The text to match in the breach summary.
         "data_breach.title":
           type: string
+          description: The text to match in the breach title.
 
     FundraisingFilters:
       title: Fundraising
@@ -841,28 +888,44 @@ components:
       properties:
         company_name:
           type: string
+          description: The name of the company receiving funding.
         event_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: The date range when the fundraising occurred.
         extraction_date:
-          $ref: "#/components/schemas/DateRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date range when events were extracted from news sources.
         "fundraising.amount":
-          $ref: "#/components/schemas/NumberRangeFilter"
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The amount of funding raised.
         "fundraising.company_description":
           type: string
+          description: The text to match in the company description.
         "fundraising.company_legal_name":
           type: string
+          description: The legal name of the company.
         "fundraising.currency":
           type: string
+          description: The currency of the funding amount.
         "fundraising.founders":
           type: string
+          description: The names of company founders.
         "fundraising.funding_type":
           type: string
+          description: The type of funding round.
         "fundraising.industry":
           type: string
+          description: The industry of the company.
         "fundraising.investors":
           type: string
+          description: The names of investors.
         "fundraising.valuation":
           type: string
+          description: The valuation of the company at the time of funding.
 
     # Placeholder for Article schema - used if "attach_articles_data": true
     Article:
