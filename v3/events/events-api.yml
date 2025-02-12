@@ -450,6 +450,7 @@ components:
 
     # Event-specific Fields Responses
     LayoffFieldsResponse:
+      title: Layoff Fields
       allOf:
         - $ref: "#/components/schemas/BaseFieldsResponse"
         - type: object
@@ -462,31 +463,61 @@ components:
                 - extraction_date
               properties:
                 company_name:
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company that conducted the layoff.
                 event_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the layoff occurred.
                 extraction_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
                 "layoff.how_much_related":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Relevance rating of the layoff event.
                 "layoff.is_relevant_for_real_estate":
-                  $ref: "#/components/schemas/UnknownFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/UnknownFieldType"
+                    - description:
+                        Indicates if the layoff impacts real estate market.
                 "layoff.layoff_reason":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Stated reason for the layoff.
                 "layoff.location":
-                  $ref: "#/components/schemas/UnknownFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/UnknownFieldType"
+                    - description: Location where the layoff occurred.
                 "layoff.max_number_of_people_laid_off":
-                  $ref: "#/components/schemas/NumberFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Maximum number of employees affected in a range.
                 "layoff.min_number_of_people_laid_off":
-                  $ref: "#/components/schemas/NumberFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Minimum number of employees affected in a range.
                 "layoff.number_of_people_laid_off":
-                  $ref: "#/components/schemas/NumberFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Exact number of employees affected.
                 "layoff.percentage_of_people_laid_off":
-                  $ref: "#/components/schemas/NumberFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Percentage of workforce affected.
                 "layoff.summary":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Summary text of the layoff event.
 
     DataBreachFieldsResponse:
+      title: Data Breach Fields
       allOf:
         - $ref: "#/components/schemas/BaseFieldsResponse"
         - type: object
@@ -499,23 +530,42 @@ components:
                 - extraction_date
               properties:
                 company_name:
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company affected by the data breach.
                 event_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the data breach occurred.
                 extraction_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
                 "data_breach.data":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of data that was compromised.
                 "data_breach.data_type":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Classification of compromised data.
                 "data_breach.impacted":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of entities affected by the breach.
                 "data_breach.summary":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Summary text of the data breach event.
                 "data_breach.title":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Title of the data breach event.
 
     FundraisingFieldsResponse:
+      title: Fundraising Fields
       allOf:
         - $ref: "#/components/schemas/BaseFieldsResponse"
         - type: object
@@ -528,29 +578,54 @@ components:
                 - extraction_date
               properties:
                 company_name:
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Name of the company that received funding.
                 event_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the fundraising occurred.
                 extraction_date:
-                  $ref: "#/components/schemas/DateFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
                 "fundraising.amount":
-                  $ref: "#/components/schemas/NumberFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Amount of funding raised.
                 "fundraising.company_description":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Description of the funded company.
                 "fundraising.company_legal_name":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Legal name of the funded company.
                 "fundraising.currency":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Currency of the funding amount.
                 "fundraising.founders":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Names of company founders.
                 "fundraising.funding_type":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of funding round.
                 "fundraising.industry":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Industry of the funded company.
                 "fundraising.investors":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Names of investors.
                 "fundraising.valuation":
-                  $ref: "#/components/schemas/StringFieldType"
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Company valuation at the time of funding.
 
     # Base Event Schema
     BaseEvent:
