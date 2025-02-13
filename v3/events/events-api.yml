@@ -723,46 +723,216 @@ components:
             - First article: `events.articles[0]`
             - Second article: `events.articles[1]`
 
-            By default, each article object only includes basic article information (`id`, `title`, `link`, and `media`).
-
-            To request additional fields, include them in the `additional_article_fields` array parameter when making a search request.
+            **Note**: To request more fields, add them to the `additional_article_fields` array in the search request.
           items:
-            $ref: "#/components/schemas/Article"
-          example:
-            - id: "bdef9020adabf6d39df2d24a94f5bf63"
-              title: "Example Article 1"
-              link: "https://example.com/article1"
-            - id: "7abc1234efgh5678ijkl9012mnop3456"
-              title: "Example Article 2"
-              link: "https://example.com/article2"
+            $ref: "#/components/schemas/ArticleEntity"
 
-    Article:
-      type: object
-      description: |
-        Represents an article associated with an event. By default, object only includes basic article information (`id`, `title`, `link`, and `media`).
-
-        To request additional fields, include them in the `additional_article_fields` array parameter when making a search request.
+    ArticleEntity:
+      title: Article Object
+      description:
+        The data model representing a single article associated with an event.
       required:
-        - id
         - title
         - link
+        - domain_url
+        - full_domain_url
+        - content
+        - id
+      type: object
       properties:
-        id:
-          type: string
-          description: The unique identifier of the article.
-          example: "bdef9020adabf6d39df2d24a94f5bf63"
         title:
-          type: string
+          title: Title
           description: The title of the article.
+          type: string
+        author:
+          title: Author
+          description: The primary author of the article.
+          type: string
+        authors:
+          title: Authors
+          description: A list of authors of the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        journalists:
+          title: Journalists
+          description: A list of journalists associated with the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        published_date:
+          title: Published Date
+          description: The date the article was published.
+          type: string
+        published_date_precision:
+          title: Published Date Precision
+          description: The precision of the published date.
+          type: string
         link:
+          title: Link
+          description: The URL link to the article.
           type: string
-          format: uri
-          description: The URL of the article.
+        domain_url:
+          title: Domain URL
+          description: The domain URL of the article.
+          type: string
+        full_domain_url:
+          title: Full Domain URL
+          description: The full domain URL of the article.
+          type: string
+        name_source:
+          title: Name Source
+          description: The name of the source where the article was published.
+          type: string
+        is_headline:
+          title: Is Headline
+          description: Indicates if the article is a headline.
+          type: boolean
+        paid_content:
+          title: Paid Content
+          description: Indicates if the article is paid content.
+          type: boolean
+        rights:
+          title: Rights
+          description: The rights information for the article.
+          type: string
+        rank:
+          title: Rank
+          description: The rank of the article's source.
+          type: integer
         media:
+          title: Media
+          description: The media associated with the article.
           type: string
-          format: uri
-          description: |
-            The URL of the article's featured image. Only present if the article has an associated image.
+        language:
+          title: Language
+          description: The language in which the article is written.
+          type: string
+        description:
+          title: Description
+          description: A brief description of the article.
+          type: string
+        content:
+          title: Content
+          description: The content of the article.
+          type: string
+        word_count:
+          title: Word Count
+          description: The word count of the article.
+          type: integer
+          default: 0
+        is_opinion:
+          title: Is Opinion
+          description: Indicates if the article is an opinion piece.
+          type: boolean
+        twitter_account:
+          title: Twitter Account
+          description: The Twitter account associated with the article.
+          type: string
+        all_links:
+          title: All Links
+          description: A list of all URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        all_domain_links:
+          title: All Domain Links
+          description: A list of all domain URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        nlp:
+          $ref: "#/components/schemas/NlpDataEntity"
+        id:
+          title: ID
+          description: The unique identifier for the article.
+          type: string
+        extraction_data:
+          title: Extraction Data
+          description:
+            Article extraction metadata, containing information such as parent
+            URL of the article source.
+          type: object
+          properties:
+            parent_url:
+              type: string
+              description: The categorical URL of the article source.
+
+    NlpDataEntity:
+      type: object
+      default: {}
+      description: Natural Language Processing data for the article.
+      properties:
+        theme:
+          type: array
+          items:
+            type: string
+          description: The themes or categories identified in the article.
+        summary:
+          type: string
+          description: A brief AI-generated summary of the article content.
+        sentiment:
+          $ref: "#/components/schemas/SentimentScores"
+        ner_PER:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for person entities (individuals' names).
+        ner_ORG:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for organization entities (company names,
+            institutions).
+        ner_MISC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for miscellaneous entities (events,
+            nationalities, products).
+        ner_LOC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for location entities (cities, countries,
+            geographic features).
+
+    SentimentScores:
+      type: object
+      description: Sentiment scores for the article's title and content.
+      properties:
+        title:
+          type: number
+          format: float
+          description: The sentiment score for the article title (-1.0 to 1.0).
+        content:
+          type: number
+          format: float
+          description:
+            The sentiment score for the article content (-1.0 to 1.0).
+
+    NamedEntityList:
+      type: array
+      description: A list of named entities identified in the article.
+      items:
+        type: object
+        properties:
+          entity_name:
+            type: string
+            description: The name of the entity identified in the article.
+          count:
+            type: integer
+            description: The number of times this entity appears in the article.
 
     LayoffEvent:
       title: Layoff
