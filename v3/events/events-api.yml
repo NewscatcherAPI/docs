@@ -953,41 +953,70 @@ components:
       properties:
         company_name:
           type: string
-          description: The name of the company conducting the layoff.
+          description:
+            The name of the company that conducted or is conducting the layoffs.
         event_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
-            - description: The date range when the layoff occurred.
+            - description: |
+                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
         extraction_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
             - description:
-                The date range when events were extracted from news sources.
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM-DD) and relative dates.
         "layoff.how_much_related":
           type: string
-          description: The relevance rating of the layoff event.
+          description:
+            The relevance rating of the layoff event to real estate market
+            trends.
+          enum:
+            [
+              "Completely Irrelevant",
+              "Irrelevant",
+              "Very Poor",
+              "Poor",
+              "Fair",
+              "Good",
+              "Very Good",
+              "Excellent",
+            ]
+        "layoff.is_relevant_for_real_estate":
+          type: string
+          description:
+            True if the layoff impacts real estate market; false otherwise.
+          enum: ["true", "false"]
         "layoff.layoff_reason":
           type: string
-          description: The stated reason for the layoff.
+          description: The stated reason provided for the layoff.
         "layoff.location":
           type: string
-          description: The location where the layoff occurred.
+          description: The location details of where the layoff occurred.
         "layoff.max_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The maximum number of affected employees in a range.
+            - description: |
+                The maximum number of employees affected when a range is
+                specified.
         "layoff.min_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The minimum number of affected employees in a range.
+            - description: |
+                The minimum number of employees affected when a range is
+                specified.
         "layoff.number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The exact number of employees affected.
+            - description: The exact number of employees affected by the layoff.
         "layoff.percentage_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The percentage of workforce affected by the layoff.
+            - description: |
+                The percentage of total workforce affected by the layoff.
+        "layoff.summary":
+          type: string
+          description: The detailed description of the layoff event.
 
     DataBreachFilters:
       title: Data Breach
