@@ -1062,47 +1062,56 @@ components:
       properties:
         company_name:
           type: string
-          description: The name of the company receiving funding.
+          description: |
+            The name of the company that was funded (e.g., Tesla, SpaceX).
         event_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
-            - description: The date range when the fundraising occurred.
+            - description: |
+                The date when the fundraising occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
         extraction_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
-            - description:
-                The date range when events were extracted from news sources.
+            - description: |
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM/DD) and relative dates.
         "fundraising.amount":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The amount of funding raised.
+            - description: |
+                The amount raised by the company in digits (e.g., 1000000, 1000000000).
         "fundraising.company_description":
           type: string
-          description: The text to match in the company description.
+          description: The description of the company that was funded.
         "fundraising.company_legal_name":
           type: string
-          description: The legal name of the company.
+          description: |
+            The legal name of the company that was funded (e.g., Tesla Inc, SpaceX Inc).
         "fundraising.currency":
           type: string
-          description: The currency of the funding amount.
+          description: |
+            The currency of the raised amount in ISO format (e.g., USD, EUR).
         "fundraising.founders":
           type: string
-          description: The names of company founders.
+          description: The names of the company founders, up to 50 entries.
         "fundraising.funding_type":
           type: string
-          description: The type of funding round.
+          description: |
+            The type of funding round (e.g., Seed, Series A, Series B, Series C, Series D, Series E, Pre-Seed, Grant, Bridge Round, Series Unknown, State Bonding, Bonding).
         "fundraising.industry":
           type: string
-          description: The industry of the company.
+          description: The industry sector of the funded company.
         "fundraising.investors":
           type: string
-          description: The names of investors.
+          description: |
+            The names of the investors participating in the funding round, up to
+            50 entries.
         "fundraising.valuation":
           type: string
-          description: The valuation of the company at the time of funding.
+          description: |
+            The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
 
     # Events Search Request
-
     SubscriptionResponseDto:
       title: Subscription Response
       description: |
