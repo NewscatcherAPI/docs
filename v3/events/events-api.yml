@@ -1028,27 +1028,33 @@ components:
         event_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
-            - description: The date range when the breach occurred.
+            - description: |
+                The date when the data breach occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
         extraction_date:
           allOf:
             - $ref: "#/components/schemas/DateRangeFilter"
-            - description:
-                The date range when events were extracted from news sources.
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM/DD) and relative dates.
         "data_breach.data":
           type: string
-          description: The type of data compromised in the breach.
+          description: |
+            The description of leaked data (e.g., Customer Phone Numbers, Customer Email Addresses, Customer Passwords).
         "data_breach.data_type":
           type: string
-          description: The classification of compromised data.
+          description: |
+            The type of leaked data (e.g., technical, financial, personal, health, credentials).
         "data_breach.impacted":
           type: string
-          description: The type of entities affected by the breach.
+          description: |
+            The category of entities affected by the breach (e.g., Clients, Customers, Employees, Users).
         "data_breach.summary":
           type: string
-          description: The text to match in the breach summary.
+          maxLength: 500
+          description: |
+            The detailed description of the data breach event, up to 500 characters.
         "data_breach.title":
           type: string
-          description: The text to match in the breach title.
+          description: The title of the data breach event.
 
     FundraisingFilters:
       title: Fundraising
