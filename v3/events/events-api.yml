@@ -478,23 +478,24 @@ components:
               gte: 100
               lte: 1000
 
-    UnknownFieldType:
+    Location:
       type: object
-      required:
-        - type
-        - usage_example
       properties:
-        type:
+        country:
           type: string
-          enum: [Unknown]
-          description: Indicates a field with special handling requirements
-        usage_example:
-          type: object
-          additionalProperties:
-            type: string
-          description: Shows how to use this special field type
-          example:
-            special_field: "example value"
+          description: The country where the event occurred.
+        city:
+          type: string
+          description: The city where the event occurred.
+        raw_location:
+          type: string
+          description: The unparsed location string from the source.
+        county:
+          type: string
+          description: The county where the event occurred.
+        state:
+          type: string
+          description: The state where the event occurred.
 
     # Event-specific Fields Responses
     LayoffFieldsResponse:
@@ -529,17 +530,17 @@ components:
                     - $ref: "#/components/schemas/StringFieldType"
                     - description: Relevance rating of the layoff event.
                 "layoff.is_relevant_for_real_estate":
-                  allOf:
-                    - $ref: "#/components/schemas/UnknownFieldType"
-                    - description:
-                        Indicates if the layoff impacts real estate market.
+                  type: string
+                  description: |
+                    Indicates if the layoff impacts real estate market.
+                  enum: ["true", "false"]
                 "layoff.layoff_reason":
                   allOf:
                     - $ref: "#/components/schemas/StringFieldType"
                     - description: Stated reason for the layoff.
                 "layoff.location":
                   allOf:
-                    - $ref: "#/components/schemas/UnknownFieldType"
+                    - $ref: "#/components/schemas/Location"
                     - description: Location where the layoff occurred.
                 "layoff.max_number_of_people_laid_off":
                   allOf:
@@ -991,26 +992,9 @@ components:
                     otherwise.
                 location:
                   type: array
-                  description: The locations affected by the layoff.
+                  description: The locations where the layoff occurred.
                   items:
-                    type: object
-                    properties:
-                      country:
-                        type: string
-                        description: The country where the layoff occurred.
-                      city:
-                        type: string
-                        description: The city where the layoff occurred.
-                      raw_location:
-                        type: string
-                        description:
-                          The unparsed location string from the source.
-                      county:
-                        type: string
-                        description: The county where the layoff occurred.
-                      state:
-                        type: string
-                        description: The state where the layoff occurred.
+                    $ref: "#/components/schemas/Location"
 
     DataBreachEvent:
       title: Data Breach
@@ -1161,8 +1145,10 @@ components:
           type: string
           description: The stated reason provided for the layoff.
         "layoff.location":
-          type: string
-          description: The location details of where the layoff occurred.
+          allOf:
+            - $ref: "#/components/schemas/Location"
+            - description: |
+                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
         "layoff.max_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
