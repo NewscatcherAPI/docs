@@ -1,0 +1,152 @@
+# Fundraising events
+
+Events API extracts structured information about company funding rounds from
+news articles. This guide explains how to discover available search fields,
+construct search requests, and understand the returned data.
+
+## Available search fields
+
+Get available search fields for fundraising events using the discovery endpoint:
+
+```bash
+GET /api/events_info/get_event_fields?event_type=fundraising
+```
+
+The endpoint returns the following fields that can be used for filtering search
+results. All fields are optional for search requests.
+
+### Common fields
+
+- `company_name`: The name of the company that received funding.
+- `event_date`: The date when the fundraising occurred.
+- `extraction_date`: The date when the event was extracted from news sources.
+
+### Fundraising-specific fields
+
+- `fundraising.amount`: The amount of funding raised by the company.
+- `fundraising.currency`: The currency of the funding amount. Possible values:
+  USD, EUR, etc.
+- `fundraising.funding_type`: The type of funding round. Possible values: Seed,
+  Series A, Series B, Series C, etc.
+- `fundraising.company_description`: The description of the funded company's
+  business and activities.
+- `fundraising.company_legal_name`: The legal name of the company that received
+  funding.
+- `fundraising.industry`: The industry sector in which the funded company
+  operates.
+- `fundraising.founders`: The names of the company's founding team members.
+- `fundraising.investors`: The names of investors who participated in the
+  funding round.
+- `fundraising.valuation`: The company's valuation at the time of funding.
+
+## Searching for events
+
+Use the search endpoint to find fundraising events:
+
+```bash
+POST /api/events_search
+```
+
+### Basic request structure
+
+```json
+{
+  "event_type": "fundraising",
+  "attach_articles_data": true,
+  "additional_filters": {
+    // search criteria using available fields
+  }
+}
+```
+
+### Using search fields
+
+Search by dates (absolute or relative):
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "event_date": {
+      "gte": "2024-01-01",
+      "lte": "2024-02-01"
+    }
+  }
+}
+```
+
+Search by amount and funding type:
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "fundraising.amount": {
+      "gte": 1000000
+    },
+    "fundraising.funding_type": "Series A",
+    "fundraising.currency": "USD"
+  }
+}
+```
+
+Search by industry and investors:
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "fundraising.industry": "AI",
+    "fundraising.investors": "Specific Investor Name"
+  }
+}
+```
+
+## Understanding the response
+
+The API returns matched events in this structure:
+
+```json
+{
+  "message": "Success",
+  "count": 97,
+  "events": [
+    {
+      "id": "event-id",
+      "event_type": "fundraising",
+      "global_event_type": "Finance",
+      "associated_article_ids": ["article-id-1", "article-id-2"],
+      "extraction_date": "2025-02-13 16:00:43",
+      "event_date": "2025-02-13 00:00:00",
+      "company_name": "Company Name",
+      "fundraising": {
+        "amount": 1000000,
+        "currency": "USD",
+        "funding_type": "Series A",
+        "company_description": "Description of the company and its activities",
+        "company_legal_name": "Company Legal Name Inc",
+        "industry": "Technology",
+        "founders": ["Founder Name 1", "Founder Name 2"],
+        "investors": ["Investor Name 1", "Investor Name 2"],
+        "valuation": "10000000",
+        "summary": "Brief description of the funding round",
+        "title": "Title of the funding announcement"
+      }
+    }
+  ]
+}
+```
+
+## Best practices
+
+1. Use date filtering to track funding trends in specific time periods.
+2. Combine amount and funding type filters to find specific investment stages.
+3. Search by industry and funding type to monitor sector-specific investment
+   patterns.
+4. Use investor names to track specific investment firms' activities.
+
+## See also
+
+- [Parameter types and formats](https://newscatcherapi.com/docs/v3/events/overview/parameter-types-and-formats)
+- [Working with articles](https://newscatcherapi.com/docs/v3/events/overview/working-with-articles)
+- [API reference](https://newscatcherapi.com/docs/v3/events/endpoints/search-events-post)
