@@ -1,0 +1,198 @@
+---
+title: Parameter formats
+sidebarTitle: Parameter formats
+description:
+---
+
+Events API supports several parameter types for filtering events. This guide
+explains available parameter formats and provides examples of their usage. For a
+complete list of available parameters for each event type, see the
+[API reference](https://newscatcherapi.com/docs/v3/events/endpoints/search-events-post)
+or use the `/events_info/get_event_fields` endpoint.
+
+## Parameter types
+
+### Numeric parameters
+
+Use numeric parameters to filter by quantities or measurements.
+
+Format:
+
+```json
+{
+  "additional_filters": {
+    "parameter_name": {
+      "gte": 100,
+      "lte": 1000
+    }
+  }
+}
+```
+
+- `gte`: Greater than or equal to value
+- `lte`: Less than or equal to value
+
+Example - finding layoffs affecting 100-1000 employees:
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "layoff.number_of_people_laid_off": {
+      "gte": 100,
+      "lte": 1000
+    }
+  }
+}
+```
+
+### String parameters
+
+Use string parameters to filter by text values. Accepts either a single string
+or an array of strings.
+
+Single string format:
+
+```json
+{
+  "additional_filters": {
+    "parameter_name": "value"
+  }
+}
+```
+
+Multiple values format:
+
+```json
+{
+  "additional_filters": {
+    "parameter_name": ["value1", "value2"]
+  }
+}
+```
+
+Example - filtering fundraising events by funding type:
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "fundraising.funding_type": "Series A"
+  }
+}
+```
+
+Example - filtering by multiple investor names:
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "fundraising.investors": ["Investor 1", "Investor 2"]
+  }
+}
+```
+
+### Date parameters
+
+Use date parameters to filter by time ranges. Supports both absolute dates and
+relative formats.
+
+Format:
+
+```json
+{
+  "additional_filters": {
+    "parameter_name": {
+      "gte": "date_value",
+      "lte": "date_value"
+    }
+  }
+}
+```
+
+Supported date formats:
+
+- Absolute dates: "YYYY-MM-DD"
+- Relative dates: "now", "now-30d"
+
+Example - events from last 30 days:
+
+```json
+{
+  "additional_filters": {
+    "event_date": {
+      "gte": "now-30d",
+      "lte": "now"
+    }
+  }
+}
+```
+
+Example - events in a specific date range:
+
+```json
+{
+  "additional_filters": {
+    "event_date": {
+      "gte": "2024-01-01",
+      "lte": "2024-02-01"
+    }
+  }
+}
+```
+
+### Location parameters
+
+Use location parameters to filter by geographic information.
+
+Format:
+
+```json
+{
+  "additional_filters": {
+    "parameter_name": {
+      "country": "Country Name",
+      "state": "State Name",
+      "city": "City Name",
+      "county": "County Name"
+    }
+  }
+}
+```
+
+All location fields are optional. Use only the fields needed for filtering.
+
+Example - filtering layoffs in a specific state:
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "layoff.location": {
+      "state": "California"
+    }
+  }
+}
+```
+
+## Combining parameters
+
+Combine multiple parameters to create more specific filters:
+
+```json
+{
+  "event_type": "fundraising",
+  "additional_filters": {
+    "event_date": {
+      "gte": "now-30d",
+      "lte": "now"
+    },
+    "fundraising.amount": {
+      "gte": 1000000
+    },
+    "fundraising.funding_type": "Series A",
+    "fundraising.currency": "USD"
+  }
+}
+```
