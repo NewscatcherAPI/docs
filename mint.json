@@ -66,7 +66,8 @@
     },
     {
       "name": "Events",
-      "url": "events"
+      "version": "v3",
+      "url": "v3/events"
     },
     {
       "name": "Glossary",
@@ -244,6 +245,44 @@
             "v3/local-news/endpoints/search-by/search-articles-by-identifiers-post"
           ]
         }
+      ]
+    },
+    {
+      "group": "Overview",
+      "version": "v3",
+      "pages": [
+        "v3/events/overview/introduction",
+        "v3/events/overview/quickstart",
+        "v3/events/overview/parameter-formats",
+        "v3/events/overview/working-with-articles"
+      ]
+    },
+    {
+      "group": "How to",
+      "version": "v3",
+      "pages": [
+        "v3/events/how-to/request-new-event-type",
+        "v3/events/how-to/build-event-monitoring-system"
+      ]
+    },
+    {
+      "group": "Event types",
+      "version": "v3",
+      "pages": [
+        "v3/events/event-types/layoff",
+        "v3/events/event-types/data-breach",
+        "v3/events/event-types/fundraising"
+      ]
+    },
+    {
+      "group": "Endpoints",
+      "version": "v3",
+      "pages": [
+        "v3/events/endpoints/event-fields-get",
+        "v3/events/endpoints/search-events-post",
+        "v3/events/endpoints/health-get",
+        "v3/events/endpoints/subscription-get",
+        "v3/events/endpoints/subscription-post"
       ]
     },
     {
