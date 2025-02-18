@@ -1,0 +1,197 @@
+---
+title: Search workforce reduction events
+sidebarTitle: Layoff
+description:
+  Access and filter corporate layoff data using search parameters and field
+  criteria.
+---
+
+Events API provides access to structured information about workforce reductions
+extracted from news articles. This guide explains how to discover available
+search fields, construct search requests, and understand the returned data.
+
+## Available search fields
+
+Get available search fields for layoff events using the discovery endpoint:
+
+```bash
+GET /api/events_info/get_event_fields?event_type=layoff
+```
+
+The endpoint returns the following fields that can be used for filtering search
+results. All fields are optional for search requests.
+
+### Common fields
+
+- `company_name`: The name of the company conducting the layoff.
+- `event_date`: The date when the layoff occurred.
+- `extraction_date`: The date when the event was extracted from news sources.
+
+### Layoff-specific fields
+
+- `layoff.number_of_people_laid_off`: The exact number of employees affected by
+  the layoff.
+- `layoff.percentage_of_people_laid_off`: The percentage of total workforce
+  affected by the layoff.
+- `layoff.min_number_of_people_laid_off`: The minimum number of employees
+  affected when a range is specified.
+- `layoff.max_number_of_people_laid_off`: The maximum number of employees
+  affected when a range is specified.
+- `layoff.how_much_related`: The relevance rating of the layoff event. Possible
+  values: "Completely Irrelevant", "Irrelevant", "Very Poor", "Poor", "Fair",
+  "Good", "Very Good", "Excellent". Default: None.
+- `layoff.is_relevant_for_real_estate`: True if the layoff impacts real estate
+  markets; false otherwise.
+- `layoff.layoff_reason`: The stated reason for the layoff.
+- `layoff.location`: The location details of the layoff. Contains fields for
+  country, state, city, and county.
+- `layoff.summary`: A detailed description of the layoff event, including key
+  information about the circumstances and impact.
+
+## Searching for events
+
+Use the search endpoint to find layoff events:
+
+```bash
+POST /api/events_search
+```
+
+### Basic request structure
+
+```json
+{
+  "event_type": "layoff",
+  "attach_articles_data": true,
+  "additional_filters": {
+    // search criteria using available fields
+  }
+}
+```
+
+### Using search fields
+
+Search by dates (absolute or relative):
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "event_date": {
+      "gte": "2024-01-01",
+      "lte": "2024-02-01"
+    },
+    "extraction_date": {
+      "gte": "now-7d",
+      "lte": "now"
+    }
+  }
+}
+```
+
+Search by employee count:
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "layoff.number_of_people_laid_off": {
+      "gte": 1000
+    },
+    "layoff.percentage_of_people_laid_off": {
+      "gte": 10
+    }
+  }
+}
+```
+
+Search by location:
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "layoff.location": {
+      "state": "California"
+    }
+  }
+}
+```
+
+Search by relevance:
+
+```json
+{
+  "event_type": "layoff",
+  "additional_filters": {
+    "layoff.how_much_related": "Excellent",
+    "layoff.is_relevant_for_real_estate": "true"
+  }
+}
+```
+
+## Understanding the response
+
+The API returns matched events in this structure:
+
+```json
+{
+  "message": "Success",
+  "count": 25,
+  "events": [
+    {
+      // Base event fields
+      "id": "event-id",
+      "event_type": "layoff",
+      "global_event_type": "Layoff",
+      "company_name": "Company Name",
+      "event_date": "2025-02-13 00:00:00",
+      "extraction_date": "2025-02-13 19:01:18",
+      "associated_article_ids": ["article-id-1", "article-id-2"],
+
+      // Layoff-specific data
+      "layoff": {
+        "number_of_people_laid_off": 1000,
+        "percentage_of_people_laid_off": 10,
+        "min_number_of_people_laid_off": 1000,
+        "max_number_of_people_laid_off": 1000,
+        "summary": "Event description",
+        "layoff_reason": "Stated reason",
+        "is_relevant_for_real_estate": false,
+        "how_much_related": "Excellent",
+        "location": [
+          {
+            "city": "City Name",
+            "county": "County Name",
+            "state": "State Name",
+            "country": "Country Name",
+            "raw_location": "Original location text"
+          }
+        ]
+      },
+
+      // Article data (when requested)
+      "articles": [
+        // See "Working with articles" guide
+      ]
+    }
+  ]
+}
+```
+
+## Working with articles
+
+See [Working with articles](working-with-articles) for details about article
+data structure and available fields.
+
+## Best practices
+
+1. Use `extraction_date` for monitoring recent layoffs and live tracking.
+2. Use `event_date` for historical analysis and reporting.
+3. Combine multiple filters to narrow results more precisely.
+4. Consider both exact numbers and ranges when searching by employee count.
+
+## See also
+
+- [Parameter types and formats](https://newscatcherapi.com/docs/v3/events/overview/parameter-types-and-formats)
+- [Working with articles](https://newscatcherapi.com/docs/v3/events/overview/working-with-articles)
+- [API reference](https://newscatcherapi.com/docs/v3/events/endpoints/search-events-post)

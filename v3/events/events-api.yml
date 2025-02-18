@@ -1,0 +1,1342 @@
+openapi: 3.0.3
+info:
+  title: Events API
+  description: |
+    The Events API processes news articles to extract structured event data about business activities. It supports public and custom event types with standardized schema and filtering capabilities.
+
+    The API enables querying events using standardized parameters and returns normalized data in a consistent JSON format.
+
+    ## Public events
+
+    Three event types are available to all API users:
+
+    - Layoffs: Company workforce reductions
+    - Data Breaches: Information security incidents
+    - Fundraising: Investment and funding rounds
+
+    Additional event types are available through custom implementations. Contact us for information about custom event development and access.
+
+    ## Core features
+
+    - Event extraction from news articles with field standardization
+    - Entity deduplication across multiple news sources
+    - Date range filtering with relative and absolute dates
+    - Company and location-based filtering
+    - Event-specific field filtering (e.g., layoff size, funding amount)
+    - Optional inclusion of source article data
+  version: 1.0.0
+  termsOfService: https://newscatcherapi.com/terms-of-service
+  contact:
+    name: Maksym Sugonyaka
+    email: maksym@newscatcherapi.com
+    url: https://www.newscatcherapi.com/pricing
+
+externalDocs:
+  description: Find out more about Events API
+  url: https://newscatcherapi.com/docs/v3/events
+
+servers:
+  - url: https://events.newscatcherapi.xyz
+    description: Events API server
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Subscription
+    description:
+      Operations related to subscription management and available events.
+  - name: Events Search
+    description: Operations for searching and retrieving events.
+  - name: Event Fields
+    description: Operations to discover available fields for event types.
+  - name: Health
+    description: API health check operations.
+
+paths:
+  /api/events_info/get_event_fields:
+    get:
+      tags:
+        - Event Fields
+      summary: Get event fields
+      description: Returns available fields for specified event type.
+      operationId: getEventFields
+      parameters:
+        - name: event_type
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Type of event to get fields for
+      responses:
+        "200":
+          $ref: "#/components/responses/EventFieldsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/events_search:
+    post:
+      tags:
+        - Events Search
+      summary: Search for events
+      description: |
+        Searches for structured event data extracted from news articles. Supports filtering by event type, date ranges, and event-specific fields.
+      operationId: searchEvents
+      requestBody:
+        $ref: "#/components/requestBodies/EventsSearchRequest"
+      responses:
+        "200":
+          $ref: "#/components/responses/EventsSearchResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/subscription:
+    get:
+      tags:
+        - Subscription
+      summary: Retrieve subscription plan information
+      description:
+        Returns information about current subscription including available
+        events and usage limits.
+      operationId: getSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/SubscriptionResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags:
+        - Subscription
+      summary: Retrieve subscription plan information
+      description:
+        Returns information about current subscription including available
+        events and usage limits.
+      operationId: postSubscription
+      responses:
+        "200":
+          $ref: "#/components/responses/SubscriptionResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/health:
+    get:
+      tags:
+        - Health
+      summary: Check API health status
+      description: Checks if the API service is operational.
+      operationId: getHealth
+      responses:
+        "200":
+          description: The API service is operational.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    description: The health status message.
+                    example: "Healthy"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  requestBodies:
+    EventsSearchRequest:
+      description: Parameters for searching events.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - event_type
+              - attach_articles_data
+              - additional_filters
+            properties:
+              event_type:
+                type: string
+                enum: [layoff, data_breach, fundraising]
+                description: The type of events to retrieve from the database.
+              attach_articles_data:
+                type: boolean
+                description:
+                  If true, includes source article data in the response. If
+                  false, returns only event data.
+              additional_filters:
+                type: object
+                description:
+                  The event-specific filtering parameters. Required structure
+                  depends on the event_type value.
+                discriminator:
+                  propertyName: event_type
+                  mapping:
+                    layoff: "#/components/schemas/LayoffFilters"
+                    data_breach: "#/components/schemas/DataBreachFilters"
+                    fundraising: "#/components/schemas/FundraisingFilters"
+                oneOf:
+                  - $ref: "#/components/schemas/LayoffFilters"
+                  - $ref: "#/components/schemas/DataBreachFilters"
+                  - $ref: "#/components/schemas/FundraisingFilters"
+              additional_article_fields:
+                type: array
+                description: |
+                  Additional article fields to include in the response. Only applicable when `attach_articles_data` is `true`.
+                items:
+                  type: string
+                  enum:
+                    [
+                      "description",
+                      "content",
+                      "published_date",
+                      "published_date_precision",
+                      "author",
+                      "authors",
+                      "journalists",
+                      "domain_url",
+                      "full_domain_url",
+                      "name_source",
+                      "extraction_data.parent_url",
+                      "is_headline",
+                      "paid_content",
+                      "rights",
+                      "rank",
+                      "is_opinion",
+                      "language",
+                      "word_count",
+                      "twitter_account",
+                      "all_links",
+                      "all_domain_links",
+                      "nlp.theme",
+                      "nlp.summary",
+                      "nlp.sentiment",
+                      "nlp.ner_PER",
+                      "nlp.ner_ORG",
+                      "nlp.ner_MISC",
+                      "nlp.ner_LOC",
+                    ]
+                example: ["description", "published_date", "nlp.summary"]
+
+  responses:
+    EventFieldsResponse:
+      description: Available fields for the specified event type
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/LayoffFieldsResponse"
+              - $ref: "#/components/schemas/DataBreachFieldsResponse"
+              - $ref: "#/components/schemas/FundraisingFieldsResponse"
+
+    EventsSearchResponse:
+      description: Search results containing matched events.
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+              - count
+              - events
+            properties:
+              message:
+                type: string
+                description: The status message of the search operation.
+                example: "Success"
+              count:
+                type: integer
+                description: The total number of events returned.
+                example: 25
+              events:
+                type: array
+                description: The list of matched events.
+                items:
+                  oneOf:
+                    - $ref: "#/components/schemas/LayoffEvent"
+                    - $ref: "#/components/schemas/DataBreachEvent"
+                    - $ref: "#/components/schemas/FundraisingEvent"
+
+    SubscriptionResponse:
+      description:
+        A successful response containing information about the current
+        subscription plan.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SubscriptionResponseDto"
+
+    # Error Responses
+    BadRequestError:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid JSON in request body"
+            status_code: 400
+            status: "Bad request"
+
+    UnauthorizedError:
+      description: Unauthorized - Authentication failed
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid api key: INVALID_API_KEY"
+            status_code: 401
+            status: "Unauthorized"
+
+    ForbiddenError:
+      description: Forbidden - Server refuses action
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message:
+              "Your plan request date range cannot be greater than 400 days"
+            status_code: 403
+            status: "Forbidden"
+
+    RequestTimeoutError:
+      description: Request timeout
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Request timed out after 30 seconds"
+            status_code: 408
+            status: "Request timeout"
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Invalid date format"
+            status_code: 422
+            status: "Validation error"
+
+    RateLimitError:
+      description: Too many requests - Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            message: "Max API requests concurrency reached"
+            status_code: 429
+            status: "Too many requests"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: "Internal Server Error"
+
+  schemas:
+    # Base Fields Response Schema
+    BaseFieldsResponse:
+      type: object
+      required:
+        - message
+        - count
+        - fields
+      properties:
+        message:
+          type: string
+          description:
+            Status message indicating success or providing additional context
+          example: "Success"
+        count:
+          type: integer
+          description: Total number of available fields returned
+          example: 12
+        fields:
+          type: object
+          description:
+            Map of field names to their type definitions and usage examples
+
+    # Field Type Definitions
+    StringFieldType:
+      type: object
+      required:
+        - type
+        - usage_example
+      properties:
+        type:
+          type: string
+          enum: [String]
+          description: Indicates this field accepts string values
+        usage_example:
+          type: object
+          additionalProperties:
+            type: string
+          description: Shows how to use this field in search queries
+          example:
+            company_name: "Tesla"
+
+    DateFieldType:
+      type: object
+      required:
+        - type
+        - usage_example
+      properties:
+        type:
+          type: string
+          enum: [Date]
+          description: Indicates this field accepts date values
+        usage_example:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              lte:
+                type: string
+                description: Less than or equal to date
+              gte:
+                type: string
+                description: Greater than or equal to date
+          description: |
+            Shows how to use date ranges in search queries.
+            Supports both absolute (YYYY-MM-DD) and relative (`now-30d`) date formats.
+          example:
+            event_date:
+              lte: "now"
+              gte: "now-30d"
+
+    NumberFieldType:
+      type: object
+      required:
+        - type
+        - usage_example
+      properties:
+        type:
+          type: string
+          enum: [Number]
+          description: Indicates this field accepts numeric values
+        usage_example:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              lte:
+                type: number
+                description: Less than or equal to value
+              gte:
+                type: number
+                description: Greater than or equal to value
+          description: Shows how to use numeric ranges in search queries
+          example:
+            number_of_people_laid_off:
+              gte: 100
+              lte: 1000
+
+    Location:
+      type: object
+      properties:
+        country:
+          type: string
+          description: The country where the event occurred.
+        city:
+          type: string
+          description: The city where the event occurred.
+        raw_location:
+          type: string
+          description: The unparsed location string from the source.
+        county:
+          type: string
+          description: The county where the event occurred.
+        state:
+          type: string
+          description: The state where the event occurred.
+
+    # Event-specific Fields Responses
+    LayoffFieldsResponse:
+      title: Layoff Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company that conducted the layoff.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the layoff occurred.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "layoff.how_much_related":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Relevance rating of the layoff event.
+                "layoff.is_relevant_for_real_estate":
+                  type: string
+                  description: |
+                    Indicates if the layoff impacts real estate market.
+                  enum: ["true", "false"]
+                "layoff.layoff_reason":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Stated reason for the layoff.
+                "layoff.location":
+                  allOf:
+                    - $ref: "#/components/schemas/Location"
+                    - description: Location where the layoff occurred.
+                "layoff.max_number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Maximum number of employees affected in a range.
+                "layoff.min_number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Minimum number of employees affected in a range.
+                "layoff.number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Exact number of employees affected.
+                "layoff.percentage_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Percentage of workforce affected.
+                "layoff.summary":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Summary text of the layoff event.
+
+    DataBreachFieldsResponse:
+      title: Data Breach Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company affected by the data breach.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the data breach occurred.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "data_breach.data":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of data that was compromised.
+                "data_breach.data_type":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Classification of compromised data.
+                "data_breach.impacted":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of entities affected by the breach.
+                "data_breach.summary":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Summary text of the data breach event.
+                "data_breach.title":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Title of the data breach event.
+
+    FundraisingFieldsResponse:
+      title: Fundraising Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Name of the company that received funding.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the fundraising occurred.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "fundraising.amount":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Amount of funding raised.
+                "fundraising.company_description":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Description of the funded company.
+                "fundraising.company_legal_name":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Legal name of the funded company.
+                "fundraising.currency":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Currency of the funding amount.
+                "fundraising.founders":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Names of company founders.
+                "fundraising.funding_type":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of funding round.
+                "fundraising.industry":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Industry of the funded company.
+                "fundraising.investors":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Names of investors.
+                "fundraising.valuation":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Company valuation at the time of funding.
+
+    BaseEvent:
+      type: object
+      required:
+        - id
+        - event_type
+        - global_event_type
+        - associated_article_ids
+        - extraction_date
+        - event_date
+        - company_name
+      properties:
+        id:
+          type: string
+          description: The unique identifier of the event.
+          example: "n1jk-pQBvyT_ytpRpzBn"
+        event_type:
+          type: string
+          description: The specific type of the event.
+          enum: [layoff, data_breach, fundraising]
+        global_event_type:
+          type: string
+          description: The high-level category of the event.
+          enum: [Layoff, DataMonitoring, Finance]
+        associated_article_ids:
+          type: array
+          description:
+            The identifiers of news articles associated with this event.
+          items:
+            type: string
+        extraction_date:
+          type: string
+          format: date-time
+          description:
+            The timestamp when the event was extracted from news sources.
+        event_date:
+          type: string
+          format: date-time
+          description: The timestamp when the event occurred.
+        company_name:
+          type: string
+          description: The name of the company involved in the event.
+        articles:
+          type: array
+          description: |
+            Array of source articles. Only present when `attach_articles_data` is `true` in the request. Access individual articles using array index, e.g.:
+            - First article: `events.articles[0]`
+            - Second article: `events.articles[1]`
+
+            **Note**: To request more fields, add them to the `additional_article_fields` array in the search request.
+          items:
+            $ref: "#/components/schemas/ArticleEntity"
+
+    ArticleEntity:
+      title: Article Object
+      description:
+        The data model representing a single article associated with an event.
+      required:
+        - title
+        - link
+        - domain_url
+        - full_domain_url
+        - content
+        - id
+      type: object
+      properties:
+        title:
+          title: Title
+          description: The title of the article.
+          type: string
+        author:
+          title: Author
+          description: The primary author of the article.
+          type: string
+        authors:
+          title: Authors
+          description: A list of authors of the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        journalists:
+          title: Journalists
+          description: A list of journalists associated with the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        published_date:
+          title: Published Date
+          description: The date the article was published.
+          type: string
+        published_date_precision:
+          title: Published Date Precision
+          description: The precision of the published date.
+          type: string
+        link:
+          title: Link
+          description: The URL link to the article.
+          type: string
+        domain_url:
+          title: Domain URL
+          description: The domain URL of the article.
+          type: string
+        full_domain_url:
+          title: Full Domain URL
+          description: The full domain URL of the article.
+          type: string
+        name_source:
+          title: Name Source
+          description: The name of the source where the article was published.
+          type: string
+        is_headline:
+          title: Is Headline
+          description: Indicates if the article is a headline.
+          type: boolean
+        paid_content:
+          title: Paid Content
+          description: Indicates if the article is paid content.
+          type: boolean
+        rights:
+          title: Rights
+          description: The rights information for the article.
+          type: string
+        rank:
+          title: Rank
+          description: The rank of the article's source.
+          type: integer
+        media:
+          title: Media
+          description: The media associated with the article.
+          type: string
+        language:
+          title: Language
+          description: The language in which the article is written.
+          type: string
+        description:
+          title: Description
+          description: A brief description of the article.
+          type: string
+        content:
+          title: Content
+          description: The content of the article.
+          type: string
+        word_count:
+          title: Word Count
+          description: The word count of the article.
+          type: integer
+          default: 0
+        is_opinion:
+          title: Is Opinion
+          description: Indicates if the article is an opinion piece.
+          type: boolean
+        twitter_account:
+          title: Twitter Account
+          description: The Twitter account associated with the article.
+          type: string
+        all_links:
+          title: All Links
+          description: A list of all URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        all_domain_links:
+          title: All Domain Links
+          description: A list of all domain URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        nlp:
+          $ref: "#/components/schemas/NlpDataEntity"
+        id:
+          title: ID
+          description: The unique identifier for the article.
+          type: string
+        extraction_data:
+          title: Extraction Data
+          description:
+            Article extraction metadata, containing information such as parent
+            URL of the article source.
+          type: object
+          properties:
+            parent_url:
+              type: string
+              description: The categorical URL of the article source.
+
+    NlpDataEntity:
+      type: object
+      default: {}
+      description: Natural Language Processing data for the article.
+      properties:
+        theme:
+          type: array
+          items:
+            type: string
+          description: The themes or categories identified in the article.
+        summary:
+          type: string
+          description: A brief AI-generated summary of the article content.
+        sentiment:
+          $ref: "#/components/schemas/SentimentScores"
+        ner_PER:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for person entities (individuals' names).
+        ner_ORG:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for organization entities (company names,
+            institutions).
+        ner_MISC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for miscellaneous entities (events,
+            nationalities, products).
+        ner_LOC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description:
+            Named Entity Recognition for location entities (cities, countries,
+            geographic features).
+
+    SentimentScores:
+      type: object
+      description: Sentiment scores for the article's title and content.
+      properties:
+        title:
+          type: number
+          format: float
+          description: The sentiment score for the article title (-1.0 to 1.0).
+        content:
+          type: number
+          format: float
+          description:
+            The sentiment score for the article content (-1.0 to 1.0).
+
+    NamedEntityList:
+      type: array
+      description: A list of named entities identified in the article.
+      items:
+        type: object
+        properties:
+          entity_name:
+            type: string
+            description: The name of the entity identified in the article.
+          count:
+            type: integer
+            description: The number of times this entity appears in the article.
+
+    LayoffEvent:
+      title: Layoff
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          properties:
+            layoff:
+              type: object
+              required:
+                - number_of_people_laid_off
+                - percentage_of_people_laid_off
+                - min_number_of_people_laid_off
+                - max_number_of_people_laid_off
+                - is_relevant_for_real_estate
+                - summary
+              properties:
+                summary:
+                  type: string
+                  description: The detailed description of the layoff event.
+                max_number_of_people_laid_off:
+                  type: integer
+                  description:
+                    The maximum number of employees affected if a range was
+                    specified.
+                min_number_of_people_laid_off:
+                  type: integer
+                  description:
+                    The minimum number of employees affected if a range was
+                    specified.
+                number_of_people_laid_off:
+                  type: integer
+                  description: The exact number of employees affected.
+                percentage_of_people_laid_off:
+                  type: number
+                  format: float
+                  description: The percentage of total workforce affected.
+                how_much_related:
+                  type: string
+                  enum:
+                    [
+                      "Completely Irrelevant",
+                      "Irrelevant",
+                      "Very Poor",
+                      "Poor",
+                      "Fair",
+                      "Good",
+                      "Very Good",
+                      "Excellent",
+                    ]
+                  description: The relevance rating of the layoff event.
+                is_relevant_for_real_estate:
+                  type: boolean
+                  description:
+                    True if the layoff impacts real estate market; false
+                    otherwise.
+                location:
+                  type: array
+                  description: The locations where the layoff occurred.
+                  items:
+                    $ref: "#/components/schemas/Location"
+
+    DataBreachEvent:
+      title: Data Breach
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          properties:
+            data_breach:
+              type: object
+              required:
+                - data
+                - impacted
+                - title
+              properties:
+                summary:
+                  type: string
+                  description: The detailed description of the data breach.
+                impacted:
+                  type: array
+                  description: The types of entities affected by the breach.
+                  items:
+                    type: string
+                data:
+                  type: string
+                  description: The description of compromised data.
+                data_type:
+                  type: string
+                  description: The classification of compromised data.
+                title:
+                  type: string
+                  description: The title summarizing the data breach event.
+
+    FundraisingEvent:
+      title: Fundraising
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          properties:
+            fundraising:
+              type: object
+              required:
+                - amount
+                - currency
+                - funding_type
+              properties:
+                amount:
+                  type: number
+                  description: The amount of funding raised.
+                company_description:
+                  type: string
+                  description: The description of the funded company.
+                company_legal_name:
+                  type: string
+                  description: The legal name of the funded company.
+                funding_type:
+                  type: string
+                  description: The type of funding round.
+                currency:
+                  type: string
+                  description: The currency of the funding amount in ISO format.
+                founders:
+                  type: array
+                  description: The list of company founders.
+                  items:
+                    type: string
+                investors:
+                  type: array
+                  description: The list of investors participating in the round.
+                  items:
+                    type: string
+                industry:
+                  type: string
+                  description: The industry of the funded company.
+                valuation:
+                  type: string
+                  description: The company valuation at the time of funding.
+
+    # Filter Schemas
+    DateRangeFilter:
+      type: object
+      description:
+        A date range filter supporting both absolute and relative date formats.
+      properties:
+        gte:
+          type: string
+          description:
+            The earliest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`30d`, `now-90d`).
+        lte:
+          type: string
+          description:
+            The latest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`now`, `now-30d`).
+
+    NumberRangeFilter:
+      type: object
+      description: A numeric range filter.
+      properties:
+        gte:
+          type: number
+          description: The minimum value to include in results.
+        lte:
+          type: number
+          description: The maximum value to include in results.
+
+    # Events Filter Schemas
+    LayoffFilters:
+      title: Layoff
+      type: object
+      properties:
+        company_name:
+          type: string
+          description:
+            The name of the company that conducted or is conducting the layoffs.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM-DD) and relative dates.
+        "layoff.how_much_related":
+          type: string
+          description:
+            The relevance rating of the layoff event to real estate market
+            trends.
+          enum:
+            [
+              "Completely Irrelevant",
+              "Irrelevant",
+              "Very Poor",
+              "Poor",
+              "Fair",
+              "Good",
+              "Very Good",
+              "Excellent",
+            ]
+        "layoff.is_relevant_for_real_estate":
+          type: string
+          description:
+            True if the layoff impacts real estate market; false otherwise.
+          enum: ["true", "false"]
+        "layoff.layoff_reason":
+          type: string
+          description: The stated reason provided for the layoff.
+        "layoff.location":
+          allOf:
+            - $ref: "#/components/schemas/Location"
+            - description: |
+                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
+        "layoff.max_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The maximum number of employees affected when a range is
+                specified.
+        "layoff.min_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The minimum number of employees affected when a range is
+                specified.
+        "layoff.number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The exact number of employees affected by the layoff.
+        "layoff.percentage_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The percentage of total workforce affected by the layoff.
+        "layoff.summary":
+          type: string
+          description: The detailed description of the layoff event.
+
+    DataBreachFilters:
+      title: Data Breach
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: The name of the company affected by the data breach.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the data breach occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM/DD) and relative dates.
+        "data_breach.data":
+          type: string
+          description: |
+            The description of leaked data (e.g., Customer Phone Numbers, Customer Email Addresses, Customer Passwords).
+        "data_breach.data_type":
+          type: string
+          description: |
+            The type of leaked data (e.g., technical, financial, personal, health, credentials).
+        "data_breach.impacted":
+          type: string
+          description: |
+            The category of entities affected by the breach (e.g., Clients, Customers, Employees, Users).
+        "data_breach.summary":
+          type: string
+          maxLength: 500
+          description: |
+            The detailed description of the data breach event, up to 500 characters.
+        "data_breach.title":
+          type: string
+          description: The title of the data breach event.
+
+    FundraisingFilters:
+      title: Fundraising
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: |
+            The name of the company that was funded (e.g., Tesla, SpaceX).
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the fundraising occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM/DD) and relative dates.
+        "fundraising.amount":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The amount raised by the company in digits (e.g., 1000000, 1000000000).
+        "fundraising.company_description":
+          type: string
+          description: The description of the company that was funded.
+        "fundraising.company_legal_name":
+          type: string
+          description: |
+            The legal name of the company that was funded (e.g., Tesla Inc, SpaceX Inc).
+        "fundraising.currency":
+          type: string
+          description: |
+            The currency of the raised amount in ISO format (e.g., USD, EUR).
+        "fundraising.founders":
+          type: string
+          description: The names of the company founders, up to 50 entries.
+        "fundraising.funding_type":
+          type: string
+          description: |
+            The type of funding round (e.g., Seed, Series A, Series B, Series C, Series D, Series E, Pre-Seed, Grant, Bridge Round, Series Unknown, State Bonding, Bonding).
+        "fundraising.industry":
+          type: string
+          description: The industry sector of the funded company.
+        "fundraising.investors":
+          type: string
+          description: |
+            The names of the investors participating in the funding round, up to
+            50 entries.
+        "fundraising.valuation":
+          type: string
+          description: |
+            The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
+
+    # Events Search Request
+    SubscriptionResponseDto:
+      title: Subscription Response
+      description: |
+        Response model for a successful `Subscription` request retrieving plan information. Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+      required:
+        - active
+        - calls_per_seconds
+        - plan_name
+        - usage_assigned_calls
+        - usage_remaining_calls
+        - additional_info
+      type: object
+      properties:
+        active:
+          title: Active
+          description: Indicates whether the subscription is currently active.
+          type: boolean
+        calls_per_seconds:
+          title: Calls Per Second
+          description:
+            The number of API calls allowed per second under the current plan.
+          type: integer
+        plan_name:
+          title: Plan Name
+          description: The name of the subscription plan.
+          type: string
+        usage_assigned_calls:
+          title: Assigned Calls
+          description:
+            The total number of API calls assigned to the current subscription.
+          type: integer
+        usage_remaining_calls:
+          title: Remaining Calls
+          description:
+            The number of API calls remaining for the current subscription
+            period.
+          type: integer
+        additional_info:
+          title: Additional Information
+          description: Additional plan-specific information and features.
+          type: object
+
+    # Error schema
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A detailed description of the error.
+        status_code:
+          type: integer
+          description: The HTTP status code of the error.
+        status:
+          type: string
+          description: A short description of the status code.
+      required:
+        - message
+        - status_code
+        - status
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-token
+      description: |
+        API Key to authenticate requests.
+
+        To access the API, include your API key in the `x-api-token` header. 
+        To obtain your API key, complete the [form](https://www.newscatcherapi.com/pricing) or contact us directly.

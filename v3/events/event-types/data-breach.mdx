@@ -1,0 +1,149 @@
+---
+title: Discover data breach events
+sidebarTitle: Data breach
+description:
+  Search and analyze data breach events using available fields, parameters, and
+  query filters.
+---
+
+Events API provides access to structured information about data breaches
+extracted from news articles. This guide explains how to discover available
+search fields, construct search requests, and understand the returned data.
+
+## Available search fields
+
+Get available search fields for data breach events using the discovery endpoint:
+
+```bash
+GET /api/events_info/get_event_fields?event_type=data_breach
+```
+
+The endpoint returns the following fields that can be used for filtering search
+results. All fields are optional for search requests.
+
+### Common fields
+
+- `company_name`: The name of the company affected by the data breach.
+- `event_date`: The date when the breach occurred.
+- `extraction_date`: The date when the event was extracted from news sources.
+
+### Data breach-specific fields
+
+- `data_breach.data`: The types of data that were compromised in the breach,
+  such as customer phone numbers or email addresses.
+- `data_breach.data_type`: The classification of the leaked data. Possible
+  values: technical, financial, personal, health, credentials.
+- `data_breach.impacted`: The types of entities affected by the breach, such as
+  clients, customers, or employees.
+- `data_breach.summary`: A detailed description of the data breach event and its
+  impact.
+- `data_breach.title`: The title summarizing the data breach event.
+
+## Searching for events
+
+Use the search endpoint to find data breach events:
+
+```bash
+POST /api/events_search
+```
+
+### Basic request structure
+
+```json
+{
+  "event_type": "data_breach",
+  "attach_articles_data": true,
+  "additional_filters": {
+    // search criteria using available fields
+  }
+}
+```
+
+### Using search fields
+
+Search by dates (absolute or relative):
+
+```json
+{
+  "event_type": "data_breach",
+  "additional_filters": {
+    "event_date": {
+      "gte": "2024-01-01",
+      "lte": "2024-02-01"
+    },
+    "extraction_date": {
+      "gte": "now-7d",
+      "lte": "now"
+    }
+  }
+}
+```
+
+Search by data type:
+
+```json
+{
+  "event_type": "data_breach",
+  "additional_filters": {
+    "data_breach.data_type": "personal",
+    "data_breach.data": "Customer Email Addresses"
+  }
+}
+```
+
+Search by affected entities:
+
+```json
+{
+  "event_type": "data_breach",
+  "additional_filters": {
+    "data_breach.impacted": "Customers"
+  }
+}
+```
+
+## Understanding the response
+
+The API returns matched events in this structure:
+
+```json
+{
+  "message": "Success",
+  "count": 1,
+  "events": [
+    {
+      "id": "event-id",
+      "event_type": "data_breach",
+      "global_event_type": "DataMonitoring",
+      "associated_article_ids": ["article-id-1", "article-id-2"],
+      "extraction_date": "2024-06-17 16:02:28",
+      "event_date": "2022-05-06 00:00:00",
+      "company_name": "Company Name",
+      "data_breach": {
+        "summary": "Detailed description of the breach event and its impact",
+        "impacted": ["Customers", "Employees"],
+        "data": "Types of compromised data (e.g., personal information, financial data)",
+        "data_type": "Classifications like personal, financial, technical",
+        "title": "Brief title describing the breach"
+      }
+    }
+  ]
+}
+```
+
+## Best practices
+
+1. Use `extraction_date` for new breach alerts and `event_date` for analyzing
+   disclosure patterns.
+2. Combine `data_type` and `data` fields to find specific categories of
+   compromised information.
+3. Search across wider date ranges as breaches often get disclosed weeks or
+   months after occurrence.
+4. Use `impacted` field to focus on breaches affecting specific groups like
+   customers or employees.
+
+## See also
+
+- [Parameter types and formats](https://newscatcherapi.com/docs/v3/events/overview/parameter-types-and-formats)
+- [Working with articles](https://newscatcherapi.com/docs/v3/events/overview/working-with-articles)
+- [API reference](https://newscatcherapi.com/docs/v3/events/endpoints/search-events-post)
