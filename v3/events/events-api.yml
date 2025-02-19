@@ -719,12 +719,38 @@ components:
             - First article: `events.articles[0]`
             - Second article: `events.articles[1]`
 
-            **Note**: To request more fields, add them to the `additional_article_fields` array in the search request.
+            By default, only returns id, title, link, and media fields. To request more fields, add them to the `additional_article_fields` array in the search request.
           items:
-            $ref: "#/components/schemas/ArticleEntity"
+            oneOf:
+              - $ref: "#/components/schemas/DefaultArticleEntity"
+              - $ref: "#/components/schemas/ArticleEntity"
+
+    DefaultArticleEntity:
+      title: Default Article Object
+      description: |
+        The default article fields returned when attach_articles_data is true.
+      type: object
+      required:
+        - id
+        - title
+        - link
+        - media
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the article.
+        title:
+          type: string
+          description: The title of the article.
+        link:
+          type: string
+          description: The URL link to the article.
+        media:
+          type: string
+          description: The media associated with the article.
 
     ArticleEntity:
-      title: Article Object
+      title: Complete Article Object
       description:
         The data model representing a single article associated with an event.
       required:
