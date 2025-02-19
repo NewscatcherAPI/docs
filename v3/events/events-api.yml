@@ -982,14 +982,12 @@ components:
                   description: Stated reason for the layoff.
                 max_number_of_people_laid_off:
                   type: integer
-                  description:
-                    The maximum number of employees affected if a range was
-                    specified.
+                  description: |
+                    The maximum number of employees affected if a range was specified.
                 min_number_of_people_laid_off:
                   type: integer
-                  description:
-                    The minimum number of employees affected if a range was
-                    specified.
+                  description: |
+                    The minimum number of employees affected if a range was specified.
                 number_of_people_laid_off:
                   type: integer
                   description: The exact number of employees affected.
@@ -1198,14 +1196,12 @@ components:
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
             - description: |
-                The maximum number of employees affected when a range is
-                specified.
+                The maximum number of employees affected when a range is specified.
         "layoff.min_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
             - description: |
-                The minimum number of employees affected when a range is
-                specified.
+                The minimum number of employees affected when a range is specified.
         "layoff.number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
@@ -1305,8 +1301,7 @@ components:
         "fundraising.investors":
           type: string
           description: |
-            The names of the investors participating in the funding round, up to
-            50 entries.
+            The names of the investors participating in the funding round, up to 50 entries.
         "fundraising.valuation":
           type: string
           description: |
