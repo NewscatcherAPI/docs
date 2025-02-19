@@ -7,10 +7,13 @@ description: Learn about parameter types and formats for filtering event data.
 Events API supports several parameter types for filtering events. This guide
 explains available parameter formats and provides examples of their usage. For a
 complete list of available parameters for each event type, see the
-[API reference](https://newscatcherapi.com/docs/v3/events/endpoints/search-events-post)
-or use the `/events_info/get_event_fields` endpoint.
+[API reference](/v3/events/endpoints).
 
 ## Parameter types
+
+In addition to the standard parameter types like string, array, object, integer,
+and number, the Events API uses custom schemas for numeric, date, and location
+parameters.
 
 ### Numeric parameters
 
@@ -78,17 +81,6 @@ Example - filtering fundraising events by funding type:
   "event_type": "fundraising",
   "additional_filters": {
     "fundraising.funding_type": "Series A"
-  }
-}
-```
-
-Example - filtering by multiple investor names:
-
-```json
-{
-  "event_type": "fundraising",
-  "additional_filters": {
-    "fundraising.investors": ["Investor 1", "Investor 2"]
   }
 }
 ```
