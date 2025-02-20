@@ -190,8 +190,6 @@ components:
             type: object
             required:
               - event_type
-              - attach_articles_data
-              - additional_filters
             properties:
               event_type:
                 type: string
@@ -202,6 +200,7 @@ components:
                 description:
                   If true, includes source article data in the response. If
                   false, returns only event data.
+                default: false
               additional_filters:
                 type: object
                 description:
@@ -685,7 +684,6 @@ components:
         - associated_article_ids
         - extraction_date
         - event_date
-        - company_name
       properties:
         id:
           type: string
@@ -714,9 +712,6 @@ components:
           type: string
           format: date-time
           description: The timestamp when the event occurred.
-        company_name:
-          type: string
-          description: The name of the company involved in the event.
         articles:
           type: array
           description: |
@@ -724,12 +719,38 @@ components:
             - First article: `events.articles[0]`
             - Second article: `events.articles[1]`
 
-            **Note**: To request more fields, add them to the `additional_article_fields` array in the search request.
+            By default, only returns id, title, link, and media fields. To request more fields, add them to the `additional_article_fields` array in the search request.
           items:
-            $ref: "#/components/schemas/ArticleEntity"
+            oneOf:
+              - $ref: "#/components/schemas/DefaultArticleEntity"
+              - $ref: "#/components/schemas/ArticleEntity"
+
+    DefaultArticleEntity:
+      title: Default Article Object
+      description: |
+        The default article fields returned when attach_articles_data is true.
+      type: object
+      required:
+        - id
+        - title
+        - link
+        - media
+      properties:
+        id:
+          type: string
+          description: The unique identifier for the article.
+        title:
+          type: string
+          description: The title of the article.
+        link:
+          type: string
+          description: The URL link to the article.
+        media:
+          type: string
+          description: The media associated with the article.
 
     ArticleEntity:
-      title: Article Object
+      title: Complete Article Object
       description:
         The data model representing a single article associated with an event.
       required:
@@ -940,30 +961,33 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseEvent"
         - type: object
+          required:
+            - company_name
           properties:
+            company_name:
+              type: string
+              description: Name of the company that conducted the layoff.
             layoff:
               type: object
               required:
-                - number_of_people_laid_off
-                - percentage_of_people_laid_off
-                - min_number_of_people_laid_off
-                - max_number_of_people_laid_off
-                - is_relevant_for_real_estate
+                - location
+                - how_much_related
                 - summary
               properties:
                 summary:
                   type: string
                   description: The detailed description of the layoff event.
+                layoff_reason:
+                  type: string
+                  description: Stated reason for the layoff.
                 max_number_of_people_laid_off:
                   type: integer
-                  description:
-                    The maximum number of employees affected if a range was
-                    specified.
+                  description: |
+                    The maximum number of employees affected if a range was specified.
                 min_number_of_people_laid_off:
                   type: integer
-                  description:
-                    The minimum number of employees affected if a range was
-                    specified.
+                  description: |
+                    The minimum number of employees affected if a range was specified.
                 number_of_people_laid_off:
                   type: integer
                   description: The exact number of employees affected.
@@ -1001,13 +1025,14 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseEvent"
         - type: object
+          required:
+            - company_name
           properties:
+            company_name:
+              type: string
+              description: Name of the company affected by the data breach.
             data_breach:
               type: object
-              required:
-                - data
-                - impacted
-                - title
               properties:
                 summary:
                   type: string
@@ -1032,7 +1057,12 @@ components:
       allOf:
         - $ref: "#/components/schemas/BaseEvent"
         - type: object
+          required:
+            - company_name
           properties:
+            company_name:
+              type: string
+              description: Name of the company that received funding.
             fundraising:
               type: object
               required:
@@ -1051,10 +1081,15 @@ components:
                   description: The legal name of the funded company.
                 funding_type:
                   type: string
-                  description: The type of funding round.
+                  description:
+                    The type of funding round (e.g., Seed, Series A, Series B,
+                    Grant, Bridge Round, Series Unknown, State Bonding,
+                    Bonding).
                 currency:
                   type: string
-                  description: The currency of the funding amount in ISO format.
+                  description:
+                    The currency of the funding amount in ISO format (e.g., USD,
+                    EUR).
                 founders:
                   type: array
                   description: The list of company founders.
@@ -1071,6 +1106,14 @@ components:
                 valuation:
                   type: string
                   description: The company valuation at the time of funding.
+                title:
+                  type: string
+                  description:
+                    Title of the funding event, typically 10-12 words.
+                summary:
+                  type: string
+                  description:
+                    Summary of the funding event, up to 500 characters.
 
     # Filter Schemas
     DateRangeFilter:
@@ -1153,14 +1196,12 @@ components:
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
             - description: |
-                The maximum number of employees affected when a range is
-                specified.
+                The maximum number of employees affected when a range is specified.
         "layoff.min_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
             - description: |
-                The minimum number of employees affected when a range is
-                specified.
+                The minimum number of employees affected when a range is specified.
         "layoff.number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
@@ -1260,8 +1301,7 @@ components:
         "fundraising.investors":
           type: string
           description: |
-            The names of the investors participating in the funding round, up to
-            50 entries.
+            The names of the investors participating in the funding round, up to 50 entries.
         "fundraising.valuation":
           type: string
           description: |

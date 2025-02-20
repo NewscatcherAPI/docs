@@ -24,25 +24,20 @@ To include article data in your request, set `attach_articles_data: true`:
 }
 ```
 
-The response includes articles as an array. Access individual articles using
-array indices:
-
-- First article: `events.articles[0]`
-- Second article: `events.articles[1]`
-
 ## Default article fields
 
-For public events (layoff, data breach, fundraising), each article object
-includes 26 default fields:
+By default, when `attach_articles_data` is set to `true`, each article object
+includes four basic fields:
 
-- Required fields:
+- `id`: Unique identifier for the article
+- `title`: Article title
+- `link`: URL link to the article
+- `media`: Media associated with the article
 
-  - `id`: Unique identifier for the article
-  - `title`: Article title
-  - `link`: URL link to the article
-  - `domain_url`: Domain URL of the article
-  - `full_domain_url`: Full domain URL of the article
-  - `content`: Content of the article
+## Available additional fields
+
+The API supports requesting additional article fields through the
+`additional_article_fields` parameter. Available fields include:
 
 - Author information:
 
@@ -55,9 +50,14 @@ includes 26 default fields:
   - `published_date`: Date the article was published
   - `published_date_precision`: Precision of the published date
   - `name_source`: Name of the source where the article was published
-  - `media`: Media associated with the article
   - `language`: Language in which the article is written
   - `description`: Brief description of the article
+  - `content`: Full content of the article
+
+- Domain information:
+
+  - `domain_url`: Domain URL of the article
+  - `full_domain_url`: Full domain URL of the article
 
 - Article attributes:
 
@@ -73,24 +73,23 @@ includes 26 default fields:
 
   - `all_links`: List of all URLs mentioned in the article
   - `all_domain_links`: List of all domain URLs mentioned in the article
-  - `extraction_data`: Article extraction metadata with parent URL information
+  - `extraction_data.parent_url`: Parent URL information from extraction
+    metadata
 
 - Natural language processing:
-  - `nlp`: Contains theme, summary, sentiment, and named entity recognition data
 
-## Custom events
+  - `nlp.theme`: Article themes or categories
+  - `nlp.summary`: AI-generated article summary
+  - `nlp.sentiment`: Sentiment analysis scores
+  - `nlp.ner_PER`: Named entities (persons)
+  - `nlp.ner_ORG`: Named entities (organizations)
+  - `nlp.ner_MISC`: Named entities (miscellaneous)
+  - `nlp.ner_LOC`: Named entities (locations)
 
-Custom event implementations include a minimum set of default fields:
+## Requesting additional fields
 
-- `id`
-- `title`
-- `link`
-
-Request any additional fields using `additional_article_fields`.
-
-## Requesting specific fields
-
-Use `additional_article_fields` to request specific fields:
+Use `additional_article_fields` to request specific fields beyond the default
+ones:
 
 ```json
 {
@@ -100,31 +99,11 @@ Use `additional_article_fields` to request specific fields:
     "description",
     "content",
     "published_date",
-    "published_date_precision",
-    "author",
-    "authors",
-    "journalists",
-    "domain_url",
-    "full_domain_url",
-    "name_source",
-    "extraction_data.parent_url",
-    "is_headline",
-    "paid_content",
-    "rights",
-    "rank",
-    "is_opinion",
-    "language",
-    "word_count",
-    "twitter_account",
-    "all_links",
-    "all_domain_links",
-    "nlp.theme",
     "nlp.summary",
-    "nlp.sentiment",
-    "nlp.ner_PER",
-    "nlp.ner_ORG",
-    "nlp.ner_MISC",
-    "nlp.ner_LOC"
+    "nlp.sentiment"
   ]
 }
 ```
+
+The response will include both the default fields and any additional requested
+fields.
