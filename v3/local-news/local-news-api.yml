@@ -463,19 +463,17 @@ components:
           - proximity_mention
           - ai_extracted
       description: |
-        Methods used to detect location mentions in articles:
+        The location detection methods to filter results by:
+        - `dedicated_source`: Identifies locations based on sources exclusively covering a specific location.
+        - `local_section`: Identifies locations through location-specific sections within larger publications.
+        - `regional_source`: Identifies locations using regional context from state-level publications.
+        - `standard_format`: Identifies locations written in standard formats like "City, State" or "City, County".
+        - `proximity_mention`: Identifies cities and states mentioned within 15 words of each other.
+        - `ai_extracted`: Identifies locations through AI-based content analysis. Requires AI Extraction plan.
 
-        - `dedicated_source`: Articles from news sources exclusively dedicated to a specific location
-        - `local_section`: Articles from location-specific sections of larger publications
-        - `regional_source`: Articles from regional news sources with state-level context
-        - `standard_format`: Articles containing locations in "City, State" or "City, County" format
-        - `proximity_mention`: Articles where city and state names appear within 15 words of each other
-        - `ai_extracted`: Articles with locations identified through AI content analysis (requires AI Extraction plan)
-
-        Multiple methods can be combined. If none is specified, all available methods for your plan are applied.
-
-        For detailed information, see [Location Detection Methods](/v3/local-news/overview/location-detection-methods).
+        For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
       example: ["dedicated_source", "proximity_mention", "ai_extracted"]
+
     Lang:
       oneOf:
         - type: string
@@ -1082,7 +1080,12 @@ components:
             Format is "City, State". For example, "San Francisco, California".
           example: "San Francisco, California"
         detection_methods:
-          $ref: "#/components/schemas/DetectionMethods"
+          allOf:
+            - $ref: "#/components/schemas/DetectionMethods"
+            - description: |
+                Methods used to detect locations in articles.
+
+                For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
 
     NlpDataEntity:
       type: object
