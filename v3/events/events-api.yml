@@ -8,11 +8,12 @@ info:
 
     ## Public events
 
-    Three event types are available to all API users:
+    Four event types are available to all API users:
 
     - Layoffs: Company workforce reductions
     - Data Breaches: Information security incidents
     - Fundraising: Investment and funding rounds
+    - Tariffs: International trade measures and tariff policy changes
 
     Additional event types are available through custom implementations. Contact us for information about custom event development and access.
 
@@ -22,7 +23,7 @@ info:
     - Entity deduplication across multiple news sources
     - Date range filtering with relative and absolute dates
     - Company and location-based filtering
-    - Event-specific field filtering (e.g., layoff size, funding amount)
+    - Event-specific field filtering (e.g., layoff size, funding amount, tariff rates)
     - Optional inclusion of source article data
   version: 1.0.0
   termsOfService: https://newscatcherapi.com/terms-of-service
