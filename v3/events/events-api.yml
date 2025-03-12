@@ -1249,7 +1249,9 @@ components:
           properties:
             company_name:
               type: string
-              description: Name of the company related to the tariff event.
+              nullable: true
+              description: |
+                Name of the company related to the tariff event, if applicable.
             tariffs_v2:
               type: object
               required:
