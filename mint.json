@@ -271,7 +271,8 @@
       "pages": [
         "v3/events/event-types/layoff",
         "v3/events/event-types/data-breach",
-        "v3/events/event-types/fundraising"
+        "v3/events/event-types/fundraising",
+        "v3/events/event-types/tariffs"
       ]
     },
     {
