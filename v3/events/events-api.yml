@@ -193,7 +193,7 @@ components:
             properties:
               event_type:
                 type: string
-                enum: [layoff, data_breach, fundraising]
+                enum: [layoff, data_breach, fundraising, tariffs_v2]
                 description: The type of events to retrieve from the database.
               attach_articles_data:
                 type: boolean
@@ -212,10 +212,12 @@ components:
                     layoff: "#/components/schemas/LayoffFilters"
                     data_breach: "#/components/schemas/DataBreachFilters"
                     fundraising: "#/components/schemas/FundraisingFilters"
+                    tariffs_v2: "#/components/schemas/TariffsFilters"
                 oneOf:
                   - $ref: "#/components/schemas/LayoffFilters"
                   - $ref: "#/components/schemas/DataBreachFilters"
                   - $ref: "#/components/schemas/FundraisingFilters"
+                  - $ref: "#/components/schemas/TariffsFilters"
               additional_article_fields:
                 type: array
                 description: |
@@ -294,6 +296,7 @@ components:
                     - $ref: "#/components/schemas/LayoffEvent"
                     - $ref: "#/components/schemas/DataBreachEvent"
                     - $ref: "#/components/schemas/FundraisingEvent"
+                    - $ref: "#/components/schemas/TariffsEvent"
 
     SubscriptionResponse:
       description:
@@ -1236,6 +1239,164 @@ components:
                   description:
                     Summary of the funding event, up to 500 characters.
 
+    TariffsEvent:
+      title: Tariff
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          required:
+            - company_name
+          properties:
+            company_name:
+              type: string
+              description: Name of the company related to the tariff event.
+            tariffs_v2:
+              type: object
+              required:
+                - imposing_country_name
+                - imposing_country_code
+                - targeted_country_names
+                - targeted_country_codes
+                - measure_type
+                - affected_industries
+                - hs_product_categories
+                - main_tariff_rate
+                - summary
+              properties:
+                imposing_country_name:
+                  type: string
+                  description: The name of the country implementing the tariff.
+                imposing_country_code:
+                  type: string
+                  description:
+                    The ISO 3166-1 alpha-2 code of the country implementing the
+                    tariff.
+                targeted_country_names:
+                  type: array
+                  description: Names of countries targeted by the tariff.
+                  items:
+                    type: string
+                targeted_country_codes:
+                  type: array
+                  description:
+                    ISO 3166-1 alpha-2 codes for countries targeted by the
+                    tariff.
+                  items:
+                    type: string
+                measure_type:
+                  type: string
+                  enum:
+                    [
+                      "new tariff",
+                      "tariff increase",
+                      "tariff reduction",
+                      "retaliatory tariff",
+                      "import ban",
+                      "quota",
+                      "other trade restriction",
+                    ]
+                  description: Type of trade measure being implemented.
+                trigger_event:
+                  type: string
+                  description:
+                    Description of what triggered the retaliatory measure.
+                affected_industries:
+                  type: array
+                  description:
+                    Industries affected by the tariff or trade measure.
+                  items:
+                    type: string
+                    enum:
+                      [
+                        "Energy",
+                        "Materials",
+                        "Industrials",
+                        "Consumer Discretionary",
+                        "Consumer Staples",
+                        "Health Care",
+                        "Financials",
+                        "Information Technology",
+                        "Communication Services",
+                        "Utilities",
+                        "Real Estate",
+                      ]
+                affected_products:
+                  type: array
+                  description:
+                    Specific products affected by the tariff or trade measure.
+                  items:
+                    type: string
+                hs_product_categories:
+                  type: array
+                  description:
+                    Harmonized System (HS) sections of products affected by the
+                    tariff.
+                  items:
+                    type: string
+                    enum:
+                      [
+                        "I: Live animals; animal products",
+                        "II: Vegetable products",
+                        "III: Animal or vegetable fats and oils",
+                        "IV: Prepared foodstuffs; beverages, spirits, tobacco",
+                        "V: Mineral products",
+                        "VI: Products of the chemical or allied industries",
+                        "VII: Plastics and rubber",
+                        "VIII: Raw hides and skins, leather, furskins",
+                        "IX: Wood and articles of wood",
+                        "X: Pulp of wood; paper and paperboard",
+                        "XI: Textiles and textile articles",
+                        "XII: Footwear, headgear, umbrellas",
+                        "XIII: Articles of stone, ceramic products, glass",
+                        "XIV: Pearls, precious stones and metals",
+                        "XV: Base metals and articles of base metal",
+                        "XVI: Machinery and mechanical appliances",
+                        "XVII: Vehicles, aircraft, vessels",
+                        "XVIII: Optical, photographic, medical instruments",
+                        "XIX: Arms and ammunition",
+                        "XX: Miscellaneous manufactured articles",
+                        "XXI: Works of art, collectors' pieces",
+                      ]
+                tariff_rates:
+                  type: array
+                  description: List of tariff rate descriptions.
+                  items:
+                    type: string
+                main_tariff_rate:
+                  type: number
+                  description: The most significant tariff rate mentioned.
+                previous_tariff_rate:
+                  type: string
+                  description: The tariff rates before this change.
+                announcement_date:
+                  type: string
+                  description:
+                    Date when the tariff or trade measure was announced.
+                implementation_date:
+                  type: string
+                  description:
+                    Date when the tariff or trade measure will be or was
+                    implemented.
+                estimated_trade_value:
+                  type: string
+                  description:
+                    The estimated value of trade affected by the measure.
+                policy_objective:
+                  type: string
+                  description:
+                    Stated policy objective for implementing the tariff.
+                relevance_score:
+                  type: string
+                  enum: ["Low", "Medium", "High"]
+                  description:
+                    Rating of how directly the article addresses specific tariff
+                    announcements.
+                summary:
+                  type: string
+                  description:
+                    A comprehensive summary of the tariff announcement or
+                    change.
+
     # Filter Schemas
     DateRangeFilter:
       type: object
@@ -1427,6 +1588,146 @@ components:
           type: string
           description: |
             The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
+
+    TariffsFilters:
+      title: Tariffs
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: The name of the company related to the tariff event.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the tariff event occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
+        "tariffs_v2.affected_industries":
+          type: string
+          description: |
+            Industries affected by the tariff or trade measure, using GICS sectors.
+          enum:
+            [
+              "Energy",
+              "Materials",
+              "Industrials",
+              "Consumer Discretionary",
+              "Consumer Staples",
+              "Health Care",
+              "Financials",
+              "Information Technology",
+              "Communication Services",
+              "Utilities",
+              "Real Estate",
+            ]
+        "tariffs_v2.affected_products":
+          type: string
+          description: |
+            The specific products affected by the tariff or trade measure.
+        "tariffs_v2.announcement_date":
+          type: string
+          description: |
+            Date when the tariff or trade measure was announced, in YYYY/MM/DD format.
+        "tariffs_v2.estimated_trade_value":
+          type: string
+          description: |
+            The estimated value of trade affected by the measure.
+        "tariffs_v2.hs_product_categories":
+          type: string
+          description: |
+            Harmonized System (HS) sections of products affected by the tariff.
+          enum:
+            [
+              "I: Live animals; animal products",
+              "II: Vegetable products",
+              "III: Animal or vegetable fats and oils",
+              "IV: Prepared foodstuffs; beverages, spirits, tobacco",
+              "V: Mineral products",
+              "VI: Products of the chemical or allied industries",
+              "VII: Plastics and rubber",
+              "VIII: Raw hides and skins, leather, furskins",
+              "IX: Wood and articles of wood",
+              "X: Pulp of wood; paper and paperboard",
+              "XI: Textiles and textile articles",
+              "XII: Footwear, headgear, umbrellas",
+              "XIII: Articles of stone, ceramic products, glass",
+              "XIV: Pearls, precious stones and metals",
+              "XV: Base metals and articles of base metal",
+              "XVI: Machinery and mechanical appliances",
+              "XVII: Vehicles, aircraft, vessels",
+              "XVIII: Optical, photographic, medical instruments",
+              "XIX: Arms and ammunition",
+              "XX: Miscellaneous manufactured articles",
+              "XXI: Works of art, collectors' pieces",
+            ]
+        "tariffs_v2.implementation_date":
+          type: string
+          description: |
+            Date when the tariff or trade measure will be or was implemented, in YYYY/MM/DD format.
+        "tariffs_v2.imposing_country_code":
+          type: string
+          description: |
+            The ISO 3166-1 alpha-2 code of the country implementing the tariff.
+        "tariffs_v2.imposing_country_name":
+          type: string
+          description: |
+            The name of the country implementing the tariff.
+        "tariffs_v2.main_tariff_rate":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The most significant tariff rate mentioned.
+        "tariffs_v2.measure_type":
+          type: string
+          description: |
+            Type of trade measure being implemented.
+          enum:
+            [
+              "new tariff",
+              "tariff increase",
+              "tariff reduction",
+              "retaliatory tariff",
+              "import ban",
+              "quota",
+              "other trade restriction",
+            ]
+        "tariffs_v2.policy_objective":
+          type: string
+          description: |
+            Stated policy objective for implementing the tariff.
+        "tariffs_v2.previous_tariff_rate":
+          type: string
+          description: |
+            The tariff rates before this change.
+        "tariffs_v2.relevance_score":
+          type: string
+          description: |
+            Rating of how directly the article addresses specific tariff announcements.
+          enum: ["Low", "Medium", "High"]
+        "tariffs_v2.summary":
+          type: string
+          description: |
+            A comprehensive summary of the tariff announcement or change.
+        "tariffs_v2.targeted_country_codes":
+          type: string
+          description: |
+            ISO 3166-1 alpha-2 codes for countries targeted by the tariff.
+        "tariffs_v2.targeted_country_names":
+          type: string
+          description: |
+            Names of countries targeted by the tariff.
+        "tariffs_v2.tariff_rates":
+          type: string
+          description: |
+            List of tariff rate descriptions.
+        "tariffs_v2.trigger_event":
+          type: string
+          description: |
+            Description of what triggered the retaliatory measure.
 
     # Events Search Request
     SubscriptionResponseDto:
