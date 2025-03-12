@@ -1,0 +1,245 @@
+---
+title: Explore international tariff events
+sidebarTitle: Tariffs
+description:
+  Monitor and analyze global trade policy changes using tariff event data with
+  customizable search parameters.
+---
+
+Events API provides access to structured information about international tariffs
+and trade measures extracted from news articles. This guide explains how to
+discover available search fields, construct search requests, and understand the
+returned data.
+
+## Available search fields
+
+Get available search fields for tariff events using the discovery endpoint:
+
+```bash
+GET /api/events_info/get_event_fields?event_type=tariffs_v2
+```
+
+The endpoint returns the following fields that can be used for filtering search
+results. All fields are optional for search requests.
+
+### Common fields
+
+- `company_name`: The name of the company related to the tariff event, if
+  applicable.
+- `event_date`: The date when the tariff event occurred.
+- `extraction_date`: The date when the event was extracted from news sources.
+
+### Tariff-specific fields
+
+- `tariffs_v2.imposing_country_name`: The name of the country implementing the
+  tariff.
+- `tariffs_v2.imposing_country_code`: The ISO 3166-1 alpha-2 code of the country
+  implementing the tariff.
+- `tariffs_v2.targeted_country_names`: Names of countries targeted by the
+  tariff.
+- `tariffs_v2.targeted_country_codes`: ISO 3166-1 alpha-2 codes for countries
+  targeted by the tariff.
+- `tariffs_v2.measure_type`: Type of trade measure being implemented. Possible
+  values: new tariff, tariff increase, tariff reduction, retaliatory tariff,
+  import ban, quota, other trade restriction.
+- `tariffs_v2.main_tariff_rate`: The most significant tariff rate mentioned.
+- `tariffs_v2.tariff_rates`: List of tariff rate descriptions in the format "X%
+  on Y".
+- `tariffs_v2.previous_tariff_rate`: The tariff rates before this change.
+- `tariffs_v2.affected_industries`: Industries affected by the tariff using GICS
+  sectors.
+- `tariffs_v2.affected_products`: Specific products affected by the tariff or
+  trade measure.
+- `tariffs_v2.hs_product_categories`: Harmonized System (HS) sections of
+  products affected by the tariff.
+- `tariffs_v2.announcement_date`: Date when the tariff was announced.
+- `tariffs_v2.implementation_date`: Date when the tariff will be or was
+  implemented.
+- `tariffs_v2.estimated_trade_value`: The estimated value of trade affected by
+  the measure.
+- `tariffs_v2.policy_objective`: Stated policy objective for implementing the
+  tariff.
+- `tariffs_v2.trigger_event`: Description of what triggered a retaliatory
+  measure.
+- `tariffs_v2.relevance_score`: Rating of how directly the article addresses
+  specific tariff announcements.
+- `tariffs_v2.summary`: A comprehensive summary of the tariff announcement or
+  change.
+
+## Searching for events
+
+Use the search endpoint to find tariff events:
+
+```bash
+POST /api/events_search
+```
+
+### Basic request structure
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "attach_articles_data": true,
+  "additional_filters": {
+    // search criteria using available fields
+  }
+}
+```
+
+### Using search fields
+
+Search by dates (absolute or relative):
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "additional_filters": {
+    "extraction_date": {
+      "gte": "now-7d",
+      "lte": "now"
+    },
+    "tariffs_v2.implementation_date": {
+      "gte": "2025-01-01",
+      "lte": "2025-04-01"
+    }
+  }
+}
+```
+
+Search by countries and tariff rates:
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "additional_filters": {
+    "tariffs_v2.imposing_country_code": "US",
+    "tariffs_v2.targeted_country_codes": ["CN"],
+    "tariffs_v2.main_tariff_rate": {
+      "gte": 20
+    }
+  }
+}
+```
+
+Search by measure type and affected industries:
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "additional_filters": {
+    "tariffs_v2.measure_type": "retaliatory tariff",
+    "tariffs_v2.affected_industries": ["Materials"]
+  }
+}
+```
+
+Search by products and relevance:
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "additional_filters": {
+    "tariffs_v2.affected_products": ["steel"],
+    "tariffs_v2.hs_product_categories": [
+      "XV: Base metals and articles of base metal"
+    ],
+    "tariffs_v2.relevance_score": "High"
+  }
+}
+```
+
+## Understanding the response
+
+The API returns matched events in this structure:
+
+```json
+{
+  "message": "Success",
+  "count": 20,
+  "events": [
+    {
+      "id": "event-id",
+      "event_type": "tariffs_v2",
+      "global_event_type": "TradePolicy",
+      "associated_article_ids": ["article-id-1", "article-id-2"],
+      "extraction_date": "2025-03-12 12:04:06",
+      "event_date": null,
+      "company_name": null,
+      "tariffs_v2": {
+        "summary": "Comprehensive summary of the tariff announcement",
+        "affected_products": ["aluminum", "steel"],
+        "imposing_country_name": "United States",
+        "affected_industries": ["Materials"],
+        "main_tariff_rate": 25,
+        "announcement_date": "2025/03/18",
+        "tariff_rates": ["25% on steel", "25% on aluminum"],
+        "targeted_country_codes": ["MX", "KR", "BR", "EU", "CN", "CA"],
+        "hs_product_categories": ["XV: Base metals and articles of base metal"],
+        "targeted_country_names": [
+          "European Union",
+          "Canada",
+          "China",
+          "South Korea",
+          "Brazil",
+          "Mexico"
+        ],
+        "relevance_score": "High",
+        "measure_type": "new tariff",
+        "imposing_country_code": "US",
+        "implementation_date": "2025/04/02"
+      },
+      "articles": [
+        // Article data when requested
+      ]
+    }
+  ]
+}
+```
+
+## Best practices
+
+1. Use `extraction_date` to monitor recently reported trade policy developments.
+2. Use `tariffs_v2.announcement_date` and `tariffs_v2.implementation_date` for
+   tracking policy timelines.
+3. Filter by both `tariffs_v2.imposing_country_code` and
+   `tariffs_v2.targeted_country_codes` to track bilateral trade tensions.
+4. Combine `tariffs_v2.affected_industries` and
+   `tariffs_v2.hs_product_categories` for sector-specific analysis.
+5. Use `tariffs_v2.measure_type` to distinguish between initial tariffs and
+   retaliatory measures.
+6. Use `tariffs_v2.main_tariff_rate` to filter for significant trade barriers.
+7. Filter by `tariffs_v2.relevance_score` to prioritize highly relevant
+   information.
+
+## Array field filtering
+
+When filtering for array fields, make sure to use array syntax even when
+searching for a single value:
+
+```json
+{
+  "event_type": "tariffs_v2",
+  "additional_filters": {
+    "tariffs_v2.targeted_country_codes": ["CA", "MX"], // Multiple values
+    "tariffs_v2.affected_industries": ["Materials"], // Single value, still using array
+    "tariffs_v2.hs_product_categories": [
+      "XV: Base metals and articles of base metal"
+    ]
+  }
+}
+```
+
+The following array fields require array syntax for filtering:
+
+- `tariffs_v2.targeted_country_codes`
+- `tariffs_v2.targeted_country_names`
+- `tariffs_v2.affected_industries`
+- `tariffs_v2.affected_products`
+- `tariffs_v2.hs_product_categories`
+- `tariffs_v2.tariff_rates`
+
+## See also
+
+- [Parameter formats](/v3/events/overview/parameter-formats)
+- [Working with articles](/v3/events/overview/working-with-articles)
+- [API reference](/v3/events/endpoints)
