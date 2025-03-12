@@ -265,6 +265,7 @@ components:
               - $ref: "#/components/schemas/LayoffFieldsResponse"
               - $ref: "#/components/schemas/DataBreachFieldsResponse"
               - $ref: "#/components/schemas/FundraisingFieldsResponse"
+              - $ref: "#/components/schemas/TariffsFieldsResponse"
 
     EventsSearchResponse:
       description: Search results containing matched events.
@@ -674,6 +675,126 @@ components:
                   allOf:
                     - $ref: "#/components/schemas/StringFieldType"
                     - description: Company valuation at the time of funding.
+
+    TariffsFieldsResponse:
+      title: Tariffs Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company related to the tariff event.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the tariff event occurred.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "tariffs_v2.affected_industries":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Industries affected by the tariff or trade measure.
+                "tariffs_v2.affected_products":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Specific products affected by the tariff or trade
+                        measure.
+                "tariffs_v2.announcement_date":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Date when the tariff or trade measure was announced.
+                "tariffs_v2.estimated_trade_value":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The estimated value of trade affected by the measure.
+                "tariffs_v2.hs_product_categories":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Harmonized System (HS) sections of products affected by
+                        the tariff.
+                "tariffs_v2.implementation_date":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Date when the tariff or trade measure will be or was
+                        implemented.
+                "tariffs_v2.imposing_country_code":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The ISO 3166-1 alpha-2 code of the country implementing
+                        the tariff.
+                "tariffs_v2.imposing_country_name":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The name of the country implementing the tariff.
+                "tariffs_v2.main_tariff_rate":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: The most significant tariff rate mentioned.
+                "tariffs_v2.measure_type":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Type of trade measure being implemented.
+                "tariffs_v2.policy_objective":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Stated policy objective for implementing the tariff.
+                "tariffs_v2.previous_tariff_rate":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: The tariff rates before this change.
+                "tariffs_v2.relevance_score":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Rating of how directly the article addresses specific
+                        tariff announcements.
+                "tariffs_v2.summary":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        A comprehensive summary of the tariff announcement or
+                        change.
+                "tariffs_v2.targeted_country_codes":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        ISO 3166-1 alpha-2 codes for countries targeted by the
+                        tariff.
+                "tariffs_v2.targeted_country_names":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Names of countries targeted by the tariff.
+                "tariffs_v2.tariff_rates":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: List of tariff rate descriptions.
+                "tariffs_v2.trigger_event":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Description of what triggered the retaliatory measure.
 
     BaseEvent:
       type: object
