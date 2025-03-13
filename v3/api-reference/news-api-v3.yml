@@ -1326,42 +1326,18 @@ components:
       example: 0.6
 
     IncludeNlpData:
-      description: |
-        If true, includes an NLP layer with each article in the response. This layer provides enhanced information such as theme classification, article summary, sentiment analysis, tags, and named entity recognition.
-
-        The NLP layer includes:
-        - Theme: General topic of the article.
-        - Summary: A concise overview of the article content.
-        - Sentiment: Separate scores for title and content (range: -1 to 1).
-        - Named entities: Identified persons (PER), organizations (ORG), locations (LOC), and miscellaneous entities (MISC).
-        - IPTC tags: Standardized news category tags.
-        - IAB tags: Content categories for digital advertising.
-
-        **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: include_nlp_data
       in: query
       required: false
       schema:
-        type: boolean
-        default: false
-      example: true
+        $ref: "#/components/schemas/IncludeNlpData"
 
     HasNlp:
-      description: |
-        If true, filters the results to include only articles with an NLP layer. This allows you to focus on articles that have been processed with advanced NLP techniques.
-
-        **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       name: has_nlp
       in: query
       required: false
       schema:
-        type: boolean
-        default: false
-      example: true
+        $ref: "#/components/schemas/HasNlp"
 
     Theme:
       description: |
@@ -3868,17 +3844,9 @@ components:
       type: boolean
       default: false
       description: |
-        If true, includes an NLP layer with each article in the response.  This layer provides enhanced information such as theme classification, article summary, sentiment analysis, tags, and named entity recognition.
+        If true, includes an NLP object for each article in the response. This object provides results of NLP analysis, including article theme, summary, sentiment, tags, and named entity recognition if available.
 
-        The NLP layer includes:
-        - Theme: General topic of the article.
-        - Summary: A concise overview of the article content.
-        - Sentiment: Separate scores for title and content (range: -1 to 1).
-        - Named entities: Identified persons (PER), organizations (ORG), locations (LOC), and miscellaneous entities (MISC).
-        - IPTC tags: Standardized news category tags.
-        - IAB tags: Content categories for digital advertising.
-
-        **Note**: The `include_nlp_data` parameter is only available if NLP is included in your subscription plan.
+        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `include_nlp_data` parameter is available only in NLP subscription plans.
 
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
@@ -3887,9 +3855,9 @@ components:
       type: boolean
       default: false
       description: |
-        If true, filters the results to include only articles with an NLP layer. This allows you to focus on articles that have been processed with advanced NLP techniques.
+        If true, filters results to include only articles that have NLP data.
 
-        **Note**: The `has_nlp` parameter is only available if NLP is included in your subscription plan.
+        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `has_nlp` parameter is available only in NLP subscription plans.
 
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
