@@ -35,12 +35,52 @@ To learn more about plan features and requirements, see
 
 ### Including NLP data in API responses
 
-To include the NLP layer in your API responses, use these parameters:
+To control NLP data in your API responses, use the following parameters:
 
-- `include_nlp_data` (boolean): Set to `true` to include the NLP layer for each
-  article.
-- `has_nlp` (boolean): Set to `true` to filter results to include only articles
-  with an NLP layer.
+- `include_nlp_data` (boolean): Set to `true` to include the NLP object for each
+  article in response.
+- `has_nlp` (boolean): Set to `true` to filter the results to only articles with
+  available NLP data.
+
+<Note>
+  Some fields within the NLP object may be empty or `null` if specific analyses
+  were not performed on the article. The full data is available for articles in
+  English and Arabic only.
+</Note>
+
+#### How these parameters work together
+
+These parameters control both the article filtering and the inclusion of NLP
+data:
+
+- `include_nlp_data=true, has_nlp=false`: Returns all matching articles with the
+  NLP object included in each. The completeness of NLP data varies by language.
+- `include_nlp_data=true, has_nlp=true`: Returns only articles processed with
+  NLP. This combination filters out many articles in languages other than
+  English and Arabic.
+- `include_nlp_data=false`: The NLP object is not included in the response,
+  regardless of the `has_nlp` value.
+
+#### NLP coverage by language
+
+The NLP coverage and available features varies by language:
+
+- **English and Arabic**: All the articles in these languages undergo
+  comprehensive NLP processing with all features: theme, summary, sentiment
+  analysis, named entities, and content tags.
+- **Other languages**: Only 10% of non-English/Arabic articles undergo NLP
+  processing. In addition, they have limited NLP features (theme, summary, and
+  tags).
+- **All languages**: Unlike other NLP features, we produce vector embeddings for
+  nearly 100% of articles across all languages, making this the most universal
+  NLP feature. For more information, see the
+  [Embeddings](/v3/documentation/guides-and-concepts/nlp-features#embeddings)
+  section.
+
+<Warning>
+  When working with non-English/Arabic content, using `has_nlp=true`
+  substantially reduces the result set.
+</Warning>
 
 ### Code example
 
