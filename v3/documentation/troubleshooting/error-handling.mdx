@@ -194,6 +194,22 @@ page or a connection error.
    [contact support](https://support-sign-in.newscatcherapi.com/) with details
    of your request.
 
+## Troubleshooting with correlation IDs
+
+All API responses include a `correlation-id` in the response headers. When
+reporting errors or contacting support, always include this ID to help us
+quickly identify and resolve your issue.
+
+```http
+correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
+```
+
+<Info>
+  For details on using correlation IDs for effective debugging, see our [Request
+  Tracing
+  guide](/v3/documentation/troubleshooting/request-tracing-correlation-ids).
+</Info>
+
 ## Best practices
 
 - **Check the status code and error message:** Always inspect the status code
