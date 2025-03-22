@@ -87,6 +87,29 @@ optimize performance by measuring exactly how long each step in processing took.
   back-and-forth and manual searching through logs.
 </Note>
 
+## Correlation IDs and support SLAs
+
+Providing a correlation ID when reporting issues helps us meet our service level
+agreements (SLAs) for support response times. According to our
+[Service Support Policy](https://www.newscatcherapi.com/services-support-policy),
+we have defined target response times based on issue priority:
+
+- Priority 1 (Critical): 1 hour
+- Priority 2 (Significant): 4 hours
+- Priority 3 (Moderate): 12 hours
+- Priority 4 (Minor): 1 business day
+
+Without a correlation ID, troubleshooting takes significantly longer, which may
+impact our ability to meet these response targets. For the fastest possible
+resolution, always include the correlation ID from the relevant API request when
+contacting support.
+
+<Warning>
+  For Priority 1 issues (complete service unavailability), please contact
+  support by phone at +33625707180 in addition to submitting a ticket with the
+  correlation ID to ensure immediate attention.
+</Warning>
+
 ## Best practices
 
 <CardGroup cols={2}>
