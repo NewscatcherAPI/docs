@@ -123,6 +123,7 @@
       "version": "v3",
       "pages": [
         "v3/documentation/troubleshooting/error-handling",
+        "v3/documentation/troubleshooting/request-tracing-correlation-ids",
         "v3/documentation/troubleshooting/report-bugs",
         "v3/documentation/troubleshooting/request-features"
       ]
@@ -135,6 +136,7 @@
         "v3/api-reference/overview/authentication",
         "v3/api-reference/overview/rate-limits",
         "v3/api-reference/overview/errors",
+        "v3/api-reference/overview/http-headers",
         "v3/api-reference/overview/enumerated-parameters"
       ]
     },
