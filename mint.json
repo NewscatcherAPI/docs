@@ -115,6 +115,7 @@
         "v3/documentation/how-to/search-by-url",
         "v3/documentation/how-to/optimize-search",
         "v3/documentation/how-to/paginate-large-datasets",
+        "v3/documentation/how-to/retrieve-more-than-10k-articles",
         "v3/documentation/how-to/check-sources-coverage"
       ]
     },
@@ -210,7 +211,18 @@
         "v3/api-reference/libraries/typescript",
         "v3/api-reference/libraries/java",
         "v3/api-reference/libraries/go",
-        "v3/api-reference/libraries/csharp"
+        "v3/api-reference/libraries/csharp",
+        "v3/api-reference/libraries/legacy",
+        {
+          "group": "Legacy SDKs",
+          "pages": [
+            "v3/api-reference/libraries/legacy/python",
+            "v3/api-reference/libraries/legacy/typescript",
+            "v3/api-reference/libraries/legacy/java",
+            "v3/api-reference/libraries/legacy/go",
+            "v3/api-reference/libraries/legacy/csharp"
+          ]
+        }
       ]
     },
     {
