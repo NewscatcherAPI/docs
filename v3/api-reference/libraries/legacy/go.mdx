@@ -1,0 +1,227 @@
+---
+title: Go SDK for NewsCatcher News API v3
+sidebarTitle: Go
+description: Idiomatic Go client for the NewsCatcher News API
+---
+
+A Go SDK for the NewsCatcher News API v3, featuring idiomatic Go patterns,
+context support, and efficient error handling with strong type safety.
+
+## Requirements
+
+- Go 1.18 or higher
+
+## Installation
+
+Add the SDK to your project using Go modules:
+
+```bash
+go get github.com/konfig-dev/newscatcher-go-sdk
+```
+
+## Core features
+
+### Initialize client
+
+```go
+import (
+    "fmt"
+    newscatcherapi "github.com/konfig-dev/newscatcher-go-sdk"
+)
+
+configuration := newscatcherapi.NewConfiguration()
+configuration.SetApiKey("YOUR_API_KEY")
+client := newscatcherapi.NewAPIClient(configuration)
+```
+
+### Search articles
+
+```go
+// Regular search
+request := client.SearchApi.Get(context.Background())
+request.Q("technology")
+request.Lang("en")
+request.IncludeNlpData(true)
+
+result, response, err := request.Execute()
+if err != nil {
+    fmt.Printf("Error: %v\n", err)
+    return
+}
+
+// Clustered search
+clusterRequest := client.SearchApi.Get(context.Background())
+clusterRequest.Q("AI technology")
+clusterRequest.Lang("en")
+clusterRequest.ClusteringEnabled(true)
+clusterRequest.ClusteringThreshold(0.6)
+clusterRequest.IncludeNlpData(true)
+
+clusterResult, response, err := clusterRequest.Execute()
+```
+
+### Latest headlines
+
+```go
+request := client.LatestHeadlinesApi.Get(context.Background())
+request.Lang("en")
+request.Countries("US")
+request.ClusteringEnabled(true)
+request.IncludeNlpData(true)
+
+headlines, response, err := request.Execute()
+```
+
+### Author search
+
+```go
+request := client.AuthorsApi.Get(context.Background(), "Sam Altman")
+request.IncludeNlpData(true)
+
+authorArticles, response, err := request.Execute()
+```
+
+### Similar articles
+
+```go
+request := client.SearchSimilarApi.Get(context.Background())
+request.Q("SpaceX launch")
+request.IncludeNlpData(true)
+
+similar, response, err := request.Execute()
+```
+
+### Get sources
+
+```go
+request := client.SourcesApi.Get(context.Background())
+request.Lang("en")
+
+sources, response, err := request.Execute()
+```
+
+### Check subscription
+
+```go
+subscription, response, err := client.SubscriptionApi.Get(context.Background()).Execute()
+```
+
+## Advanced features
+
+### HTTP response handling
+
+The SDK provides detailed HTTP response information:
+
+```go
+request := client.SearchApi.Get(context.Background())
+request.Q("tech")
+
+result, response, err := request.Execute()
+if err != nil {
+    fmt.Printf("Error: %v\n", err)
+    fmt.Printf("Response: %v\n", response)
+    fmt.Printf("Status code: %v\n", response.StatusCode)
+    fmt.Printf("Headers: %v\n", response.Header)
+    return
+}
+```
+
+### Context support
+
+All API operations support context for timeout and cancellation:
+
+```go
+ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+defer cancel()
+
+request := client.SearchApi.Get(ctx)
+result, response, err := request.Execute()
+```
+
+## Error handling
+
+The SDK uses `GenericOpenAPIError` for comprehensive error handling:
+
+```go
+request := client.SearchApi.Get(context.Background())
+request.Q("tech news")
+
+result, response, err := request.Execute()
+if err != nil {
+    if apiError, ok := err.(*newscatcherapi.GenericOpenAPIError); ok {
+        fmt.Printf("Error body: %v\n", string(apiError.Body()))
+        fmt.Printf("Error model: %v\n", apiError.Model())
+    }
+    fmt.Printf("Full error: %v\n", err)
+    return
+}
+```
+
+## Utilities
+
+### Rate limit handler
+
+```go
+func withRetry(operation func() error, maxRetries int, delay time.Duration) error {
+    var lastErr error
+    for i := 0; i < maxRetries; i++ {
+        err := operation()
+        if err == nil {
+            return nil
+        }
+
+        if apiErr, ok := err.(*newscatcherapi.GenericOpenAPIError); ok {
+            // Check if it's a rate limit error
+            if strings.Contains(string(apiErr.Body()), "429") {
+                time.Sleep(delay * time.Duration(math.Pow(2, float64(i))))
+                lastErr = err
+                continue
+            }
+        }
+        return err
+    }
+    return fmt.Errorf("max retries exceeded: %v", lastErr)
+}
+
+// Usage
+request := client.SearchApi.Get(context.Background())
+request.Q("tech")
+
+err := withRetry(func() error {
+    _, _, err := request.Execute()
+    return err
+}, 3, time.Second)
+```
+
+### Pagination handler
+
+```go
+func getAllResults(client *newscatcherapi.APIClient, query string, maxPages int) ([]Article, error) {
+    var results []Article
+
+    for page := 1; page <= maxPages; page++ {
+        request := client.SearchApi.Get(context.Background())
+        request.Q(query)
+        request.Page(page)
+        request.PageSize(100)
+
+        response, _, err := request.Execute()
+        if err != nil {
+            return nil, err
+        }
+
+        results = append(results, response.Articles...)
+
+        if page >= response.TotalPages {
+            break
+        }
+    }
+
+    return results, nil
+}
+```
+
+## Additional resources
+
+- [API Reference](/v3/api-reference/endpoints/search/search-articles-get)
+- [Go Package](https://pkg.go.dev/github.com/konfig-dev/newscatcher-go-sdk/v6)
