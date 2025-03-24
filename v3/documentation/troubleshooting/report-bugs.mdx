@@ -1,7 +1,302 @@
 ---
-title: How to report bugs
+title: Report bugs
 sidebarTitle: Report bugs
-description: Procedures for reporting technical problems.
+description: How to report bugs and issues with the NewsCatcher APIs
 ---
 
-Coming soon ...
+This guide explains how to effectively report bugs and issues with the
+NewsCatcher APIs to ensure quick resolution and improve your experience.
+
+## Before reporting
+
+Before submitting a bug report, please take these steps to ensure efficient
+resolution:
+
+1. **Check documentation**: Review the [API Reference](/v3/api-reference) to
+   verify you're using parameters correctly and that you understand expected
+   behaviors.
+
+2. **Verify API usage**: Double-check that you're using the correct headers,
+   parameters, and payload formats according to our documentation.
+
+3. **Check status page**: Visit our
+   [status page](https://status.newscatcherapi.com) to see if there are any
+   known issues or maintenance activities affecting the service.
+
+4. **Try our debugging tools**: Use our
+   [Postman collections](https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview)
+   or the API playground in our documentation to verify if the issue can be
+   reproduced with different tools.
+
+5. **Examine your code**: Double-check your implementation to ensure the issue
+   isn't in your integration code.
+
+<Tip>
+  Many reported "bugs" turn out to be integration issues that can be resolved
+  through proper configuration or implementation. Testing with Postman often
+  helps identify these cases quickly.
+</Tip>
+
+## Where to report bugs
+
+You can report bugs through the following official channels:
+
+<CardGroup cols={2}>
+  <Card
+    title="Customer Portal"
+    icon="ticket"
+    href="https://support.newscatcherapi.com/customer-portal"
+  >
+    Our preferred channel for bug reports with structured templates and ticket
+    tracking
+  </Card>
+  <Card
+    title="Email Support"
+    icon="envelope"
+    href="mailto:support@newscatcherapi.com"
+  >
+    Alternative channel for bug reports and general support
+  </Card>
+  <Card title="Dedicated Slack" icon="slack">
+    For eligible customers with dedicated Slack channel access (based on plan
+    tier)
+  </Card>
+  <Card
+    title="GitHub Issues"
+    icon="github"
+    href="https://github.com/Newscatcher"
+  >
+    Review the current issues and open a new one if needed (for SDK-related bugs
+    only)
+  </Card>
+</CardGroup>
+
+<Info>
+  Our Customer Portal is the recommended channel as it automatically creates
+  tickets in our internal tracking system, allowing for faster processing and
+  resolution.
+</Info>
+
+## How to report effectively
+
+When reporting a bug, include the following information to help us identify and
+fix the issue quickly:
+
+### 1. Include the correlation ID
+
+<Info>
+  Every API response includes a unique `correlation-id` in the headers. This ID
+  is essential for us to trace your request through our system.
+</Info>
+
+Here's how to find it:
+
+<CodeGroup>
+
+    ```bash Terminal
+    curl -i https://api.newscatcherapi.com/v3/search
+    # Look for: correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
+    ```
+
+    ```javascript JavaScript
+    // After making a request
+    console.log(response.headers.get("correlation-id"));
+    ```
+
+    ```python Python
+    # After making a request
+    print(response.headers['correlation-id'])
+    ```
+
+</CodeGroup>
+
+### 2. What happened vs. what you expected
+
+Briefly describe:
+
+- What you were trying to do
+- What actually happened
+- What you expected to happen instead
+
+### 3. Request and response details
+
+Provide information to reporoduce the issue:
+
+- API endpoint and method (`GET`/`POST`)
+- Request parameters or payload
+- Error message and status code
+
+### 4. Bug report template
+
+For convenience, you can use our template when reporting bugs:
+
+```
+## Bug Description
+[Brief description of the issue]
+
+## Correlation ID
+correlation-id: [ID from response headers]
+
+## Request Details
+- Endpoint: [e.g., /v3/search]
+- Method: [GET/POST]
+- Parameters/Body: [Key details]
+
+## Response
+- Status Code: [e.g., 500]
+- Error Message: [If applicable]
+
+## Expected Behavior
+[What you expected to happen]
+
+## Environment
+- Language/SDK: [e.g., Python 3.9, newscatcher-python 1.2.0]
+```
+
+<Tip>If possible, attach relevant screenshots that show the issue.</Tip>
+
+## Common issues and solutions
+
+Before reporting a bug, check if your issue matches one of these common
+scenarios:
+
+### Using incorrect authentication header
+
+We use `x-api-token` for authentication, not `x-api-key`:
+
+<CodeGroup>
+```http Correct
+GET /v3/search HTTP/1.1
+Host: api.newscatcherapi.com
+x-api-token: YOUR_API_KEY
+```
+
+```http Incorrect
+GET /v3/search HTTP/1.1
+Host: api.newscatcherapi.com
+x-api-key: YOUR_API_KEY
+```
+
+</CodeGroup>
+
+### Malformed JSON payload causing 500 errors
+
+If you receive a `500 Internal Server Error`, check your request payload:
+
+<CodeGroup>
+```json Correct
+{
+  "q": "bitcoin",
+  "from_": "30d",
+  "countries": ["US", "CA"]
+}
+```
+
+```json Incorrect
+{
+  "q": "bitcoin",
+  "from_": "30d",
+  "countries": ["US", "CA"  // Missing closing bracket
+}
+```
+
+</CodeGroup>
+
+<Info>
+  For security reasons, our API may return a generic 500 error for certain
+  malformed payloads instead of detailed validation errors. Always validate your
+  JSON before sending.
+</Info>
+
+## What happens after you report a bug?
+
+1. **Ticket creation**: Your report is converted into a ticket in our internal
+   tracking system.
+
+2. **Initial assessment**: Our support team performs an initial assessment to
+   determine severity and priority.
+
+3. **Investigation**: Our engineering team uses the correlation ID to trace the
+   issue through our logs and systems.
+
+4. **Status updates**: We'll keep you informed about the progress of your bug
+   report through the same channel you used to report it.
+
+5. **Resolution**: Once resolved, we'll provide you with details about the fix
+   and when you can expect it to be deployed.
+
+## Issue priority and response times
+
+When you report a bug, our support team assesses its priority based on urgency
+and impact according to our
+[Service Support Policy](https://www.newscatcherapi.com/services-support-policy).
+Understanding these priority levels can help you set appropriate response and
+resolution times expectations.
+
+### How we determine priority
+
+<CardGroup cols={2}>
+  <Card title="Urgency" icon="fire">
+    How quickly the issue needs to be addressed based on its effect on your
+    operations
+  </Card>
+  <Card title="Impact" icon="chart-network">
+    The scope and severity of the issue on the service functionality
+  </Card>
+</CardGroup>
+
+### Priority levels
+
+| Priority   | Description                                                                | Target Response Time | Target Resolution Time |
+| ---------- | -------------------------------------------------------------------------- | -------------------- | ---------------------- |
+| Priority 1 | Critical issue causing complete service unavailability with no workaround  | 1 hour               | Within 12 hours        |
+| Priority 2 | Significant issue with major impact; service usable but seriously impaired | 4 hours              | 2 business days        |
+| Priority 3 | Moderate issue with acceptable workarounds available                       | 12 hours             | 5 business days        |
+| Priority 4 | Minor issue with minimal impact                                            | 1 business day       | Planned                |
+
+<Info>
+  Priority 1 issues should be reported by phone in addition to creating a ticket
+  to ensure immediate attention. Standard support hours are 8am–5pm on business
+  days in your principal location.
+</Info>
+
+When reporting a bug, you can suggest a priority level based on the criteria
+above, but the final determination will be made by our support team based on
+technical assessment.
+
+## Debugging tools
+
+We provide several tools to help you debug issues before reporting them:
+
+<CardGroup cols={2}>
+  <Card
+    title="Postman Collections"
+    icon="globe"
+    href="https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview"
+  >
+    Pre-configured request collections for all our APIs with examples
+  </Card>
+  <Card
+    title="API Playground"
+    icon="flask"
+    href="/v3/api-reference/endpoints/search/search-articles-post"
+  >
+    Interactive API testing tool available directly in our documentation
+  </Card>
+  <Card title="Documentation AI Assistant" icon="robot">
+    To use our AI chat assistant, type your question in the search bar (⌘K)
+  </Card>
+  <Card
+    title="Status Page"
+    icon="signal"
+    href="https://status.newscatcherapi.com"
+  >
+    Real-time service status and incident history
+  </Card>
+</CardGroup>
+
+## Related resources
+
+- [Error handling](/v3/documentation/troubleshooting/error-handling)
+- [Request tracing with correlation IDs](/v3/documentation/troubleshooting/request-tracing-correlation-ids)
+- [API error codes](/v3/api-reference/overview/errors)

@@ -1,0 +1,137 @@
+---
+title: Request tracing with correlation IDs
+sidebarTitle: Request tracing with correlation IDs
+description:
+  Learn how to use correlation IDs to debug and troubleshoot API requests
+---
+
+In a distributed system like NewsCatcher, tracing requests across multiple
+services is essential for effective troubleshooting. This guide explains how
+correlation IDs work and how to use them to resolve issues quickly.
+
+## What is a correlation ID?
+
+A correlation ID is a unique identifier assigned to every request that enters
+our system. This ID follows the request through all microservices and appears in
+logs across our infrastructure, enabling end-to-end request tracing.
+
+<Tip>
+  Think of a correlation ID as a tracking number for your API request - it lets
+  you and our support team follow the request's journey through our entire
+  system.
+</Tip>
+
+In the NewsCatcher APIs, correlation IDs appear in:
+
+- HTTP response headers as `correlation-id`
+- Internal logs across our Kubernetes infrastructure
+- Error tracking systems
+
+## Why correlation IDs matter
+
+<Info>
+### Faster support resolution
+
+When reporting issues to our support team, including the correlation ID allows
+us to immediately locate all relevant logs and trace the exact path your request
+took through our systems. This dramatically speeds up troubleshooting and
+resolution times.
+
+</Info>
+<Info>
+### End-to-end request visibility
+
+In complex operations that touch multiple services (search, filtering,
+aggregation, etc.), correlation IDs let us reconstruct the complete journey of
+your request and identify exactly where problems occurred.
+
+</Info>
+<Info>
+### Performance analysis
+
+For requests with unexpected latency, correlation IDs help us analyze and
+optimize performance by measuring exactly how long each step in processing took.
+
+</Info>
+
+## How to use correlation IDs
+
+<Steps>
+  <Step title="Find your correlation ID in response headers">
+    Every response from the NewsCatcher API includes a `correlation-id` in the HTTP headers. You can view this:
+
+    - In your HTTP client's response headers
+    - In programming language responses by accessing the headers collection
+    - In Postman under the **Headers** tab of the response
+
+    <Frame>![Correlation ID in Postman](/images/correlation-id-postman.png)</Frame>
+
+    Example correlation ID: `a702576c-2007-4b23-9ba4-cad305c84275`
+
+</Step>
+  <Step title="Include your correlation IDs in support requests">
+    When contacting our support team about an API issue, always include:
+
+    - The complete correlation ID from the response headers
+    - The approximate time the request was made
+    - A brief description of the expected vs. actual behavior
+
+    This information lets us immediately locate the exact request in our logs and
+    provide faster assistance.
+
+  </Step>
+</Steps>
+
+<Note>
+  Without the correlation ID, debugging process would require much more
+  back-and-forth and manual searching through logs.
+</Note>
+
+## Correlation IDs and support SLAs
+
+Providing a correlation ID when reporting issues helps us meet our service level
+agreements (SLAs) for support response times. According to our
+[Service Support Policy](https://www.newscatcherapi.com/services-support-policy),
+we have defined target response times based on issue priority:
+
+- Priority 1 (Critical): 1 hour
+- Priority 2 (Significant): 4 hours
+- Priority 3 (Moderate): 12 hours
+- Priority 4 (Minor): 1 business day
+
+Without a correlation ID, troubleshooting takes significantly longer, which may
+impact our ability to meet these response targets. For the fastest possible
+resolution, always include the correlation ID from the relevant API request when
+contacting support.
+
+<Warning>
+  For Priority 1 issues (complete service unavailability), please contact
+  support by phone at +33625707180 in addition to submitting a ticket with the
+  correlation ID to ensure immediate attention.
+</Warning>
+
+## Best practices
+
+<CardGroup cols={2}>
+  <Card title="Log correlation IDs" icon="pencil">
+    Always include correlation IDs in your own application logs when making
+    requests to our APIs.
+  </Card>
+  <Card title="Report with correlation IDs" icon="bug">
+    Always include correlation IDs when reporting issues to our support team.
+  </Card>
+  <Card title="Include in error reporting" icon="triangle-exclamation">
+    Integrate correlation ID extraction into your application's error handling
+    logic.
+  </Card>
+  <Card title="Keep for later reference" icon="clock">
+    Consider storing correlation IDs for important requests temporarily for
+    easier troubleshooting.
+  </Card>
+</CardGroup>
+
+## Related resources
+
+- [Error handling](/v3/documentation/troubleshooting/error-handling)
+- [Report bugs](/v3/documentation/troubleshooting/report-bugs)
+- [API error codes](/v3/api-reference/overview/errors)
