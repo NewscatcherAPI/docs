@@ -1,0 +1,255 @@
+---
+title: How to retrieve more than 10,000 articles
+sidebarTitle: Retrieve more than 10,000 articles
+description:
+  Learn how to use time-chunking methods in the Python SDK to retrieve large
+  volumes of articles
+---
+
+The Newscatcher API limits results to 10,000 articles per search query. The
+Python SDK provides special methods that automatically split your search across
+multiple time periods to bypass the limit and retrieve all articles relevant to
+your query.
+
+<Note>
+  These advanced retrieval methods are available only in the Python SDK.
+</Note>
+
+## Understanding the article limit
+
+When your query matches more than 10,000 articles, the API returns
+`"total_hits": 10000` as a hard limit, and you cannot retrieve more through
+standard pagination.
+
+```python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+response = client.search.post(
+    q="technology",
+    from_="7d",
+    to="now"
+)
+
+print(f"Total hits: {response.total_hits}")
+print(f"Is result capped: {response.total_hits == 10000}")  # True if limit reached
+```
+
+## Using time-chunking methods
+
+The SDK provides two special methods to retrieve large volumes of articles:
+
+- `get_all_articles`
+- `get_all_headlines`
+
+Both methods available for synchronous and asynchronous clients.
+
+### Get all articles
+
+<CodeGroup>
+
+```python Synchronous
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+articles = client.get_all_articles(
+    q="renewable energy",
+    from_="30d",
+    to="now",
+    time_chunk_size="1d",
+    max_articles=50000,
+    show_progress=True,
+)
+
+print(f"Retrieved {len(articles)} articles")
+```
+
+```python Asynchronous
+import asyncio
+from newscatcher import AsyncNewscatcherApi
+
+async def get_articles():
+    client = AsyncNewscatcherApi(api_key="YOUR_API_KEY")
+
+    articles = await client.get_all_articles(
+        q="electric vehicles",
+        from_="30d",
+        to="now",
+        time_chunk_size="1d",
+        max_articles=50000,
+        concurrency=3,
+        show_progress=True
+    )
+
+    print(f"Retrieved {len(articles)} articles")
+
+articles = asyncio.run(get_articles())
+```
+
+</CodeGroup>
+
+### Get all headlines
+
+<CodeGroup>
+
+```python Synchronous
+headlines = client.get_all_headlines(
+    when="30d",
+    time_chunk_size="1d",
+    max_articles=20000,
+    show_progress=True
+)
+
+print(f"Retrieved {len(headlines)} headlines")
+```
+
+```python Asynchronous
+import asyncio
+from newscatcher import AsyncNewscatcherApi
+
+async def get_headlines():
+    client = AsyncNewscatcherApi(api_key="YOUR_API_KEY")
+
+    headlines = await client.get_all_headlines(
+        when="30d",
+        time_chunk_size="1d",
+        max_articles=20000,
+        concurrency=3,
+        show_progress=True
+    )
+
+    print(f"Retrieved {len(headlines)} headlines")
+
+headlines = asyncio.run(get_headlines())
+```
+
+</CodeGroup>
+
+## How time-chunking works
+
+Time-chunking divides your date range into smaller intervals, making separate
+API calls for each period and combining the results. Each interval can return up
+to 10,000 articles.
+
+For example, with `time_chunk_size="1d"` over 5 days, the method makes 5 API
+calls, one for each day, with auto pagination to potentially retrieve up to 
+50,000 articles.
+
+<Frame>
+  <img
+    src="/images/day_chunks.png"
+    alt="Time-chunking diagram showing how multiple requests are combined"
+  />
+</Frame>
+
+## Choosing the right chunk size
+
+The optimal chunk size depends on how many articles your query returns:
+
+<Tabs>
+  <Tab title="Table guide">
+    | Query type | Articles per day | Recommended chunk size |
+    |------------|------------------|------------------------|
+    | Extremely broad | 10,000+ per hour | `"1h"` |
+    | Very broad | 10,000+ per day | `"6h"` |
+    | Broad | 3,000-10,000 per day | `"1d"` |
+    | Moderate | 1,000-3,000 per day | `"3d"` |
+    | Specific | 100-1,000 per day | `"7d"` |
+    | Very specific | < 100 per day | `"30d"` |
+  </Tab>
+  <Tab title="Quick test code">
+    ```python
+    response = client.search.post(
+        q="renewable energy",
+        from_="1d",
+        to="now"
+    )
+
+    print(f"Articles for one day: {response.total_hits}")
+
+    if response.total_hits == 10000:
+        response_6h = client.search.post(
+            q="renewable energy",
+            from_="6h",
+            to="now"
+        )
+        print(f"Articles for 6 hours: {response_6h.total_hits}")
+    ```
+
+  </Tab>
+</Tabs>
+
+## Method parameters
+
+<ParamField path="q" type="string" required>
+  Your search query. Supports AND, OR, NOT operators and advanced syntax.
+</ParamField>
+
+<ParamField path="from_" type="string" default="30d">
+  Starting date for `get_all_articles` (e.g., `"10d"` or `"2023-03-15"`).
+</ParamField>
+
+<ParamField path="to" type="string" default="now">
+  Ending date for `get_all_articles` defaults to current time.
+</ParamField>
+
+<ParamField path="when" type="string" default="7d">
+  Time range for `get_all_headlines` (e.g., `"1d"` or `"2023-03-15"`).
+</ParamField>
+
+<ParamField path="time_chunk_size" type="string" default="1h">
+  Chunk size: `"1h"`, `"6h"`, `"1d"`, `"7d"`, `"1m"`.
+</ParamField>
+
+<ParamField path="max_articles" type="integer" default="100000">
+  Maximum number of articles to retrieve.
+</ParamField>
+
+<ParamField path="show_progress" type="boolean" default="false">
+  Whether to display a progress bar.
+</ParamField>
+
+<ParamField path="deduplicate" type="boolean" default="true">
+  Whether to remove duplicate articles.
+</ParamField>
+
+<ParamField path="concurrency" type="integer" default="3">
+  For async methods only: number of concurrent requests.
+</ParamField>
+
+## Common issues and solutions
+
+<AccordionGroup>
+
+  <Accordion title="Rate limiting errors">
+    If you hit rate limits: 
+    - Reduce concurrency (for async methods).
+    - Add longer delays between requests.
+    - Break large requests into smaller batches.
+  </Accordion>
+
+  <Accordion title="Memory errors">
+    If you run out of memory:
+    - Reduce `max_articles` parameter.
+    - Process data in smaller batches.
+    - Save results incrementally as shown in the advanced example.
+    - Release memory with `del` and `gc.collect()`.
+  </Accordion>
+
+  <Accordion title="Missing results">
+    If results are incomplete: 
+    - Check if your chunk size is appropriate.
+    - Ensure your date range is correct.
+    - Verify your query syntax is valid.
+    - Make sure you're not hitting the 10,000 limit per chunk.
+  </Accordion>
+  
+</AccordionGroup>
+
+## See also
+
+- [Advanced query syntax](/v3/documentation/guides-and-concepts/advanced-querying)
+- [API rate limits](/v3/api-reference/overview/rate-limits)
+- [Python SDK](https://github.com/Newscatcher/newscatcher-python)
