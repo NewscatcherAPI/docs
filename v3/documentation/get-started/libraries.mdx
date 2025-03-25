@@ -1,7 +1,15 @@
 ---
 title: Libraries
-description: NewsCatcher v3 SDKs
+description: NewsCatcher News API v3 SDKs
 ---
+
+# NewsCatcher API client libraries
+
+NewsCatcher provides official SDKs for multiple programming languages to help
+you integrate with our API quickly and efficiently. These SDKs are generated
+using Fern and are available as open-source projects on GitHub.
+
+## Available SDKs
 
 <CardGroup cols={2}>
   <Card
@@ -9,7 +17,7 @@ description: NewsCatcher v3 SDKs
     icon="python"
     iconType="brands"
     color="#306998"
-    href="/v3/api-reference/libraries/python"
+    href="https://github.com/Newscatcher/newscatcher-python"
   >
     A comprehensive SDK for developing Python applications.
   </Card>
@@ -18,7 +26,7 @@ description: NewsCatcher v3 SDKs
     icon="square-js"
     iconType="brands"
     color="#3178C6"
-    href="/v3/api-reference/libraries/typescript"
+    href="https://github.com/Newscatcher/newscatcher-typescript"
   >
     A robust SDK for TypeScript development, with full type support.
   </Card>
@@ -27,7 +35,7 @@ description: NewsCatcher v3 SDKs
     icon="java"
     iconType="brands"
     color="#5382A1"
-    href="/v3/api-reference/libraries/java"
+    href="https://github.com/Newscatcher/newscatcher-java"
   >
     A powerful SDK for building Java applications and services.
   </Card>
@@ -36,7 +44,7 @@ description: NewsCatcher v3 SDKs
     icon="golang"
     iconType="solid"
     color="#00ADD8"
-    href="/v3/api-reference/libraries/go"
+    href="https://github.com/Newscatcher/newscatcher-go"
   >
     An efficient SDK for developing applications in Go.
   </Card>
@@ -45,8 +53,50 @@ description: NewsCatcher v3 SDKs
     icon="microsoft"
     iconType="solid"
     color="#68217A"
-    href="/v3/api-reference/libraries/csharp"
+    href="https://github.com/Newscatcher/newscatcher-csharp"
   >
     A feature-rich SDK for C# and .NET development.
   </Card>
+  <Card
+    title="Legacy SDKs"
+    icon="clock-rotate-left"
+    iconType="solid"
+    color="#718096"
+    href="/v3/api-reference/libraries/legacy"
+  >
+    Documentation for deprecated SDKs (Konfig-generated)
+  </Card>
 </CardGroup>
+
+## SDK documentation
+
+Each SDK has its own documentation, which includes:
+
+- Installation instructions
+- Authentication setup
+- Basic and advanced usage examples
+- Error handling techniques
+- Advanced configuration options
+
+Visit the GitHub repository for each SDK to view the comprehensive
+documentation.
+
+## Common features
+
+All our SDKs provide:
+
+- **Authentication**: Simple API key authentication
+- **Error handling**: Structured error types and handling mechanisms
+- **Retry logic**: Automatic retries with exponential backoff
+- **Timeout configuration**: Customizable request timeouts
+- **Type safety**: Strong typing for request parameters and responses
+
+## Getting started
+
+1. Choose the SDK for your preferred programming language.
+2. Install the SDK via the appropriate package manager.
+3. Create a client instance with your API key.
+4. Start making API requests.
+
+For more information on the API endpoints and parameters, refer to the
+[API reference](/v3/api-reference/endpoints).

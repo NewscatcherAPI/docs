@@ -1,256 +1,64 @@
 ---
-title: C# SDK for NewsCatcher News API v3
+title: C# SDK
 sidebarTitle: C#
-description: .NET client library for the NewsCatcher News API
+description: C# client library for News API v3
 ---
 
-A C# SDK for the NewsCatcher News API v3, offering full .NET integration,
-async/await support, and comprehensive exception handling with platform-specific
-optimizations.
-
-## Requirements
-
-- .NET Core >=1.0
-- .NET Framework >=4.6
-- Mono/Xamarin >=vNext
+C# SDK provides access to the News API v3 from C# applications.
 
 ## Installation
 
-### Using the .NET CLI
-
 ```bash
-dotnet add package Newscatcherapi.Net
+# Using the .NET CLI
+dotnet add package NewscatcherApi
+
+# Using NuGet Package Manager Console
+Install-Package NewscatcherApi
 ```
 
-### Using NuGet Package Manager Console
-
-```powershell
-Install-Package Newscatcherapi.Net
-```
-
-### Using Package Manager UI in Visual Studio
-
-1. Right-click on your project in Solution Explorer.
-2. Select "Manage NuGet Packages".
-3. Search for "Newscatcherapi.Net".
-4. Click Install.
-
-## Core features
-
-### Initialize client
+## Basic usage
 
 ```csharp
-using Newscatcherapi.Net.Client;
+using NewscatcherApi;
 
-var client = new NewscatcherClient();
-client.SetApiKey("YOUR_API_KEY");
-```
-
-### Search articles
-
-```csharp
-// Regular search
-try
-{
-    var result = await client.Search.Get(
-        q: "technology",
-        lang: "en",
-        includeNlpData: true
-    );
-    Console.WriteLine($"Found {result.TotalHits} articles");
-}
-catch (ApiException e)
-{
-    Console.WriteLine($"Error: {e.ErrorCode} - {e.Message}");
-}
-
-// Clustered search
-var clusterResults = await client.Search.Get(
-    q: "AI technology",
-    lang: "en",
-    clusteringEnabled: true,
-    clusteringThreshold: 0.6,
-    includeNlpData: true
-);
-```
-
-### Latest headlines
-
-```csharp
-var headlines = await client.LatestHeadlines.Get(
-    lang: "en",
-    countries: "US",
-    clusteringEnabled: true,
-    includeNlpData: true
-);
-```
-
-### Author search
-
-```csharp
-var authorArticles = await client.Authors.Get(
-    authorName: "Sam Altman",
-    includeNlpData: true
-);
-```
-
-### Similar articles
-
-```csharp
-var similar = await client.SearchSimilar.Get(
-    q: "SpaceX launch",
-    includeNlpData: true
-);
-```
-
-### Get sources
-
-```csharp
-var sources = await client.Sources.Get(
-    lang: "en"
-);
-```
-
-### Check subscription
-
-```csharp
-var subscription = await client.Subscription.Get();
-```
-
-## Advanced features
-
-### Error handling
-
-The SDK provides detailed error information through `ApiException`:
-
-```csharp
-try
-{
-    var result = await client.Search.Get(q: "tech news");
-}
-catch (ApiException e)
-{
-    Console.WriteLine($"Error code: {e.ErrorCode}");
-    Console.WriteLine($"Error content: {e.ErrorContent}");
-    Console.WriteLine($"Headers: {e.Headers}");
-    Console.WriteLine($"Response details: {e.Message}");
-}
-catch (Exception e)
-{
-    Console.WriteLine($"General error: {e.Message}");
-}
-```
-
-### Cancellation support
-
-All async operations support cancellation tokens:
-
-```csharp
-using var cts = new CancellationTokenSource();
-cts.CancelAfter(TimeSpan.FromSeconds(5)); // 5-second timeout
-
-try
-{
-    var result = await client.Search.GetAsync(
-        q: "tech",
-        cancellationToken: cts.Token
-    );
-}
-catch (OperationCanceledException)
-{
-    Console.WriteLine("Request timed out");
-}
-```
-
-## Utilities
-
-### Rate limit handler
-
-```csharp
-public static class RateLimitHandler
-{
-    public static async Task<T> WithRetry<T>(
-        Func<Task<T>> operation,
-        int maxRetries = 3,
-        int baseDelay = 1000)
+var client = new NewscatcherApiClient("YOUR_API_KEY");
+await client.Search.PostAsync(
+    new SearchPostRequest
     {
-        for (int i = 0; i < maxRetries; i++)
-        {
-            try
-            {
-                return await operation();
-            }
-            catch (ApiException e) when (e.ErrorCode == 429)
-            {
-                if (i == maxRetries - 1)
-                    throw;
-
-                var delay = baseDelay * Math.Pow(2, i);
-                await Task.Delay((int)delay);
-            }
-        }
-        throw new Exception("Max retries exceeded");
+        Q = "renewable energy",
+        PredefinedSources = new List<string>() { "top 50 US" },
+        Lang = new List<string>() { "en" },
+        From = new DateTime(2024, 01, 01, 00, 00, 00, 000),
+        To = new DateTime(2024, 06, 30, 00, 00, 00, 000),
+        AdditionalDomainInfo = true,
+        IsNewsDomain = true,
     }
-}
-
-// Usage
-var result = await RateLimitHandler.WithRetry(async () =>
-    await client.Search.Get(q: "tech")
 );
 ```
 
-### Pagination handler
+## Error handling
 
 ```csharp
-public static class PaginationHandler
-{
-    public static async Task<List<Article>> GetAllResults(
-        NewscatcherClient client,
-        string query,
-        int maxPages = 5)
-    {
-        var results = new List<Article>();
+using NewscatcherApi;
 
-        for (int page = 1; page <= maxPages; page++)
-        {
-            var response = await client.Search.Get(
-                q: query,
-                page: page,
-                pageSize: 100
-            );
-
-            results.AddRange(response.Articles);
-
-            if (page >= response.TotalPages)
-                break;
-        }
-
-        return results;
-    }
+try {
+    var response = await client.Search.PostAsync(...);
+} catch (NewscatcherApiApiException e) {
+    Console.WriteLine(e.Body);
+    Console.WriteLine(e.StatusCode);
 }
-
-// Usage
-var allArticles = await PaginationHandler.GetAllResults(
-    client,
-    "AI technology",
-    maxPages: 2
-);
 ```
 
-### HTTP client configuration
+For complete documentation, including retry configuration and timeouts, see the
+[GitHub repository](https://github.com/Newscatcher/newscatcher-csharp).
 
-```csharp
-var config = new Configuration
-{
-    UserAgent = "CustomUserAgent/1.0",
-    Timeout = 30000, // 30 seconds
-    BasePath = "https://your-proxy.com/v3-api.newscatcherapi.com"
-};
+<Note>
+  If you use our legacy C# SDK (Konfig-based), see our [Legacy
+  SDKs](/v3/api-reference/libraries/legacy) documentation. We recommend
+  migrating to this newer SDK for improved features and ongoing support.
+</Note>
 
-var client = new NewscatcherClient(config);
-```
+## Resources
 
-## Additional resources
-
-- [API Reference](/v3/api-reference/endpoints/search/search-articles-get)
-- [NuGet Package](https://www.nuget.org/packages/Newscatcherapi.Net)
+- [GitHub repository](https://github.com/Newscatcher/newscatcher-csharp)
+- [NuGet package](https://nuget.org/packages/NewscatcherApi)
