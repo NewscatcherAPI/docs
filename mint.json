@@ -160,6 +160,13 @@
           ]
         },
         {
+          "group": "Breaking news",
+          "pages": [
+            "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
+            "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-post"
+          ]
+        },
+        {
           "group": "Authors",
           "pages": [
             "v3/api-reference/endpoints/authors/search-articles-by-author-get",
