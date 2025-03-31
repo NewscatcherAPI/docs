@@ -42,6 +42,11 @@ tags:
         Retrieve the latest headlines since a specified date, with filtering
         options.
       url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get
+  - name: Breaking News
+    description: Operations to retrieve breaking news articles.
+    externalDocs:
+      description: Retrieve breaking news articles.
+      url: https://newscatcherapi.com/docs/v3/api-reference/endpoints/breaking-news/breaking-news-get
   - name: Authors
     description: Operations to search by author.
     externalDocs:
@@ -269,6 +274,80 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/breaking_news:
+    get:
+      tags:
+        - Breaking News
+      summary: Get breaking news
+      description:
+        Retrieves breaking news articles and sorts them based on specified
+        criteria.
+      operationId: BreakingNews_get
+      parameters:
+        - $ref: "#/components/parameters/SortBy"
+        - $ref: "#/components/parameters/RankedOnly"
+        - $ref: "#/components/parameters/FromRank"
+        - $ref: "#/components/parameters/ToRank"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/IncludeNlpData"
+        - $ref: "#/components/parameters/HasNlp"
+        - $ref: "#/components/parameters/Theme"
+        - $ref: "#/components/parameters/NotTheme"
+        - $ref: "#/components/parameters/OrgEntityName"
+        - $ref: "#/components/parameters/PerEntityName"
+        - $ref: "#/components/parameters/LocEntityName"
+        - $ref: "#/components/parameters/MiscEntityName"
+        - $ref: "#/components/parameters/TitleSentimentMin"
+        - $ref: "#/components/parameters/TitleSentimentMax"
+        - $ref: "#/components/parameters/ContentSentimentMin"
+        - $ref: "#/components/parameters/ContentSentimentMax"
+      responses:
+        "200":
+          $ref: "#/components/responses/BreakingNewsResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+    post:
+      tags:
+        - Breaking News
+      summary: Get breaking news
+      description:
+        Retrieves breaking news articles and sorts them based on specified
+        criteria.
+      operationId: BreakingNews_post
+      requestBody:
+        $ref: "#/components/requestBodies/BreakingNewsRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/BreakingNewsResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -2200,6 +2279,58 @@ components:
               is_opinion: false
               page_size: 10
 
+    BreakingNewsRequestBody:
+      description:
+        Request body for retrieving breaking news articles with sorting and
+        filtering options.
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              sort_by:
+                $ref: "#/components/schemas/SortBy"
+              ranked_only:
+                $ref: "#/components/schemas/RankedOnly"
+              from_rank:
+                $ref: "#/components/schemas/FromRank"
+              to_rank:
+                $ref: "#/components/schemas/ToRank"
+              page:
+                $ref: "#/components/schemas/Page"
+              page_size:
+                $ref: "#/components/schemas/PageSize"
+              include_nlp_data:
+                $ref: "#/components/schemas/IncludeNlpData"
+              has_nlp:
+                $ref: "#/components/schemas/HasNlp"
+              theme:
+                $ref: "#/components/schemas/Theme"
+              not_theme:
+                $ref: "#/components/schemas/NotTheme"
+              ORG_entity_name:
+                $ref: "#/components/schemas/OrgEntityName"
+              PER_entity_name:
+                $ref: "#/components/schemas/PerEntityName"
+              LOC_entity_name:
+                $ref: "#/components/schemas/LocEntityName"
+              MISC_entity_name:
+                $ref: "#/components/schemas/MiscEntityName"
+              title_sentiment_min:
+                $ref: "#/components/schemas/TitleSentimentMin"
+              title_sentiment_max:
+                $ref: "#/components/schemas/TitleSentimentMax"
+              content_sentiment_min:
+                $ref: "#/components/schemas/ContentSentimentMin"
+              content_sentient_max:
+                $ref: "#/components/schemas/ContentSentimentMax"
+            example:
+              sort_by: relevancy
+              page: 1
+              page_size: 100
+              include_nlp_data: true
+
     SearchRequestBody:
       description:
         Request body for searching articles based on specified criteria such as
@@ -2560,6 +2691,15 @@ components:
               - $ref: "#/components/schemas/SearchResponseDto"
               - $ref: "#/components/schemas/ClusteredSearchResponseDto"
 
+    BreakingNewsResponse:
+      description:
+        A successful response containing breaking news articles with additional
+        breaking news event information.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/BreakingNewsResponseDto"
+
     SearchLinkResponse:
       description:
         A successful response containing articles that match the provided links
@@ -2747,8 +2887,7 @@ components:
       description: |
         The response model for a successful `Aggregation count` request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
       allOf:
         - $ref: "#/components/schemas/BaseSearchResponseDto"
         - type: object
@@ -3120,8 +3259,7 @@ components:
       description: |
         The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search` and `Latest headlines` requests. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
         - To access article properties in the `articles` response array, 
         use array index notation. For example, `articles[n].title`, where `n` 
         is the zero-based index of the article object (0, 1, 2, etc.).
@@ -3165,7 +3303,7 @@ components:
       description: |
         The response model for the search requests applies to the `Search`, `Latest Headlines`, `Search by link`, and `Authors` endpoints. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
         - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
         - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
       allOf:
@@ -3177,13 +3315,35 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
+    BreakingNewsResponseDto:
+      title: Breaking News Response
+      description: |
+        The response model for the breaking news requests. Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
+        - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
+      allOf:
+        - $ref: "#/components/schemas/BaseSearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              title: Articles
+              description: A list of articles matching the search criteria.
+              type: array
+              items:
+                $ref: "#/components/schemas/BreakingNewsArticleEntity"
+              default: []
+            user_input:
+              $ref: "#/components/schemas/UserInputDto"
+
     # Search Similar related schemas for the response object
     SearchSimilarResponseDto:
       title: Search Similar Response
       description: |
         The response model for a successful `Search similar` request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
         - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
         - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
       allOf:
@@ -3217,13 +3377,171 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
+    BreakingNewsArticleEntity:
+      title: Breaking News Article object
+      description:
+        The data model representing a single article in the `Breaking news`
+        search results.
+      required:
+        - title
+        - link
+        - domain_url
+        - full_domain_url
+        - parent_url
+        - rank
+        - content
+        - id
+        - score
+      type: object
+      properties:
+        title:
+          title: Title
+          description: The title of the article.
+          type: string
+        author:
+          title: Author
+          description: The primary author of the article.
+          type: string
+        authors:
+          title: Authors
+          description: A list of authors of the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        journalists:
+          title: Journalists
+          description: A list of journalists associated with the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+        published_date:
+          title: Published Date
+          description: The date the article was published.
+          type: string
+        published_date_precision:
+          title: Published Date Precision
+          description: The precision of the published date.
+          type: string
+        updated_date:
+          title: Updated Date
+          description: The date the article was last updated.
+          type: string
+        updated_date_precision:
+          title: Updated Date Precision
+          description: The precision of the updated date.
+          type: string
+        parse_date:
+          title: Parse Date
+          description: The date the article was parsed.
+          type: string
+        link:
+          title: Link
+          description: The URL link to the article.
+          type: string
+        domain_url:
+          title: Domain URL
+          description: The domain URL of the article.
+          type: string
+        full_domain_url:
+          title: Full Domain URL
+          description: The full domain URL of the article.
+          type: string
+        name_source:
+          title: Name Source
+          description: The name of the source where the article was published.
+          type: string
+        is_headline:
+          title: Is Headline
+          description: Indicates if the article is a headline.
+          type: boolean
+        paid_content:
+          title: Paid Content
+          description: Indicates if the article is paid content.
+          type: boolean
+        parent_url:
+          title: Parent URL
+          description: The categorical URL of the article.
+          type: string
+        country:
+          title: Country
+          description: The country where the article was published.
+          type: string
+        rights:
+          title: Rights
+          description: The rights information for the article.
+          type: string
+        rank:
+          title: Rank
+          description: The rank of the article's source.
+          type: integer
+        media:
+          title: Media
+          description: The media associated with the article.
+          type: string
+        language:
+          title: Language
+          description: The language in which the article is written.
+          type: string
+        description:
+          title: Description
+          description: A brief description of the article.
+          type: string
+        content:
+          title: Content
+          description: The content of the article.
+          type: string
+        word_count:
+          title: Word Count
+          description: The word count of the article.
+          type: integer
+          default: 0
+        is_opinion:
+          title: Is Opinion
+          description: Indicates if the article is an opinion piece.
+          type: boolean
+        twitter_account:
+          title: Twitter Account
+          description: The Twitter account associated with the article.
+          type: string
+        all_links:
+          title: All Links
+          description: A list of all URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        all_domain_links:
+          title: All Domain Links
+          description: A list of all domain URLs mentioned in the article.
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: string
+          default: []
+        nlp:
+          $ref: "#/components/schemas/NlpDataEntity"
+        id:
+          title: ID
+          description: The unique identifier for the article.
+          type: string
+        score:
+          title: Score
+          description: The relevance score of the article.
+          type: number
+
     SimilarArticleEntity:
       title: Search Similar Article Object
       description: |
         The data model for an article result in the `Search similar` articles request. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted 
-        during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
       allOf:
         - $ref: "#/components/schemas/ArticleEntity"
         - type: object
@@ -3271,7 +3589,7 @@ components:
       description: |
         The response model for a successful `Sources` request retrieving news sources matching the specified criteria. Response field behavior:
         - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
       required:
         - message
         - sources
