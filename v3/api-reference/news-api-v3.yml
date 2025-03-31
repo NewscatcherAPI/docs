@@ -1647,7 +1647,7 @@ components:
 
         Example: `"20000199, 20000209"`
 
-        **Note**: The `iptc_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       name: iptc_tags
@@ -1663,7 +1663,7 @@ components:
 
         Example: `"20000205, 20000209"`
 
-        **Note**: The `not_iptc_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `not_iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       name: not_iptc_tags
@@ -1679,7 +1679,7 @@ components:
 
         Example: `"Business, Events"`
 
-        **Note**: The `iab_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       name: iab_tags
@@ -1695,7 +1695,7 @@ components:
 
         Example: `"Agriculture, Metals"`
 
-        **Note**: The `not_iab_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `not_iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       name: not_iab_tags
@@ -3191,18 +3191,24 @@ components:
             type: string
           description: |
             IPTC media topic taxonomy paths identified in the article content. Each path represents a hierarchical category following the IPTC standard.
+
+            **Note**: The `iptc_tags_name` field is only available in the `v3_nlp_iptc_tags` subscription plan.
         iptc_tags_id:
           type: array
           items:
             type: string
           description: |
             IPTC media topic numeric codes identified in the article content. These codes correspond to the standardized IPTC media topic taxonomy.
+
+            **Note**: The `iptc_tags_id` field is only available in the `v3_nlp_iptc_tags` subscription plan.
         iab_tags_name:
           type: array
           items:
             type: string
           description: |
             IAB content taxonomy paths identified in the article content. Each path represents a hierarchical category following the IAB content standard.
+
+            **Note**: The `iab_tags_name` field is only available in the `v3_nlp_iptc_tags` subscription plan.
 
     SentimentScores:
       type: object
@@ -4375,7 +4381,7 @@ components:
         - `"20000199, 20000209"`
         - `["20000199", "20000209"]`
 
-        **Note**: The `iptc_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       example: ["20000199", "20000209"]
@@ -4393,7 +4399,7 @@ components:
         - `"20000205, 20000209"`
         - `["20000205", "20000209"]`
 
-        **Note**: The `not_iptc_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `not_iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
       example: ["20000205", "20000209"]
@@ -4411,7 +4417,7 @@ components:
         - `"Business, Events"`
         - `["Business", "Events"]`
 
-        **Note**: The `iab_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       example: ["Business", "Events"]
@@ -4429,7 +4435,7 @@ components:
         - `"Agriculture, Metals"`
         - `["Agriculture", "Metals"]`
 
-        **Note**: The `not_iab_tags` parameter is only available if tags are included in your subscription plan.
+        **Note**: The `not_iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
       example: ["Agriculture", "Metals"]
