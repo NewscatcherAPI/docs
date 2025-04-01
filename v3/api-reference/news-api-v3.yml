@@ -3384,10 +3384,9 @@ components:
               $ref: "#/components/schemas/UserInputDto"
 
     BreakingNewsArticleEntity:
-      title: Breaking News Article object
-      description:
-        The data model representing a single article in the `Breaking news`
-        search results.
+      title: Breaking News Article Object
+      description: |
+        The data model representing a single article in the `Breaking news` search results.
       required:
         - title
         - link
