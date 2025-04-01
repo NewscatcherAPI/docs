@@ -1,0 +1,181 @@
+---
+title: Breaking news (beta)
+sidebarTitle: Breaking news
+description:
+  Learn about breaking news detection and how to access emerging stories through
+  the News API v3
+---
+
+<Warning>
+  Breaking news is currently in beta. We do not recommend using it in production
+  as it may undergo changes.
+</Warning>
+
+## Overview
+
+Breaking news represents important news stories rapidly gaining traction across
+multiple sources. Our system identifies these stories through automated analysis
+of news coverage patterns, allowing you to discover high-impact events as they
+emerge.
+
+A breaking news event is characterized by:
+
+- Coverage from multiple different sources and authors
+- Rapid publication within a short time frame
+- Significant importance within a specific topic area
+
+## How it works
+
+Our breaking news detection works through several interconnected stages:
+
+<Steps>
+  <Step title="Clustering">
+    Recently published articles are automatically grouped together based on
+    their content similarity.
+  </Step>
+  <Step title="Validation">
+    Each cluster undergoes analysis for breaking news signals, including: 
+    - Publication frequency (sudden spikes in coverage) 
+    - Source diversity (coverage across multiple publishers) 
+    - Coverage quality (presence of high-ranking news sources)
+  </Step>
+  <Step title="Deduplication">
+    The system filters out duplicate content within clusters while preserving
+    source diversity.
+  </Step>
+  <Step title="Historical Analysis">
+    New candidates get compared against recent breaking news to track continuing
+    stories.
+  </Step>
+  <Step title="AI Evaluation">
+    An AI analysis step confirms whether potential breaking news clusters
+    represent significant events.
+  </Step>
+  <Step title="Classification">
+    Clusters that meet the breaking news criteria receive a special flag in the
+    system.
+  </Step>
+</Steps>
+
+When you query the `/breaking_news` endpoint, you receive the most
+representative article from each breaking news cluster. Results are ordered by
+cluster size, so the most widely covered breaking news appears first.
+
+## Breaking news endpoint
+
+The `/breaking_news` endpoint provides access to breaking news stories through
+simple API calls.
+
+### Base URL
+
+```
+https://v3-api.newscatcherapi.com/api/breaking_news
+```
+
+### HTTP Methods
+
+- `GET`: Query parameters in the URL
+- `POST`: Parameters in request body (JSON)
+
+### Request examples
+
+<CodeGroup>
+
+```bash GET
+curl -X GET "https://v3-api.newscatcherapi.com/api/breaking_news?theme=Business&include_nlp_data=true" \
+  -H "x-api-token: YOUR_API_KEY"
+```
+
+```bash POST
+curl -X POST "https://v3-api.newscatcherapi.com/api/breaking_news" \
+  -H "Content-Type: application/json" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -d '{
+    "include_nlp_data": true,
+    "theme": "Business"
+  }'
+```
+
+</CodeGroup>
+
+### Response format
+
+The API returns a JSON object with the following structure:
+
+```json
+{
+  "status": "ok",
+  "total_hits": 318,
+  "page": 1,
+  "total_pages": 318,
+  "page_size": 1,
+  "articles": [
+    {
+      "title": "Article Title",
+      "author": "Author Name",
+      "published_date": "2025-03-31 14:11:04",
+      // ... standard article fields ...
+      "breaking_news_event_id": "12520934405688386290",
+      "breaking_news_articles_count": 766
+    }
+  ],
+  "user_input": {
+    // Echo of request parameters
+  }
+}
+```
+
+Each article in the response represents the top article from a unique breaking
+news cluster. The additional fields specific to the `/breaking_news` endpoint
+include:
+
+- `breaking_news_event_id`: Unique identifier for the breaking news
+  event/cluster.
+- `breaking_news_articles_count`: Number of articles in this breaking news
+  cluster.
+
+### Comparison with other endpoints
+
+| Endpoint        | Breaking news                                       | Search                                         | Latest headlines                                        |
+| --------------- | --------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------- |
+| Purpose         | Discover emerging stories with significant traction | Find specific content matching search criteria | Retrieve recent headlines for the specified time period |
+| Time scope      | Fixed at 24 hours                                   | Configurable with `from_` and `to_`            | Configurable with `when`                                |
+| Result grouping | Clustered by event                                  | Individual articles                            | Individual articles                                     |
+| Primary sorting | By cluster size (coverage volume)                   | By relevance, date, or rank                    | By publication date                                     |
+| Best for        | Discovering important new stories                   | Finding specific content                       | Monitoring regular updates                              |
+
+## Use cases
+
+The breaking news endpoint is valuable in several scenarios:
+
+### Timely information discovery
+
+Media monitoring teams can quickly identify emerging stories without manually
+tracking multiple sources. When a significant event occurs, the breaking news
+endpoint immediately highlights it based on its sudden surge in coverage.
+
+### Content curation
+
+Content teams can discover trending stories to feature in newsletters, websites,
+or apps. Instead of manually checking multiple sources, the breaking news
+endpoint automatically identifies stories gaining traction across the media
+landscape.
+
+### Market intelligence
+
+Financial and business analysts can be alerted to significant events affecting
+markets, companies, or industries. By monitoring breaking news in specific
+business sectors, analysts can identify potentially market-moving information
+faster.
+
+### Crisis monitoring
+
+Organizations can quickly identify emerging crises related to their industry,
+brand, or interests. The breaking news endpoint helps detect sudden increases in
+coverage about topics of concern, enabling faster response.
+
+
+## Related resources
+
+- [API reference: Get breaking news](/v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get)
+- [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles)
