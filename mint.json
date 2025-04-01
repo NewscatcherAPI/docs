@@ -94,7 +94,8 @@
         "v3/documentation/guides-and-concepts/articles-deduplication",
         "v3/documentation/guides-and-concepts/nlp-features",
         "v3/documentation/guides-and-concepts/custom-tags",
-        "v3/documentation/guides-and-concepts/entity-disambiguation"
+        "v3/documentation/guides-and-concepts/entity-disambiguation",
+        "v3/documentation/guides-and-concepts/breaking-news"
       ]
     },
     {
@@ -157,6 +158,13 @@
           "pages": [
             "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
             "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post"
+          ]
+        },
+        {
+          "group": "Breaking news",
+          "pages": [
+            "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
+            "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-post"
           ]
         },
         {
