@@ -2061,7 +2061,7 @@ components:
                 $ref: "#/components/schemas/TitleSentimentMax"
               content_sentiment_min:
                 $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentient_max:
+              content_sentiment_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
               iptc_tags:
                 $ref: "#/components/schemas/IptcTags"
@@ -2437,7 +2437,7 @@ components:
                 $ref: "#/components/schemas/TitleSentimentMax"
               content_sentiment_min:
                 $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentient_max:
+              content_sentiment_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
               iptc_tags:
                 $ref: "#/components/schemas/IptcTags"
@@ -2658,7 +2658,7 @@ components:
     AggregationCountResponse:
       description:
         A successful response containing aggregation count results that match
-        the search criteria. If no matches, returns a failded aggregation
+        the search criteria. If no matches, returns a failed aggregation
         response according to the defined schema.
       content:
         application/json:
@@ -2670,7 +2670,7 @@ components:
     AuthorsResponse:
       description:
         Authors search response containing a list of authors that match the
-        search criteria. If no matches, returns a failded search response
+        search criteria. If no matches, returns a failed search response
         according to the defined schema.
       content:
         application/json:
@@ -2712,7 +2712,7 @@ components:
     SearchSimilarResponse:
       description:
         A successful response containing articles similar to the specified
-        query. If no matches, returns a failded search response according to the
+        query. If no matches, returns a failed search response according to the
         defined schema.
       content:
         application/json:
