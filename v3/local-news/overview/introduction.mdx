@@ -1,31 +1,86 @@
 ---
 title: Introduction to Local News API
 sidebarTitle: Introduction
-description: Local News API features and capabilities
+description:
+  Access U.S. location-specific news with advanced geographic relevance
+  detection.
 ---
 
 ## What is Local News API?
 
-Local News API provides precise access to location-specific news content
-worldwide. Building upon News API v3's robust foundation, it adds specialized
-features for geographic news discovery and analysis. Whether developing local
-news applications, analyzing regional trends, or tracking city-specific
-coverage, Local News API helps you efficiently work with geographically focused
-news data.
+Local News API is a specialized service focused on U.S. location-specific
+content. Building on our core News API v3 infrastructure, it adds dedicated
+location detection capabilities optimized for city, county, and state-level news
+coverage. The system processes content from thousands of local news sources,
+including small city publishers, regional outlets, university newspapers, and
+local government news portals.
 
-## Key features
+## Features
 
-- AI-powered location recognition and validation
-- Advanced querying with boolean operators and proximity search
-- Multiple town association methods for precise location matching
-- NLP-enriched content for deeper analysis
-- Articles clustering
-- Multi-language support
-- High volume data retrieval (up to 1000 articles per request)
+<Tabs>
+  <Tab title="Location">
+    - Six distinct location detection methods
+    - Content from thousands of local U.S. news sources, including city publishers, university newspapers, and government portals
+    - Specialized validation of location relevance, not just location mentions
+  </Tab>
+  <Tab title="Content">
+    - NLP analysis including sentiment scoring, theme categorization, and entity recognition
+    - Article clustering for related content grouping
+  </Tab>
+  <Tab title="Technical">
+    - Boolean query support with proximity search capabilities
+    - High-volume retrieval with up to 1000 articles per request
+    - Comprehensive API with search, headlines, and direct article lookup
+  </Tab>
+</Tabs>
+
+## Key differences from News API v3
+
+For users familiar with our core News API v3, Local News API offers these key
+enhancements:
+
+| Feature           | Local News API                                          | News API v3                               |
+| ----------------- | ------------------------------------------------------- | ----------------------------------------- |
+| Geographic focus  | U.S. local coverage with specialized location detection | Global news coverage                      |
+| Location handling | Basic NER plus six specialized detection methods        | Basic geographic filtering using NER      |
+| Historical data   | 30 days of history                                      | Up to 5 years of history                  |
+| Source types      | Local newspapers, government sites, university outlets  | Major publications, international sources |
+
+## Location detection methods
+
+The system uses six distinct methods to detect and validate locations in news
+articles:
+
+<CardGroup cols={2}>
+  <Card title="Dedicated Source" icon="building-columns">
+    Identifies articles from news sources exclusively covering a specific
+    location (highest confidence)
+  </Card>
+  <Card title="Local Section" icon="newspaper">
+    Identifies locations through dedicated sections in larger publications
+  </Card>
+  <Card title="Regional Source" icon="map">
+    Uses regional context to properly interpret and disambiguate location
+    mentions
+  </Card>
+  <Card title="Standard Format" icon="font">
+    Identifies locations written in standard formats like "City, State"
+  </Card>
+  <Card title="Proximity Mention" icon="arrow-right-arrow-left">
+    Detects cities and states mentioned within 15 words of each other
+  </Card>
+  <Card title="AI Extraction" icon="brain">
+    Uses AI-based content analysis to identify locations (requires AI Extraction
+    plan)
+  </Card>
+</CardGroup>
+
+For detailed information on each method, see
+[Location detection methods](/v3/local-news/overview/location-detection-methods).
 
 ## Base URL
 
-You must send all the API requests to the following base URL:
+For API requests use the following base URL:
 
 ```bash
 https://local-news.newscatcherapi.com
@@ -40,12 +95,22 @@ https://local-news.newscatcherapi.com
 | `/api/search_by`        | POST   | Direct article lookup                    | Retrieve specific articles using URLs, IDs, or RSS GUIDs     |
 | `/api/sources`          | POST   | Available news sources                   | Discover local news providers by region                      |
 
-## Request Format
+## Request format
 
 Include your API key in the `x-api-token` header for each request. All requests
 must use HTTPS.
 
 <CodeGroup>
+
+```json JSON
+{
+  "q": "venture capital",
+  "locations": ["San Francisco, California"],
+  "detection_methods": ["dedicated_source", "standard_format"],
+  "lang": "en",
+  "from_": "7 days ago"
+}
+```
 
 ```python Python
 import requests
@@ -60,9 +125,8 @@ HEADERS = {
 
 PAYLOAD = {
     "q": "venture capital",
-    "associated_towns": [{
-        "name": "San Francisco, California"
-    }],
+    "locations": ["San Francisco, California"],
+    "detection_methods": ["dedicated_source", "local_section"],
     "lang": "en",
     "from_": "7 days ago"
 }
@@ -82,9 +146,8 @@ curl -X POST \
   -H 'Content-Type: application/json' \
   -d '{
     "q": "venture capital",
-    "associated_towns": [{
-      "name": "San Francisco, California"
-    }],
+    "locations": ["San Francisco, California"],
+    "detection_methods": ["dedicated_source", "local_section"],
     "lang": "en",
     "from_": "7 days ago"
   }'
@@ -98,7 +161,7 @@ All API responses are JSON objects containing articles and metadata. The key
 response fields include:
 
 <ResponseField name="status" type="string">
-  The status of the request.
+  The status of the request. Always returns `"ok"` for successful requests.
 </ResponseField>
 
 <ResponseField name="total_hits" type="integer">
@@ -106,11 +169,11 @@ response fields include:
 </ResponseField>
 
 <ResponseField name="page" type="integer">
-  The current page number.
+  The current page number of the results.
 </ResponseField>
 
 <ResponseField name="total_pages" type="integer">
-  The total number of available pages.
+  The total number of pages available for the given search criteria.
 </ResponseField>
 
 <ResponseField name="page_size" type="integer">
@@ -121,28 +184,182 @@ response fields include:
   An array of article objects, each containing location-specific metadata and content.
 
   <Expandable title="properties">
-    <ResponseField name="id" type="string">
+    <ResponseField name="id" type="string" required>
       The unique identifier for the article.
     </ResponseField>
 
-    <ResponseField name="associated_town" type="array">
-      A list of towns associated with the article, including association methods.
+    <ResponseField name="locations" type="array">
+      A list of locations mentioned in the article along with their detection methods.
+      <Expandable title="Location properties">
+        <ResponseField name="name" type="string" required>
+          The full name of the location, including the state. Format is `"City, State"`.
+          For example, `"San Francisco, California"`.
+        </ResponseField>
+        <ResponseField name="detection_methods" type="array" required>
+          Methods used to detect this location in the article. Options:
+          `"dedicated_source"`, `"local_section"`, `"regional_source"`, `"standard_format"`,
+          `"proximity_mention"`, `"ai_extracted"`.
+        </ResponseField>
+      </Expandable>
     </ResponseField>
 
-    <ResponseField name="ai_associated_town" type="array">
-      Towns identified through AI analysis of the article content.
+    <ResponseField name="score" type="number">
+      The relevance score of the article.
     </ResponseField>
 
-    <ResponseField name="title" type="string">
+    <ResponseField name="title" type="string" required>
       The title of the article.
     </ResponseField>
 
-    <ResponseField name="content" type="string">
-      The full content of the article.
+    <ResponseField name="author" type="string">
+      The primary author of the article.
+    </ResponseField>
+
+    <ResponseField name="link" type="string" required>
+      The URL link to the article.
+    </ResponseField>
+
+    <ResponseField name="description" type="string">
+      A brief description of the article.
+    </ResponseField>
+
+    <ResponseField name="media" type="string">
+      The URL of the media associated with the article, typically an image.
+    </ResponseField>
+
+    <ResponseField name="content" type="string" required>
+      A snippet or summary of the article's content.
+    </ResponseField>
+
+    <ResponseField name="authors" type="array">
+      A list of authors of the article.
+    </ResponseField>
+
+    <ResponseField name="published_date" type="string" required>
+      The date and time the article was published.
+    </ResponseField>
+
+    <ResponseField name="published_date_precision" type="string" required>
+      The precision of the published date.
+    </ResponseField>
+
+    <ResponseField name="updated_date" type="string">
+      The date and time the article was last updated.
+    </ResponseField>
+
+    <ResponseField name="updated_date_precision" type="string">
+      The precision of the updated date.
+    </ResponseField>
+
+    <ResponseField name="is_opinion" type="boolean" required>
+      Indicates if the article is an opinion piece.
+    </ResponseField>
+
+    <ResponseField name="twitter_account" type="string">
+      The Twitter account associated with the article. Can be `null`.
+    </ResponseField>
+
+    <ResponseField name="domain_url" type="string" required>
+      The domain URL of the article's source.
+    </ResponseField>
+
+    <ResponseField name="parent_url" type="string">
+      The parent URL of the article, typically representing the homepage of the source.
+    </ResponseField>
+
+    <ResponseField name="word_count" type="integer">
+      The word count of the article.
+    </ResponseField>
+
+    <ResponseField name="rank" type="integer" required>
+      The rank of the article's source.
+    </ResponseField>
+
+    <ResponseField name="country" type="string">
+      The country code where the article was published.
+    </ResponseField>
+
+    <ResponseField name="rights" type="string">
+      The rights information for the article, typically the domain name.
+    </ResponseField>
+
+    <ResponseField name="language" type="string">
+      The language code in which the article is written.
+    </ResponseField>
+
+    <ResponseField name="paid_content" type="boolean">
+      Indicates if the article is paid content.
     </ResponseField>
 
     <ResponseField name="nlp" type="object">
-      NLP analysis data including sentiment, themes, and named entities.
+      Natural Language Processing data for the article.
+      <Expandable title="NLP properties">
+        <ResponseField name="theme" type="array">
+          The themes or categories identified in the article.
+        </ResponseField>
+        <ResponseField name="summary" type="string">
+          A brief AI-generated summary of the article content.
+        </ResponseField>
+        <ResponseField name="sentiment" type="object">
+          Sentiment scores for the article's title and content.
+          <Expandable title="Sentiment properties">
+            <ResponseField name="title" type="number">
+              The sentiment score for the article title (-1.0 to 1.0).
+            </ResponseField>
+            <ResponseField name="content" type="number">
+              The sentiment score for the article content (-1.0 to 1.0).
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="new_embedding" type="array">
+          A dense 1024-dimensional vector representation of the article content.
+          Only available in the `v3_local_news_nlp_embeddings` subscription plan.
+        </ResponseField>
+        <ResponseField name="ner_PER" type="array">
+          Named Entity Recognition for person entities (individuals' names).
+          <Expandable title="Entity properties">
+            <ResponseField name="entity_name" type="string">
+              The name of the entity identified in the article.
+            </ResponseField>
+            <ResponseField name="count" type="integer">
+              The number of times this entity appears in the article.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="ner_ORG" type="array">
+          Named Entity Recognition for organization entities (company names, institutions).
+          <Expandable title="Entity properties">
+            <ResponseField name="entity_name" type="string">
+              The name of the entity identified in the article.
+            </ResponseField>
+            <ResponseField name="count" type="integer">
+              The number of times this entity appears in the article.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="ner_MISC" type="array">
+          Named Entity Recognition for miscellaneous entities (events, nationalities, products).
+          <Expandable title="Entity properties">
+            <ResponseField name="entity_name" type="string">
+              The name of the entity identified in the article.
+            </ResponseField>
+            <ResponseField name="count" type="integer">
+              The number of times this entity appears in the article.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+        <ResponseField name="ner_LOC" type="array">
+          Named Entity Recognition for location entities (cities, countries, geographic features).
+          <Expandable title="Entity properties">
+            <ResponseField name="entity_name" type="string">
+              The name of the entity identified in the article.
+            </ResponseField>
+            <ResponseField name="count" type="integer">
+              The number of times this entity appears in the article.
+            </ResponseField>
+          </Expandable>
+        </ResponseField>
+      </Expandable>
     </ResponseField>
 
   </Expandable>
@@ -158,133 +375,51 @@ response fields include:
   section.
 </Note>
 
-### Example request
-
-Here's a sample search for venture capital news in San Francisco:
-
-```json Request
-{
-  "q": "venture capital",
-  "associated_towns": [
-    {
-      "name": "San Francisco, California"
-    }
-  ],
-  "lang": "en",
-  "from_": "7 days ago"
-}
-```
-
 ### Example response
 
 ```json Response
 {
   "status": "ok",
-  "total_hits": 5,
+  "total_hits": 35,
   "page": 1,
   "total_pages": 1,
   "page_size": 100,
   "articles": [
     {
       "id": "dabf25a5cbee2705f1ab866eeafdc835",
-      "associated_town": [
+      "locations": [
         {
-          "ai_validated": true,
           "name": "San Francisco, California",
-          "description": ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
+          "detection_methods": ["dedicated_source"]
         }
       ],
-      "ai_associated_town": null,
       "score": 17.720953,
-      "title": "Tech company to move headquarters from San Francisco to Texas",
-      "author": "Aayush Gupta",
-      "link": "https://www.bizjournals.com/sanfrancisco/news/2024/10/24/simplilearn-kumar-plano-san-francisco-headquarters.html",
-      "description": "The company offers a variety of online training programs for those interested in working in the tech industry, including programming, cybersecurity, digital marketing and artificial intelligence.",
-      "media": "https://media.bizj.us/view/img/11514132/042712369*1200xx5184-2916-0-270.jpg",
-      "content": "A global digital education company is relocating its U.S headquarters from downtown San Francisco to North Texas...",
-      "authors": ["Aayush Gupta"],
-      "published_date_precision": "full",
-      "published_date": "2024-10-24 18:40:00",
-      "updated_date": null,
-      "updated_date_precision": null,
-      "is_opinion": false,
-      "twitter_account": null,
-      "domain_url": "bizjournals.com",
-      "parent_url": "https://www.bizjournals.com/sanfrancisco",
-      "word_count": 391,
-      "rank": 503,
-      "country": "US",
-      "rights": "bizjournals.com",
-      "language": "en",
-      "nlp": {
-        "theme": ["Business", "Tech"],
-        "summary": "Simplilearn Solutions Pvt. Ltd. is relocating its U.S headquarters from downtown San Francisco to Plano, Texas. The new HQ will be located at 5851 Legacy Circle in Legacy Town Center.",
-        "sentiment": {
-          "title": 0.0,
-          "content": 0.9911
-        },
-        "ner_PER": [
-          {
-            "entity_name": "Krishna Kumar",
-            "count": 1
-          }
-        ],
-        "ner_ORG": [
-          {
-            "entity_name": "Simplilearn",
-            "count": 4
-          }
-        ],
-        "ner_MISC": [
-          {
-            "entity_name": "NYSE",
-            "count": 1
-          }
-        ],
-        "ner_LOC": [
-          {
-            "entity_name": "San Francisco",
-            "count": 2
-          },
-          {
-            "entity_name": "Texas",
-            "count": 1
-          }
-        ]
-      },
-      "paid_content": false
+      "title": "Tech company to move headquarters from San Francisco to Texas"
+      // Additional fields omitted for brevity
     }
-    // ... other articles
-  ],
-  "user_input": {
-    "q": "venture capital",
-    "associated_towns": [
-      {
-        "name": "San Francisco, California"
-      }
-    ],
-    "lang": "en",
-    "from_": "7 days ago"
-  }
+  ]
 }
 ```
 
+## Use cases
+
+Local News API is designed for applications requiring location-specific news
+intelligence:
+
+- **Local news applications**: Deliver geographically relevant content to users.
+- **Regional business monitoring**: Track company activities in specific
+  markets.
+- **Real estate intelligence**: Monitor development news, policy changes, and
+  market trends.
+- **Media analysis**: Examine coverage patterns across geographic regions.
+- **Government affairs**: Track policy issues at local and regional levels.
+- **Crisis monitoring**: Follow emergencies and public health issues by
+  location.
+- **University research**: Analyze local media coverage of regional issues.
+
 ## Getting started
 
-To start using Local News API:
-
-1. [Contact our sales team](https://www.newscatcherapi.com/pricing) to discuss
-   your needs and obtain an API key.
-2. Once you have your API key, check out our
-   [Quickstart guide](/v3/local-news/overview/quickstart) to make your first API
-   call.
-3. Explore [Documentation](/v3/local-news/overview/introduction) to unlock the
-   full potential of the API.
-
-For detailed information about request parameters and response formats, refer to
-the specific endpoint documentation in this API reference.
-
-The Local News API is your gateway to precise, location-specific news content.
-Whether you're building local news applications, analyzing regional trends, or
-tracking city-specific coverage, we're here to help you navigate the world of
-local news data.
+1. Visit our [pricing page](https://www.newscatcherapi.com/pricing) to get your API key.
+2. Follow the [Quickstart guide](/v3/local-news/overview/quickstart) to make your first request and comprehend the basic workflow.
+3. Review the [Location detection methods](/v3/local-news/overview/location-detection-methods) documentation to understand how the system identifies and validates location mentions.
+4. Dive into the [API reference](/v3/local-news/endpoints) for detailed endpoint documentation and advanced query options.
