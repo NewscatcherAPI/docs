@@ -63,19 +63,22 @@ data:
 
 #### NLP coverage by language
 
-The NLP coverage and available features varies by language:
+The table below shows which NLP features are available for different language
+categories:
 
-- **English and Arabic**: All the articles in these languages undergo
-  comprehensive NLP processing with all features: theme, summary, sentiment
-  analysis, named entities, and content tags.
-- **Other languages**: Only 10% of non-English/Arabic articles undergo NLP
-  processing. In addition, they have limited NLP features (theme, summary, and
-  tags).
-- **All languages**: Unlike other NLP features, we produce vector embeddings for
-  nearly 100% of articles across all languages, making this the most universal
-  NLP feature. For more information, see the
-  [Embeddings](/v3/documentation/guides-and-concepts/nlp-features#embeddings)
-  section.
+| Feature                  | English & Arabic | Other Languages | Coverage                           |
+| ------------------------ | ---------------- | --------------- | ---------------------------------- |
+| Theme classification     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Summary                  | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Sentiment analysis       | ✓                | ✗               | 100% of English/Arabic articles    |
+| Named entity recognition | ✓                | ✗               | 100% of English/Arabic articles    |
+| Content tags             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Vector embeddings        | ✓                | ✓               | Nearly 100% of all articles        |
+| Clustering               | ✓                | ✓               | All articles                       |
+| Deduplication            | ✓                | ✓               | All articles                       |
+
+For a complete list of supported languages, see
+[language codes in News API v3](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
 
 <Warning>
   When working with non-English/Arabic content, using `has_nlp=true`
