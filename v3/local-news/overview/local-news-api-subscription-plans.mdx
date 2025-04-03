@@ -7,8 +7,8 @@ description:
 ---
 
 <Note>
-  Each plan includes multi-language support, article clustering, NLP analysis,
-  town association methods, and comprehensive metadata. Plans differ in their
+  Each plan includes specialized location detection methods, articles
+  clustering, NLP analysis, and comprehensive metadata. Plans differ in their
   specialized features and processing capabilities.
 </Note>
 
@@ -18,14 +18,14 @@ description:
   <Tab title="Standard">
     **Plan ID**: `v3_local_news_nlp`
 
-    Standard plan provides comprehensive NLP capabilities for content analysis and monitoring:
+    Standard plan provides comprehensive NLP capabilities for content analysis and location-based monitoring:
 
     <Check>Access complete article metadata and clustering</Check>
     <Check>Categorize content across 15+ themes (Business, Tech, Politics, and more)</Check>
     <Check>Detect named entities (PER, ORG, LOC, MISC)</Check>
     <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
     <Check>Get AI-generated article summaries</Check>
-    <Check>Use 5 town association methods for precise location matching</Check>
+    <Check>Use 5 location detection methods: `dedicated_source`, `local_section`, `regional_source`, `standard_format`, and `proximity_mention`</Check>
 
   </Tab>
   <Tab title="Embeddings">
@@ -38,6 +38,7 @@ description:
     <Check>Use the multilingual-e5-large model for embeddings generation</Check>
     <Check>Enable semantic search in your applications</Check>
     <Check>Build similarity-based news aggregations</Check>
+    <Check>Use 5 location detection methods: `dedicated_source`, `local_section`, `regional_source`, `standard_format`, and `proximity_mention`</Check>
 
   </Tab>
   <Tab title="AI Extraction">
@@ -46,11 +47,10 @@ description:
     AI Extraction plan adds AI-powered location features:
 
     <Check>Access all Standard NLP features</Check>
-    <Check>Extract towns from article content using AI</Check>
-    <Check>Validate locations automatically</Check>
-    <Check>Get town information through `ai_associated_town` in responses</Check>
-    <Check>Filter content using the `search_in_ai_associated_town` parameter</Check>
-    <Check>Access AI town data starting from September 24, 2024</Check>
+    <Check>Extract locations from article content using AI</Check>
+    <Check>Access all 6 location detection methods including `ai_extracted`</Check>
+    <Check>Filter content using the `detection_methods` parameter with the `ai_extracted` method</Check>
+    <Check>Access AI-extracted location data starting from September 24, 2024</Check>
 
   </Tab>
 </Tabs>
@@ -61,7 +61,6 @@ description:
 | ---------------------- | -------- | ---------- | ------------- |
 | **Core Features**      |
 | Article Metadata       | ✓        | ✓          | ✓             |
-| Multi-language Support | ✓        | ✓          | ✓             |
 | Clustering             | ✓        | ✓          | ✓             |
 | **NLP Features**       |
 | Theme Analysis         | ✓        | ✓          | ✓             |
@@ -71,7 +70,13 @@ description:
 | **Location Features**  |
 | Location Filtering     | ✓        | ✓          | ✓             |
 | AI Location Extraction | -        | -          | ✓             |
-| Location Validation    | -        | -          | ✓             |
+| Location Validation    | ✓        | ✓          | ✓             |
+
+<Tip>
+  For detailed information on location detection methods available in each plan,
+  see [Location detection
+  methods](/v3/local-news/overview/location-detection-methods).
+</Tip>
 
 ## Support
 
