@@ -3397,6 +3397,8 @@ components:
         - content
         - id
         - score
+        - breaking_news_event_id
+        - breaking_news_articles_count
       type: object
       properties:
         title:
@@ -3540,6 +3542,14 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
+        breaking_news_event_id:
+          title: Breaking News Event ID
+          description: Unique identifier for the breaking news event/cluster
+          type: string
+        breaking_news_articles_count:
+          title: Breaking News Articles Count
+          description: Number of articles in this breaking news cluster
+          type: integer
 
     SimilarArticleEntity:
       title: Search Similar Article Object
