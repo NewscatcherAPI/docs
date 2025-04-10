@@ -1,37 +1,77 @@
 ---
 title: Local News API quickstart guide
 sidebarTitle: Quickstart
-description:
-  This guide will help you make your first API call to Local News API and start
-  retrieving location-specific news in just a few minutes.
+description: Get started with location-specific news data using Local News API.
 ---
+
+Transform your data needs with precise location-specific news content! This
+guide helps you make your first API call to access local news articles with
+powerful location detection and filtering capabilities.
 
 ## Before you start
 
-Before you begin, make sure you have:
+Before you begin, make sure you meet these prerequisites:
 
-- An API key for Local News API (obtained from your account manager)
-- Python 3.6+ installed on your system
-- The `requests` library for Python
+- An API key (obtain one through our
+  [pricing page](https://www.newscatcherapi.com/pricing))
+- Basic understanding of REST APIs
+- Your preferred programming language and HTTP client
+- Basic knowledge of JSON data format
 
 ## Steps
 
 <Steps>
   <Step title="Set up your environment">
 
-    First, make sure you have Python and the `requests` library installed. You can
-    install `requests` using pip:
+    Make sure you have the necessary HTTP client library installed for your programming language:
 
-    ```bash
+    <CodeGroup>
+    ```bash curl
+    # cURL is typically included in your system
+    # To check, open the terminal and type the following:
+    curl --version
+    ```
+
+    ```bash Python
     pip install requests
     ```
+
+    ```bash TypeScript
+    npm install axios
+    ```
+    </CodeGroup>
 
   </Step>
   <Step title="Create your first script">
 
-    Create a new file named `local_news_quickstart.py` and add the following code:
+    Run the curl command in your terminal, use JSON for the request body in Postman,
+    or create a script to fetch local news articles:
 
-    ```python
+    <CodeGroup>
+    ```bash curl
+    curl -X POST https://local-news.newscatcherapi.com/api/search \
+      -H "x-api-token: YOUR_API_KEY_HERE" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "q": "*",
+        "locations": ["San Francisco, California"],
+        "detection_methods": ["local_section", "ai_extracted"],
+        "theme": "Tech",
+        "lang": "en",
+        "from_": "7 days ago"
+      }'
+    ```
+    ```json JSON
+    {
+      "q": "*",
+      "locations": ["San Francisco, California"],
+      "detection_methods": ["local_section", "ai_extracted"],
+      "theme": "Tech",
+      "lang": "en",
+      "from_": "7 days ago"
+    }
+    ```
+    ```python Python
     import requests
     import json
 
@@ -39,12 +79,18 @@ Before you begin, make sure you have:
     API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
     URL = "https://local-news.newscatcherapi.com/api/search"
     HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+    # Define the search parameters
     PAYLOAD = {
-        "q": "*",
-        "associated_towns": [{"name": "San Francisco, California"}],
-        "theme": "Tech",
-        "lang": "en",
-        "from_": "7 days ago",
+        "q": "*",  # Search for all articles
+        "locations": ["San Francisco, California"],  # City to search for
+        "detection_methods": [
+            "local_section",
+            "ai_extracted",
+        ],  # How to detect location mentions
+        "theme": "Tech",  # Filter for tech news
+        "lang": "en",  # English language articles
+        "from_": "7 days ago",  # Articles from the last week
     }
 
     try:
@@ -58,196 +104,97 @@ Before you begin, make sure you have:
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch articles: {e}")
     ```
+    ```typescript TypeScript
+    async function fetchLocalNews() {
+      const API_KEY = "YOUR_API_KEY_HERE"; // Replace with your actual API key
+      const URL = "https://local-news.newscatcherapi.com/api/search";
 
-    Remember to replace `YOUR_API_KEY_HERE` with your actual API key.
+      // Define the search parameters
+      const payload = {
+        q: "*", // Search for all articles
+        locations: ["San Francisco, California"], // City to search for
+        detection_methods: ["local_section", "ai_extracted"], // How to detect location mentions
+        theme: "Tech", // Filter for tech news
+        lang: "en", // English language articles
+        from_: "7 days ago" // Articles from the last week
+      };
+
+      try {
+        // Fetch articles using POST method
+        const response = await fetch(URL, {
+          method: 'POST',
+          headers: {
+            'x-api-token': API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // Parse and log the response
+        const data = await response.json();
+        console.log(JSON.stringify(data, null, 2));
+      } catch (error) {
+        console.error('Failed to fetch articles:', error);
+      }
+    }
+
+    // Execute the function
+    fetchLocalNews();
+    ```
+
+    </CodeGroup>
+
+    <Note>
+      Remember to replace `YOUR_API_KEY_HERE` with your actual API key.
+    </Note>
 
   </Step>
 
-  <Step title="Run the script and review the results">
+  <Step title="Review the results">
 
-    Run the script from your terminal:
+    When you run the script, you receive a JSON response like this (shortened for readability):
 
-    ```bash
-    python local_news_quickstart.py
-    ```
-
-    You can see a JSON response similar to this (shortened for readability):
-
-    ```json
+    ```json JSON {10-15}
     {
-    "status": "ok",
-    "total_hits": 51,
-    "page": 1,
-    "total_pages": 1,
-    "page_size": 100,
-    "articles": [
+      "status": "ok",
+      "total_hits": 51,
+      "page": 1,
+      "total_pages": 1,
+      "page_size": 100,
+      "articles": [
         {
-        "id": "d156bb26af2b39ed33bd96b8428b4b21",
-        "associated_town": [
+          "id": "d156bb26af2b39ed33bd96b8428b4b21",
+          "locations": [
             {
-            "ai_validated": true,
-            "name": "San Francisco, California",
-            "description": ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
+              "name": "San Francisco, California",
+              "detection_methods": ["local_section"]
             }
-        ],
-        "title": "Researchers say an AI-powered transcription tool used in hospitals invents things no one ever said",
-        "link": "https://www.sfchronicle.com/business/article/researchers-say-an-ai-powered-transcription-tool-19864411.php",
-        "published_date": "2024-10-26 04:15:41",
-        "domain_url": "sfchronicle.com",
-        "nlp": {
+          ],
+          "title": "Researchers say an AI-powered transcription tool used in hospitals invents things no one ever said",
+          "link": "https://www.sfchronicle.com/business/article/researchers-say-an-ai-powered-transcription-tool-19864411.php",
+          "published_date": "2024-10-26 04:15:41",
+          "domain_url": "sfchronicle.com",
+          // ... other fields
+          "nlp": {
             "theme": ["Tech", "Science"],
             "summary": "Whisper, an AI-powered transcription tool, is prone to making up chunks of text or entire sentences. It's being used in industries worldwide to translate and transcribe interviews, generate text in popular consumer technologies and create subtitles for videos.",
             "sentiment": {
               "title": 0.8877,
               "content": -0.9958
             },
-            // other NLP fields
+            // ... nlp other fields
           }
         }
-        // ... additional articles
-    ],
-    "user_input": {
-        "q": "*",
-        "associated_towns": [
-          {
-            "name": "San Francisco, California"
-          }
-        ],
-        "theme": "Tech",
-        "lang": "en",
-        "from_": "7 days ago"
-      }
+      ],
     }
     ```
 
-    This response shows location-specific articles with rich metadata, including
-    town associations, NLP analysis, and article details.
-
-    <Note>
-    To learn more about town association, see the [Town association
-    methods](/v3/local-news/overview/town-association-methods).
-    </Note>
-
-  </Step>
-  <Step title="Modify the query to track industry trends">
-
-    Let's modify our script to monitor significant tech industry movements and
-    investments across major Bay Area tech hubs:
-
-    ```python
-    import requests
-
-    # Configuration
-    API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
-    URL = "https://local-news.newscatcherapi.com/api/search"
-    HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
-    PAYLOAD = {
-        "q": "expansion OR investment OR startup OR headquarters",
-        "associated_towns": [
-            {"name": "San Francisco, California"},
-            {"name": "San Jose, California"},
-            {"name": "Palo Alto, California"},
-        ],
-        "theme": "Tech",
-        "lang": "en",
-        "from_": "7 days ago",
-        "clustering": True,
-    }
-
-    # Association method descriptions
-    ASSOCIATION_METHODS = {
-        "HYPERLOCAL_SOURCES_EXCLUDE_QUERY": "Hyper-local source",
-        "HYPERLOCAL_SOURCES_INCLUDE_QUERY": "Exact city match",
-        "LOCAL_SOURCES_EXCLUDE_QUERY": "State-level source",
-        "CITY_STATE_COUNTY_QUERY": "Matches 'City, State' format",
-        "NEAR_CITY_STATE_QUERY": "Proximity match",
-    }
-
-    try:
-        # Fetch articles using POST method
-        response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
-        response.raise_for_status()
-
-        # Parse and display the articles
-        data = response.json()
-        clusters = data.get("clusters", {})
-
-        print(f"Found {data['clusters_count']} major tech stories")
-        print(f"Total articles: {data['total_hits']}")
-        print("---")
-
-        for cluster_id, cluster in clusters.items():
-            # Get the main article from each cluster
-            article = cluster["articles"][0]
-
-            # Extract key information
-            title = article["title"]
-
-            # Process all associated locations
-            locations = []
-            for town in article["associated_town"]:
-                # Get human-readable association methods
-                methods = [
-                    ASSOCIATION_METHODS.get(method, method)
-                    for method in town["description"]
-                ]
-                # Create location string with validation and methods
-                validation = "AI validated" if town.get("ai_validated") else "Not validated"
-                loc_str = f"{town['name']} ({validation}, {', '.join(methods)})"
-                locations.append(loc_str)
-
-            summary = article["nlp"]["summary"]
-            cluster_size = cluster["cluster_size"]
-            sentiment = (
-                "Positive" if article["nlp"]["sentiment"]["content"] > 0 else "Negative"
-            )
-
-            # Print story details
-            print(f"TRENDING STORY ({cluster_size} related articles):")
-            print(f"Title: {title}")
-            print("Locations:")
-            for loc in locations:
-                print(f"  - {loc}")
-            print(f"Sentiment: {sentiment}")
-            print(f"Summary: {summary}")
-            print("---")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to fetch articles: {e}")
-    ```
-
-    Sample output:
-
-    ```bash
-    Found 20 major tech stories
-    Total articles: 28
-    ---
-    TRENDING STORY (3 related articles):
-    Title: Persona Positioned Highest for Ability to Execute in the
-    Inaugural Gartner Magic Quadrant™ for Identity Verification
-    Locations:
-    - San Francisco, California (AI validated, Exact city match)
-    Sentiment: Positive
-    Summary: Persona ranked first across all Use Cases: Know Your Customer (KYC),
-    Fraud Detection, Account Recovery, and Sensitive or Regulated scenarios
-    in the Gartner Critical Capabilities report. Persona's advanced identity
-    verification platform stands as a critical defense that provides granular
-    fraud and risk controls to help organizations stay ahead of digital fraud
-    and safeguard both their business and customers.
-    ---
-    ```
-
-    The script shows how to:
-
-    - Track major business moves across key tech hubs.
-    - Monitor investment activity and expansions.
-    - Identify trending stories using clustering.
-    - Analyze market sentiment.
-    - Get detailed summaries of major developments.
-
-    Each clustered story provides a comprehensive view of significant tech industry
-    movements, helping you stay informed about important developments in the Bay
-    Area tech scene.
+    The response shows location-specific articles with rich metadata, including location detection methods,
+    NLP analysis, and article details.
 
   </Step>
 </Steps>
@@ -258,13 +205,12 @@ Now that you've made your first calls to the Local News API, here are some next
 steps:
 
 1. Learn about
-   [advanced querying](/v3/documentation/guides-and-concepts/advanced-querying)
-   to refine your searches.
+   [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying)
+   to refine your searches
 2. Explore
-   [town association methods](/v3/local-news/overview/town-association-methods)
-   for better location matching.
+   [Location detection methods](/v3/local-news/overview/location-detection-methods)
+   for better location matching
 3. Read about [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
-   to extract insights from articles.
+   to extract insights from articles
 
-If you have any questions or need assistance, please get in touch with our
-[support team](mailto:support@newscatcherapi.com).
+<Note>Need help? Contact our support team at support@newscatcherapi.com</Note>

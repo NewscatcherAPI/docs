@@ -4,16 +4,22 @@ info:
   description: |
     Discover, analyze, and leverage location-specific news with unparalleled precision!
 
-    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including AI-assisted town association, NLP analysis, and clustering of similar articles.
+    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including AI-powered location detection, NLP analysis, and clustering of similar articles.
 
     ## Key features
 
-    - **AI-Assisted Search**: Utilize AI-extracted town associations for highly accurate local news results.
+    - **Smart Location Detection**: Multiple detection methods, including dedicated sources, proximity analysis, and AI extraction.
     - **Advanced Querying**: Support for logical operators, wildcards, and multi-faceted filtering.
     - **Flexible Retrieval**: Search by keywords, get the latest headlines, or fetch articles by URL, ID, or RSS GUID.
     - **Rich Metadata**: Access detailed article information, including NLP-analysis insights.
     - **Content Clustering**: Group similar articles for concise topic overviews.
-    - **Granular Location Association**: Use predefined search patterns for associating articles with specific towns.
+    - **Precise Location Matching**: Six distinct methods for accurate location detection:
+      - Dedicated local news sources
+      - Local sections of larger publications
+      - Regional news sources
+      - Standard location format matching
+      - Proximity-based detection
+      - AI-powered extraction
     - **Customizable Filtering**: Filter by sentiment, word count, content type, and more.
     - **Source Discovery**: Retrieve information on available local news sources.
     - **Comprehensive Documentation**: Detailed overview and API reference with playground.
@@ -25,7 +31,7 @@ info:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
     url: https://www.newscatcherapi.com/pricing
-  version: 1.0.0
+  version: 1.1.0
 
 externalDocs:
   description: Find out more about NewsCatcher
@@ -336,14 +342,21 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # Request schemas
+    # v1.1.0 Updated BaseRequestDto
     BaseRequestDto:
       type: object
       properties:
-        associated_towns:
-          $ref: "#/components/schemas/AssociatedTowns"
-        search_in_ai_associated_town:
-          $ref: "#/components/schemas/SearchInAiAssociatedTown"
+        locations:
+          type: array
+          items:
+            type: string
+          description: |
+            The location(s) to search for in articles. Format should be "City, State".
+
+            Example: `["San Francisco, California"]`
+          example: ["New York City, New York", "Los Angeles, California"]
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
         lang:
           $ref: "#/components/schemas/Lang"
         sources:
@@ -382,8 +395,6 @@ components:
           $ref: "#/components/schemas/ContentSentimentMin"
         content_sentiment_max:
           $ref: "#/components/schemas/ContentSentimentMax"
-      required:
-        - associated_towns
 
     SearchRequestDto:
       allOf:
@@ -439,6 +450,30 @@ components:
 
     # Parameter schemas
     ## BaseRequestDto (mixin model) parameters
+    ### v1.1.0 New schema for detection methods
+    DetectionMethods:
+      type: array
+      items:
+        type: string
+        enum:
+          - dedicated_source
+          - local_section
+          - regional_source
+          - standard_format
+          - proximity_mention
+          - ai_extracted
+      description: |
+        The location detection methods to filter results by:
+        - `dedicated_source`: Identifies locations based on sources exclusively covering a specific location.
+        - `local_section`: Identifies locations through location-specific sections within larger publications.
+        - `regional_source`: Identifies locations using regional context from state-level publications.
+        - `standard_format`: Identifies locations written in standard formats like "City, State" or "City, County".
+        - `proximity_mention`: Identifies cities and states mentioned within 15 words of each other.
+        - `ai_extracted`: Identifies locations through AI-based content analysis. Requires AI Extraction plan.
+
+        For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
+      example: ["dedicated_source", "proximity_mention", "ai_extracted"]
+
     Lang:
       oneOf:
         - type: string
@@ -689,72 +724,6 @@ components:
         If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       example: false
 
-    AssociatedTowns:
-      type: array
-      items:
-        $ref: "#/components/schemas/TownEntity"
-      description: |
-        An array of town entities related to the articles. Each town entity contains information about a specific town and the association methods to be used for searching.
-
-        To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
-      example:
-        - name: "New York City, New York"
-          ai_validated: true
-          description: ["CITY_STATE_COUNTY_QUERY", "NEAR_CITY_STATE_QUERY"]
-        - name: "Los Angeles, California"
-          ai_validated: true
-          description:
-            ["HYPERLOCAL_SOURCES_INCLUDE_QUERY", "LOCAL_SOURCES_EXCLUDE_QUERY"]
-
-    SearchInAiAssociatedTown:
-      type: boolean
-      default: false
-      description: |
-        Determines whether to include AI-extracted town names in the search. If true, the API searches for articles mentioning AI-extracted towns and towns specified in the `associated_towns` parameter.
-
-        **Note**: The `search_in_ai_associated_town` parameter is only available for the `v3_local_news_ai_extraction_nlp` plan. Data for AI-associated towns is only available from September 24, 2024, onwards.
-      example: true
-
-    ## Town Entity schema: has complete docs, used for the requests.
-    ## More simple version `AssociatedTownEntity` used for responses.
-    TownEntity:
-      type: object
-      required:
-        - name
-      properties:
-        name:
-          type: string
-          description: |
-            The full name of the town, including the state. Format must be "City, State". For example, `"San Francisco, California"`.
-          example: "San Francisco, California"
-        ai_validated:
-          type: boolean
-          default: true
-          description: Indicates whether the town name was validated by AI.
-          example: true
-        description:
-          type: array
-          items:
-            type: string
-            enum:
-              - HYPERLOCAL_SOURCES_EXCLUDE_QUERY
-              - HYPERLOCAL_SOURCES_INCLUDE_QUERY
-              - LOCAL_SOURCES_EXCLUDE_QUERY
-              - CITY_STATE_COUNTY_QUERY
-              - NEAR_CITY_STATE_QUERY
-          description: |
-            An array of strings specifying the association methods used for this town. These methods determine how the API searches for articles related to this town.
-
-            Available association methods:
-            - `HYPERLOCAL_SOURCES_EXCLUDE_QUERY`: Searches hyperlocal sources, excluding state names and IDs.
-            - `HYPERLOCAL_SOURCES_INCLUDE_QUERY`: Performs an exact match of the city name in the title or content.
-            - `LOCAL_SOURCES_EXCLUDE_QUERY`: Searches local sources, excluding state names and IDs.
-            - `CITY_STATE_COUNTY_QUERY`: Conducts a global search using city, state, and county combinations.
-            - `NEAR_CITY_STATE_QUERY`: Performs a proximity search, finding city and state within 15 words of each other.
-
-            To learn more, see [Town association methods](/docs/v3/local-news/overview/town-association-methods).
-          example: ["HYPERLOCAL_SOURCES_INCLUDE_QUERY"]
-
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
     Q:
       type: string
@@ -988,7 +957,7 @@ components:
               type: object
 
     ## Article object schema, used for `articles` in `ArticleSearchResponseDto`
-    ## Added the `AssociatedTownEntity` and the `NlpDataEntity` with the related schemas:
+    ###  v1.1.0 Replace the associated_towns with locations entity
     ArticleResultEntity:
       title: Article Result
       description:
@@ -1010,19 +979,12 @@ components:
         id:
           type: string
           description: The unique identifier for the article.
-        associated_town:
+        locations:
           type: array
           items:
-            $ref: "#/components/schemas/AssociatedTownEntity"
-          description: A list of towns associated with the article.
-        ai_associated_town:
-          type: array
-          items:
-            $ref: "#/components/schemas/AiAssociatedTownEntity"
-          nullable: true
-          description:
-            A list of towns associated with the article, as identified by AI
-            analysis. Can be `null`.
+            $ref: "#/components/schemas/LocationEntity"
+          description: |
+            A list of locations mentioned in the article along with their detection methods.
         score:
           type: number
           format: float
@@ -1104,35 +1066,26 @@ components:
           type: boolean
           description: Indicates if the article is paid content.
 
-    AssociatedTownEntity:
+    # v1.1.0 New LocationEntity to replace TownEntity, AssociatedTownEntity and AiAssociatedTownEntity
+    LocationEntity:
       type: object
-      description: Represents a town associated with an article.
-      properties:
-        ai_validated:
-          type: boolean
-          description:
-            Indicates whether the town association was validated by AI.
-        name:
-          type: string
-          description: The name of the associated town.
-        description:
-          type: array
-          items:
-            type: string
-          description:
-            A list of search patterns used to associate the town with the
-            article.
       required:
         - name
+        - detection_methods
+      properties:
+        name:
+          type: string
+          description: |
+            The full name of the location, including the state. 
+            Format is "City, State". For example, "San Francisco, California".
+          example: "San Francisco, California"
+        detection_methods:
+          allOf:
+            - $ref: "#/components/schemas/DetectionMethods"
+            - description: |
+                Methods used to detect locations in articles.
 
-    AiAssociatedTownEntity:
-      type: object
-      properties:
-        name:
-          type: string
-          description: The full name of the town, including the state.
-      required:
-        - name
+                For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
 
     NlpDataEntity:
       type: object
