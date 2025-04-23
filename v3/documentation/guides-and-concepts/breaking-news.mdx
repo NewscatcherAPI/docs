@@ -34,7 +34,7 @@ Our breaking news detection works through several interconnected stages:
     their content similarity.
   </Step>
   <Step title="Validation">
-    Each cluster undergoes analysis for breaking news signals, including: 
+    Each cluster undergoes analysis for breaking news signals, including:
     - Publication frequency (sudden spikes in coverage) 
     - Source diversity (coverage across multiple publishers) 
     - Coverage quality (presence of high-ranking news sources)
@@ -82,7 +82,7 @@ https://v3-api.newscatcherapi.com/api/breaking_news
 <CodeGroup>
 
 ```bash GET
-curl -X GET "https://v3-api.newscatcherapi.com/api/breaking_news?theme=Business&include_nlp_data=true" \
+curl -X GET "https://v3-api.newscatcherapi.com/api/breaking_news?theme=Business&page_size=100&top_n_articles=5" \
   -H "x-api-token: YOUR_API_KEY"
 ```
 
@@ -91,8 +91,9 @@ curl -X POST "https://v3-api.newscatcherapi.com/api/breaking_news" \
   -H "Content-Type: application/json" \
   -H "x-api-token: YOUR_API_KEY" \
   -d '{
-    "include_nlp_data": true,
-    "theme": "Business"
+    "theme": "Business",
+    "page_size": 100,
+    "top_n_articles": 5
   }'
 ```
 
@@ -105,44 +106,41 @@ The API returns a JSON object with the following structure:
 ```json
 {
   "status": "ok",
-  "total_hits": 318,
+  "total_hits": 465,
   "page": 1,
-  "total_pages": 318,
-  "page_size": 1,
-  "articles": [
+  "total_pages": 5,
+  "page_size": 100,
+  "breaking_news_events": [
     {
-      "title": "Article Title",
-      "author": "Author Name",
-      "published_date": "2025-03-31 14:11:04",
-      // ... standard article fields ...
-      "breaking_news_event_id": "12520934405688386290",
-      "breaking_news_articles_count": 766
+      "event_id": "15610469432059813057",
+      "articles_count": 5842,
+      "articles": [
+        // Individual articles within this breaking news event
+      ]
     }
-  ],
-  "user_input": {
-    // Echo of request parameters
-  }
+  ]
 }
 ```
 
-Each article in the response represents the top article from a unique breaking
-news cluster. The additional fields specific to the `/breaking_news` endpoint
-include:
+The response contains an array of breaking news events, each with its associated
+articles. The structure includes:
 
-- `breaking_news_event_id`: Unique identifier for the breaking news
-  event/cluster.
-- `breaking_news_articles_count`: Number of articles in this breaking news
-  cluster.
+- `breaking_news_events`: Array of breaking news events, each representing a
+  significant news cluster
+  - `event_id`: Unique identifier for the breaking news event/cluster
+  - `articles_count`: Total number of articles in this breaking news cluster
+  - `articles`: Array of articles related to this breaking news event (limited
+    by the `top_n_articles` parameter)
 
 ### Comparison with other endpoints
 
-| Endpoint        | Breaking news                                       | Search                                         | Latest headlines                                        |
-| --------------- | --------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------- |
-| Purpose         | Discover emerging stories with significant traction | Find specific content matching search criteria | Retrieve recent headlines for the specified time period |
-| Time scope      | Fixed at 24 hours                                   | Configurable with `from_` and `to_`            | Configurable with `when`                                |
-| Result grouping | Clustered by event                                  | Individual articles                            | Individual articles                                     |
-| Primary sorting | By cluster size (coverage volume)                   | By relevance, date, or rank                    | By publication date                                     |
-| Best for        | Discovering important new stories                   | Finding specific content                       | Monitoring regular updates                              |
+| Endpoint        | Breaking news                                           | Search                                         | Latest headlines                                        |
+| --------------- | ------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------- |
+| Purpose         | Discover emerging stories with significant traction     | Find specific content matching search criteria | Retrieve recent headlines for the specified time period |
+| Time scope      | Fixed at 24 hours                                       | Configurable with `from_` and `to_`            | Configurable with `when`                                |
+| Result grouping | Clustered by event with configurable articles per event | Individual articles                            | Individual articles                                     |
+| Primary sorting | By cluster size (coverage volume)                       | By relevance, date, or rank                    | By publication date                                     |
+| Best for        | Discovering important new stories                       | Finding specific content                       | Monitoring regular updates                              |
 
 ## Use cases
 
@@ -173,7 +171,6 @@ faster.
 Organizations can quickly identify emerging crises related to their industry,
 brand, or interests. The breaking news endpoint helps detect sudden increases in
 coverage about topics of concern, enabling faster response.
-
 
 ## Related resources
 
