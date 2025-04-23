@@ -305,6 +305,7 @@ paths:
         - $ref: "#/components/parameters/ToRank"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/TopNArticles"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
         - $ref: "#/components/parameters/Theme"
@@ -1970,6 +1971,14 @@ components:
           summary: Multiple news types
           value: "General News Outlets,Tech News and Updates"
 
+    # Breaking news
+    TopNArticles:
+      name: top_n_articles
+      in: query
+      schema:
+        $ref: "#/components/schemas/TopNArticles"
+      required: false
+
   requestBodies:
     AggregationRequestBody:
       description:
@@ -2301,6 +2310,8 @@ components:
                 $ref: "#/components/schemas/Page"
               page_size:
                 $ref: "#/components/schemas/PageSize"
+              top_n_articles:
+                $ref: "#/components/schemas/TopNArticles"
               include_nlp_data:
                 $ref: "#/components/schemas/IncludeNlpData"
               has_nlp:
@@ -3333,12 +3344,14 @@ components:
         - $ref: "#/components/schemas/BaseSearchResponseDto"
         - type: object
           properties:
-            articles:
-              title: Articles
-              description: A list of articles matching the search criteria.
+            breaking_news_events:
+              title: Breaking News Events
+              description:
+                A list of breaking news events, each containing relevant
+                articles.
               type: array
               items:
-                $ref: "#/components/schemas/BreakingNewsArticleEntity"
+                $ref: "#/components/schemas/BreakingNewsEventEntity"
               default: []
             user_input:
               $ref: "#/components/schemas/UserInputDto"
@@ -3383,6 +3396,32 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
+    BreakingNewsEventEntity:
+      title: Breaking News Event Object
+      description: |
+        The data model representing a breaking news event with its associated articles.
+      required:
+        - event_id
+        - articles_count
+        - articles
+      type: object
+      properties:
+        event_id:
+          title: Event ID
+          description: Unique identifier for the breaking news event/cluster.
+          type: string
+        articles_count:
+          title: Articles Count
+          description: Number of articles in this breaking news cluster.
+          type: integer
+        articles:
+          title: Articles
+          description: The articles associated with this breaking news event.
+          type: array
+          items:
+            $ref: "#/components/schemas/BreakingNewsArticleEntity"
+          default: []
+
     BreakingNewsArticleEntity:
       title: Breaking News Article Object
       description: |
@@ -3397,8 +3436,6 @@ components:
         - content
         - id
         - score
-        - breaking_news_event_id
-        - breaking_news_articles_count
       type: object
       properties:
         title:
@@ -3542,14 +3579,6 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
-        breaking_news_event_id:
-          title: Breaking News Event ID
-          description: Unique identifier for the breaking news event/cluster
-          type: string
-        breaking_news_articles_count:
-          title: Breaking News Articles Count
-          description: Number of articles in this breaking news cluster
-          type: integer
 
     SimilarArticleEntity:
       title: Search Similar Article Object
@@ -4650,6 +4679,20 @@ components:
       description: |
         If true, filters results to include only news domains.
       example: true
+
+    # Breaking news
+    TopNArticles:
+      type: integer
+      minimum: 1
+      maximum: 100
+      default: 1
+      description: |
+        Controls the number of top articles to include for each breaking news event.
+
+        **Important limitations**: 
+        - Maximum value is 100.
+        - The product of `top_n_articles` x `page_size` must not exceed 1,000 (total articles limit).
+      example: 5
 
   securitySchemes:
     ApiKeyAuth:
