@@ -2,685 +2,685 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://www.newscatcherapi.com/docs/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/latest-headlines/get-latest-headlines-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/latest-headlines/get-latest-headlines-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/search/search-news-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/search/search-news-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/sources/get-top-news-sources-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/endpoints/sources/get-top-news-sources-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/overview/authentication/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/overview/introduction/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/api-reference/overview/rate-limits-quotas/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/faq/company-faq/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/faq/overview/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/faq/product-faq/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/get-started/overview/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/get-started/quickstart/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/guides-and-concepts/advanced-querying-in-v2/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/guides-and-concepts/how-newscatcher-works/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/guides-and-concepts/use-news-api-v2-in-postman/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/how-to/get-more-than-10000-articles/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/how-to/scroll-through-pages/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/how-to/search-by-date-time/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/how-to/search-for-person-company-product/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/advanced-querying-search-examples/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/functions-classes/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/installation-quickstart/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/overview/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/proxies/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/pygooglenews/special-query-terms/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/tutorials/build-news-aggregator/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v2/documentation/tutorials/export-news-into-csv-with-python/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/authors/search-articles-by-author-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/authors/search-articles-by-author-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-similar/search-similar-articles-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-similar/search-similar-articles-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search/search-articles-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search/search-articles-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/sources/retrieve-sources-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/sources/retrieve-sources-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/csharp/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/go/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/java/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/csharp/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/go/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/java/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/python/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/legacy/typescript/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/python/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/libraries/typescript/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/authentication/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/errors/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/http-headers/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/introduction/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/api-reference/overview/rate-limits/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/get-started/libraries/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/get-started/news-api-v3-subscription-plans/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/get-started/overview/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/get-started/quickstart/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/advanced-querying/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/articles-deduplication/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/breaking-news/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/custom-tags/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/entity-disambiguation/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/check-sources-coverage/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/optimize-search/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/paginate-large-datasets/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/retrieve-more-than-10k-articles/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-with-near/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/how-to/use-boolean-operators/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/migration/api-changes-v2-vs-v3/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/migration/migration-guide/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/troubleshooting/error-handling/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/troubleshooting/report-bugs/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/troubleshooting/request-features/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/documentation/troubleshooting/request-tracing-correlation-ids/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/endpoints/event-fields-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/endpoints/health-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/endpoints/search-events-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/endpoints/subscription-get/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/endpoints/subscription-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/event-types/data-breach/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/event-types/fundraising/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/event-types/layoff/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/event-types/tariffs/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/how-to/build-event-monitoring-system/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/how-to/request-new-event-type/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/overview/introduction/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/overview/parameter-formats/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/overview/quickstart/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/events/overview/working-with-articles/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/endpoints/search-by/search-articles-by-identifiers-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/endpoints/search/search-articles-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/endpoints/sources/retrieve-sources-post/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/overview/introduction/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/overview/local-news-api-subscription-plans/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.newscatcherapi.com/docs/v3/local-news/overview/location-detection-methods/</loc>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://www.newscatcherapi.com/docs/v3/local-news/overview/quickstart/</loc>
-    <lastmod>2025-04-01</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.newscatcherapi.com/docs/v3/local-news/overview/town-association-methods/</loc>
-    <lastmod>2025-04-01</lastmod>
+    <lastmod>2025-04-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
