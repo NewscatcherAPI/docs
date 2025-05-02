@@ -1,0 +1,214 @@
+---
+title: Track supply chain disruption events
+sidebarTitle: Supply chain disruption
+description:
+  Monitor and analyze supply chain disruptions using search parameters and field
+  criteria.
+---
+
+Events API provides access to structured information about supply chain
+disruptions extracted from news articles. This guide explains how to discover
+available search fields, construct search requests, and understand the returned
+data.
+
+## Available search fields
+
+Get available search fields for supply chain disruption events using the
+discovery endpoint:
+
+```bash
+GET /api/events_info/get_event_fields?event_type=supply_chain_disruption
+```
+
+The endpoint returns the following fields that can be used for filtering search
+results. All fields are optional for search requests.
+
+### Common fields
+
+- `company_name`: The name of the primary company affected by the supply chain
+  disruption.
+- `event_date`: The date when the disruption occurred or was first reported.
+- `extraction_date`: The date when the event was extracted from news sources.
+
+### Supply chain disruption-specific fields
+
+- `supply_chain_disruption.disruption_type`: The category of the supply chain
+  disruption.
+- `supply_chain_disruption.disruption_cause`: A specific description of what
+  caused the supply chain disruption.
+- `supply_chain_disruption.facility_type`: The category of facility primarily
+  affected by the disruption.
+- `supply_chain_disruption.facility_original`: The exact phrase or term used in
+  the article to describe the affected facility.
+- `supply_chain_disruption.additional_affected_companies`: Names of other
+  companies affected by the same disruption.
+- `supply_chain_disruption.affected_industries`: Industries affected by the
+  disruption, using GICS sectors.
+- `supply_chain_disruption.affected_products`: The specific products or
+  materials affected by the supply chain disruption.
+- `supply_chain_disruption.hs_product_categories`: Harmonized System (HS)
+  sections of products affected by the disruption.
+- `supply_chain_disruption.location`: The locations where the disruption
+  occurred.
+- `supply_chain_disruption.expected_timeframe`: The general expected timeframe
+  for the disruption.
+- `supply_chain_disruption.supply_impact_severity`: The severity of impact on
+  supply availability.
+- `supply_chain_disruption.summary`: A comprehensive summary of the supply chain
+  disruption event.
+
+## Searching for events
+
+Use the search endpoint to find supply chain disruption events:
+
+```bash
+POST /api/events_search
+```
+
+### Basic request structure
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "attach_articles_data": true,
+  "additional_filters": {
+    // search criteria using available fields
+  }
+}
+```
+
+### Using search fields
+
+Search by dates (absolute or relative):
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "additional_filters": {
+    "event_date": {
+      "gte": "2025-03-01",
+      "lte": "2025-05-01"
+    },
+    "extraction_date": {
+      "gte": "now-7d",
+      "lte": "now"
+    }
+  }
+}
+```
+
+Search by disruption type:
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "additional_filters": {
+    "supply_chain_disruption.disruption_type": "production_stoppage",
+    "supply_chain_disruption.facility_type": "manufacturing_plant"
+  }
+}
+```
+
+Search by industry and product categories:
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "additional_filters": {
+    "supply_chain_disruption.affected_industries": "Materials",
+    "supply_chain_disruption.affected_products": "rare earths"
+  }
+}
+```
+
+Search by location:
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "additional_filters": {
+    "supply_chain_disruption.location.country": "United States",
+    "supply_chain_disruption.location.state": "California"
+  }
+}
+```
+
+Search by impact severity:
+
+```json
+{
+  "event_type": "supply_chain_disruption",
+  "additional_filters": {
+    "supply_chain_disruption.supply_impact_severity": "severe",
+    "supply_chain_disruption.expected_timeframe": "months"
+  }
+}
+```
+
+## Understanding the response
+
+The API returns matched events in this structure:
+
+```json
+{
+  "message": "Success",
+  "count": 7,
+  "events": [
+    {
+      "id": "WlrNi5YBvyT_ytpRIfP4",
+      "event_type": "supply_chain_disruption",
+      "global_event_type": "SupplyChainOperations",
+      "associated_article_ids": ["3b9c292bd7967fe9ed2d2d59427acc44"],
+      "extraction_date": "2025-05-01 12:23:18",
+      "event_date": "2025-04-28 00:00:00",
+      "company_name": "KTM",
+      "supply_chain_disruption": {
+        "summary": "KTM has halted production at its Mattighofen plant in Austria due to a shortage of components, stemming from financial instability and a lack of supplier confidence. The production stoppage, which began in April 2025, is expected to last until the end of July 2025...",
+        "affected_products": ["motorcycles"],
+        "supply_impact_severity": "severe",
+        "affected_industries": ["Consumer Discretionary"],
+        "disruption_type": "production_stoppage",
+        "disruption_cause": "Shortage of components due to financial instability and lack of supplier confidence",
+        "facility_original": "Mattighofen plant",
+        "location": [
+          {
+            "country": "Austria",
+            "city": "Mattighofen",
+            "raw_location": "Mattighofen plant",
+            "county": "Braunau am Inn",
+            "state": "Upper Austria"
+          }
+        ],
+        "facility_type": "manufacturing_plant",
+        "hs_product_categories": ["XVII: Vehicles, aircraft, vessels"],
+        "expected_timeframe": "months"
+      },
+      "articles": [
+        {
+          "link": "https://example.com/article-about-ktm-disruption",
+          "id": "3b9c292bd7967fe9ed2d2d59427acc44",
+          "media": "https://example.com/image.jpg",
+          "title": "KTM Halts Production Due to Component Shortage"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## Best practices
+
+1. Use `extraction_date` for monitoring recent supply chain disruptions.
+2. Use `event_date` for historical analysis of disruption patterns.
+3. Combine `disruption_type` and `facility_type` filters for specific disruption
+   scenarios.
+4. Use multiple filters to narrow results more precisely.
+5. Filter by `supply_impact_severity` to focus on critical disruptions first.
+6. For location-based filtering, include as much geographic specificity as
+   needed.
+
+## See also
+
+- [Parameter formats](/v3/events/overview/parameter-formats)
+- [Working with articles](/v3/events/overview/working-with-articles)
+- [API reference](/v3/events/endpoints)

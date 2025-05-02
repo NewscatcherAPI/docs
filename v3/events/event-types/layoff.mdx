@@ -79,10 +79,6 @@ Search by dates (absolute or relative):
     "event_date": {
       "gte": "2024-01-01",
       "lte": "2024-02-01"
-    },
-    "extraction_date": {
-      "gte": "now-7d",
-      "lte": "now"
     }
   }
 }
@@ -110,9 +106,8 @@ Search by location:
 {
   "event_type": "layoff",
   "additional_filters": {
-    "layoff.location": {
-      "state": "California"
-    }
+    "layoff.location.state": "California",
+    "layoff.location.city": "San Francisco"
   }
 }
 ```

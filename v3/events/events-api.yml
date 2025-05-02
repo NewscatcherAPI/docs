@@ -69,6 +69,7 @@ paths:
           schema:
             type: string
           description: Type of event to get fields for
+          example: "data_breach"
       responses:
         "200":
           $ref: "#/components/responses/EventFieldsResponse"
@@ -194,7 +195,14 @@ components:
             properties:
               event_type:
                 type: string
-                enum: [layoff, data_breach, fundraising, tariffs_v2]
+                enum:
+                  [
+                    data_breach,
+                    fundraising,
+                    layoff,
+                    supply_chain_disruption,
+                    tariffs_v2,
+                  ]
                 description: The type of events to retrieve from the database.
               attach_articles_data:
                 type: boolean
@@ -210,14 +218,16 @@ components:
                 discriminator:
                   propertyName: event_type
                   mapping:
-                    layoff: "#/components/schemas/LayoffFilters"
                     data_breach: "#/components/schemas/DataBreachFilters"
                     fundraising: "#/components/schemas/FundraisingFilters"
+                    layoff: "#/components/schemas/LayoffFilters"
+                    supply_chain_disruption: "#/components/schemas/SupplyChainDisruptionFilters"
                     tariffs_v2: "#/components/schemas/TariffsFilters"
                 oneOf:
-                  - $ref: "#/components/schemas/LayoffFilters"
                   - $ref: "#/components/schemas/DataBreachFilters"
                   - $ref: "#/components/schemas/FundraisingFilters"
+                  - $ref: "#/components/schemas/LayoffFilters"
+                  - $ref: "#/components/schemas/SupplyChainDisruptionFilters"
                   - $ref: "#/components/schemas/TariffsFilters"
               additional_article_fields:
                 type: array
@@ -265,9 +275,10 @@ components:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/LayoffFieldsResponse"
               - $ref: "#/components/schemas/DataBreachFieldsResponse"
               - $ref: "#/components/schemas/FundraisingFieldsResponse"
+              - $ref: "#/components/schemas/LayoffFieldsResponse"
+              - $ref: "#/components/schemas/SupplyChainDisruptionFieldsResponse"
               - $ref: "#/components/schemas/TariffsFieldsResponse"
 
     EventsSearchResponse:
@@ -294,9 +305,10 @@ components:
                 description: The list of matched events.
                 items:
                   oneOf:
-                    - $ref: "#/components/schemas/LayoffEvent"
                     - $ref: "#/components/schemas/DataBreachEvent"
                     - $ref: "#/components/schemas/FundraisingEvent"
+                    - $ref: "#/components/schemas/LayoffEvent"
+                    - $ref: "#/components/schemas/SupplyChainDisruptionEvent"
                     - $ref: "#/components/schemas/TariffsEvent"
 
     SubscriptionResponse:
@@ -502,73 +514,6 @@ components:
           description: The state where the event occurred.
 
     # Event-specific Fields Responses
-    LayoffFieldsResponse:
-      title: Layoff Fields
-      allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
-        - type: object
-          properties:
-            fields:
-              type: object
-              required:
-                - company_name
-                - event_date
-                - extraction_date
-              properties:
-                company_name:
-                  allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
-                    - description:
-                        Name of the company that conducted the layoff.
-                event_date:
-                  allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
-                    - description: Date when the layoff occurred.
-                extraction_date:
-                  allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
-                    - description:
-                        Date when the event was extracted from news sources.
-                "layoff.how_much_related":
-                  allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
-                    - description: Relevance rating of the layoff event.
-                "layoff.is_relevant_for_real_estate":
-                  type: string
-                  description: |
-                    Indicates if the layoff impacts real estate market.
-                  enum: ["true", "false"]
-                "layoff.layoff_reason":
-                  allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
-                    - description: Stated reason for the layoff.
-                "layoff.location":
-                  allOf:
-                    - $ref: "#/components/schemas/Location"
-                    - description: Location where the layoff occurred.
-                "layoff.max_number_of_people_laid_off":
-                  allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
-                    - description:
-                        Maximum number of employees affected in a range.
-                "layoff.min_number_of_people_laid_off":
-                  allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
-                    - description:
-                        Minimum number of employees affected in a range.
-                "layoff.number_of_people_laid_off":
-                  allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
-                    - description: Exact number of employees affected.
-                "layoff.percentage_of_people_laid_off":
-                  allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
-                    - description: Percentage of workforce affected.
-                "layoff.summary":
-                  allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
-                    - description: Summary text of the layoff event.
-
     DataBreachFieldsResponse:
       title: Data Breach Fields
       allOf:
@@ -679,6 +624,170 @@ components:
                   allOf:
                     - $ref: "#/components/schemas/StringFieldType"
                     - description: Company valuation at the time of funding.
+
+    LayoffFieldsResponse:
+      title: Layoff Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the company that conducted the layoff.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description: Date when the layoff occurred.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "layoff.how_much_related":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Relevance rating of the layoff event.
+                "layoff.is_relevant_for_real_estate":
+                  type: string
+                  description: |
+                    Indicates if the layoff impacts real estate market.
+                  enum: ["true", "false"]
+                "layoff.layoff_reason":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Stated reason for the layoff.
+                "layoff.location":
+                  allOf:
+                    - $ref: "#/components/schemas/Location"
+                    - description: Location where the layoff occurred.
+                "layoff.max_number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Maximum number of employees affected in a range.
+                "layoff.min_number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description:
+                        Minimum number of employees affected in a range.
+                "layoff.number_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Exact number of employees affected.
+                "layoff.percentage_of_people_laid_off":
+                  allOf:
+                    - $ref: "#/components/schemas/NumberFieldType"
+                    - description: Percentage of workforce affected.
+                "layoff.summary":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: Summary text of the layoff event.
+
+    # New Schema: SupplyChainDisruptionFieldsResponse
+    SupplyChainDisruptionFieldsResponse:
+      title: Supply Chain Disruption Fields
+      allOf:
+        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - type: object
+          properties:
+            fields:
+              type: object
+              required:
+                - company_name
+                - event_date
+                - extraction_date
+              properties:
+                company_name:
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Name of the primary company affected by the supply chain
+                        disruption.
+                event_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the disruption occurred or was first reported.
+                extraction_date:
+                  allOf:
+                    - $ref: "#/components/schemas/DateFieldType"
+                    - description:
+                        Date when the event was extracted from news sources.
+                "supply_chain_disruption.disruption_type":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description: The category of the supply chain disruption.
+                "supply_chain_disruption.disruption_cause":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        A specific description of what caused the supply chain
+                        disruption.
+                "supply_chain_disruption.facility_type":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The category of facility primarily affected by the
+                        disruption.
+                "supply_chain_disruption.facility_original":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The exact phrase or term used in the article to describe
+                        the affected facility.
+                "supply_chain_disruption.additional_affected_companies":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Names of other companies affected by the same
+                        disruption.
+                "supply_chain_disruption.affected_industries":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Industries affected by the disruption, using GICS
+                        sectors.
+                "supply_chain_disruption.affected_products":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The specific products or materials affected by the
+                        supply chain disruption.
+                "supply_chain_disruption.hs_product_categories":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        Harmonized System (HS) sections of products affected by
+                        the disruption.
+                "supply_chain_disruption.location":
+                  allOf:
+                    - $ref: "#/components/schemas/Location"
+                    - description: The locations where the disruption occurred.
+                "supply_chain_disruption.expected_timeframe":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The general expected timeframe for the disruption.
+                "supply_chain_disruption.supply_impact_severity":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        The severity of impact on supply availability.
+                "supply_chain_disruption.summary":
+                  allOf:
+                    - $ref: "#/components/schemas/StringFieldType"
+                    - description:
+                        A comprehensive summary of the supply chain disruption
+                        event.
 
     TariffsFieldsResponse:
       title: Tariffs Fields
@@ -817,11 +926,25 @@ components:
         event_type:
           type: string
           description: The specific type of the event.
-          enum: [layoff, data_breach, fundraising]
+          enum:
+            [
+              data_breach,
+              fundraising,
+              layoff,
+              supply_chain_disruption,
+              tariffs_v2,
+            ]
         global_event_type:
           type: string
           description: The high-level category of the event.
-          enum: [Layoff, DataMonitoring, Finance]
+          enum:
+            [
+              DataMonitoring,
+              Finance,
+              Layoff,
+              SupplyChainOperations,
+              TradePolicy,
+            ]
         associated_article_ids:
           type: array
           description:
@@ -1081,70 +1204,7 @@ components:
             type: integer
             description: The number of times this entity appears in the article.
 
-    LayoffEvent:
-      title: Layoff
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          required:
-            - company_name
-          properties:
-            company_name:
-              type: string
-              description: Name of the company that conducted the layoff.
-            layoff:
-              type: object
-              required:
-                - location
-                - how_much_related
-                - summary
-              properties:
-                summary:
-                  type: string
-                  description: The detailed description of the layoff event.
-                layoff_reason:
-                  type: string
-                  description: Stated reason for the layoff.
-                max_number_of_people_laid_off:
-                  type: integer
-                  description: |
-                    The maximum number of employees affected if a range was specified.
-                min_number_of_people_laid_off:
-                  type: integer
-                  description: |
-                    The minimum number of employees affected if a range was specified.
-                number_of_people_laid_off:
-                  type: integer
-                  description: The exact number of employees affected.
-                percentage_of_people_laid_off:
-                  type: number
-                  format: float
-                  description: The percentage of total workforce affected.
-                how_much_related:
-                  type: string
-                  enum:
-                    [
-                      "Completely Irrelevant",
-                      "Irrelevant",
-                      "Very Poor",
-                      "Poor",
-                      "Fair",
-                      "Good",
-                      "Very Good",
-                      "Excellent",
-                    ]
-                  description: The relevance rating of the layoff event.
-                is_relevant_for_real_estate:
-                  type: boolean
-                  description:
-                    True if the layoff impacts real estate market; false
-                    otherwise.
-                location:
-                  type: array
-                  description: The locations where the layoff occurred.
-                  items:
-                    $ref: "#/components/schemas/Location"
-
+    # Event schemas
     DataBreachEvent:
       title: Data Breach
       allOf:
@@ -1239,6 +1299,232 @@ components:
                   type: string
                   description:
                     Summary of the funding event, up to 500 characters.
+
+    LayoffEvent:
+      title: Layoff
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          required:
+            - company_name
+          properties:
+            company_name:
+              type: string
+              description: Name of the company that conducted the layoff.
+            layoff:
+              type: object
+              required:
+                - location
+                - how_much_related
+                - summary
+              properties:
+                summary:
+                  type: string
+                  description: The detailed description of the layoff event.
+                layoff_reason:
+                  type: string
+                  description: Stated reason for the layoff.
+                max_number_of_people_laid_off:
+                  type: integer
+                  description: |
+                    The maximum number of employees affected if a range was specified.
+                min_number_of_people_laid_off:
+                  type: integer
+                  description: |
+                    The minimum number of employees affected if a range was specified.
+                number_of_people_laid_off:
+                  type: integer
+                  description: The exact number of employees affected.
+                percentage_of_people_laid_off:
+                  type: number
+                  format: float
+                  description: The percentage of total workforce affected.
+                how_much_related:
+                  type: string
+                  enum:
+                    [
+                      "Completely Irrelevant",
+                      "Irrelevant",
+                      "Very Poor",
+                      "Poor",
+                      "Fair",
+                      "Good",
+                      "Very Good",
+                      "Excellent",
+                    ]
+                  description: The relevance rating of the layoff event.
+                is_relevant_for_real_estate:
+                  type: boolean
+                  description:
+                    True if the layoff impacts real estate market; false
+                    otherwise.
+                location:
+                  type: array
+                  description: The locations where the layoff occurred.
+                  items:
+                    $ref: "#/components/schemas/Location"
+
+    # New Schema: SupplyChainDisruptionEvent
+    SupplyChainDisruptionEvent:
+      title: Supply Chain Disruption
+      allOf:
+        - $ref: "#/components/schemas/BaseEvent"
+        - type: object
+          required:
+            - company_name
+          properties:
+            company_name:
+              type: string
+              description:
+                Name of the primary company affected by the supply chain
+                disruption.
+            supply_chain_disruption:
+              type: object
+              required:
+                - summary
+                - disruption_type
+                - disruption_cause
+                - facility_type
+                - facility_original
+                - affected_industries
+                - affected_products
+                - hs_product_categories
+                - expected_timeframe
+                - supply_impact_severity
+              properties:
+                summary:
+                  type: string
+                  description:
+                    A comprehensive summary of the supply chain disruption
+                    event.
+                disruption_type:
+                  type: string
+                  enum:
+                    [
+                      "transportation_delay",
+                      "production_stoppage",
+                      "natural_disaster",
+                      "labor_dispute",
+                      "geopolitical",
+                      "supply_shortage",
+                      "quality_issue",
+                      "cyberattack",
+                      "regulatory_change",
+                      "other",
+                    ]
+                  description: The category of the supply chain disruption.
+                disruption_cause:
+                  type: string
+                  description:
+                    A specific description of what caused the supply chain
+                    disruption.
+                facility_type:
+                  type: string
+                  enum:
+                    [
+                      "manufacturing_plant",
+                      "assembly_factory",
+                      "fulfillment_center",
+                      "distribution_center",
+                      "cross_dock_facility",
+                      "warehouse",
+                      "cold_storage",
+                      "port",
+                      "container_yard",
+                      "logistics_hub",
+                      "intermodal_terminal",
+                      "shipping_terminal",
+                      "rail_terminal",
+                      "maintenance_facility",
+                      "data_center",
+                      "other",
+                    ]
+                  description:
+                    The category of facility primarily affected by the
+                    disruption.
+                facility_original:
+                  type: string
+                  description:
+                    The exact phrase or term used in the article to describe the
+                    affected facility.
+                additional_affected_companies:
+                  type: array
+                  items:
+                    type: string
+                  description:
+                    Names of other companies affected by the same disruption.
+                affected_industries:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      [
+                        "Energy",
+                        "Materials",
+                        "Industrials",
+                        "Consumer Discretionary",
+                        "Consumer Staples",
+                        "Health Care",
+                        "Financials",
+                        "Information Technology",
+                        "Communication Services",
+                        "Utilities",
+                        "Real Estate",
+                      ]
+                  description:
+                    Industries affected by the disruption, using GICS sectors.
+                affected_products:
+                  type: array
+                  items:
+                    type: string
+                  description:
+                    The specific products or materials affected by the supply
+                    chain disruption.
+                hs_product_categories:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      [
+                        "I: Live animals; animal products",
+                        "II: Vegetable products",
+                        "III: Animal or vegetable fats and oils",
+                        "IV: Prepared foodstuffs; beverages, spirits, tobacco",
+                        "V: Mineral products",
+                        "VI: Products of the chemical or allied industries",
+                        "VII: Plastics and rubber",
+                        "VIII: Raw hides and skins, leather, furskins",
+                        "IX: Wood and articles of wood",
+                        "X: Pulp of wood; paper and paperboard",
+                        "XI: Textiles and textile articles",
+                        "XII: Footwear, headgear, umbrellas",
+                        "XIII: Articles of stone, ceramic products, glass",
+                        "XIV: Pearls, precious stones and metals",
+                        "XV: Base metals and articles of base metal",
+                        "XVI: Machinery and mechanical appliances",
+                        "XVII: Vehicles, aircraft, vessels",
+                        "XVIII: Optical, photographic, medical instruments",
+                        "XIX: Arms and ammunition",
+                        "XX: Miscellaneous manufactured articles",
+                        "XXI: Works of art, collectors' pieces",
+                      ]
+                  description:
+                    Harmonized System (HS) sections of products affected by the
+                    disruption.
+                location:
+                  type: array
+                  description: The locations where the disruption occurred.
+                  items:
+                    $ref: "#/components/schemas/Location"
+                expected_timeframe:
+                  type: string
+                  enum: ["days", "weeks", "months", "indefinite", "resolved"]
+                  description:
+                    The general expected timeframe for the disruption.
+                supply_impact_severity:
+                  type: string
+                  enum: ["minimal", "moderate", "severe", "critical", "unknown"]
+                  description: The severity of impact on supply availability.
 
     TariffsEvent:
       title: Tariff
@@ -1429,77 +1715,6 @@ components:
           description: The maximum value to include in results.
 
     # Events Filter Schemas
-    LayoffFilters:
-      title: Layoff
-      type: object
-      properties:
-        company_name:
-          type: string
-          description:
-            The name of the company that conducted or is conducting the layoffs.
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description:
-                The date when the event was extracted from news sources. Accepts
-                both absolute dates (YYYY-MM-DD) and relative dates.
-        "layoff.how_much_related":
-          type: string
-          description:
-            The relevance rating of the layoff event to real estate market
-            trends.
-          enum:
-            [
-              "Completely Irrelevant",
-              "Irrelevant",
-              "Very Poor",
-              "Poor",
-              "Fair",
-              "Good",
-              "Very Good",
-              "Excellent",
-            ]
-        "layoff.is_relevant_for_real_estate":
-          type: string
-          description:
-            True if the layoff impacts real estate market; false otherwise.
-          enum: ["true", "false"]
-        "layoff.layoff_reason":
-          type: string
-          description: The stated reason provided for the layoff.
-        "layoff.location":
-          allOf:
-            - $ref: "#/components/schemas/Location"
-            - description: |
-                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
-        "layoff.max_number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The maximum number of employees affected when a range is specified.
-        "layoff.min_number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The minimum number of employees affected when a range is specified.
-        "layoff.number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The exact number of employees affected by the layoff.
-        "layoff.percentage_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The percentage of total workforce affected by the layoff.
-        "layoff.summary":
-          type: string
-          description: The detailed description of the layoff event.
-
     DataBreachFilters:
       title: Data Breach
       type: object
@@ -1591,6 +1806,147 @@ components:
           type: string
           description: |
             The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
+
+    LayoffFilters:
+      title: Layoff
+      type: object
+      properties:
+        company_name:
+          type: string
+          description:
+            The name of the company that conducted or is conducting the layoffs.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM-DD) and relative dates.
+        "layoff.how_much_related":
+          type: string
+          description:
+            The relevance rating of the layoff event to real estate market
+            trends.
+          enum:
+            [
+              "Completely Irrelevant",
+              "Irrelevant",
+              "Very Poor",
+              "Poor",
+              "Fair",
+              "Good",
+              "Very Good",
+              "Excellent",
+            ]
+        "layoff.is_relevant_for_real_estate":
+          type: string
+          description:
+            True if the layoff impacts real estate market; false otherwise.
+          enum: ["true", "false"]
+        "layoff.layoff_reason":
+          type: string
+          description: The stated reason provided for the layoff.
+        "layoff.location":
+          allOf:
+            - $ref: "#/components/schemas/Location"
+            - description: |
+                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
+        "layoff.max_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The maximum number of employees affected when a range is specified.
+        "layoff.min_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The minimum number of employees affected when a range is specified.
+        "layoff.number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The exact number of employees affected by the layoff.
+        "layoff.percentage_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The percentage of total workforce affected by the layoff.
+        "layoff.summary":
+          type: string
+          description: The detailed description of the layoff event.
+
+    # New Schema: SupplyChainDisruptionFilters
+    SupplyChainDisruptionFilters:
+      title: Supply Chain Disruption
+      type: object
+      properties:
+        company_name:
+          type: string
+          description:
+            The name of the primary company affected by the supply chain
+            disruption.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the disruption occurred or was first reported. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
+        "supply_chain_disruption.disruption_type":
+          type: string
+          description: |
+            The category of the supply chain disruption (e.g., production_stoppage, natural_disaster, labor_dispute, transportation_delay, supply_shortage, regulatory_change).
+        "supply_chain_disruption.disruption_cause":
+          type: string
+          description: |
+            A specific description of what caused the supply chain disruption.
+        "supply_chain_disruption.facility_type":
+          type: string
+          description: |
+            The category of facility primarily affected by the disruption (e.g., manufacturing_plant, distribution_center, warehouse, port).
+        "supply_chain_disruption.facility_original":
+          type: string
+          description: |
+            The exact phrase or term used in the article to describe the affected facility.
+        "supply_chain_disruption.additional_affected_companies":
+          type: string
+          description: |
+            Names of other companies affected by the same disruption.
+        "supply_chain_disruption.affected_industries":
+          type: string
+          description: |
+            Industries affected by the disruption, using GICS sectors (e.g., Materials, Consumer Discretionary, Information Technology).
+        "supply_chain_disruption.affected_products":
+          type: string
+          description: |
+            The specific products or materials affected by the supply chain disruption.
+        "supply_chain_disruption.hs_product_categories":
+          type: string
+          description: |
+            Harmonized System (HS) sections of products affected by the disruption.
+        "supply_chain_disruption.location":
+          allOf:
+            - $ref: "#/components/schemas/Location"
+            - description: |
+                The locations where the disruption occurred.
+        "supply_chain_disruption.expected_timeframe":
+          type: string
+          description: |
+            The general expected timeframe for the disruption (e.g., days, weeks, months, indefinite, resolved).
+        "supply_chain_disruption.supply_impact_severity":
+          type: string
+          description: |
+            The severity of impact on supply availability (e.g., minimal, moderate, severe, critical, unknown).
+        "supply_chain_disruption.summary":
+          type: string
+          description: |
+            A comprehensive summary of the supply chain disruption event.
 
     TariffsFilters:
       title: Tariffs
