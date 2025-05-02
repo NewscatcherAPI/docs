@@ -69,6 +69,7 @@ paths:
           schema:
             type: string
           description: Type of event to get fields for
+          example: "data_breach"
       responses:
         "200":
           $ref: "#/components/responses/EventFieldsResponse"
@@ -196,11 +197,11 @@ components:
                 type: string
                 enum:
                   [
-                    layoff,
                     data_breach,
                     fundraising,
-                    tariffs_v2,
+                    layoff,
                     supply_chain_disruption,
+                    tariffs_v2,
                   ]
                 description: The type of events to retrieve from the database.
               attach_articles_data:
@@ -927,22 +928,22 @@ components:
           description: The specific type of the event.
           enum:
             [
-              layoff,
               data_breach,
               fundraising,
-              tariffs_v2,
+              layoff,
               supply_chain_disruption,
+              tariffs_v2,
             ]
         global_event_type:
           type: string
           description: The high-level category of the event.
           enum:
             [
-              Layoff,
               DataMonitoring,
               Finance,
-              TradePolicy,
+              Layoff,
               SupplyChainOperations,
+              TradePolicy,
             ]
         associated_article_ids:
           type: array
