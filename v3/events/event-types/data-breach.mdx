@@ -68,12 +68,8 @@ Search by dates (absolute or relative):
   "event_type": "data_breach",
   "additional_filters": {
     "event_date": {
-      "gte": "2024-01-01",
-      "lte": "2024-02-01"
-    },
-    "extraction_date": {
-      "gte": "now-7d",
-      "lte": "now"
+      "gte": "2024-04-01",
+      "lte": "2024-05-01"
     }
   }
 }
@@ -86,7 +82,7 @@ Search by data type:
   "event_type": "data_breach",
   "additional_filters": {
     "data_breach.data_type": "personal",
-    "data_breach.data": "Customer Email Addresses"
+    "data_breach.data": "email"
   }
 }
 ```
