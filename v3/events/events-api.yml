@@ -614,11 +614,21 @@ components:
         "layoff.layoff_reason":
           type: string
           description: The stated reason provided for the layoff.
-        "layoff.location":
-          allOf:
-            - $ref: "#/components/schemas/Location"
-            - description: |
-                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
+        "layoff.location.country":
+          type: string
+          description: The country where the layoff occurred.
+        "layoff.location.city":
+          type: string
+          description: The city where the layoff occurred.
+        "layoff.location.state":
+          type: string
+          description: The state where the layoff occurred.
+        "layoff.location.county":
+          type: string
+          description: The county where the layoff occurred.
+        "layoff.location.raw_location":
+          type: string
+          description: The unparsed location string from the source.
         "layoff.max_number_of_people_laid_off":
           allOf:
             - $ref: "#/components/schemas/NumberRangeFilter"
@@ -696,11 +706,21 @@ components:
             - $ref: "#/components/schemas/HarmonizedSystemProductSections"
             - description: |
                 Harmonized System (HS) sections of products affected by the disruption.
-        "supply_chain_disruption.location":
-          allOf:
-            - $ref: "#/components/schemas/Location"
-            - description: |
-                The locations where the disruption occurred.
+        "supply_chain_disruption.location.country":
+          type: string
+          description: The country where the disruption occurred.
+        "supply_chain_disruption.location.city":
+          type: string
+          description: The city where the disruption occurred.
+        "supply_chain_disruption.location.state":
+          type: string
+          description: The state where the disruption occurred.
+        "supply_chain_disruption.location.county":
+          type: string
+          description: The county where the disruption occurred.
+        "supply_chain_disruption.location.raw_location":
+          type: string
+          description: The unparsed location string from the source.
         "supply_chain_disruption.expected_timeframe":
           type: string
           description: |
