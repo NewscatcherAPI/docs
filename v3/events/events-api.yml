@@ -49,8 +49,8 @@ tags:
       Operations related to subscription management and available events.
   - name: Events Search
     description: Operations for searching and retrieving events.
-  - name: Event Fields
-    description: Operations to discover available fields for event types.
+  - name: Event Available Filters
+    description: Operations to discover available filters for event types.
   - name: Health
     description: API health check operations.
 
@@ -58,21 +58,21 @@ paths:
   /api/events_info/get_event_fields:
     get:
       tags:
-        - Event Fields
-      summary: Get event fields
-      description: Returns available fields for specified event type.
-      operationId: getEventFields
+        - Event Available Filters
+      summary: Get event available filters
+      description: Returns available filters for specified event type.
+      operationId: getEventAvailableFilters
       parameters:
         - name: event_type
           in: query
           required: true
           schema:
             type: string
-          description: Type of event to get fields for
+          description: Type of event to discover available filters for
           example: "data_breach"
       responses:
         "200":
-          $ref: "#/components/responses/EventFieldsResponse"
+          $ref: "#/components/responses/EventAvailableFiltersResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -94,7 +94,7 @@ paths:
         - Events Search
       summary: Search for events
       description: |
-        Searches for structured event data extracted from news articles. Supports filtering by event type, date ranges, and event-specific fields.
+        Searches for structured event data extracted from news articles. Supports filtering by event type, date ranges, and event-specific filters.
       operationId: searchEvents
       requestBody:
         $ref: "#/components/requestBodies/EventsSearchRequest"
@@ -194,16 +194,7 @@ components:
               - event_type
             properties:
               event_type:
-                type: string
-                enum:
-                  [
-                    data_breach,
-                    fundraising,
-                    layoff,
-                    supply_chain_disruption,
-                    tariffs_v2,
-                  ]
-                description: The type of events to retrieve from the database.
+                $ref: "#/components/schemas/EventType"
               attach_articles_data:
                 type: boolean
                 description:
@@ -218,21 +209,21 @@ components:
                 discriminator:
                   propertyName: event_type
                   mapping:
-                    data_breach: "#/components/schemas/DataBreachFilters"
-                    fundraising: "#/components/schemas/FundraisingFilters"
-                    layoff: "#/components/schemas/LayoffFilters"
-                    supply_chain_disruption: "#/components/schemas/SupplyChainDisruptionFilters"
-                    tariffs_v2: "#/components/schemas/TariffsFilters"
+                    data_breach: "#/components/schemas/DataBreachSearchFilters"
+                    fundraising: "#/components/schemas/FundraisingSearchFilters"
+                    layoff: "#/components/schemas/LayoffSearchFilters"
+                    supply_chain_disruption: "#/components/schemas/SupplyChainDisruptionSearchFilters"
+                    tariffs_v2: "#/components/schemas/TariffsSearchFilters"
                 oneOf:
-                  - $ref: "#/components/schemas/DataBreachFilters"
-                  - $ref: "#/components/schemas/FundraisingFilters"
-                  - $ref: "#/components/schemas/LayoffFilters"
-                  - $ref: "#/components/schemas/SupplyChainDisruptionFilters"
-                  - $ref: "#/components/schemas/TariffsFilters"
+                  - $ref: "#/components/schemas/DataBreachSearchFilters"
+                  - $ref: "#/components/schemas/FundraisingSearchFilters"
+                  - $ref: "#/components/schemas/LayoffSearchFilters"
+                  - $ref: "#/components/schemas/SupplyChainDisruptionSearchFilters"
+                  - $ref: "#/components/schemas/TariffsSearchFilters"
               additional_article_fields:
                 type: array
                 description: |
-                  Additional article fields to include in the response. Only applicable when `attach_articles_data` is `true`.
+                  Additional article filters to include in the response. Only applicable when `attach_articles_data` is `true`.
                 items:
                   type: string
                   enum:
@@ -269,17 +260,17 @@ components:
                 example: ["description", "published_date", "nlp.summary"]
 
   responses:
-    EventFieldsResponse:
-      description: Available fields for the specified event type
+    EventAvailableFiltersResponse:
+      description: Available filters for the specified event type
       content:
         application/json:
           schema:
             oneOf:
-              - $ref: "#/components/schemas/DataBreachFieldsResponse"
-              - $ref: "#/components/schemas/FundraisingFieldsResponse"
-              - $ref: "#/components/schemas/LayoffFieldsResponse"
-              - $ref: "#/components/schemas/SupplyChainDisruptionFieldsResponse"
-              - $ref: "#/components/schemas/TariffsFieldsResponse"
+              - $ref: "#/components/schemas/DataBreachAvailableFiltersResponse"
+              - $ref: "#/components/schemas/FundraisingAvailableFiltersResponse"
+              - $ref: "#/components/schemas/LayoffAvailableFiltersResponse"
+              - $ref: "#/components/schemas/SupplyChainDisruptionAvailableFiltersResponse"
+              - $ref: "#/components/schemas/TariffsAvailableFiltersResponse"
 
     EventsSearchResponse:
       description: Search results containing matched events.
@@ -304,12 +295,26 @@ components:
                 type: array
                 description: The list of matched events.
                 items:
+                  allOf:
+                    - $ref: "#/components/schemas/BaseEventResponse"
+                    - oneOf:
+                        - $ref: "#/components/schemas/DataBreachEventResponse"
+                        - $ref: "#/components/schemas/FundraisingEventResponse"
+                        - $ref: "#/components/schemas/LayoffEventResponse"
+                        - $ref: "#/components/schemas/SupplyChainDisruptionEventResponse"
+                        - $ref: "#/components/schemas/TariffsEventResponse"
+              articles:
+                type: array
+                description: |
+                  Array of source articles. Only present when `attach_articles_data` is `true` in the request. Access individual articles using array index, e.g.:
+                  - First article: `events.articles[0]`
+                  - Second article: `events.articles[1]`
+
+                  By default, only returns id, title, link, and media fields. To request more fields, add them to the `additional_article_fields` array in the search request.
+                items:
                   oneOf:
-                    - $ref: "#/components/schemas/DataBreachEvent"
-                    - $ref: "#/components/schemas/FundraisingEvent"
-                    - $ref: "#/components/schemas/LayoffEvent"
-                    - $ref: "#/components/schemas/SupplyChainDisruptionEvent"
-                    - $ref: "#/components/schemas/TariffsEvent"
+                    - $ref: "#/components/schemas/DefaultArticleEntity"
+                    - $ref: "#/components/schemas/ArticleEntity"
 
     SubscriptionResponse:
       description:
@@ -397,8 +402,445 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # Base Fields Response Schema
-    BaseFieldsResponse:
+    # Filter types for the event-specific schemas
+    # for `/api/events_search` request body
+    DateRangeFilter:
+      type: object
+      description:
+        A date range filter supporting both absolute and relative date formats.
+      properties:
+        gte:
+          type: string
+          description:
+            The earliest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`30d`, `now-90d`).
+        lte:
+          type: string
+          description:
+            The latest date to include. Accepts absolute dates (YYYY-MM-DD) or
+            relative formats (`now`, `now-30d`).
+
+    NumberRangeFilter:
+      type: object
+      description: A numeric range filter.
+      properties:
+        gte:
+          type: number
+          description: The minimum value to include in results.
+        lte:
+          type: number
+          description: The maximum value to include in results.
+
+    GlobalIndustryCategories:
+      type: string
+      description:
+        Industry categories based on the Global Industry Classification Standard
+        (GICS) sectors.
+      enum:
+        - "Energy"
+        - "Materials"
+        - "Industrials"
+        - "Consumer Discretionary"
+        - "Consumer Staples"
+        - "Health Care"
+        - "Financials"
+        - "Information Technology"
+        - "Communication Services"
+        - "Utilities"
+        - "Real Estate"
+
+    HarmonizedSystemProductSections:
+      type: string
+      description:
+        Harmonized System (HS) sections for product classification in
+        international trade.
+      enum:
+        - "I: Live animals; animal products"
+        - "II: Vegetable products"
+        - "III: Animal or vegetable fats and oils"
+        - "IV: Prepared foodstuffs; beverages, spirits, tobacco"
+        - "V: Mineral products"
+        - "VI: Products of the chemical or allied industries"
+        - "VII: Plastics and rubber"
+        - "VIII: Raw hides and skins, leather, furskins"
+        - "IX: Wood and articles of wood"
+        - "X: Pulp of wood; paper and paperboard"
+        - "XI: Textiles and textile articles"
+        - "XII: Footwear, headgear, umbrellas"
+        - "XIII: Articles of stone, ceramic products, glass"
+        - "XIV: Pearls, precious stones and metals"
+        - "XV: Base metals and articles of base metal"
+        - "XVI: Machinery and mechanical appliances"
+        - "XVII: Vehicles, aircraft, vessels"
+        - "XVIII: Optical, photographic, medical instruments"
+        - "XIX: Arms and ammunition"
+        - "XX: Miscellaneous manufactured articles"
+        - "XXI: Works of art, collectors' pieces"
+
+    # Event-specific schemas for request body
+    # `/api/events_search`
+    DataBreachSearchFilters:
+      title: Data Breach
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: The name of the company affected by the data breach.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the data breach occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM/DD) and relative dates.
+        "data_breach.data":
+          type: string
+          description: |
+            The description of leaked data (e.g., Customer Phone Numbers, Customer Email Addresses, Customer Passwords).
+        "data_breach.data_type":
+          type: string
+          description: |
+            The type of leaked data (e.g., technical, financial, personal, health, credentials).
+        "data_breach.impacted":
+          type: string
+          description: |
+            The category of entities affected by the breach (e.g., Clients, Customers, Employees, Users).
+        "data_breach.summary":
+          type: string
+          maxLength: 500
+          description: |
+            The detailed description of the data breach event, up to 500 characters.
+        "data_breach.title":
+          type: string
+          description: The title of the data breach event.
+
+    FundraisingSearchFilters:
+      title: Fundraising
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: |
+            The name of the company that was funded (e.g., Tesla, SpaceX).
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the fundraising occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM/DD) and relative dates.
+        "fundraising.amount":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The amount raised by the company in digits (e.g., 1000000, 1000000000).
+        "fundraising.company_description":
+          type: string
+          description: The description of the company that was funded.
+        "fundraising.company_legal_name":
+          type: string
+          description: |
+            The legal name of the company that was funded (e.g., Tesla Inc, SpaceX Inc).
+        "fundraising.currency":
+          type: string
+          description: |
+            The currency of the raised amount in ISO format (e.g., USD, EUR).
+        "fundraising.founders":
+          type: string
+          description: The names of the company founders, up to 50 entries.
+        "fundraising.funding_type":
+          type: string
+          description: |
+            The type of funding round (e.g., Seed, Series A, Series B, Series C, Series D, Series E, Pre-Seed, Grant, Bridge Round, Series Unknown, State Bonding, Bonding).
+        "fundraising.industry":
+          type: string
+          description: The industry sector of the funded company.
+        "fundraising.investors":
+          type: string
+          description: |
+            The names of the investors participating in the funding round, up to 50 entries.
+        "fundraising.valuation":
+          type: string
+          description: |
+            The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
+
+    LayoffSearchFilters:
+      title: Layoff
+      type: object
+      properties:
+        company_name:
+          type: string
+          description:
+            The name of the company that conducted or is conducting the layoffs.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description:
+                The date when the event was extracted from news sources. Accepts
+                both absolute dates (YYYY-MM-DD) and relative dates.
+        "layoff.how_much_related":
+          type: string
+          description:
+            The relevance rating of the layoff event to real estate market
+            trends.
+          enum:
+            [
+              "Completely Irrelevant",
+              "Irrelevant",
+              "Very Poor",
+              "Poor",
+              "Fair",
+              "Good",
+              "Very Good",
+              "Excellent",
+            ]
+        "layoff.is_relevant_for_real_estate":
+          type: string
+          description:
+            True if the layoff impacts real estate market; false otherwise.
+          enum: ["true", "false"]
+        "layoff.layoff_reason":
+          type: string
+          description: The stated reason provided for the layoff.
+        "layoff.location.country":
+          type: string
+          description: The country where the layoff occurred.
+        "layoff.location.city":
+          type: string
+          description: The city where the layoff occurred.
+        "layoff.location.state":
+          type: string
+          description: The state where the layoff occurred.
+        "layoff.location.county":
+          type: string
+          description: The county where the layoff occurred.
+        "layoff.location.raw_location":
+          type: string
+          description: The unparsed location string from the source.
+        "layoff.max_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The maximum number of employees affected when a range is specified.
+        "layoff.min_number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The minimum number of employees affected when a range is specified.
+        "layoff.number_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: The exact number of employees affected by the layoff.
+        "layoff.percentage_of_people_laid_off":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The percentage of total workforce affected by the layoff.
+        "layoff.summary":
+          type: string
+          description: The detailed description of the layoff event.
+
+    # New Schema: SupplyChainDisruptionFilters
+    SupplyChainDisruptionSearchFilters:
+      title: Supply Chain Disruption
+      type: object
+      properties:
+        company_name:
+          type: string
+          description:
+            The name of the primary company affected by the supply chain
+            disruption.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the disruption occurred or was first reported. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
+        "supply_chain_disruption.disruption_type":
+          type: string
+          description: |
+            The category of the supply chain disruption (e.g., production_stoppage, natural_disaster, labor_dispute, transportation_delay, supply_shortage, regulatory_change).
+        "supply_chain_disruption.disruption_cause":
+          type: string
+          description: |
+            A specific description of what caused the supply chain disruption.
+        "supply_chain_disruption.facility_type":
+          type: string
+          description: |
+            The category of facility primarily affected by the disruption (e.g., manufacturing_plant, distribution_center, warehouse, port).
+        "supply_chain_disruption.facility_original":
+          type: string
+          description: |
+            The exact phrase or term used in the article to describe the affected facility.
+        "supply_chain_disruption.additional_affected_companies":
+          type: string
+          description: |
+            Names of other companies affected by the same disruption.
+        "supply_chain_disruption.affected_industries":
+          allOf:
+            - $ref: "#/components/schemas/GlobalIndustryCategories"
+            - description: |
+                Industries affected by the disruption, using GICS sectors (e.g., Materials, Consumer Discretionary, Information Technology).
+        "supply_chain_disruption.affected_products":
+          type: string
+          description: |
+            The specific products or materials affected by the supply chain disruption.
+        "supply_chain_disruption.hs_product_categories":
+          allOf:
+            - $ref: "#/components/schemas/HarmonizedSystemProductSections"
+            - description: |
+                Harmonized System (HS) sections of products affected by the disruption.
+        "supply_chain_disruption.location.country":
+          type: string
+          description: The country where the disruption occurred.
+        "supply_chain_disruption.location.city":
+          type: string
+          description: The city where the disruption occurred.
+        "supply_chain_disruption.location.state":
+          type: string
+          description: The state where the disruption occurred.
+        "supply_chain_disruption.location.county":
+          type: string
+          description: The county where the disruption occurred.
+        "supply_chain_disruption.location.raw_location":
+          type: string
+          description: The unparsed location string from the source.
+        "supply_chain_disruption.expected_timeframe":
+          type: string
+          description: |
+            The general expected timeframe for the disruption (e.g., days, weeks, months, indefinite, resolved).
+        "supply_chain_disruption.supply_impact_severity":
+          type: string
+          description: |
+            The severity of impact on supply availability (e.g., minimal, moderate, severe, critical, unknown).
+        "supply_chain_disruption.summary":
+          type: string
+          description: |
+            A comprehensive summary of the supply chain disruption event.
+
+    TariffsSearchFilters:
+      title: Tariffs
+      type: object
+      properties:
+        company_name:
+          type: string
+          description: The name of the company related to the tariff event.
+        event_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the tariff event occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
+        extraction_date:
+          allOf:
+            - $ref: "#/components/schemas/DateRangeFilter"
+            - description: |
+                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
+        "tariffs_v2.affected_industries":
+          allOf:
+            - $ref: "#/components/schemas/GlobalIndustryCategories"
+            - description: |
+                Industries affected by the tariff or trade measure, using GICS sectors.
+        "tariffs_v2.affected_products":
+          type: string
+          description: |
+            The specific products affected by the tariff or trade measure.
+        "tariffs_v2.announcement_date":
+          type: string
+          description: |
+            Date when the tariff or trade measure was announced, in YYYY/MM/DD format.
+        "tariffs_v2.estimated_trade_value":
+          type: string
+          description: |
+            The estimated value of trade affected by the measure.
+        "tariffs_v2.hs_product_categories":
+          allOf:
+            - $ref: "#/components/schemas/HarmonizedSystemProductSections"
+            - description: |
+                Harmonized System (HS) sections of products affected by the tariff.
+        "tariffs_v2.implementation_date":
+          type: string
+          description: |
+            Date when the tariff or trade measure will be or was implemented, in YYYY/MM/DD format.
+        "tariffs_v2.imposing_country_code":
+          type: string
+          description: |
+            The ISO 3166-1 alpha-2 code of the country implementing the tariff.
+        "tariffs_v2.imposing_country_name":
+          type: string
+          description: |
+            The name of the country implementing the tariff.
+        "tariffs_v2.main_tariff_rate":
+          allOf:
+            - $ref: "#/components/schemas/NumberRangeFilter"
+            - description: |
+                The most significant tariff rate mentioned.
+        "tariffs_v2.measure_type":
+          type: string
+          description: |
+            Type of trade measure being implemented.
+          enum:
+            [
+              "new tariff",
+              "tariff increase",
+              "tariff reduction",
+              "retaliatory tariff",
+              "import ban",
+              "quota",
+              "other trade restriction",
+            ]
+        "tariffs_v2.policy_objective":
+          type: string
+          description: |
+            Stated policy objective for implementing the tariff.
+        "tariffs_v2.previous_tariff_rate":
+          type: string
+          description: |
+            The tariff rates before this change.
+        "tariffs_v2.relevance_score":
+          type: string
+          description: |
+            Rating of how directly the article addresses specific tariff announcements.
+          enum: ["Low", "Medium", "High"]
+        "tariffs_v2.summary":
+          type: string
+          description: |
+            A comprehensive summary of the tariff announcement or change.
+        "tariffs_v2.targeted_country_codes":
+          type: string
+          description: |
+            ISO 3166-1 alpha-2 codes for countries targeted by the tariff.
+        "tariffs_v2.targeted_country_names":
+          type: string
+          description: |
+            Names of countries targeted by the tariff.
+        "tariffs_v2.tariff_rates":
+          type: string
+          description: |
+            List of tariff rate descriptions.
+        "tariffs_v2.trigger_event":
+          type: string
+          description: |
+            Description of what triggered the retaliatory measure.
+
+    # The response schema for `/api/events_info/get_event_fields`
+    # Common filters available for all the event types
+    BaseAvailableFiltersResponse:
       type: object
       required:
         - message
@@ -412,15 +854,16 @@ components:
           example: "Success"
         count:
           type: integer
-          description: Total number of available fields returned
+          description: Total number of available filters returned
           example: 12
         fields:
           type: object
           description:
             Map of field names to their type definitions and usage examples
 
-    # Field Type Definitions
-    StringFieldType:
+    # Filter models for response schema
+    # `/api/events_info/get_event_fields`
+    StringFilter:
       type: object
       required:
         - type
@@ -428,7 +871,6 @@ components:
       properties:
         type:
           type: string
-          enum: [String]
           description: Indicates this field accepts string values
         usage_example:
           type: object
@@ -438,7 +880,7 @@ components:
           example:
             company_name: "Tesla"
 
-    DateFieldType:
+    DateFilter:
       type: object
       required:
         - type
@@ -446,7 +888,6 @@ components:
       properties:
         type:
           type: string
-          enum: [Date]
           description: Indicates this field accepts date values
         usage_example:
           type: object
@@ -467,7 +908,7 @@ components:
               lte: "now"
               gte: "now-30d"
 
-    NumberFieldType:
+    NumberFilter:
       type: object
       required:
         - type
@@ -475,7 +916,6 @@ components:
       properties:
         type:
           type: string
-          enum: [Number]
           description: Indicates this field accepts numeric values
         usage_example:
           type: object
@@ -513,11 +953,31 @@ components:
           type: string
           description: The state where the event occurred.
 
-    # Event-specific Fields Responses
-    DataBreachFieldsResponse:
-      title: Data Breach Fields
+    EventType:
+      type: string
+      description: The specific type of business event.
+      enum:
+        - "data_breach"
+        - "fundraising"
+        - "layoff"
+        - "supply_chain_disruption"
+        - "tariffs_v2"
+
+    GlobalEventType:
+      type: string
+      description: The high-level category of the business event.
+      enum:
+        - "DataMonitoring"
+        - "Finance"
+        - "Layoff"
+        - "SupplyChainOperations"
+        - "TradePolicy"
+
+    # Event-specific Available Filters Responses
+    DataBreachAvailableFiltersResponse:
+      title: Data Breach Available Filters
       allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - $ref: "#/components/schemas/BaseAvailableFiltersResponse"
         - type: object
           properties:
             fields:
@@ -529,43 +989,43 @@ components:
               properties:
                 company_name:
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Name of the company affected by the data breach.
                 event_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description: Date when the data breach occurred.
                 extraction_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the event was extracted from news sources.
                 "data_breach.data":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Type of data that was compromised.
                 "data_breach.data_type":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Classification of compromised data.
                 "data_breach.impacted":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Type of entities affected by the breach.
                 "data_breach.summary":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Summary text of the data breach event.
                 "data_breach.title":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Title of the data breach event.
 
-    FundraisingFieldsResponse:
-      title: Fundraising Fields
+    FundraisingAvailableFiltersResponse:
+      title: Fundraising Available Filters
       allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - $ref: "#/components/schemas/BaseAvailableFiltersResponse"
         - type: object
           properties:
             fields:
@@ -577,58 +1037,58 @@ components:
               properties:
                 company_name:
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Name of the company that received funding.
                 event_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description: Date when the fundraising occurred.
                 extraction_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the event was extracted from news sources.
                 "fundraising.amount":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description: Amount of funding raised.
                 "fundraising.company_description":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Description of the funded company.
                 "fundraising.company_legal_name":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Legal name of the funded company.
                 "fundraising.currency":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Currency of the funding amount.
                 "fundraising.founders":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Names of company founders.
                 "fundraising.funding_type":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Type of funding round.
                 "fundraising.industry":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Industry of the funded company.
                 "fundraising.investors":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Names of investors.
                 "fundraising.valuation":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Company valuation at the time of funding.
 
-    LayoffFieldsResponse:
-      title: Layoff Fields
+    LayoffAvailableFiltersResponse:
+      title: Layoff Available Filters
       allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - $ref: "#/components/schemas/BaseAvailableFiltersResponse"
         - type: object
           properties:
             fields:
@@ -640,21 +1100,21 @@ components:
               properties:
                 company_name:
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Name of the company that conducted the layoff.
                 event_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description: Date when the layoff occurred.
                 extraction_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the event was extracted from news sources.
                 "layoff.how_much_related":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Relevance rating of the layoff event.
                 "layoff.is_relevant_for_real_estate":
                   type: string
@@ -663,7 +1123,7 @@ components:
                   enum: ["true", "false"]
                 "layoff.layoff_reason":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Stated reason for the layoff.
                 "layoff.location":
                   allOf:
@@ -671,32 +1131,32 @@ components:
                     - description: Location where the layoff occurred.
                 "layoff.max_number_of_people_laid_off":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description:
                         Maximum number of employees affected in a range.
                 "layoff.min_number_of_people_laid_off":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description:
                         Minimum number of employees affected in a range.
                 "layoff.number_of_people_laid_off":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description: Exact number of employees affected.
                 "layoff.percentage_of_people_laid_off":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description: Percentage of workforce affected.
                 "layoff.summary":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Summary text of the layoff event.
 
-    # New Schema: SupplyChainDisruptionFieldsResponse
-    SupplyChainDisruptionFieldsResponse:
-      title: Supply Chain Disruption Fields
+    # New Schema: SupplyChainDisruptionAvailableFiltersResponse
+    SupplyChainDisruptionAvailableFiltersResponse:
+      title: Supply Chain Disruption Available Filters
       allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - $ref: "#/components/schemas/BaseAvailableFiltersResponse"
         - type: object
           properties:
             fields:
@@ -708,63 +1168,63 @@ components:
               properties:
                 company_name:
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Name of the primary company affected by the supply chain
                         disruption.
                 event_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the disruption occurred or was first reported.
                 extraction_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the event was extracted from news sources.
                 "supply_chain_disruption.disruption_type":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: The category of the supply chain disruption.
                 "supply_chain_disruption.disruption_cause":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         A specific description of what caused the supply chain
                         disruption.
                 "supply_chain_disruption.facility_type":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The category of facility primarily affected by the
                         disruption.
                 "supply_chain_disruption.facility_original":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The exact phrase or term used in the article to describe
                         the affected facility.
                 "supply_chain_disruption.additional_affected_companies":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Names of other companies affected by the same
                         disruption.
                 "supply_chain_disruption.affected_industries":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Industries affected by the disruption, using GICS
                         sectors.
                 "supply_chain_disruption.affected_products":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The specific products or materials affected by the
                         supply chain disruption.
                 "supply_chain_disruption.hs_product_categories":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Harmonized System (HS) sections of products affected by
                         the disruption.
@@ -774,25 +1234,25 @@ components:
                     - description: The locations where the disruption occurred.
                 "supply_chain_disruption.expected_timeframe":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The general expected timeframe for the disruption.
                 "supply_chain_disruption.supply_impact_severity":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The severity of impact on supply availability.
                 "supply_chain_disruption.summary":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         A comprehensive summary of the supply chain disruption
                         event.
 
-    TariffsFieldsResponse:
-      title: Tariffs Fields
+    TariffsAvailableFiltersResponse:
+      title: Tariffs Available Filters
       allOf:
-        - $ref: "#/components/schemas/BaseFieldsResponse"
+        - $ref: "#/components/schemas/BaseAvailableFiltersResponse"
         - type: object
           properties:
             fields:
@@ -804,112 +1264,112 @@ components:
               properties:
                 company_name:
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Name of the company related to the tariff event.
                 event_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description: Date when the tariff event occurred.
                 extraction_date:
                   allOf:
-                    - $ref: "#/components/schemas/DateFieldType"
+                    - $ref: "#/components/schemas/DateFilter"
                     - description:
                         Date when the event was extracted from news sources.
                 "tariffs_v2.affected_industries":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Industries affected by the tariff or trade measure.
                 "tariffs_v2.affected_products":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Specific products affected by the tariff or trade
                         measure.
                 "tariffs_v2.announcement_date":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Date when the tariff or trade measure was announced.
                 "tariffs_v2.estimated_trade_value":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The estimated value of trade affected by the measure.
                 "tariffs_v2.hs_product_categories":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Harmonized System (HS) sections of products affected by
                         the tariff.
                 "tariffs_v2.implementation_date":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Date when the tariff or trade measure will be or was
                         implemented.
                 "tariffs_v2.imposing_country_code":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The ISO 3166-1 alpha-2 code of the country implementing
                         the tariff.
                 "tariffs_v2.imposing_country_name":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         The name of the country implementing the tariff.
                 "tariffs_v2.main_tariff_rate":
                   allOf:
-                    - $ref: "#/components/schemas/NumberFieldType"
+                    - $ref: "#/components/schemas/NumberFilter"
                     - description: The most significant tariff rate mentioned.
                 "tariffs_v2.measure_type":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Type of trade measure being implemented.
                 "tariffs_v2.policy_objective":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Stated policy objective for implementing the tariff.
                 "tariffs_v2.previous_tariff_rate":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: The tariff rates before this change.
                 "tariffs_v2.relevance_score":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Rating of how directly the article addresses specific
                         tariff announcements.
                 "tariffs_v2.summary":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         A comprehensive summary of the tariff announcement or
                         change.
                 "tariffs_v2.targeted_country_codes":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         ISO 3166-1 alpha-2 codes for countries targeted by the
                         tariff.
                 "tariffs_v2.targeted_country_names":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: Names of countries targeted by the tariff.
                 "tariffs_v2.tariff_rates":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description: List of tariff rate descriptions.
                 "tariffs_v2.trigger_event":
                   allOf:
-                    - $ref: "#/components/schemas/StringFieldType"
+                    - $ref: "#/components/schemas/StringFilter"
                     - description:
                         Description of what triggered the retaliatory measure.
 
-    BaseEvent:
+    BaseEventResponse:
       type: object
       required:
         - id
@@ -924,27 +1384,9 @@ components:
           description: The unique identifier of the event.
           example: "n1jk-pQBvyT_ytpRpzBn"
         event_type:
-          type: string
-          description: The specific type of the event.
-          enum:
-            [
-              data_breach,
-              fundraising,
-              layoff,
-              supply_chain_disruption,
-              tariffs_v2,
-            ]
+          $ref: "#/components/schemas/EventType"
         global_event_type:
-          type: string
-          description: The high-level category of the event.
-          enum:
-            [
-              DataMonitoring,
-              Finance,
-              Layoff,
-              SupplyChainOperations,
-              TradePolicy,
-            ]
+          $ref: "#/components/schemas/GlobalEventType"
         associated_article_ids:
           type: array
           description:
@@ -960,18 +1402,6 @@ components:
           type: string
           format: date-time
           description: The timestamp when the event occurred.
-        articles:
-          type: array
-          description: |
-            Array of source articles. Only present when `attach_articles_data` is `true` in the request. Access individual articles using array index, e.g.:
-            - First article: `events.articles[0]`
-            - Second article: `events.articles[1]`
-
-            By default, only returns id, title, link, and media fields. To request more fields, add them to the `additional_article_fields` array in the search request.
-          items:
-            oneOf:
-              - $ref: "#/components/schemas/DefaultArticleEntity"
-              - $ref: "#/components/schemas/ArticleEntity"
 
     DefaultArticleEntity:
       title: Default Article Object
@@ -1205,890 +1635,389 @@ components:
             description: The number of times this entity appears in the article.
 
     # Event schemas
-    DataBreachEvent:
+    DataBreachEventResponse:
       title: Data Breach
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          required:
-            - company_name
+      type: object
+      required:
+        - company_name
+      properties:
+        company_name:
+          type: string
+          description: Name of the company affected by the data breach.
+        data_breach:
+          type: object
           properties:
-            company_name:
+            summary:
               type: string
-              description: Name of the company affected by the data breach.
-            data_breach:
-              type: object
-              properties:
-                summary:
-                  type: string
-                  description: The detailed description of the data breach.
-                impacted:
-                  type: array
-                  description: The types of entities affected by the breach.
-                  items:
-                    type: string
-                data:
-                  type: string
-                  description: The description of compromised data.
-                data_type:
-                  type: string
-                  description: The classification of compromised data.
-                title:
-                  type: string
-                  description: The title summarizing the data breach event.
+              description: The detailed description of the data breach.
+            impacted:
+              type: array
+              description: The types of entities affected by the breach.
+              items:
+                type: string
+            data:
+              type: string
+              description: The description of compromised data.
+            data_type:
+              type: string
+              description: The classification of compromised data.
+            title:
+              type: string
+              description: The title summarizing the data breach event.
 
-    FundraisingEvent:
+    FundraisingEventResponse:
       title: Fundraising
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
+      type: object
+      required:
+        - company_name
+      properties:
+        company_name:
+          type: string
+          description: Name of the company that received funding.
+        fundraising:
+          type: object
           required:
-            - company_name
+            - amount
+            - currency
+            - funding_type
           properties:
-            company_name:
+            amount:
+              type: number
+              description: The amount of funding raised.
+            company_description:
               type: string
-              description: Name of the company that received funding.
-            fundraising:
-              type: object
-              required:
-                - amount
-                - currency
-                - funding_type
-              properties:
-                amount:
-                  type: number
-                  description: The amount of funding raised.
-                company_description:
-                  type: string
-                  description: The description of the funded company.
-                company_legal_name:
-                  type: string
-                  description: The legal name of the funded company.
-                funding_type:
-                  type: string
-                  description:
-                    The type of funding round (e.g., Seed, Series A, Series B,
-                    Grant, Bridge Round, Series Unknown, State Bonding,
-                    Bonding).
-                currency:
-                  type: string
-                  description:
-                    The currency of the funding amount in ISO format (e.g., USD,
-                    EUR).
-                founders:
-                  type: array
-                  description: The list of company founders.
-                  items:
-                    type: string
-                investors:
-                  type: array
-                  description: The list of investors participating in the round.
-                  items:
-                    type: string
-                industry:
-                  type: string
-                  description: The industry of the funded company.
-                valuation:
-                  type: string
-                  description: The company valuation at the time of funding.
-                title:
-                  type: string
-                  description:
-                    Title of the funding event, typically 10-12 words.
-                summary:
-                  type: string
-                  description:
-                    Summary of the funding event, up to 500 characters.
-
-    LayoffEvent:
-      title: Layoff
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          required:
-            - company_name
-          properties:
-            company_name:
+              description: The description of the funded company.
+            company_legal_name:
               type: string
-              description: Name of the company that conducted the layoff.
-            layoff:
-              type: object
-              required:
-                - location
-                - how_much_related
-                - summary
-              properties:
-                summary:
-                  type: string
-                  description: The detailed description of the layoff event.
-                layoff_reason:
-                  type: string
-                  description: Stated reason for the layoff.
-                max_number_of_people_laid_off:
-                  type: integer
-                  description: |
-                    The maximum number of employees affected if a range was specified.
-                min_number_of_people_laid_off:
-                  type: integer
-                  description: |
-                    The minimum number of employees affected if a range was specified.
-                number_of_people_laid_off:
-                  type: integer
-                  description: The exact number of employees affected.
-                percentage_of_people_laid_off:
-                  type: number
-                  format: float
-                  description: The percentage of total workforce affected.
-                how_much_related:
-                  type: string
-                  enum:
-                    [
-                      "Completely Irrelevant",
-                      "Irrelevant",
-                      "Very Poor",
-                      "Poor",
-                      "Fair",
-                      "Good",
-                      "Very Good",
-                      "Excellent",
-                    ]
-                  description: The relevance rating of the layoff event.
-                is_relevant_for_real_estate:
-                  type: boolean
-                  description:
-                    True if the layoff impacts real estate market; false
-                    otherwise.
-                location:
-                  type: array
-                  description: The locations where the layoff occurred.
-                  items:
-                    $ref: "#/components/schemas/Location"
-
-    # New Schema: SupplyChainDisruptionEvent
-    SupplyChainDisruptionEvent:
-      title: Supply Chain Disruption
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          required:
-            - company_name
-          properties:
-            company_name:
+              description: The legal name of the funded company.
+            funding_type:
               type: string
               description:
-                Name of the primary company affected by the supply chain
-                disruption.
-            supply_chain_disruption:
-              type: object
-              required:
-                - summary
-                - disruption_type
-                - disruption_cause
-                - facility_type
-                - facility_original
-                - affected_industries
-                - affected_products
-                - hs_product_categories
-                - expected_timeframe
-                - supply_impact_severity
-              properties:
-                summary:
-                  type: string
-                  description:
-                    A comprehensive summary of the supply chain disruption
-                    event.
-                disruption_type:
-                  type: string
-                  enum:
-                    [
-                      "transportation_delay",
-                      "production_stoppage",
-                      "natural_disaster",
-                      "labor_dispute",
-                      "geopolitical",
-                      "supply_shortage",
-                      "quality_issue",
-                      "cyberattack",
-                      "regulatory_change",
-                      "other",
-                    ]
-                  description: The category of the supply chain disruption.
-                disruption_cause:
-                  type: string
-                  description:
-                    A specific description of what caused the supply chain
-                    disruption.
-                facility_type:
-                  type: string
-                  enum:
-                    [
-                      "manufacturing_plant",
-                      "assembly_factory",
-                      "fulfillment_center",
-                      "distribution_center",
-                      "cross_dock_facility",
-                      "warehouse",
-                      "cold_storage",
-                      "port",
-                      "container_yard",
-                      "logistics_hub",
-                      "intermodal_terminal",
-                      "shipping_terminal",
-                      "rail_terminal",
-                      "maintenance_facility",
-                      "data_center",
-                      "other",
-                    ]
-                  description:
-                    The category of facility primarily affected by the
-                    disruption.
-                facility_original:
-                  type: string
-                  description:
-                    The exact phrase or term used in the article to describe the
-                    affected facility.
-                additional_affected_companies:
-                  type: array
-                  items:
-                    type: string
-                  description:
-                    Names of other companies affected by the same disruption.
-                affected_industries:
-                  type: array
-                  items:
-                    type: string
-                    enum:
-                      [
-                        "Energy",
-                        "Materials",
-                        "Industrials",
-                        "Consumer Discretionary",
-                        "Consumer Staples",
-                        "Health Care",
-                        "Financials",
-                        "Information Technology",
-                        "Communication Services",
-                        "Utilities",
-                        "Real Estate",
-                      ]
-                  description:
-                    Industries affected by the disruption, using GICS sectors.
-                affected_products:
-                  type: array
-                  items:
-                    type: string
-                  description:
-                    The specific products or materials affected by the supply
-                    chain disruption.
-                hs_product_categories:
-                  type: array
-                  items:
-                    type: string
-                    enum:
-                      [
-                        "I: Live animals; animal products",
-                        "II: Vegetable products",
-                        "III: Animal or vegetable fats and oils",
-                        "IV: Prepared foodstuffs; beverages, spirits, tobacco",
-                        "V: Mineral products",
-                        "VI: Products of the chemical or allied industries",
-                        "VII: Plastics and rubber",
-                        "VIII: Raw hides and skins, leather, furskins",
-                        "IX: Wood and articles of wood",
-                        "X: Pulp of wood; paper and paperboard",
-                        "XI: Textiles and textile articles",
-                        "XII: Footwear, headgear, umbrellas",
-                        "XIII: Articles of stone, ceramic products, glass",
-                        "XIV: Pearls, precious stones and metals",
-                        "XV: Base metals and articles of base metal",
-                        "XVI: Machinery and mechanical appliances",
-                        "XVII: Vehicles, aircraft, vessels",
-                        "XVIII: Optical, photographic, medical instruments",
-                        "XIX: Arms and ammunition",
-                        "XX: Miscellaneous manufactured articles",
-                        "XXI: Works of art, collectors' pieces",
-                      ]
-                  description:
-                    Harmonized System (HS) sections of products affected by the
-                    disruption.
-                location:
-                  type: array
-                  description: The locations where the disruption occurred.
-                  items:
-                    $ref: "#/components/schemas/Location"
-                expected_timeframe:
-                  type: string
-                  enum: ["days", "weeks", "months", "indefinite", "resolved"]
-                  description:
-                    The general expected timeframe for the disruption.
-                supply_impact_severity:
-                  type: string
-                  enum: ["minimal", "moderate", "severe", "critical", "unknown"]
-                  description: The severity of impact on supply availability.
-
-    TariffsEvent:
-      title: Tariff
-      allOf:
-        - $ref: "#/components/schemas/BaseEvent"
-        - type: object
-          required:
-            - company_name
-          properties:
-            company_name:
+                The type of funding round (e.g., Seed, Series A, Series B,
+                Grant, Bridge Round, Series Unknown, State Bonding, Bonding).
+            currency:
               type: string
-              nullable: true
-              description: |
-                Name of the company related to the tariff event, if applicable.
-            tariffs_v2:
-              type: object
-              required:
-                - imposing_country_name
-                - imposing_country_code
-                - targeted_country_names
-                - targeted_country_codes
-                - measure_type
-                - affected_industries
-                - hs_product_categories
-                - main_tariff_rate
-                - summary
-              properties:
-                imposing_country_name:
-                  type: string
-                  description: The name of the country implementing the tariff.
-                imposing_country_code:
-                  type: string
-                  description:
-                    The ISO 3166-1 alpha-2 code of the country implementing the
-                    tariff.
-                targeted_country_names:
-                  type: array
-                  description: Names of countries targeted by the tariff.
-                  items:
-                    type: string
-                targeted_country_codes:
-                  type: array
-                  description:
-                    ISO 3166-1 alpha-2 codes for countries targeted by the
-                    tariff.
-                  items:
-                    type: string
-                measure_type:
-                  type: string
-                  enum:
-                    [
-                      "new tariff",
-                      "tariff increase",
-                      "tariff reduction",
-                      "retaliatory tariff",
-                      "import ban",
-                      "quota",
-                      "other trade restriction",
-                    ]
-                  description: Type of trade measure being implemented.
-                trigger_event:
-                  type: string
-                  description:
-                    Description of what triggered the retaliatory measure.
-                affected_industries:
-                  type: array
-                  description:
-                    Industries affected by the tariff or trade measure.
-                  items:
-                    type: string
-                    enum:
-                      [
-                        "Energy",
-                        "Materials",
-                        "Industrials",
-                        "Consumer Discretionary",
-                        "Consumer Staples",
-                        "Health Care",
-                        "Financials",
-                        "Information Technology",
-                        "Communication Services",
-                        "Utilities",
-                        "Real Estate",
-                      ]
-                affected_products:
-                  type: array
-                  description:
-                    Specific products affected by the tariff or trade measure.
-                  items:
-                    type: string
-                hs_product_categories:
-                  type: array
-                  description:
-                    Harmonized System (HS) sections of products affected by the
-                    tariff.
-                  items:
-                    type: string
-                    enum:
-                      [
-                        "I: Live animals; animal products",
-                        "II: Vegetable products",
-                        "III: Animal or vegetable fats and oils",
-                        "IV: Prepared foodstuffs; beverages, spirits, tobacco",
-                        "V: Mineral products",
-                        "VI: Products of the chemical or allied industries",
-                        "VII: Plastics and rubber",
-                        "VIII: Raw hides and skins, leather, furskins",
-                        "IX: Wood and articles of wood",
-                        "X: Pulp of wood; paper and paperboard",
-                        "XI: Textiles and textile articles",
-                        "XII: Footwear, headgear, umbrellas",
-                        "XIII: Articles of stone, ceramic products, glass",
-                        "XIV: Pearls, precious stones and metals",
-                        "XV: Base metals and articles of base metal",
-                        "XVI: Machinery and mechanical appliances",
-                        "XVII: Vehicles, aircraft, vessels",
-                        "XVIII: Optical, photographic, medical instruments",
-                        "XIX: Arms and ammunition",
-                        "XX: Miscellaneous manufactured articles",
-                        "XXI: Works of art, collectors' pieces",
-                      ]
-                tariff_rates:
-                  type: array
-                  description: List of tariff rate descriptions.
-                  items:
-                    type: string
-                main_tariff_rate:
-                  type: number
-                  description: The most significant tariff rate mentioned.
-                previous_tariff_rate:
-                  type: string
-                  description: The tariff rates before this change.
-                announcement_date:
-                  type: string
-                  description:
-                    Date when the tariff or trade measure was announced.
-                implementation_date:
-                  type: string
-                  description:
-                    Date when the tariff or trade measure will be or was
-                    implemented.
-                estimated_trade_value:
-                  type: string
-                  description:
-                    The estimated value of trade affected by the measure.
-                policy_objective:
-                  type: string
-                  description:
-                    Stated policy objective for implementing the tariff.
-                relevance_score:
-                  type: string
-                  enum: ["Low", "Medium", "High"]
-                  description:
-                    Rating of how directly the article addresses specific tariff
-                    announcements.
-                summary:
-                  type: string
-                  description:
-                    A comprehensive summary of the tariff announcement or
-                    change.
+              description:
+                The currency of the funding amount in ISO format (e.g., USD,
+                EUR).
+            founders:
+              type: array
+              description: The list of company founders.
+              items:
+                type: string
+            investors:
+              type: array
+              description: The list of investors participating in the round.
+              items:
+                type: string
+            industry:
+              type: string
+              description: The industry of the funded company.
+            valuation:
+              type: string
+              description: The company valuation at the time of funding.
+            title:
+              type: string
+              description: Title of the funding event, typically 10-12 words.
+            summary:
+              type: string
+              description: Summary of the funding event, up to 500 characters.
 
-    # Filter Schemas
-    DateRangeFilter:
-      type: object
-      description:
-        A date range filter supporting both absolute and relative date formats.
-      properties:
-        gte:
-          type: string
-          description:
-            The earliest date to include. Accepts absolute dates (YYYY-MM-DD) or
-            relative formats (`30d`, `now-90d`).
-        lte:
-          type: string
-          description:
-            The latest date to include. Accepts absolute dates (YYYY-MM-DD) or
-            relative formats (`now`, `now-30d`).
-
-    NumberRangeFilter:
-      type: object
-      description: A numeric range filter.
-      properties:
-        gte:
-          type: number
-          description: The minimum value to include in results.
-        lte:
-          type: number
-          description: The maximum value to include in results.
-
-    # Events Filter Schemas
-    DataBreachFilters:
-      title: Data Breach
-      type: object
-      properties:
-        company_name:
-          type: string
-          description: The name of the company affected by the data breach.
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the data breach occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM/DD) and relative dates.
-        "data_breach.data":
-          type: string
-          description: |
-            The description of leaked data (e.g., Customer Phone Numbers, Customer Email Addresses, Customer Passwords).
-        "data_breach.data_type":
-          type: string
-          description: |
-            The type of leaked data (e.g., technical, financial, personal, health, credentials).
-        "data_breach.impacted":
-          type: string
-          description: |
-            The category of entities affected by the breach (e.g., Clients, Customers, Employees, Users).
-        "data_breach.summary":
-          type: string
-          maxLength: 500
-          description: |
-            The detailed description of the data breach event, up to 500 characters.
-        "data_breach.title":
-          type: string
-          description: The title of the data breach event.
-
-    FundraisingFilters:
-      title: Fundraising
-      type: object
-      properties:
-        company_name:
-          type: string
-          description: |
-            The name of the company that was funded (e.g., Tesla, SpaceX).
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the fundraising occurred. Accepts both absolute dates (YYYY-MM/DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the event was extracted from news sources. Accepts
-                both absolute dates (YYYY-MM/DD) and relative dates.
-        "fundraising.amount":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The amount raised by the company in digits (e.g., 1000000, 1000000000).
-        "fundraising.company_description":
-          type: string
-          description: The description of the company that was funded.
-        "fundraising.company_legal_name":
-          type: string
-          description: |
-            The legal name of the company that was funded (e.g., Tesla Inc, SpaceX Inc).
-        "fundraising.currency":
-          type: string
-          description: |
-            The currency of the raised amount in ISO format (e.g., USD, EUR).
-        "fundraising.founders":
-          type: string
-          description: The names of the company founders, up to 50 entries.
-        "fundraising.funding_type":
-          type: string
-          description: |
-            The type of funding round (e.g., Seed, Series A, Series B, Series C, Series D, Series E, Pre-Seed, Grant, Bridge Round, Series Unknown, State Bonding, Bonding).
-        "fundraising.industry":
-          type: string
-          description: The industry sector of the funded company.
-        "fundraising.investors":
-          type: string
-          description: |
-            The names of the investors participating in the funding round, up to 50 entries.
-        "fundraising.valuation":
-          type: string
-          description: |
-            The valuation of the company in digits at the time of funding (e.g., 1000000, 1000000000).
-
-    LayoffFilters:
+    LayoffEventResponse:
       title: Layoff
       type: object
+      required:
+        - company_name
       properties:
         company_name:
           type: string
-          description:
-            The name of the company that conducted or is conducting the layoffs.
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the layoff occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description:
-                The date when the event was extracted from news sources. Accepts
-                both absolute dates (YYYY-MM-DD) and relative dates.
-        "layoff.how_much_related":
-          type: string
-          description:
-            The relevance rating of the layoff event to real estate market
-            trends.
-          enum:
-            [
-              "Completely Irrelevant",
-              "Irrelevant",
-              "Very Poor",
-              "Poor",
-              "Fair",
-              "Good",
-              "Very Good",
-              "Excellent",
-            ]
-        "layoff.is_relevant_for_real_estate":
-          type: string
-          description:
-            True if the layoff impacts real estate market; false otherwise.
-          enum: ["true", "false"]
-        "layoff.layoff_reason":
-          type: string
-          description: The stated reason provided for the layoff.
-        "layoff.location":
-          allOf:
-            - $ref: "#/components/schemas/Location"
-            - description: |
-                Filter criteria for the location of the layoff. All fields support both exact and partial matching.
-        "layoff.max_number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The maximum number of employees affected when a range is specified.
-        "layoff.min_number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The minimum number of employees affected when a range is specified.
-        "layoff.number_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: The exact number of employees affected by the layoff.
-        "layoff.percentage_of_people_laid_off":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The percentage of total workforce affected by the layoff.
-        "layoff.summary":
-          type: string
-          description: The detailed description of the layoff event.
+          description: Name of the company that conducted the layoff.
+        layoff:
+          type: object
+          required:
+            - location
+            - how_much_related
+            - summary
+          properties:
+            summary:
+              type: string
+              description: The detailed description of the layoff event.
+            layoff_reason:
+              type: string
+              description: Stated reason for the layoff.
+            max_number_of_people_laid_off:
+              type: integer
+              description: |
+                The maximum number of employees affected if a range was specified.
+            min_number_of_people_laid_off:
+              type: integer
+              description: |
+                The minimum number of employees affected if a range was specified.
+            number_of_people_laid_off:
+              type: integer
+              description: The exact number of employees affected.
+            percentage_of_people_laid_off:
+              type: number
+              format: float
+              description: The percentage of total workforce affected.
+            how_much_related:
+              type: string
+              enum:
+                [
+                  "Completely Irrelevant",
+                  "Irrelevant",
+                  "Very Poor",
+                  "Poor",
+                  "Fair",
+                  "Good",
+                  "Very Good",
+                  "Excellent",
+                ]
+              description: The relevance rating of the layoff event.
+            is_relevant_for_real_estate:
+              type: boolean
+              description:
+                True if the layoff impacts real estate market; false otherwise.
+            location:
+              type: array
+              description: The locations where the layoff occurred.
+              items:
+                $ref: "#/components/schemas/Location"
 
-    # New Schema: SupplyChainDisruptionFilters
-    SupplyChainDisruptionFilters:
+    SupplyChainDisruptionEventResponse:
       title: Supply Chain Disruption
       type: object
+      required:
+        - company_name
       properties:
         company_name:
           type: string
           description:
-            The name of the primary company affected by the supply chain
-            disruption.
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the disruption occurred or was first reported. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
-        "supply_chain_disruption.disruption_type":
-          type: string
-          description: |
-            The category of the supply chain disruption (e.g., production_stoppage, natural_disaster, labor_dispute, transportation_delay, supply_shortage, regulatory_change).
-        "supply_chain_disruption.disruption_cause":
-          type: string
-          description: |
-            A specific description of what caused the supply chain disruption.
-        "supply_chain_disruption.facility_type":
-          type: string
-          description: |
-            The category of facility primarily affected by the disruption (e.g., manufacturing_plant, distribution_center, warehouse, port).
-        "supply_chain_disruption.facility_original":
-          type: string
-          description: |
-            The exact phrase or term used in the article to describe the affected facility.
-        "supply_chain_disruption.additional_affected_companies":
-          type: string
-          description: |
-            Names of other companies affected by the same disruption.
-        "supply_chain_disruption.affected_industries":
-          type: string
-          description: |
-            Industries affected by the disruption, using GICS sectors (e.g., Materials, Consumer Discretionary, Information Technology).
-        "supply_chain_disruption.affected_products":
-          type: string
-          description: |
-            The specific products or materials affected by the supply chain disruption.
-        "supply_chain_disruption.hs_product_categories":
-          type: string
-          description: |
-            Harmonized System (HS) sections of products affected by the disruption.
-        "supply_chain_disruption.location":
-          allOf:
-            - $ref: "#/components/schemas/Location"
-            - description: |
-                The locations where the disruption occurred.
-        "supply_chain_disruption.expected_timeframe":
-          type: string
-          description: |
-            The general expected timeframe for the disruption (e.g., days, weeks, months, indefinite, resolved).
-        "supply_chain_disruption.supply_impact_severity":
-          type: string
-          description: |
-            The severity of impact on supply availability (e.g., minimal, moderate, severe, critical, unknown).
-        "supply_chain_disruption.summary":
-          type: string
-          description: |
-            A comprehensive summary of the supply chain disruption event.
+            Name of the primary company affected by the supply chain disruption.
+        supply_chain_disruption:
+          type: object
+          required:
+            - summary
+            - disruption_type
+            - disruption_cause
+            - facility_type
+            - facility_original
+            - affected_industries
+            - affected_products
+            - hs_product_categories
+            - expected_timeframe
+            - supply_impact_severity
+          properties:
+            summary:
+              type: string
+              description:
+                A comprehensive summary of the supply chain disruption event.
+            disruption_type:
+              type: string
+              enum:
+                [
+                  "transportation_delay",
+                  "production_stoppage",
+                  "natural_disaster",
+                  "labor_dispute",
+                  "geopolitical",
+                  "supply_shortage",
+                  "quality_issue",
+                  "cyberattack",
+                  "regulatory_change",
+                  "other",
+                ]
+              description: The category of the supply chain disruption.
+            disruption_cause:
+              type: string
+              description:
+                A specific description of what caused the supply chain
+                disruption.
+            facility_type:
+              type: string
+              enum:
+                [
+                  "manufacturing_plant",
+                  "assembly_factory",
+                  "fulfillment_center",
+                  "distribution_center",
+                  "cross_dock_facility",
+                  "warehouse",
+                  "cold_storage",
+                  "port",
+                  "container_yard",
+                  "logistics_hub",
+                  "intermodal_terminal",
+                  "shipping_terminal",
+                  "rail_terminal",
+                  "maintenance_facility",
+                  "data_center",
+                  "other",
+                ]
+              description:
+                The category of facility primarily affected by the disruption.
+            facility_original:
+              type: string
+              description:
+                The exact phrase or term used in the article to describe the
+                affected facility.
+            additional_affected_companies:
+              type: array
+              items:
+                type: string
+              description:
+                Names of other companies affected by the same disruption.
+            affected_industries:
+              type: array
+              items:
+                type: string
+                enum:
+                  [
+                    "Energy",
+                    "Materials",
+                    "Industrials",
+                    "Consumer Discretionary",
+                    "Consumer Staples",
+                    "Health Care",
+                    "Financials",
+                    "Information Technology",
+                    "Communication Services",
+                    "Utilities",
+                    "Real Estate",
+                  ]
+              description:
+                Industries affected by the disruption, using GICS sectors.
+            affected_products:
+              type: array
+              items:
+                type: string
+              description:
+                The specific products or materials affected by the supply chain
+                disruption.
+            hs_product_categories:
+              type: array
+              items:
+                allOf:
+                  - $ref: "#/components/schemas/HarmonizedSystemProductSections"
+                  - description: |
+                      Harmonized System (HS) sections of products affected by the disruption.
+            location:
+              type: array
+              description: The locations where the disruption occurred.
+              items:
+                $ref: "#/components/schemas/Location"
+            expected_timeframe:
+              type: string
+              enum: ["days", "weeks", "months", "indefinite", "resolved"]
+              description: The general expected timeframe for the disruption.
+            supply_impact_severity:
+              type: string
+              enum: ["minimal", "moderate", "severe", "critical", "unknown"]
+              description: The severity of impact on supply availability.
 
-    TariffsFilters:
+    TariffsEventResponse:
       title: Tariffs
       type: object
+      required:
+        - company_name
       properties:
         company_name:
           type: string
-          description: The name of the company related to the tariff event.
-        event_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the tariff event occurred. Accepts both absolute dates (YYYY-MM-DD) and relative dates (e.g., "now", "now-30d"). Default: Last 30 days.
-        extraction_date:
-          allOf:
-            - $ref: "#/components/schemas/DateRangeFilter"
-            - description: |
-                The date when the event was extracted from news sources. Accepts both absolute dates (YYYY-MM-DD) and relative dates.
-        "tariffs_v2.affected_industries":
-          type: string
+          nullable: true
           description: |
-            Industries affected by the tariff or trade measure, using GICS sectors.
-          enum:
-            [
-              "Energy",
-              "Materials",
-              "Industrials",
-              "Consumer Discretionary",
-              "Consumer Staples",
-              "Health Care",
-              "Financials",
-              "Information Technology",
-              "Communication Services",
-              "Utilities",
-              "Real Estate",
-            ]
-        "tariffs_v2.affected_products":
-          type: string
-          description: |
-            The specific products affected by the tariff or trade measure.
-        "tariffs_v2.announcement_date":
-          type: string
-          description: |
-            Date when the tariff or trade measure was announced, in YYYY/MM/DD format.
-        "tariffs_v2.estimated_trade_value":
-          type: string
-          description: |
-            The estimated value of trade affected by the measure.
-        "tariffs_v2.hs_product_categories":
-          type: string
-          description: |
-            Harmonized System (HS) sections of products affected by the tariff.
-          enum:
-            [
-              "I: Live animals; animal products",
-              "II: Vegetable products",
-              "III: Animal or vegetable fats and oils",
-              "IV: Prepared foodstuffs; beverages, spirits, tobacco",
-              "V: Mineral products",
-              "VI: Products of the chemical or allied industries",
-              "VII: Plastics and rubber",
-              "VIII: Raw hides and skins, leather, furskins",
-              "IX: Wood and articles of wood",
-              "X: Pulp of wood; paper and paperboard",
-              "XI: Textiles and textile articles",
-              "XII: Footwear, headgear, umbrellas",
-              "XIII: Articles of stone, ceramic products, glass",
-              "XIV: Pearls, precious stones and metals",
-              "XV: Base metals and articles of base metal",
-              "XVI: Machinery and mechanical appliances",
-              "XVII: Vehicles, aircraft, vessels",
-              "XVIII: Optical, photographic, medical instruments",
-              "XIX: Arms and ammunition",
-              "XX: Miscellaneous manufactured articles",
-              "XXI: Works of art, collectors' pieces",
-            ]
-        "tariffs_v2.implementation_date":
-          type: string
-          description: |
-            Date when the tariff or trade measure will be or was implemented, in YYYY/MM/DD format.
-        "tariffs_v2.imposing_country_code":
-          type: string
-          description: |
-            The ISO 3166-1 alpha-2 code of the country implementing the tariff.
-        "tariffs_v2.imposing_country_name":
-          type: string
-          description: |
-            The name of the country implementing the tariff.
-        "tariffs_v2.main_tariff_rate":
-          allOf:
-            - $ref: "#/components/schemas/NumberRangeFilter"
-            - description: |
-                The most significant tariff rate mentioned.
-        "tariffs_v2.measure_type":
-          type: string
-          description: |
-            Type of trade measure being implemented.
-          enum:
-            [
-              "new tariff",
-              "tariff increase",
-              "tariff reduction",
-              "retaliatory tariff",
-              "import ban",
-              "quota",
-              "other trade restriction",
-            ]
-        "tariffs_v2.policy_objective":
-          type: string
-          description: |
-            Stated policy objective for implementing the tariff.
-        "tariffs_v2.previous_tariff_rate":
-          type: string
-          description: |
-            The tariff rates before this change.
-        "tariffs_v2.relevance_score":
-          type: string
-          description: |
-            Rating of how directly the article addresses specific tariff announcements.
-          enum: ["Low", "Medium", "High"]
-        "tariffs_v2.summary":
-          type: string
-          description: |
-            A comprehensive summary of the tariff announcement or change.
-        "tariffs_v2.targeted_country_codes":
-          type: string
-          description: |
-            ISO 3166-1 alpha-2 codes for countries targeted by the tariff.
-        "tariffs_v2.targeted_country_names":
-          type: string
-          description: |
-            Names of countries targeted by the tariff.
-        "tariffs_v2.tariff_rates":
-          type: string
-          description: |
-            List of tariff rate descriptions.
-        "tariffs_v2.trigger_event":
-          type: string
-          description: |
-            Description of what triggered the retaliatory measure.
+            Name of the company related to the tariff event, if applicable.
+        tariffs_v2:
+          type: object
+          required:
+            - imposing_country_name
+            - imposing_country_code
+            - targeted_country_names
+            - targeted_country_codes
+            - measure_type
+            - affected_industries
+            - hs_product_categories
+            - main_tariff_rate
+            - summary
+          properties:
+            imposing_country_name:
+              type: string
+              description: The name of the country implementing the tariff.
+            imposing_country_code:
+              type: string
+              description:
+                The ISO 3166-1 alpha-2 code of the country implementing the
+                tariff.
+            targeted_country_names:
+              type: array
+              description: Names of countries targeted by the tariff.
+              items:
+                type: string
+            targeted_country_codes:
+              type: array
+              description:
+                ISO 3166-1 alpha-2 codes for countries targeted by the tariff.
+              items:
+                type: string
+            measure_type:
+              type: string
+              description: Type of trade measure being implemented.
+            trigger_event:
+              type: string
+              description:
+                Description of what triggered the retaliatory measure.
+            affected_industries:
+              type: array
+              description: Industries affected by the tariff or trade measure.
+              items:
+                type: string
+            affected_products:
+              type: array
+              description:
+                Specific products affected by the tariff or trade measure.
+              items:
+                type: string
+            hs_product_categories:
+              type: array
+              description:
+                Harmonized System (HS) sections of products affected by the
+                tariff.
+              items:
+                type: string
+            tariff_rates:
+              type: array
+              description: List of tariff rate descriptions.
+              items:
+                type: string
+            main_tariff_rate:
+              type: number
+              description: The most significant tariff rate mentioned.
+            previous_tariff_rate:
+              type: string
+              description: The tariff rates before this change.
+            announcement_date:
+              type: string
+              description: Date when the tariff or trade measure was announced.
+            implementation_date:
+              type: string
+              description:
+                Date when the tariff or trade measure will be or was
+                implemented.
+            estimated_trade_value:
+              type: string
+              description: The estimated value of trade affected by the measure.
+            policy_objective:
+              type: string
+              description: Stated policy objective for implementing the tariff.
+            relevance_score:
+              type: string
+              description:
+                Rating of how directly the article addresses specific tariff
+                announcements.
+            summary:
+              type: string
+              description:
+                A comprehensive summary of the tariff announcement or change.
 
-    # Events Search Request
     SubscriptionResponseDto:
       title: Subscription Response
       description: |
