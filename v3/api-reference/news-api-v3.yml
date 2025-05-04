@@ -95,6 +95,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/SearchIn"
+        - $ref: "#/components/parameters/IncludeTranslationFields"
         - $ref: "#/components/parameters/PredefinedSources"
         - $ref: "#/components/parameters/SourceName"
         - $ref: "#/components/parameters/Sources"
@@ -227,6 +228,7 @@ paths:
         - $ref: "#/components/parameters/ClusteringEnabled"
         - $ref: "#/components/parameters/ClusteringVariable"
         - $ref: "#/components/parameters/ClusteringThreshold"
+        - $ref: "#/components/parameters/IncludeTranslationFields"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
         - $ref: "#/components/parameters/Theme"
@@ -306,6 +308,7 @@ paths:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
         - $ref: "#/components/parameters/TopNArticles"
+        - $ref: "#/components/parameters/IncludeTranslationFields"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
         - $ref: "#/components/parameters/Theme"
@@ -401,6 +404,7 @@ paths:
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/IncludeTranslationFields"
         - $ref: "#/components/parameters/IncludeNlpData"
         - $ref: "#/components/parameters/HasNlp"
         - $ref: "#/components/parameters/Theme"
@@ -560,6 +564,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/SearchIn"
+        - $ref: "#/components/parameters/IncludeTranslationFields"
         - $ref: "#/components/parameters/IncludeSimilarDocuments"
         - $ref: "#/components/parameters/SimilarDocumentsNumber"
         - $ref: "#/components/parameters/SimilarDocumentsFields"
@@ -923,27 +928,18 @@ components:
           value: fr,de
 
     SearchIn:
-      description: |
-        The article fields to search in. To search in multiple fields, use a comma-separated string. 
-
-        Example: `"title, summary"`
-
-        **Note**: The `summary` option is available if NLP is enabled in your plan.
-
-        Available options: `title`, `summary`, `content`.
       name: search_in
       in: query
       required: false
       schema:
-        type: string
-        default: title,content
-      examples:
-        single-field:
-          summary: Single field
-          value: title
-        multiple-fields:
-          summary: Multiple fields
-          value: title,content
+        $ref: "#/components/schemas/SearchIn"
+
+    IncludeTranslationFields:
+      name: include_translation_fields
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/IncludeTranslationFields"
 
     Countries:
       description: |
@@ -2151,6 +2147,8 @@ components:
                 $ref: "#/components/schemas/Page"
               page_size:
                 $ref: "#/components/schemas/PageSize"
+              include_translation_fields:
+                $ref: "#/components/schemas/IncludeTranslationFields"
               include_nlp_data:
                 $ref: "#/components/schemas/IncludeNlpData"
               has_nlp:
@@ -2246,6 +2244,8 @@ components:
                 $ref: "#/components/schemas/ClusteringVariable"
               clustering_threshold:
                 $ref: "#/components/schemas/ClusteringThreshold"
+              include_translation_fields:
+                $ref: "#/components/schemas/IncludeTranslationFields"
               include_nlp_data:
                 $ref: "#/components/schemas/IncludeNlpData"
               has_nlp:
@@ -2312,6 +2312,8 @@ components:
                 $ref: "#/components/schemas/PageSize"
               top_n_articles:
                 $ref: "#/components/schemas/TopNArticles"
+              include_translation_fields:
+                $ref: "#/components/schemas/IncludeTranslationFields"
               include_nlp_data:
                 $ref: "#/components/schemas/IncludeNlpData"
               has_nlp:
@@ -2358,6 +2360,8 @@ components:
                 $ref: "#/components/schemas/Q"
               search_in:
                 $ref: "#/components/schemas/SearchIn"
+              include_translation_fields:
+                $ref: "#/components/schemas/IncludeTranslationFields"
               predefined_sources:
                 $ref: "#/components/schemas/PredefinedSources"
               source_name:
@@ -2540,6 +2544,8 @@ components:
                 $ref: "#/components/schemas/Q"
               search_in:
                 $ref: "#/components/schemas/SearchIn"
+              include_translation_fields:
+                $ref: "#/components/schemas/IncludeTranslationFields"
               include_similar_documents:
                 $ref: "#/components/schemas/IncludeSimilarDocuments"
               similar_documents_number:
@@ -3095,6 +3101,14 @@ components:
           title: Content
           description: The content of the article.
           type: string
+        title_translated_en:
+          type: string
+          description: |
+            English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
+        content_translated_en:
+          type: string
+          description: |
+            English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
         word_count:
           title: Word Count
           description: The word count of the article.
@@ -3156,6 +3170,10 @@ components:
       default: {}
       description: Natural Language Processing data for the article.
       properties:
+        translation_summary:
+          type: string
+          description: |
+            A brief AI-generated summary of the article's English translation.
         theme:
           type: string
           description: The themes or categories identified in the article.
@@ -3834,16 +3852,25 @@ components:
 
     SearchIn:
       type: string
-      default: title,content
+      default: title_content
       description: |
-        The article fields to search in. To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. Use a comma-separated string for multiple options, with a maximum of 2 in a single request.
 
-        Example: `"title, summary"`
+        Available options: 
+        - Standard fields: `title`, `content`, `summary`, `title_content`
+        - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        **Note**: The `summary` option is available if NLP is enabled in your plan.
+        **Note**: The summary and translation options are available only in NLP subscription plans.
+      example: title_content, title_content_translated
 
-        Available options: `title`, `summary`, `content`.
-      example: title,content
+    IncludeTranslationFields:
+      type: boolean
+      default: false
+      description: |
+        If true, the response includes translation fields `title_translated_en` and `content_translated_en`.
+
+        **Note**: Article translations are available only in the NLP plan.
+      example: true
 
     Countries:
       oneOf:
