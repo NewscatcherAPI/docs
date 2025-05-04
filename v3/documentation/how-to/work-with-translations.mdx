@@ -1,0 +1,244 @@
+---
+title: Search and retrieve translated content
+sidebarTitle: Work with translations
+description:
+  Learn how to search within translated articles and retrieve translated content
+  from News API v3
+---
+
+## Overview
+
+News API v3 provides translation capabilities that allow you to search across
+language barriers and retrieve translated content. This guide explains how to
+use these features to work with multilingual news content effectively.
+
+## Prerequisites
+
+- An active subscription with the **NLP plan** or higher
+- A valid API key with appropriate permissions
+
+## Key translation features
+
+News API v3 offers two main translation capabilities:
+
+1. **Search in translated content**: Find articles using English keywords even
+   when the original content is in another language.
+2. **Retrieve translated fields**: Include English translations in API
+   responses.
+
+## Searching in translated content
+
+To search within translated content, use the `search_in` parameter with one of
+these translation options:
+
+| Option                     | Description                                  |
+| -------------------------- | -------------------------------------------- |
+| `title_translated`         | Search only in translated titles             |
+| `content_translated`       | Search only in translated content            |
+| `summary_translated`       | Search only in translated summaries          |
+| `title_content_translated` | Search in both translated titles and content |
+
+**Example request:**
+
+<CodeGroup>
+```json JSON
+{
+  "q": "artificial intelligence",
+  "search_in": "title_content_translated",
+  "lang": "fr"
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+payload = {
+    "q": "artificial intelligence",
+    "search_in": "title_content_translated",
+    "lang": "fr"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=payload)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "artificial intelligence",
+    "search_in": "title_content_translated",
+    "lang": "fr"
+  }'
+```
+
+</CodeGroup>
+
+This request finds French articles where the English translation contains
+"artificial intelligence".
+
+## Retrieving translations
+
+When using the `search_in` parameter with translation options, translation
+fields are included in the response by default. To always include them, use the
+`include_translation_fields` parameter:
+
+<CodeGroup>
+```json JSON
+{
+  "q": "économie",
+  "search_in": "title,content",
+  "lang": "fr",
+  "include_translation_fields": true
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+payload = {
+    "q": "économie",
+    "search_in": "title,content",
+    "lang": "fr",
+    "include_translation_fields": true
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=payload)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "économie",
+    "search_in": "title,content",
+    "lang": "fr",
+    "include_translation_fields": true
+  }'
+```
+
+</CodeGroup>
+
+## Combining original and translated search
+
+For comprehensive results, you can search in both original and translated fields
+simultaneously:
+
+<CodeGroup>
+```json JSON
+{
+  "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
+  "search_in": "title_content,title_content_translated",
+  "lang": "de"
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+payload = {
+    "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
+    "search_in": "title_content,title_content_translated",
+    "lang": "de"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=payload)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
+    "search_in": "title_content,title_content_translated",
+    "lang": "de"
+  }'
+```
+
+</CodeGroup>
+
+<Warning>
+  You can specify a maximum of 2 options in the `search_in` parameter.
+</Warning>
+
+## Translation fields in responses
+
+When using translation features, these fields appear in responses:
+
+- `title_translated_en`: English translation of the article title
+- `content_translated_en`: English translation of the article content
+- `nlp.translation_summary`: Brief AI-generated summary of the translation (when
+  `include_nlp_data` is `true`)
+
+## Example response snippet
+
+```json Response {6-7, 10}
+{
+  "articles": [
+    {
+      "title": "Royal London AM s'adosse à un TPM sur le marché espagnol",
+      "content": "Laurence Marchal\nLa société de gestion américaine TCW...",
+      "title_translated_en": "Royal London AM relies on a TPM on the Spanish market",
+      "content_translated_en": "Laurence Marchal\nThe American management company TCW...",
+      "language": "fr",
+      "nlp": {
+        "translation_summary": "TCW has signed an agreement with Fineco for distribution of an artificial intelligence equity fund and a multi-asset class fund."
+      }
+    }
+  ]
+}
+```
+
+## Best practices
+
+1. **Use precise queries**: Translations may not capture all language nuances
+2. **Combine with filters**: Use `lang` and `countries` parameters to target
+   specific regions
+3. **Remember the 2-option limit**: The `search_in` parameter accepts a maximum
+   of 2 options
+
+## Limitations
+
+- Search in translations is only available for English translations
+- Translation features require the NLP subscription plan or higher
+- Translation quality varies by source language and content complexity
+- Translation search is only available for content from March 12, 2025 onwards,
+  as this is when the translation indexing was implemented
+
+## Related resources
+
+- [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
+- [Advanced querying techniques](/v3/documentation/guides-and-concepts/advanced-querying)
+- [API Reference](/v3/api-reference/endpoints/search/search-articles-get)

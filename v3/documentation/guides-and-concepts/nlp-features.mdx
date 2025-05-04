@@ -25,6 +25,7 @@ The NLP layer in News API v3 consists of the following components:
 | Summary        | Concise overview of the article's content                                | v3_nlp            |
 | Sentiment      | Separate scores for title and content sentiment                          | v3_nlp            |
 | Named Entities | Identified persons, organizations, locations, and miscellaneous entities | v3_nlp            |
+| Translations   | English translations of non-English content (one-way only)               | v3_nlp            |
 | IPTC Tags      | Standardized news category tags                                          | v3_nlp_iptc_tags  |
 | IAB Tags       | Content categories for digital advertising                               | v3_nlp_iptc_tags  |
 | Custom Tags    | Organization-specific classification system                              | All v3 NLP plans  |
@@ -41,11 +42,14 @@ To control NLP data in your API responses, use the following parameters:
   article in response.
 - `has_nlp` (boolean): Set to `true` to filter the results to only articles with
   available NLP data.
+- `include_translation_fields` (boolean): Set to `true` to include translation
+  fields in the response.
 
 <Note>
   Some fields within the NLP object may be empty or `null` if specific analyses
   were not performed on the article. The full data is available for articles in
-  English and Arabic only.
+  English and Arabic only. Translation features are only available with the NLP
+  plan or higher.
 </Note>
 
 #### How these parameters work together
@@ -60,22 +64,26 @@ data:
   English and Arabic.
 - `include_nlp_data=false`: The NLP object is not included in the response,
   regardless of the `has_nlp` value.
+- `include_translation_fields=true`: Includes translation fields
+  (`title_translated_en` and `content_translated_en`) in the response.
 
 #### NLP coverage by language
 
 The table below shows which NLP features are available for different language
 categories:
 
-| Feature                  | English & Arabic | Other Languages | Coverage                           |
-| ------------------------ | ---------------- | --------------- | ---------------------------------- |
-| Theme classification     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Summary                  | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Sentiment analysis       | ✓                | ✗               | 100% of English/Arabic articles    |
-| Named entity recognition | ✓                | ✗               | 100% of English/Arabic articles    |
-| Content tags             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Vector embeddings        | ✓                | ✓               | Nearly 100% of all articles        |
-| Clustering               | ✓                | ✓               | All articles                       |
-| Deduplication            | ✓                | ✓               | All articles                       |
+| Feature                          | English & Arabic | Other Languages | Coverage                           |
+| -------------------------------- | ---------------- | --------------- | ---------------------------------- |
+| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles    |
+| Named entity recognition         | ✓                | ✗               | 100% of English/Arabic articles    |
+| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
+| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles        |
+| Clustering                       | ✓                | ✓               | All articles                       |
+| Deduplication                    | ✓                | ✓               | All articles                       |
+| Translations to English          | ✗                | ✓               | All non-English articles           |
+| Search with English translations | ✗                | ✓               | All non-English articles           |
 
 For a complete list of supported languages, see
 [language codes in News API v3](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
@@ -363,6 +371,79 @@ Microsoft as organizations and Tim Cook or Satya Nadella as persons.
 
 To learn more about NER, see
 [How to search by entity](/v3/documentation/how-to/search-by-entity).
+
+## Translation features
+
+We translate and index all non-English articles to English, enabling you to
+search multilingual content using English keywords. This feature is available in
+the NLP plan and higher.
+
+### Available translation fields
+
+When using translation features, the API can include these fields in responses:
+
+- `title_translated_en`: English translation of the article title
+- `content_translated_en`: English translation of the article content
+- `nlp.translation_summary`: Brief AI-generated summary of the English
+  translation
+
+### Searching in translated content
+
+You can use English keywords to find relevant content in non-English articles by
+using the `search_in` parameter with these options:
+
+- `title_translated`: Search in English translations of titles.
+- `content_translated`: Search in English translations of content.
+- `summary_translated`: Search in summaries of English translations.
+- `title_content_translated`: Search in both English translated titles and
+  content.
+
+Example query:
+
+```json
+{
+  "q": "artificial intelligence",
+  "search_in": "title_content_translated",
+  "lang": "fr"
+}
+```
+
+This searches in English translations of French articles.
+
+### Retrieving translations
+
+To include translations in responses without searching them, use:
+
+```json
+{
+  "q": "économie",
+  "search_in": "title,content",
+  "lang": "fr",
+  "include_translation_fields": true
+}
+```
+
+### Example response with translations
+
+```json
+{
+  "articles": [
+    {
+      "title": "Royal London AM s'adosse à un TPM sur le marché espagnol",
+      "content": "Laurence Marchal\nLa société de gestion américaine TCW...",
+      "title_translated_en": "Royal London AM relies on a TPM on the Spanish market",
+      "content_translated_en": "Laurence Marchal\nThe American management company TCW...",
+      "language": "fr",
+      "nlp": {
+        "translation_summary": "TCW has signed an agreement with Fineco for distribution of an artificial intelligence equity fund..."
+      }
+    }
+  ]
+}
+```
+
+To learn more, see
+[Search and retrieve translated content](/v3/documentation/how-to/searching-translated-content).
 
 ## Tagging
 
