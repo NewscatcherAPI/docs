@@ -6,16 +6,21 @@ description:
   applications that respect publisher permissions
 ---
 
-News API v3 includes robots.txt compliance information with every article and
-source, helping you build applications that respect publisher permissions. This
-feature provides transparency about whether content adheres to the source
-website's automated access guidelines.
+News API v3 includes robots.txt compliance information with every article,
+helping you build applications that respect publisher permissions. This feature
+provides transparency about whether content adheres to the source website's
+automated access guidelines.
 
 ## What is robots.txt compliance?
 
 Robots.txt files allow website publishers to specify which parts of their site
 can be accessed by automated tools. News API v3 respects these guidelines by
-marking each article and source with its compliance status.
+marking each article with its compliance status.
+
+<Note>
+  The robots.txt compliance check is performed at the time of article collection
+  and reflects the publisher's guidelines at that moment.
+</Note>
 
 ## The robots_compliant field
 
@@ -34,30 +39,10 @@ automated access is allowed; if false, it is restricted.
 }
 ```
 
-For the `/sources` endpoint, the compliance information appears in the
-`additional_info` object:
-
-```json {12}
-{
-  "name_source": "Yahoo",
-  "domain_url": "yahoo.com",
-  "logo": "https://all-logos-bucket.s3.amazonaws.com/yahoo.com.png",
-  "additional_info": {
-    "nb_articles_for_7d": 58306,
-    "country": "US",
-    "rank": 45,
-    "is_news_domain": false,
-    "news_domain_type": "Aggregator",
-    "news_type": "Corporate News",
-    "robots_compliant": true
-  }
-}
-```
-
 ## Filtering by compliance
 
 Use the optional `robots_compliant` parameter to filter your API requests. This
-parameter works with all endpoints that return articles or sources.
+parameter works with all endpoints that return articles.
 
 <Tabs>
   <Tab title="All articles">
@@ -85,15 +70,6 @@ parameter works with all endpoints that return articles or sources.
     }
     ```
     Returns only articles flagged as non-compliant.
-  </Tab>
-    <Tab title="All sources">
-    ```json
-    {
-      "countries": "US",
-      "include_additional_info": true
-    }
-    ```
-    Returns all sources with compliance status indicated (default behavior).
   </Tab>
 </Tabs>
 
@@ -142,5 +118,4 @@ parameter works with all endpoints that return articles or sources.
 ## See also
 
 - [API Reference](/v3/api-reference/endpoints/search/search-articles-get)
-- [Check sources coverage](/v3/documentation/how-to/check-sources-coverage)
 - [Error handling](/v3/documentation/troubleshooting/error-handling)
