@@ -148,6 +148,7 @@ paths:
         - $ref: "#/components/parameters/NotIabTags"
         - $ref: "#/components/parameters/CustomTags"
         - $ref: "#/components/parameters/ExcludeDuplicates"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/SearchResponse"
@@ -246,6 +247,7 @@ paths:
         - $ref: "#/components/parameters/IabTags"
         - $ref: "#/components/parameters/NotIabTags"
         - $ref: "#/components/parameters/CustomTags"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/SearchResponse"
@@ -321,6 +323,7 @@ paths:
         - $ref: "#/components/parameters/TitleSentimentMax"
         - $ref: "#/components/parameters/ContentSentimentMin"
         - $ref: "#/components/parameters/ContentSentimentMax"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/BreakingNewsResponse"
@@ -419,6 +422,7 @@ paths:
         - $ref: "#/components/parameters/IabTags"
         - $ref: "#/components/parameters/NotIabTags"
         - $ref: "#/components/parameters/CustomTags"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/AuthorsResponse"
@@ -510,6 +514,7 @@ paths:
               - English phrases: `1 day ago`, `today`
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/SearchLinkResponse"
@@ -605,6 +610,7 @@ paths:
         - $ref: "#/components/parameters/IptcTags"
         - $ref: "#/components/parameters/NotIptcTags"
         - $ref: "#/components/parameters/CustomTags"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/SearchSimilarResponse"
@@ -772,6 +778,7 @@ paths:
         - $ref: "#/components/parameters/IptcTags"
         - $ref: "#/components/parameters/NotIptcTags"
         - $ref: "#/components/parameters/AggregationBy"
+        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/AggregationCountResponse"
@@ -1975,6 +1982,16 @@ components:
         $ref: "#/components/schemas/TopNArticles"
       required: false
 
+    RobotsCompliant:
+      name: robots_compliant
+      in: query
+      required: false
+      schema:
+        type: boolean
+      description: |
+        If true, returns only articles/sources that comply with the publisher's robots.txt rules. If false, returns only articles/sources that do not comply with robots.txt rules. If omitted, returns all articles/sources regardless of compliance status.
+      example: true
+
   requestBodies:
     AggregationRequestBody:
       description:
@@ -2074,6 +2091,8 @@ components:
                 $ref: "#/components/schemas/NotIptcTags"
               aggregation_by:
                 $ref: "#/components/schemas/AggregationBy"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               q: renewable energy
               predefined_sources: top 50 US
@@ -2177,6 +2196,8 @@ components:
                 $ref: "#/components/schemas/NotIabTags"
               custom_tags:
                 $ref: "#/components/schemas/CustomTags"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               author_name: Joanna Stern
               lang: en
@@ -2280,6 +2301,8 @@ components:
                 $ref: "#/components/schemas/NotIabTags"
               custom_tags:
                 $ref: "#/components/schemas/CustomTags"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               lang: en
               predefined_sources:
@@ -2338,6 +2361,8 @@ components:
                 $ref: "#/components/schemas/ContentSentimentMin"
               content_sentient_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               sort_by: relevancy
               page: 1
@@ -2466,6 +2491,8 @@ components:
                 $ref: "#/components/schemas/CustomTags"
               exclude_duplicates:
                 $ref: "#/components/schemas/ExcludeDuplicates"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               q: renewable energy
               predefined_sources:
@@ -2520,6 +2547,8 @@ components:
                 $ref: "#/components/schemas/Page"
               page_size:
                 $ref: "#/components/schemas/PageSize"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               ids:
                 - 8ea8a784568ffaa05cb6d1ab2d2e84dd
@@ -2626,6 +2655,8 @@ components:
                 $ref: "#/components/schemas/NotIptcTags"
               custom_tags:
                 $ref: "#/components/schemas/CustomTags"
+              robots_compliant:
+                $ref: "#/components/schemas/RobotsCompliant"
             example:
               q: artificial intelligence
               include_similar_documents: true
@@ -3150,6 +3181,12 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
+        robots_compliant:
+          title: Robots Compliant
+          description: |
+            True if the article content can be safely accessed according to the publisher's robots.txt rules; false otherwise.
+          type: boolean
+          example: true
         custom_tags:
           title: Custom Tags
           description:
@@ -3597,6 +3634,12 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
+        robots_compliant:
+          title: Robots Compliant
+          description: |
+            True if the article content can be safely accessed according to the publisher's robots.txt rules; false otherwise.
+          type: boolean
+          example: true
 
     SimilarArticleEntity:
       title: Search Similar Article Object
@@ -3736,6 +3779,7 @@ components:
         is_news_domain: true
         news_domain_type: "Original Content"
         news_type: "General News Outlets"
+        robots_compliant: true
 
     # Subscription related schema for the response object
     SubscriptionResponseDto:
@@ -4720,6 +4764,12 @@ components:
         - Maximum value is 100.
         - The product of `top_n_articles` x `page_size` must not exceed 1,000 (total articles limit).
       example: 5
+
+    RobotsCompliant:
+      type: boolean
+      description: |
+        If true, returns only articles/sources that comply with the publisher's robots.txt rules. If false, returns only articles/sources that do not comply with robots.txt rules. If omitted, returns all articles/sources regardless of compliance status.
+      example: true
 
   securitySchemes:
     ApiKeyAuth:
