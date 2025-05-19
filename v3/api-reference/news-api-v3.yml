@@ -678,7 +678,6 @@ paths:
         - $ref: "#/components/parameters/NewsType"
         - $ref: "#/components/parameters/FromRank"
         - $ref: "#/components/parameters/ToRank"
-        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/SourcesResponse"
@@ -2695,8 +2694,6 @@ components:
                 $ref: "#/components/schemas/FromRank"
               to_rank:
                 $ref: "#/components/schemas/ToRank"
-              robots_compliant:
-                $ref: "#/components/schemas/RobotsCompliant"
             example:
               predefined_sources:
                 - top 50 US
@@ -3775,11 +3772,6 @@ components:
           title: News Type
           description: The category of news provided by the source.
           type: string
-        robots_compliant:
-          title: Robots Compliant
-          description: |
-            True if the source allows automated access according to its robots.txt file; false otherwise.
-          type: boolean
       example:
         nb_articles_for_7d: 153
         country: "US"
