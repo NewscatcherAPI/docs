@@ -1895,8 +1895,6 @@ components:
       example: bbc.com
 
     AggregationBy:
-      description: |
-        The aggregation interval for the results.
       name: aggregation_by
       in: query
       required: false
@@ -4691,11 +4689,8 @@ components:
         - hour
         - month
       description: |
-        The aggregation interval for the results. Possible values are:
-        - `day`: Aggregates results by day.
-        - `hour`: Aggregates results by hour.
-        - `month`: Aggregates results by month.
-      example: day
+        The aggregation interval for the results.
+      default: day
 
     # New params
     NewsDomainType:
