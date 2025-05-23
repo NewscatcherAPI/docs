@@ -736,6 +736,7 @@ paths:
       operationId: Aggregation_get
       parameters:
         - $ref: "#/components/parameters/Q"
+        - $ref: "#/components/parameters/AggregationBy"
         - $ref: "#/components/parameters/SearchIn"
         - $ref: "#/components/parameters/PredefinedSources"
         - $ref: "#/components/parameters/Sources"
@@ -777,7 +778,6 @@ paths:
         - $ref: "#/components/parameters/ContentSentimentMax"
         - $ref: "#/components/parameters/IptcTags"
         - $ref: "#/components/parameters/NotIptcTags"
-        - $ref: "#/components/parameters/AggregationBy"
         - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
@@ -1895,19 +1895,11 @@ components:
       example: bbc.com
 
     AggregationBy:
-      description: |
-        The aggregation interval for the results. Possible values are:
-        - `day`: Aggregates results by day.
-        - `hour`: Aggregates results by hour.
       name: aggregation_by
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - day
-          - hour
-      example: day
+        $ref: "#/components/schemas/AggregationBy"
 
     # New parameters
     AdditionalDomainInfo:
@@ -2007,6 +1999,8 @@ components:
             properties:
               q:
                 $ref: "#/components/schemas/Q"
+              aggregation_by:
+                $ref: "#/components/schemas/AggregationBy"
               search_in:
                 $ref: "#/components/schemas/SearchIn"
               predefined_sources:
@@ -2089,8 +2083,6 @@ components:
                 $ref: "#/components/schemas/IptcTags"
               not_iptc_tags:
                 $ref: "#/components/schemas/NotIptcTags"
-              aggregation_by:
-                $ref: "#/components/schemas/AggregationBy"
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
@@ -4695,11 +4687,10 @@ components:
       enum:
         - day
         - hour
+        - month
       description: |
-        The aggregation interval for the results. Possible values are:
-        - `day`: Aggregates results by day.
-        - `hour`: Aggregates results by hour.
-      example: day
+        The aggregation interval for the results.
+      default: day
 
     # New params
     NewsDomainType:
