@@ -193,6 +193,64 @@ curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
   You can specify a maximum of 2 options in the `search_in` parameter.
 </Warning>
 
+## Searching for all English and non-English content
+
+To search for all English and non-English content in a single request, omit the
+`lang` parameter and use both original and translated search fields:
+
+<CodeGroup>
+```json JSON
+{
+  "q": "\"climate change\"",
+  "search_in": "title_content,title_content_translated"
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+payload = {
+    "q": "\"climate change\"",
+    "search_in": "title_content,title_content_translated"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=payload)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "\"climate change\"",
+    "search_in": "title_content,title_content_translated"
+  }'
+```
+
+</CodeGroup>
+
+This approach returns:
+
+- English articles where the original title or content contains the exact phrase
+  "climate change".
+- Non-English articles where the English translation of the title or content
+  contains the exact phrase "climate change".
+
+**Use case**: This is particularly useful when you want comprehensive global
+coverage of a topic without being limited by language barriers. You can search
+for English terms and find relevant content regardless of the original language
+of publication.
+
 ## Translation fields in responses
 
 When using translation features, these fields appear in responses:
@@ -223,11 +281,14 @@ When using translation features, these fields appear in responses:
 
 ## Best practices
 
-1. **Use precise queries**: Translations may not capture all language nuances
+1. **Use precise queries**: Translations may not capture all language nuances.
 2. **Combine with filters**: Use `lang` and `countries` parameters to target
-   specific regions
+   specific regions.
 3. **Remember the 2-option limit**: The `search_in` parameter accepts a maximum
-   of 2 options
+   of 2 options.
+4. **For global coverage**: To search all articles regardless of language, set
+   `search_in` to "title_content,title_content_translated" without including the
+   `lang` parameter.
 
 ## Limitations
 
