@@ -799,12 +799,13 @@ components:
         - relevancy
         - date
         - rank
-      default: relevancy
+      default: date
       description: |
         The sorting order of the results. Possible values are:
         - `relevancy`: The most relevant results first.
         - `date`: The most recently published results first.
-        - `rank`: The results from the highest-ranked sources first.
+        - `rank`: Highest-ranked sources first; when clustering enabled, sorts by `cluster_rank` within clusters.
+
       example: date
 
     ## Latest headlines: LatestHeadlinesReqestDto parameters
@@ -1204,8 +1205,13 @@ components:
 
     ClusterEntity:
       title: Cluster Entity
-      description:
+      description: |
         Represents a cluster of similar articles in the search results.
+
+        Articles within each cluster are sorted according to the `sort_by` parameter:
+        - sort_by: "date" (default) - Articles sorted by published_date (newest first)
+        - sort_by: "rank" - Articles sorted by `cluster_rank` (lowest rank first)
+        - sort_by: "relevancy" - Articles sorted by relevance score
       type: object
       required:
         - articles
@@ -1217,20 +1223,27 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ClusterArticleResultEntity"
-          description: A list of articles in the cluster.
+          description:
+            A list of articles in the cluster. The order depends on the
+            `sort_by` parameter used in the request. Default sorting is by
+            published date (newest first).
         agg_cluster:
           type: boolean
           description:
-            Indicates whether the cluster contains articles from big news
-            aggregators.
+            Indicates whether the cluster contains articles from major news
+            aggregators and has been modified during processing to prioritize
+            local sources.
         original_cluster_size:
           type: integer
           description:
-            The original number of articles in the cluster before processing.
+            The original number of articles in the cluster before any processing
+            or filtering for aggregator sources.
         cluster_size:
           type: integer
           description:
-            The current number of articles in the cluster after processing.
+            The current number of articles in the cluster after processing. This
+            may be smaller than `original_cluster_size` if articles from major
+            aggregators were filtered out to prioritize local sources.
 
     ClusterArticleResultEntity:
       title: Cluster Article Result
@@ -1251,7 +1264,10 @@ components:
                 belongs.
             cluster_rank:
               type: integer
-              description: The rank of the article within its cluster.
+              description: |
+                The rank of the article within its cluster. Calculated using the DBSCAN clustering method, where rank 1 represents the centroid article of the cluster. Lower values indicate higher relevance within the cluster.
+
+                **Note:** Articles are sorted by `cluster_rank` only when the `sort_by` parameter is set to "rank". With default `sort_by`: "date", articles are sorted by published date regardless of cluster rank values.
 
     ## Sources response schemas
     SourcesResponseDto:
