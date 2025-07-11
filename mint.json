@@ -284,10 +284,7 @@
     {
       "group": "How to",
       "version": "v3",
-      "pages": [
-        "v3/events/how-to/request-new-event-type",
-        "v3/events/how-to/build-event-monitoring-system"
-      ]
+      "pages": ["v3/events/how-to/request-new-event-type"]
     },
     {
       "group": "Event types",

@@ -43,7 +43,10 @@ The SDK provides two special methods to retrieve large volumes of articles:
 - `get_all_articles`
 - `get_all_headlines`
 
-Both methods available for synchronous and asynchronous clients.
+Both methods available for synchronous and asynchronous clients. **All existing
+v3 API parameters are available for both methods**, giving you full control over
+filtering, sorting, and content selection while bypassing the 10,000 article
+limit.
 
 ### Get all articles
 
@@ -134,7 +137,7 @@ API calls for each period and combining the results. Each interval can return up
 to 10,000 articles.
 
 For example, with `time_chunk_size="1d"` over 5 days, the method makes 5 API
-calls, one for each day, with auto pagination to potentially retrieve up to 
+calls, one for each day, with auto pagination to potentially retrieve up to
 50,000 articles.
 
 <Frame>
@@ -223,20 +226,20 @@ The optimal chunk size depends on how many articles your query returns:
 
 <AccordionGroup>
 
-  <Accordion title="Rate limiting errors">
-    If you hit rate limits: 
-    - Reduce concurrency (for async methods).
-    - Add longer delays between requests.
-    - Break large requests into smaller batches.
-  </Accordion>
+{" "}
 
-  <Accordion title="Memory errors">
-    If you run out of memory:
-    - Reduce `max_articles` parameter.
-    - Process data in smaller batches.
-    - Save results incrementally as shown in the advanced example.
-    - Release memory with `del` and `gc.collect()`.
-  </Accordion>
+<Accordion title="Rate limiting errors">
+  If you hit rate limits: - Reduce concurrency (for async methods). - Add longer
+  delays between requests. - Break large requests into smaller batches.
+</Accordion>
+
+{" "}
+
+<Accordion title="Memory errors">
+  If you run out of memory: - Reduce `max_articles` parameter. - Process data in
+  smaller batches. - Save results incrementally as shown in the advanced
+  example. - Release memory with `del` and `gc.collect()`.
+</Accordion>
 
   <Accordion title="Missing results">
     If results are incomplete: 

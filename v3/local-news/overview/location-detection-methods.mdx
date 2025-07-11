@@ -53,7 +53,7 @@ which methods you choose to filter by.
 
 ### Dedicated source detection
 
-API method name: `dedicated_source`
+API method name: `dedicated_source` (US only)
 
 The most precise method for identifying location-relevant content. This method
 tags articles from news sources that exclusively cover a specific location, such
@@ -77,46 +77,47 @@ work with content from well-known local publications.
 
 API method name: `local_section`
 
-Identifies articles from location-specific sections within larger publications.
-This method is particularly effective for regional or state-level news outlets
-that maintain dedicated coverage areas for specific cities.
+This method identifies locations through dedicated local sections within larger
+news publications. Many regional and national outlets have local sections that
+cover specific geographic areas.
 
 For example, an article from the "Huntington Beach" section of the Orange County
 Register is likely relevant to Huntington Beach, even if the city isn't
 repeatedly mentioned in the text.
 
-**When to use**: Effective when searching for location-specific content from
-larger regional publications with well-defined local sections.
+**When to use**: Ideal for finding location-specific content from established
+regional publications with dedicated local coverage sections.
 
 ### Regional source detection
 
-API method name: `regional_source`
+API method name: `regional_source` (US only)
 
-This method leverages the context of regional news sources to properly interpret
-location mentions. It's particularly useful for disambiguating location
-references in state-level publications.
+This method uses the geographic context of news sources to properly interpret
+and disambiguate location mentions. It's particularly useful for handling cases
+where location names might be ambiguous or where regional context provides
+important meaning.
 
-For example, when a California news outlet mentions "Georgetown," it typically
-refers to Georgetown, California, rather than Georgetown, Texas or other
-similarly named locations. This method helps resolve such ambiguities based on
-the publication's regional context.
+For example, an article from a Texas publication mentioning "Austin" would be
+correctly identified as referring to Austin, Texas, rather than Austin in other
+states.
 
-**When to use**: Valuable when working with state-level publications or when
-location names might be ambiguous without regional context.
+**When to use**: Helpful when working with content from sources that cover
+multiple locations within a region, or when you need to disambiguate common
+location names.
 
 ### Standard format detection
 
 API method name: `standard_format`
 
-Identifies location mentions that follow common journalistic formatting
-patterns. This method looks for locations written in standardized formats:
+This method identifies locations written in standard formats such as "City,
+State" or "City, Region". It's effective for formal news articles that use
+conventional location naming.
 
-- "City, State" (San Francisco, California)
-- "City, State Code" (San Francisco, CA)
-- "City, County" (San Francisco, San Francisco County)
+For example, mentions like "San Francisco, California" or "Toronto, Ontario" are
+captured through this method.
 
-**When to use**: Reliable for finding explicit location references, particularly
-in article headlines or opening paragraphs.
+**When to use**: Effective for formal news content and when you want to capture
+explicitly formatted location references.
 
 ### Proximity mention detection
 
@@ -131,6 +132,11 @@ confirm the location reference.
 
 **When to use**: Helpful for finding location mentions in naturally written
 content where formal city-state formats aren't used.
+
+<Note>
+  The `dedicated_source` and `regional_source` detection methods are only
+  available for US locations.
+</Note>
 
 ### AI-based detection
 
