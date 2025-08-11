@@ -1460,7 +1460,7 @@ components:
 
     OrgEntityName:
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Example: `"Apple, Microsoft"`
 
@@ -1485,7 +1485,7 @@ components:
 
     PerEntityName:
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string. 
+        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Example: `"Elon Musk, Jeff Bezos"`
 
@@ -1510,7 +1510,7 @@ components:
 
     LocEntityName:
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string. 
+        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Example: `"California, New York"`
 
@@ -1535,7 +1535,7 @@ components:
 
     MiscEntityName:
       description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Example: `"Bitcoin, Blockchain"`
 
@@ -3244,6 +3244,26 @@ components:
           description:
             Named Entity Recognition for location entities (cities, countries,
             geographic features).
+        translation_ner_PER:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for person entities (individuals' names) extracted from the English translation of the article.
+        translation_ner_ORG:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for organization entities (company names, institutions) extracted from the English translation of the article.
+        translation_ner_MISC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for miscellaneous entities (events, nationalities, products) extracted from the English translation of the article.
+        translation_ner_LOC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for location entities (cities, countries, geographic features) extracted from the English translation of the article.
         iptc_tags_name:
           type: array
           items:
@@ -3897,7 +3917,7 @@ components:
         - Standard fields: `title`, `content`, `summary`, `title_content`
         - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        **Note**: The summary and translation options are available only in NLP subscription plans.
+        **Note**: Search in summaries and translations is only available for NLP subscription plans.
       example: title_content, title_content_translated
 
     IncludeTranslationFields:
@@ -4334,7 +4354,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Examples: 
         - `"Apple, Microsoft"`
@@ -4352,7 +4372,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Examples: 
         - `"Elon Musk, Jeff Bezos"`
@@ -4370,7 +4390,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Examples: 
         - `"California, New York"`
@@ -4388,7 +4408,7 @@ components:
           items:
             type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         Examples: 
         - `"Bitcoin, Blockchain"`
