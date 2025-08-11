@@ -19,17 +19,17 @@ API v3.
 
 The NLP layer in News API v3 consists of the following components:
 
-| Component      | Description                                                              | Plan Requirement  |
-| -------------- | ------------------------------------------------------------------------ | ----------------- |
-| Theme          | General topic or category of the article                                 | v3_nlp            |
-| Summary        | Concise overview of the article's content                                | v3_nlp            |
-| Sentiment      | Separate scores for title and content sentiment                          | v3_nlp            |
-| Named Entities | Identified persons, organizations, locations, and miscellaneous entities | v3_nlp            |
-| Translations   | English translations of non-English content (one-way only)               | v3_nlp            |
-| IPTC Tags      | Standardized news category tags                                          | v3_nlp_iptc_tags  |
-| IAB Tags       | Content categories for digital advertising                               | v3_nlp_iptc_tags  |
-| Custom Tags    | Organization-specific classification system                              | All v3 NLP plans  |
-| Embeddings     | 1024-dimensional vector representation for semantic similarity           | v3_nlp_embeddings |
+| Component      | Description                                                                                         | Plan Requirement  |
+| -------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
+| Theme          | General topic or category of the article                                                            | v3_nlp            |
+| Summary        | Concise overview of the article's content                                                           | v3_nlp            |
+| Sentiment      | Separate scores for title and content sentiment                                                     | v3_nlp            |
+| Named Entities | Identified persons, organizations, locations, and miscellaneous entities                            | v3_nlp            |
+| Translations   | English translations of non-English content (one-way only): title, content, summary, named entities | v3_nlp            |
+| IPTC Tags      | Standardized news category tags                                                                     | v3_nlp_iptc_tags  |
+| IAB Tags       | Content categories for digital advertising                                                          | v3_nlp_iptc_tags  |
+| Custom Tags    | Organization-specific classification system                                                         | All v3 NLP plans  |
+| Embeddings     | 1024-dimensional vector representation for semantic similarity                                      | v3_nlp_embeddings |
 
 To learn more about plan features and requirements, see
 [Subscription plans](/v3/documentation/get-started/news-api-v3-subscription-plans).
@@ -72,18 +72,18 @@ data:
 The table below shows which NLP features are available for different language
 categories:
 
-| Feature                          | English & Arabic | Other Languages | Coverage                           |
-| -------------------------------- | ---------------- | --------------- | ---------------------------------- |
-| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles    |
-| Named entity recognition         | ✓                | ✗               | 100% of English/Arabic articles    |
-| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles        |
-| Clustering                       | ✓                | ✓               | All articles                       |
-| Deduplication                    | ✓                | ✓               | All articles                       |
-| Translations to English          | ✗                | ✓               | All non-English articles           |
-| Search with English translations | ✗                | ✓               | All non-English articles           |
+| Feature                          | English & Arabic | Other Languages | Coverage                                                                      |
+| -------------------------------- | ---------------- | --------------- | ----------------------------------------------------------------------------- |
+| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles                                               |
+| Named entity recognition         | ✓                | ✓               | 100% of English/Arabic articles and all non-English articles via translations |
+| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles                                                   |
+| Clustering                       | ✓                | ✓               | All articles                                                                  |
+| Deduplication                    | ✓                | ✓               | All articles                                                                  |
+| Translations to English          | ✗                | ✓               | All non-English articles                                                      |
+| Search with English translations | ✗                | ✓               | All non-English articles                                                      |
 
 For a complete list of supported languages, see
 [language codes in News API v3](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
