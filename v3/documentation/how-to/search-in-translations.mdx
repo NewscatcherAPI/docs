@@ -1,5 +1,5 @@
 ---
-title: Search and retrieve translated content
+title: Search in translations
 sidebarTitle: Work with translations
 description:
   Learn how to search within translated articles and retrieve translated content
@@ -8,28 +8,34 @@ description:
 
 ## Overview
 
-News API v3 provides translation capabilities that allow you to search across
-language barriers and retrieve translated content. This guide explains how to
-use these features to work with multilingual news content effectively.
+News API v3 translation features let you search across language barriers and
+retrieve translated content. This guide explains how to use these capabilities
+effectively with practical examples.
 
 ## Prerequisites
 
 - An active subscription with the **NLP plan** or higher
 - A valid API key with appropriate permissions
 
-## Key translation features
+## Key translation capabilities
 
-News API v3 offers two main translation capabilities:
+News API v3 offers comprehensive translation features:
 
 1. **Search in translated content**: Find articles using English keywords even
    when the original content is in another language.
-2. **Retrieve translated fields**: Include English translations in API
-   responses.
+2. **Cross-language entity recognition**: Search for organizations, people, and
+   locations using English entity names across all languages.
+3. **Retrieve translated fields**: Include English translations and NLP data in
+   API responses.
+4. **Global content coverage**: Combine original and translated search for
+   maximum reach.
 
-## Searching in translated content
+## Search in translations
+
+### Available search options
 
 To search within translated content, use the `search_in` parameter with one of
-these translation options:
+the following options:
 
 | Option                     | Description                                  |
 | -------------------------- | -------------------------------------------- |
@@ -38,265 +44,261 @@ these translation options:
 | `summary_translated`       | Search only in translated summaries          |
 | `title_content_translated` | Search in both translated titles and content |
 
-**Example request:**
-
-<CodeGroup>
-```json JSON
-{
-  "q": "artificial intelligence",
-  "search_in": "title_content_translated",
-  "lang": "fr"
-}
-```
-
-```python Python
-import requests
-import json
-
-API_KEY = "YOUR_API_KEY"
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
-
-payload = {
-    "q": "artificial intelligence",
-    "search_in": "title_content_translated",
-    "lang": "fr"
-}
-
-try:
-    response = requests.post(URL, headers=HEADERS, json=payload)
-    response.raise_for_status()
-    print(json.dumps(response.json(), indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
-```
-
-```bash cURL
-curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-  -H "x-api-token: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "q": "artificial intelligence",
-    "search_in": "title_content_translated",
-    "lang": "fr"
-  }'
-```
-
-</CodeGroup>
-
-This request finds French articles where the English translation contains
-"artificial intelligence".
-
-## Retrieving translations
-
-When using the `search_in` parameter with translation options, translation
-fields are included in the response by default. To always include them, use the
-`include_translation_fields` parameter:
-
-<CodeGroup>
-```json JSON
-{
-  "q": "économie",
-  "search_in": "title,content",
-  "lang": "fr",
-  "include_translation_fields": true
-}
-```
-
-```python Python
-import requests
-import json
-
-API_KEY = "YOUR_API_KEY"
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
-
-payload = {
-    "q": "économie",
-    "search_in": "title,content",
-    "lang": "fr",
-    "include_translation_fields": true
-}
-
-try:
-    response = requests.post(URL, headers=HEADERS, json=payload)
-    response.raise_for_status()
-    print(json.dumps(response.json(), indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
-```
-
-```bash cURL
-curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-  -H "x-api-token: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "q": "économie",
-    "search_in": "title,content",
-    "lang": "fr",
-    "include_translation_fields": true
-  }'
-```
-
-</CodeGroup>
-
-## Combining original and translated search
-
-For comprehensive results, you can search in both original and translated fields
-simultaneously:
-
-<CodeGroup>
-```json JSON
-{
-  "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
-  "search_in": "title_content,title_content_translated",
-  "lang": "de"
-}
-```
-
-```python Python
-import requests
-import json
-
-API_KEY = "YOUR_API_KEY"
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
-
-payload = {
-    "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
-    "search_in": "title_content,title_content_translated",
-    "lang": "de"
-}
-
-try:
-    response = requests.post(URL, headers=HEADERS, json=payload)
-    response.raise_for_status()
-    print(json.dumps(response.json(), indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
-```
-
-```bash cURL
-curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-  -H "x-api-token: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "q": "\"erneuerbare Energien\" OR  \"renewable energy\"",
-    "search_in": "title_content,title_content_translated",
-    "lang": "de"
-  }'
-```
-
-</CodeGroup>
-
 <Warning>
-  You can specify a maximum of 2 options in the `search_in` parameter.
+  You can specify a maximum of two options in the `search_in` parameter.
 </Warning>
 
-## Searching for all English and non-English content
+### Entity search in translations
 
-To search for all English and non-English content in a single request, omit the
-`lang` parameter and use both original and translated search fields:
+You can search for named entities within English translations of non-English
+articles, expanding entity search coverage to 100% (all content via
+translations).
 
-<CodeGroup>
-```json JSON
-{
-  "q": "\"climate change\"",
-  "search_in": "title_content,title_content_translated"
-}
-```
+**Available entity parameters:**
 
-```python Python
-import requests
-import json
+- `PER_entity_name`: Person names (e.g., "Donald Trump", "Emmanuel Macron")
+- `ORG_entity_name`: Organization names (e.g., "European Union", "United
+  Nations", "Federal Reserve")
+- `LOC_entity_name`: Location names (e.g., "United States", "United Kingdom")
+- `MISC_entity_name`: Other entities (events, products, etc.)
 
-API_KEY = "YOUR_API_KEY"
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+All entity parameters support boolean operators (`AND`, `OR`, `NOT`) and
+proximity search with `NEAR`.
 
-payload = {
-    "q": "\"climate change\"",
-    "search_in": "title_content,title_content_translated"
-}
-
-try:
-    response = requests.post(URL, headers=HEADERS, json=payload)
-    response.raise_for_status()
-    print(json.dumps(response.json(), indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
-```
-
-```bash cURL
-curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-  -H "x-api-token: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "q": "\"climate change\"",
-    "search_in": "title_content,title_content_translated"
-  }'
-```
-
-</CodeGroup>
-
-This approach returns:
-
-- English articles where the original title or content contains the exact phrase
-  "climate change".
-- Non-English articles where the English translation of the title or content
-  contains the exact phrase "climate change".
-
-**Use case**: This is particularly useful when you want comprehensive global
-coverage of a topic without being limited by language barriers. You can search
-for English terms and find relevant content regardless of the original language
-of publication.
-
-## Translation fields in responses
+### Translation fields in responses
 
 When using translation features, these fields appear in responses:
 
+**Basic translation fields:**
+
 - `title_translated_en`: English translation of the article title
 - `content_translated_en`: English translation of the article content
-- `nlp.summary_translated`: Brief AI-generated summary of the translation (when
-  `include_nlp_data` is `true`)
 
-## Example response snippet
+**NLP translation fields (when `include_nlp_data` is `true`):**
 
-```json Response {6-7, 10}
+- `nlp.summary_translated`: Brief AI-generated summary of the translation
+- `nlp.translation_ner_PER`: Person entities extracted from English translations
+- `nlp.translation_ner_ORG`: Organization entities extracted from English
+  translations
+- `nlp.translation_ner_LOC`: Location entities extracted from English
+  translations
+- `nlp.translation_ner_MISC`: Miscellaneous entities extracted from English
+  translations
+
+**Entity field comparison:**
+
+| Field                                                                                       | Description                                  |
+| ------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| `ner_PER`, `ner_ORG`, `ner_LOC`, `ner_MISC`                                                 | Entities extracted from original content     |
+| `translation_ner_PER`, `translation_ner_ORG`, `translation_ner_LOC`, `translation_ner_MISC` | Entities extracted from English translations |
+
+## Use case 1: Comprehensive multilingual coverage
+
+**Scenario**: You want maximum global coverage of climate change discussions,
+capturing both English and non-English articles discussing the topic.
+
+**Solution**: Search in original and translated fields simultaneously and omit
+the `lang` parameter to achieve complete coverage. To ensure better quality,
+exclude duplicates. If needed, include NLP data.
+
+<CodeGroup>
+```json JSON
+{
+ "q": "\"climate change\" OR \"global warming\"",
+ "search_in": "title_content,title_content_translated",
+ "exclude_duplicates": true
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+payload = {
+    "q": "\"climate change\" OR \"global warming\"",
+    "search_in": "title_content,title_content_translated",
+    "exclude_duplicates": True
+}
+
+try:
+ response = requests.post(URL, headers=HEADERS, json=payload)
+ response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+ -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+ -d '{
+    "q": "\"climate change\" OR \"global warming\"",
+    "search_in": "title_content,title_content_translated",
+    "exclude_duplicates": true
+ }'
+```
+
+</CodeGroup>
+
+<Accordion title="Response example">
+
+```json {12-13, 17-18, 24, 35, 45}
 {
   "articles": [
     {
-      "title": "Royal London AM s'adosse à un TPM sur le marché espagnol",
-      "content": "Laurence Marchal\nLa société de gestion américaine TCW...",
-      "title_translated_en": "Royal London AM relies on a TPM on the Spanish market",
-      "content_translated_en": "Laurence Marchal\nThe American management company TCW...",
-      "language": "fr",
+      "title": "Climate change accelerates in Arctic regions",
+      "content": "Scientists report unprecedented warming in polar areas...",
+      "language": "en"
+      // other fields
+    },
+    {
+      "title": "El suizo UBS se retira de la alianza global de bancos para combatir el cambio climático",
+      "content": "Ginebra, 7 ago (EFE).- El banco suizo UBS, el mayor de su país, anunció este jueves su retirada de Net-Zero Banking Alliance, la alianza creada en 2021 para coordinar a bancos de todo el mundo en la lucha contra el cambio climático...",
+      "title_translated_en": "The Swiss UBS withdraws from the global alliance of banks to combat climate change",
+      "content_translated_en": "Geneva, August 7 (EFE).- The Swiss bank UBS, the largest in its country, announced this Thursday its withdrawal from the Net-Zero Banking Alliance, the alliance created in 2021 to coordinate banks around the world in the fight against climate change...",
+      "language": "es",
+      "country": "US",
       "nlp": {
-        "summary_translated": "TCW has signed an agreement with Fineco for distribution of an artificial intelligence equity fund and a multi-asset class fund."
+        "translation_summary": "UBS withdraws from the Net-Zero Banking Alliance. The alliance was created in 2021 to coordinate banks around the world in the fight against climate change. JPMorgan, Citi, Morgan Stanley, Macquarie and Bank of Montreal have already left the alliance.",
+        "translation_ner_PER": [
+          {
+            "entity_name": "Donald Trump",
+            "count": 1
+          }
+        ],
+        "translation_ner_ORG": [
+          {
+            "entity_name": "UBS",
+            "count": 2
+          },
+          {
+            "entity_name": "Net-Zero Banking Alliance",
+            "count": 1
+          }
+          // other ORG entity objects
+        ],
+        "translation_ner_MISC": [
+          {
+            "entity_name": "Swiss",
+            "count": 1
+          },
+          {
+            "entity_name": "British",
+            "count": 1
+          }
+        ],
+        "translation_ner_LOC": [
+          {
+            "entity_name": "Geneva",
+            "count": 1
+          },
+          {
+            "entity_name": "Zurich",
+            "count": 1
+          }
+        ],
+        "theme": "Business",
+        "summary": null,
+        "sentiment": {
+          "title": -0.7923,
+          "content": 0.0
+        },
+        "ner_PER": null,
+        "ner_ORG": null,
+        "ner_MISC": null,
+        "ner_LOC": null
+        // other NLP fields
       }
     }
   ]
 }
 ```
 
+</Accordion>
+
+This approach returns:
+
+- English articles with the original title or content containing "climate
+  change" or "global warming".
+- Non-English articles where the English translation contains these terms.
+
+## Use case 2: Tracking international organizations across languages
+
+**Scenario**: You monitor European Union policy coverage across specific
+countries. You want to find all articles mentioning the EU, but original
+languages use different names (Union européenne, Unión Europea, etc.).
+
+**Solution**: Combine keyword search with entity recognition in translations to
+find organization mentions using standardized English entity names.
+
+```json
+{
+  "q": "policy OR regulation",
+  "ORG_entity_name": "\"European Union\" OR \"European Commission\"",
+  "search_in": "title_content,title_content_translated",
+  "countries": ["FR", "DE", "IT", "ES", "NL"],
+  "include_nlp_data": true,
+  "include_translation_fields": true
+}
+```
+
+This query finds articles from European countries about EU policy by searching
+for "European Union" (which matches "Union européenne" in French, "Unión
+Europea" in Spanish, etc.) using English entity names across all languages.
+
+## Use case 3: Global trade policy monitoring
+
+**Scenario**: You're monitoring how countries report on US tariff policies and
+changes in trade developments.
+
+**Solution**: Combine multiple entity types with location filtering to monitor
+global coverage of trade events.
+
+```json
+{
+  "q": "tariffs OR trade OR duties OR imports",
+  "ORG_entity_name": "\"White House\" OR \"Commerce Department\"",
+  "LOC_entity_name": "\"United States\" OR \"Washington\"",
+  "search_in": "title_content,title_content_translated",
+  "countries": ["FR", "DE", "IT", "ES", "CA", "MX", "BR", "IN"],
+  "include_nlp_data": true,
+  "include_translation_fields": true,
+  "from_": "7d"
+}
+```
+
+This searches for recent international coverage of US tariff policy, finding
+articles in English, French, German, Italian, Spanish, and other languages that
+mention US trade actions using English entity names in original content and
+their translations.
+
 ## Best practices
 
-1. **Use precise queries**: Translations may not capture all language nuances.
-2. **Combine with filters**: Use `lang` and `countries` parameters to target
-   specific regions.
-3. **Remember the 2-option limit**: The `search_in` parameter accepts a maximum
-   of 2 options.
-4. **For global coverage**: To search all articles regardless of language, set
-   `search_in` to "title_content,title_content_translated" without including the
-   `lang` parameter.
+1. **Start simple**: Begin with a basic keyword search in original articles and
+   English translations
+   (`"search_in": "title_content,title_content_translated",`) before adding
+   entity recognition and complex filtering.
+2. **Use precise queries**: For organizations and locations, use official
+   English names in quotes (`"\"European Union\""`) and combine entities with
+   boolean operators (`OR`, `AND`) for flexible matching.
+3. **Target strategically**: When monitoring international coverage, use the
+   `countries` parameter to focus on specific regions rather than searching
+   globally.
+4. **Monitor translation quality**: Translation accuracy varies by source
+   language and content complexity - verify important findings in original
+   content when possible.
 
 ## Limitations
 
-- Search in translations is only available for English translations
-- Translation features require the NLP subscription plan or higher
-- Translation quality varies by source language and content complexity
-- Translation search is only available for content from March 12, 2025 onwards,
-  as this is when the translation indexing was implemented
+- Search in translations is only available for English translations.
+- Translation features are only available in the NLP subscription plans.
+- English translations are available for content **from March 12, 2025**,
+  onwards.
 
 ## Related resources
 
