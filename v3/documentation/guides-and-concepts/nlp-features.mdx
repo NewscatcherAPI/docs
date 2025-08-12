@@ -19,17 +19,17 @@ API v3.
 
 The NLP layer in News API v3 consists of the following components:
 
-| Component      | Description                                                              | Plan Requirement  |
-| -------------- | ------------------------------------------------------------------------ | ----------------- |
-| Theme          | General topic or category of the article                                 | v3_nlp            |
-| Summary        | Concise overview of the article's content                                | v3_nlp            |
-| Sentiment      | Separate scores for title and content sentiment                          | v3_nlp            |
-| Named Entities | Identified persons, organizations, locations, and miscellaneous entities | v3_nlp            |
-| Translations   | English translations of non-English content (one-way only)               | v3_nlp            |
-| IPTC Tags      | Standardized news category tags                                          | v3_nlp_iptc_tags  |
-| IAB Tags       | Content categories for digital advertising                               | v3_nlp_iptc_tags  |
-| Custom Tags    | Organization-specific classification system                              | All v3 NLP plans  |
-| Embeddings     | 1024-dimensional vector representation for semantic similarity           | v3_nlp_embeddings |
+| Component      | Description                                                                                         | Plan Requirement  |
+| -------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
+| Theme          | General topic or category of the article                                                            | v3_nlp            |
+| Summary        | Concise overview of the article's content                                                           | v3_nlp            |
+| Sentiment      | Separate scores for title and content sentiment                                                     | v3_nlp            |
+| Named Entities | Identified persons, organizations, locations, and miscellaneous entities                            | v3_nlp            |
+| Translations   | English translations of non-English content (one-way only): title, content, summary, named entities | v3_nlp            |
+| IPTC Tags      | Standardized news category tags                                                                     | v3_nlp_iptc_tags  |
+| IAB Tags       | Content categories for digital advertising                                                          | v3_nlp_iptc_tags  |
+| Custom Tags    | Organization-specific classification system                                                         | All v3 NLP plans  |
+| Embeddings     | 1024-dimensional vector representation for semantic similarity                                      | v3_nlp_embeddings |
 
 To learn more about plan features and requirements, see
 [Subscription plans](/v3/documentation/get-started/news-api-v3-subscription-plans).
@@ -72,18 +72,18 @@ data:
 The table below shows which NLP features are available for different language
 categories:
 
-| Feature                          | English & Arabic | Other Languages | Coverage                           |
-| -------------------------------- | ---------------- | --------------- | ---------------------------------- |
-| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles    |
-| Named entity recognition         | ✓                | ✗               | 100% of English/Arabic articles    |
-| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles |
-| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles        |
-| Clustering                       | ✓                | ✓               | All articles                       |
-| Deduplication                    | ✓                | ✓               | All articles                       |
-| Translations to English          | ✗                | ✓               | All non-English articles           |
-| Search with English translations | ✗                | ✓               | All non-English articles           |
+| Feature                          | English & Arabic | Other Languages | Coverage                                                                      |
+| -------------------------------- | ---------------- | --------------- | ----------------------------------------------------------------------------- |
+| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles                                               |
+| Named entity recognition         | ✓                | ✓               | 100% of English/Arabic articles and all non-English articles via translations |
+| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
+| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles                                                   |
+| Clustering                       | ✓                | ✓               | All articles                                                                  |
+| Deduplication                    | ✓                | ✓               | All articles                                                                  |
+| Translations to English          | ✗                | ✓               | All non-English articles                                                      |
+| Search with English translations | ✗                | ✓               | All non-English articles                                                      |
 
 For a complete list of supported languages, see
 [language codes in News API v3](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
@@ -131,6 +131,8 @@ except requests.exceptions.RequestException as e:
 
 Here's a snippet of what you might see in the response, focusing on the NLP data
 for a single article:
+
+<Accordion title="Response example">
 
 ```json response.json
 {
@@ -223,6 +225,8 @@ for a single article:
   ]
 }
 ```
+
+</Accordion>
 
 This response shows the rich NLP data available for each article, including
 theme classification, summary, sentiment analysis, named entity recognition, and
@@ -342,32 +346,24 @@ sentiment (scores between 0.2 and 1.0).
 
 ## Named Entity Recognition (NER)
 
-NER identifies and categorizes named entities within the text. News API v3
+NER identifies and categorizes named entities within text content. News API v3
 recognizes four types of entities:
 
-- `PER_entity_name` (string): Person names.
-- `ORG_entity_name` (string): Organization names.
-- `LOC_entity_name` (string): Location names.
-- `MISC_entity_name` (string): Miscellaneous entities cover named entities
-  outside of the person, organization, or location categories, such as events,
-  nationalities, products, and works of art.
+- `PER_entity_name`: Person names
+- `ORG_entity_name`: Organization names
+- `LOC_entity_name`: Location names
+- `MISC_entity_name`: Miscellaneous entities (events, nationalities, products,
+  works of art, etc.)
+
+### NER Coverage and Language Support
+
+| NER Type              | Language Coverage                               | Response Fields                                                                                             |
+| --------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Original Content**  | 100% English, 100% Arabic, ~10% other languages | `nlp.ner_PER`, `nlp.ner_ORG`, `nlp.ner_LOC`, `nlp.ner_MISC`                                                 |
+| **Translation-Based** | 100% all languages (via English translations)   | `nlp.translation_ner_PER`, `nlp.translation_ner_ORG`, `nlp.translation_ner_LOC`, `nlp.translation_ner_MISC` |
 
 These parameters support boolean operators (`AND`, `OR`, `NOT`), proximity
 search with `NEAR`, and count-based filtering.
-
-Example of a NER query:
-
-```json
-{
-  "q": "tech industry",
-  "ORG_entity_name": "Apple OR Microsoft",
-  "PER_entity_name": "\"Tim Cook\" OR \"Satya Nadella\"",
-  "include_nlp_data": true
-}
-```
-
-This query searches for articles about the tech industry that mention Apple or
-Microsoft as organizations and Tim Cook or Satya Nadella as persons.
 
 To learn more about NER, see
 [How to search by entity](/v3/documentation/how-to/search-by-entity).
@@ -375,75 +371,40 @@ To learn more about NER, see
 ## Translation features
 
 We translate and index all non-English articles to English, enabling you to
-search multilingual content using English keywords. This feature is available in
-the NLP plan and higher.
+search multilingual content using English keywords and perform named entity
+recognition across all languages. This feature is available in the NLP plan and
+higher.
+
+### Searching in translated content
+
+You can use English keywords to find relevant content in non-English articles by
+using the `search_in` parameter with translation options:
+
+- `title_translated`: Search in English translations of titles
+- `content_translated`: Search in English translations of content
+- `summary_translated`: Search in summaries of English translations
+- `title_content_translated`: Search in both English translated titles and
+  content
 
 ### Available translation fields
 
-When using translation features, the API can include these fields in responses:
+When using translation features, the API can include these additional fields in
+responses:
 
 - `title_translated_en`: English translation of the article title
 - `content_translated_en`: English translation of the article content
 - `nlp.summary_translated`: Brief AI-generated summary of the English
   translation
+- `nlp.translation_ner_PER`: Person entities extracted from English translations
+- `nlp.translation_ner_ORG`: Organization entities extracted from English
+  translations
+- `nlp.translation_ner_LOC`: Location entities extracted from English
+  translations
+- `nlp.translation_ner_MISC`: Miscellaneous entities extracted from English
+  translations
 
-### Searching in translated content
-
-You can use English keywords to find relevant content in non-English articles by
-using the `search_in` parameter with these options:
-
-- `title_translated`: Search in English translations of titles.
-- `content_translated`: Search in English translations of content.
-- `summary_translated`: Search in summaries of English translations.
-- `title_content_translated`: Search in both English translated titles and
-  content.
-
-Example query:
-
-```json
-{
-  "q": "artificial intelligence",
-  "search_in": "title_content_translated",
-  "lang": "fr"
-}
-```
-
-This searches in English translations of French articles.
-
-### Retrieving translations
-
-To include translations in responses without searching them, use:
-
-```json
-{
-  "q": "économie",
-  "search_in": "title,content",
-  "lang": "fr",
-  "include_translation_fields": true
-}
-```
-
-### Example response with translations
-
-```json
-{
-  "articles": [
-    {
-      "title": "Royal London AM s'adosse à un TPM sur le marché espagnol",
-      "content": "Laurence Marchal\nLa société de gestion américaine TCW...",
-      "title_translated_en": "Royal London AM relies on a TPM on the Spanish market",
-      "content_translated_en": "Laurence Marchal\nThe American management company TCW...",
-      "language": "fr",
-      "nlp": {
-        "summary_translated": "TCW has signed an agreement with Fineco for distribution of an artificial intelligence equity fund..."
-      }
-    }
-  ]
-}
-```
-
-To learn more, see
-[Search and retrieve translated content](/v3/documentation/how-to/searching-translated-content).
+For detailed translation search capabilities, see
+[Search in translations](/v3/documentation/how-to/search-in-translations).
 
 ## Tagging
 
@@ -604,8 +565,7 @@ To maximize the effectiveness of NLP features in News API v3:
 
 ## Related resources
 
-- [How to use boolean operators](/v3/documentation/how-to/use-boolean-operators)
-- [Proximity search with NEAR](/v3/documentation/how-to/search-with-near)
 - [How to search by entity](/v3/documentation/how-to/search-by-entity)
+- [Search in translations](/v3/documentation/how-to/search-in-translations)
 - [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles)
 - [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication)
