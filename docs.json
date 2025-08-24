@@ -40,13 +40,6 @@
                 ]
               },
               {
-                "group": "Migration",
-                "pages": [
-                  "v3/documentation/migration/api-changes-v2-vs-v3",
-                  "v3/documentation/migration/migration-guide"
-                ]
-              },
-              {
                 "group": "How to",
                 "pages": [
                   "v3/documentation/how-to/use-boolean-operators",
@@ -56,7 +49,8 @@
                   "v3/documentation/how-to/search-in-translations",
                   "v3/documentation/how-to/paginate-large-datasets",
                   "v3/documentation/how-to/retrieve-more-than-10k-articles",
-                  "v3/documentation/how-to/check-sources-coverage"
+                  "v3/documentation/how-to/check-sources-coverage",
+                  "v3/documentation/how-to/validate-queries-python-sdk"
                 ]
               },
               {
@@ -66,6 +60,13 @@
                   "v3/documentation/troubleshooting/request-tracing-correlation-ids",
                   "v3/documentation/troubleshooting/report-bugs",
                   "v3/documentation/troubleshooting/request-features"
+                ]
+              },
+              {
+                "group": "Migration",
+                "pages": [
+                  "v3/documentation/migration/api-changes-v2-vs-v3",
+                  "v3/documentation/migration/migration-guide"
                 ]
               }
             ]

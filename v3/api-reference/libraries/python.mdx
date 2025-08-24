@@ -79,6 +79,27 @@ articles = client.get_all_articles(
 To learn more about the custom methods allowing to bypass the API limits, see
 [How to retrieve more than 10,000 articles](/v3/documentation/how-to/retrieve-more-than-10k-articles).
 
+## Query validation
+
+The SDK includes client-side query validation that helps you catch syntax errors
+before making API calls:
+
+```python
+# Validate query syntax
+is_valid, error_message = client.validate_query("machine learning")
+if is_valid:
+    print("Query is valid!")
+else:
+    print(f"Invalid query: {error_message}")
+```
+
+Query validation is automatically enabled in methods like `get_all_articles()`
+and will raise a `ValueError` for invalid queries. You can disable validation by
+setting `validate_query=False`.
+
+To learn more about query validation rules and bulk validation techniques, see
+[Validate queries with Python SDK](/v3/documentation/how-to/validate-queries-python-sdk).
+
 ## Error handling
 
 ```python
