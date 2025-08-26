@@ -232,10 +232,6 @@
                 ]
               },
               {
-                "group": "How to",
-                "pages": ["v3/events/how-to/request-new-event-type"]
-              },
-              {
                 "group": "Event types",
                 "pages": [
                   "v3/events/event-types/data-breach",
