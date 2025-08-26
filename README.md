@@ -109,7 +109,7 @@ curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelli
 ### API Support
 
 - **Customer Portal**: [support.newscatcherapi.com](https://support.newscatcherapi.com/customer-portal)
-- **Email**: <support@newscatcherapi.com>
+- **Email**: [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
 - **Status Page**: [status.newscatcherapi.com](https://status.newscatcherapi.com)
 
 ## Resources
