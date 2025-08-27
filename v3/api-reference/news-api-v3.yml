@@ -876,23 +876,11 @@ paths:
 components:
   parameters:
     Q:
-      description: |
-        The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
-
-        - For an exact match, use double quotes. For example, `"technology news"`.
-        - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases. 
-          For example, `+Apple`, `-Google`.
-        - Use `AND`, `OR`, and `NOT` to refine search results. 
-          For example, `technology AND (Apple OR Microsoft) NOT Google`.
-
-        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
       name: q
       in: query
       required: true
       schema:
-        type: string
-      example: technology AND (Apple OR Microsoft) NOT Google
+        $ref: "#/components/schemas/Q"
 
     Lang:
       description: |
@@ -3861,19 +3849,22 @@ components:
         - status_code
         - status
 
-    # Parameters to use in Request Bodies
+    # Parameter schemas to use in Request Bodies
     Q:
       type: string
       description: |
         The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
 
-        - For an exact match, use double quotes. For example, `"technology news"`.
-        - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
-        - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
+        - For exact phrases, use escaped quotes: `\"technology news\"`
+        - Use `*` for wildcards: `technolog*` (cannot start with `*`)
+        - Use `+` to include and `-` to exclude: `+Apple`, `-Google`
+        - Boolean operators: `technology AND (Apple OR Microsoft) NOT Google`
+        - Forbidden characters: `[` `]` `/` `\\` `:` `^` and URL-encoded equivalents
 
-        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
-      example: technology AND (Apple OR Microsoft) NOT Google
+        **Note:** The API automatically inserts `AND` operators between standalone terms, so strings like `"machine learning"` become `"machine AND learning"`. To avoid syntax errors (especially in queries with `OR` operators), use literal escape `"\"machine learning\""`.
+
+        For detailed syntax rules, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
+      example: '"supply chain" AND Amazon NOT China'
 
     Lang:
       oneOf:
