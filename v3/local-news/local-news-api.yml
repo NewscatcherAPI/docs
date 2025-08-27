@@ -577,68 +577,47 @@ components:
       example: ["Business", "Finance"]
 
     OrgEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Apple, Microsoft"`
-        - `["Apple", "Microsoft"]`
+        - To specify multiple organizations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Apple", "Microsoft"]
+      example: '"Apple Inc" OR Microsoft'
 
     PerEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific person names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Elon Musk, Jeff Bezos"`
-        - `["Elon Musk", "Jeff Bezos"]`
+        - To specify multiple names, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Elon Musk", "Jeff Bezos"]
-
+      example: '"Elon Musk" OR "Jeff Bezos"'
     LocEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific location names, as identified by NLP analysis.
 
-        Examples: 
-        - `"California, New York"`
-        - `["California", "New York"]`
+        - To specify multiple locations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["California", "New York"]
+      example: '"San Francisco" OR "New York City"'
 
     MiscEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
 
-        Examples: 
-        - `"Bitcoin, Blockchain"`
-        - `["Bitcoin", "Blockchain"]`
+        - To specify multiple entities, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Bitcoin", "Blockchain"]
+      example: 'AWS OR "Microsoft Azure"'
 
     TitleSentimentMin:
       type: number
