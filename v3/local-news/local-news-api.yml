@@ -4,14 +4,16 @@ info:
   description: |
     Discover, analyze, and leverage location-specific news with unparalleled precision!
 
-    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including AI-powered location detection, NLP analysis, and clustering of similar articles.
+    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including GeoNames-powered location filtering, cross-language search, and NLP analysis.
 
     ## Key features
 
-    - **Smart Location Detection**: Multiple detection methods, including dedicated sources, proximity analysis, and AI extraction.
+    - **GeoNames Integration**: Structured geographic filtering using the world's largest geographic database with 25+ million locations.
+    - **Global Coverage**: Support for Italy, Germany, France, Canada, Great Britain, China, United States, Thailand, and Switzerland, with more countries added monthly.
+    - **Cross-Language Search**: Find articles using English keywords even when the original content is in other languages.
     - **Advanced Querying**: Support for logical operators, wildcards, and multi-faceted filtering.
     - **Flexible Retrieval**: Search by keywords, get the latest headlines, or fetch articles by URL, ID, or RSS GUID.
-    - **Rich Metadata**: Access detailed article information, including NLP-analysis insights.
+    - **Rich Metadata**: Access detailed article information, including NLP-analysis insights and translation fields.
     - **Content Clustering**: Group similar articles for concise topic overviews.
     - **Precise Location Matching**: Six distinct methods for accurate location detection:
       - Dedicated local news sources
@@ -20,7 +22,7 @@ info:
       - Standard location format matching
       - Proximity-based detection
       - AI-powered extraction
-    - **Customizable Filtering**: Filter by sentiment, word count, content type, and more.
+    - **Geographic Filtering**: Filter by coordinates, administrative levels, feature types, and location relevance scores.
     - **Source Discovery**: Retrieve information on available local news sources.
     - **Comprehensive Documentation**: Detailed overview and API reference with playground.
 
