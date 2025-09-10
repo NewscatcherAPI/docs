@@ -2075,10 +2075,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: renewable energy
-              predefined_sources: top 50 US
-              from_: 2024/01/01
-              to_: 2024/06/30
+              q: '"supply chain" AND Amazon NOT China'
               aggregation_by: day
 
     AuthorsRequestBody:
@@ -2180,13 +2177,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              author_name: Joanna Stern
-              lang: en
-              sources:
-                - wsj.com
-                - nytimes.com
-              from_: 2024/01/01
-              to_: 2024/06/30
+              author_name: David Muir
 
     LatestHeadlinesRequestBody:
       description:
@@ -2285,12 +2276,8 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              lang: en
-              predefined_sources:
-                - top 50 US
-                - top 20 GB
-              is_opinion: false
-              page_size: 10
+              when: 7d
+              page_size: 1
 
     BreakingNewsRequestBody:
       description:
@@ -2346,9 +2333,8 @@ components:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
               sort_by: relevancy
-              page: 1
-              page_size: 100
-              include_nlp_data: true
+              ranked_only: true
+              top_n_articles: 1
 
     SearchRequestBody:
       description:
@@ -2475,15 +2461,8 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: renewable energy
-              predefined_sources:
-                - top 50 US
-              lang:
-                - en
-              from_: 2024/01/01
-              to_: 2024/06/30
-              additional_domain_info: true
-              is_news_domain: true
+              q: '"supply chain" AND Amazon NOT China'
+              page_size: 1
 
     SearchLinkRequestBody:
       description:
@@ -2531,12 +2510,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              ids:
-                - 8ea8a784568ffaa05cb6d1ab2d2e84dd
-                - 0146a551ef05ab1c494a55e806e3ce64
-              links:
-                - "https://www.nytimes.com/2024/08/30/technology/ai-chatbot-chatgpt-manipulation.html"
-                - "https://www.bbc.com/news/articles/c39k379grzlo"
+              links: https://www.reuters.com/business/energy/oil-prices-up-after-israeli-attacks-oversupply-caps-gains-2025-09-10/
 
     SearchSimilarRequestBody:
       description:
@@ -2639,9 +2613,10 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: artificial intelligence
+              q: '"supply chain" AND Amazon NOT China'
               include_similar_documents: true
               similar_documents_number: 5
+              page_size: 10
 
     SourcesRequestBody:
       description:
@@ -2676,12 +2651,7 @@ components:
               to_rank:
                 $ref: "#/components/schemas/ToRank"
             example:
-              predefined_sources:
-                - top 50 US
-              include_additional_info: true
-              is_news_domain: true
-              news_domain_type: "Original Content"
-              news_type: "General News Outlets"
+              predefined_sources: top 10 US
 
   responses:
     AggregationCountResponse:
@@ -3910,7 +3880,6 @@ components:
         - Standard fields: `title`, `content`, `summary`, `title_content`
         - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        **Note**: Search in summaries and translations is only available for NLP subscription plans.
       example: title_content, title_content_translated
 
     IncludeTranslationFields:
@@ -4284,8 +4253,6 @@ components:
       description: |
         If true, includes an NLP object for each article in the response. This object provides results of NLP analysis, including article theme, summary, sentiment, tags, and named entity recognition if available.
 
-        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `include_nlp_data` parameter is available only in NLP subscription plans.
-
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
@@ -4294,8 +4261,6 @@ components:
       default: false
       description: |
         If true, filters results to include only articles that have NLP data.
-
-        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `has_nlp` parameter is available only in NLP subscription plans.
 
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
