@@ -3915,9 +3915,7 @@ components:
       type: boolean
       default: false
       description: |
-        If true, the response includes translation fields `title_translated_en` and `content_translated_en`.
-
-        **Note**: Article translations are available only in the NLP plan.
+        If true, includes English translation fields in the response (`title_translated_en`, `content_translated_en`, and NLP translation fields).
       example: true
 
     Countries:
