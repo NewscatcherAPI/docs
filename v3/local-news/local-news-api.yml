@@ -33,7 +33,7 @@ info:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
     url: https://www.newscatcherapi.com/pricing
-  version: 1.1.0
+  version: 2.0.0
 
 externalDocs:
   description: Find out more about NewsCatcher
@@ -80,8 +80,8 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for local news based on specified criteria such as keyword,
-        language, country, source, and more.
+        Searches for local news based on specified criteria such as keywords,
+        geographic locations, language, country, source, and more.
       operationId: Search_post
       requestBody:
         $ref: "#/components/requestBodies/SearchRequestBody"
@@ -344,21 +344,14 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # v1.1.0 Updated BaseRequestDto
+    # v2.0.0 Updated BaseRequestDto
     BaseRequestDto:
       type: object
       properties:
-        locations:
-          type: array
-          items:
-            type: string
-          description: |
-            The location(s) to search for in articles. Format should be "City, State".
-
-            Example: `["San Francisco, California"]`
-          example: ["New York City, New York", "Los Angeles, California"]
-        detection_methods:
-          $ref: "#/components/schemas/DetectionMethods"
+        geonames:
+          $ref: "#/components/schemas/GeoNamesFilter"
+        geonames_operator:
+          $ref: "#/components/schemas/GeoNamesOperator"
         lang:
           $ref: "#/components/schemas/Lang"
         sources:
@@ -397,6 +390,8 @@ components:
           $ref: "#/components/schemas/ContentSentimentMin"
         content_sentiment_max:
           $ref: "#/components/schemas/ContentSentimentMax"
+        include_translation_fields:
+          $ref: "#/components/schemas/IncludeTranslationFields"
 
     SearchRequestDto:
       allOf:
@@ -452,7 +447,216 @@ components:
 
     # Parameter schemas
     ## BaseRequestDto (mixin model) parameters
-    ### v1.1.0 New schema for detection methods
+    ## v2.0.0 GeoNames schemas
+    GeoNamesFilter:
+      type: array
+      items:
+        $ref: "#/components/schemas/GeoNamesEntity"
+      description: |
+        Filter articles by geographic locations using structured GeoNames data. Each object defines location criteria that must all be met (internal `AND`). Multiple objects are combined using the `geonames_operator` parameter.
+
+        For detailed information, see [GeoNames filtering](/v3/local-news/overview/geonames-filtering).
+      example:
+        - name: "New York City"
+          country: "US"
+          feature_class: "A"
+        - name: "San Francisco"
+          admin1:
+            name: "California"
+          localization_score:
+            min: 7
+
+    GeoNamesOperator:
+      type: string
+      enum:
+        - AND
+        - OR
+      default: AND
+      description: |
+        The operator to combine multiple `geonames` objects. If `AND`, all geonames objects must match. If `OR`, at least one geonames object must match.
+      example: AND
+
+    GeoNamesEntity:
+      type: object
+      description: |
+        A single geographic location filter using GeoNames structured data. All provided fields within this object are combined with `AND` logic.
+      properties:
+        geonames_id:
+          type: string
+          nullable: true
+          description: |
+            The unique GeoNames identifier for exact location matching.
+          example: "5128581"
+        name:
+          type: string
+          nullable: true
+          description: |
+            The location name to search in articles. Use leading minus `-` to exclude names (e.g., `-Boston`). Supports wildcard `*` for partial matching when `enable_wildcard` is `true`.
+
+            When the `search_with_alt_names` parameter is `true`, search in both canonical and alternative names from GeoNames database.
+          example: New York City
+        country:
+          type: string
+          nullable: true
+          description: |
+            Two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code.
+
+            To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+          example: "US"
+        admin1:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            First-order administrative division filter (e.g., states in US, provinces in Canada, regions in Italy).
+          example:
+            name: "California"
+            code: "CA"
+            geonames_id: "5332921"
+        admin2:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Second-order administrative division filter (e.g., counties in the US, departments in France).
+          example:
+            name: "Los Angeles County"
+            geonames_id: "5368361"
+        admin3:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Third-order administrative division filter (e.g., townships, boroughs, smaller regional divisions).
+          example:
+            name: "Manhattan"
+            geonames_id: "5125771"
+        admin4:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Fourth-order administrative division filter (smallest administrative units).
+          example:
+            name: "Downtown"
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        feature_class:
+          type: string
+          nullable: true
+          description: |
+            GeoNames feature class. Main classes: 
+            - `A`: Administrative
+            - `H`: Hydrographic
+            - `L`: Area
+            - `P`: Populated places
+            - `R`: Roads/rail
+            - `S`: Spots/buildings
+            - `T`: Topography
+            - `U`: Undersea
+            - `V`: Vegetation
+          example: "A"
+        feature_code:
+          type: string
+          nullable: true
+          description: |
+            Specific GeoNames feature code (e.g., `PPL` for populated place, `PPLA` for administrative seat). Supports wildcards.
+          example: "PPL"
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
+        localization_score:
+          allOf:
+            - $ref: "#/components/schemas/RangeModel"
+          description: |
+            Filter by geographic focus score (0-10):
+            - 10: Hyper-local — specific town or neighborhood named with clear local impact
+            - 7–9: Regional — nearby city, metro, or administrative region mentioned with some local detail
+            - 4–6: Subnational — province/state-level reference; town may be named but with limited context
+            - 1–3: National or broader — only national relevance; town appears only in passing
+            - 0: None — no mention or not relevant to the location
+        confidence_score:
+          allOf:
+            - $ref: "#/components/schemas/RangeModel"
+          description: |
+            Filter by model's confidence in location relevance (0-10):
+            - 10: Certain — Clear, unambiguous match; location is definitely relevant
+            - 7–9: High — Strong indications of relevance, but not absolute certainty
+            - 4–6: Medium — Some evidence or indirect relevance, but inconclusive
+            - 1–3: Low — Weak signal or unlikely relevance
+            - 0: Certain Not — Confident the location is not mentioned or relevant
+
+        search_with_alt_names:
+          type: boolean
+          default: false
+          description: |
+            If true, expands location search to alternative names, such as abbreviations, local language names, historical names, and other variants stored in the GeoNames database. For example, `"NYC"` finds articles about `"New York City"`. If false, searches only in canonical location names.
+
+            **Note**: This setting affects all location names within the `geonames` object, including the `name` field and all administrative-level names (`admin1.name`, `admin2.name`, etc.).
+          example: true
+
+        enable_wildcard:
+          type: boolean
+          default: false
+          description: |
+            If true, enables wildcard matching using `*` for partial matching location names. If false, requires exact matching.
+
+            **Note**: This setting affects all location names within the `geonames` object, including the `name` field and all administrative-level names (`admin1.name`, `admin2.name`, etc.).
+          example: false
+
+    GeoNamesLocationAdminEntity:
+      type: object
+      properties:
+        geonames_id:
+          type: string
+          description: GeoNames ID for the administrative division.
+        name:
+          type: string
+          description: |
+            Administrative division name. Use leading minus `-` to exclude the name.
+        code:
+          type: string
+          description: Administrative division code.
+
+    RangeModel:
+      type: object
+      description:
+        Numeric range filter with minimum and/or maximum values (inclusive).
+      properties:
+        min:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: Minimum value (inclusive).
+        max:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: Maximum value (inclusive).
+      example:
+        min: 7
+        max: 10
+
+    Coordinates:
+      type: object
+      description: Geographic coordinates for a location.
+      properties:
+        lat:
+          type: number
+          format: float
+          nullable: true
+          description: The latitude coordinate.
+        lon:
+          type: number
+          format: float
+          nullable: true
+          description: The longitude coordinate.
+      example:
+        lat: 40.71427
+        lon: -74.00597
+
+    IncludeTranslationFields:
+      type: boolean
+      default: false
+      description: |
+        If true, includes English translation fields in the response (`title_translated_en`, `content_translated_en`, and NLP translation fields). If false, excludes translation fields.
+      example: true
+
     DetectionMethods:
       type: array
       items:
@@ -485,10 +689,6 @@ components:
       description: |
         The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"en,es"`
-        - `["en", "es"]`
-
         To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
@@ -500,10 +700,6 @@ components:
             type: string
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable. To specify multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"nytimes.com, theguardian.com"`
-        - `["nytimes.com", "theguardian.com"]`
       example: ["nytimes.com", "theguardian.com"]
 
     NotSources:
@@ -514,10 +710,6 @@ components:
             type: string
       description: |
         The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"cnn.com, wsj.com"`
-        - `["cnn.com", "wsj.com"]`
       example: ["cnn.com", "wsj.com"]
 
     ParentUrl:
@@ -528,10 +720,6 @@ components:
             type: string
       description: |
         The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"wsj.com/politics,wsj.com/tech"`
-        - `["wsj.com/politics", "wsj.com/tech"]`
       example: ["wsj.com/politics", "wsj.com/tech"]
 
     Page:
@@ -555,7 +743,7 @@ components:
       type: boolean
       default: false
       description: |
-        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
+        If true, groups similar articles into clusters and returns clustered results. If false, returns individual articles without clustering.
 
         To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
@@ -568,10 +756,6 @@ components:
             type: string
       description: |
         Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"Finance, Tech"`
-        - `["Finance", "Tech"]`
 
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
 
@@ -599,6 +783,7 @@ components:
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
       example: '"Elon Musk" OR "Jeff Bezos"'
+
     LocEntityName:
       type: string
       description: |
@@ -768,14 +953,16 @@ components:
 
     SearchIn:
       type: string
-      default: title,content
+      default: title_content
       description: |
-        The article fields to search in. To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. Use a comma-separated string for multiple options, with a maximum of 2 in a single request.
 
-        Example: `"title, summary"`
+        Available options: 
+        - Standard fields: `title`, `content`, `summary`, `title_content`
+        - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        Available options: `title`, `summary`, `content`.
-      example: title,content
+        **Note**: Search in summaries and translations is only available for NLP subscription plans.
+      example: title_content, title_content_translated
 
     SortBy:
       type: string
@@ -817,10 +1004,6 @@ components:
       description: |
         The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"US,CA"`
-        - `["US", "CA"]`
-
         To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
@@ -832,11 +1015,7 @@ components:
           items:
             type: string
       description: |
-        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings. 
-
-        Examples:
-        - `"https://example.com/article1, https://example.com/article2"`
-        - `["https://example.com/article1", "https://example.com/article2"]`
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings.
 
         **Note**: You can use the `links` parameter in combination with `ids` or `rss_guids`, but at least one of these parameters must be provided.
       example: "https://nytimes.com/article1"
@@ -848,11 +1027,7 @@ components:
           items:
             type: string
       description: |
-        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings. 
-
-        Examples:
-        - `"1234567890abcdef, abcdef1234567890"`
-        - `["1234567890abcdef", "abcdef1234567890"]`
+        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings.
 
         **Note**: You can use the `ids` parameter in combination with `links` or `rss_guids`, but at least one of these parameters must be provided.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
@@ -867,11 +1042,6 @@ components:
         The RSS GUID (Globally Unique Identifier) or list of GUIDs to search for. To specify multiple GUIDs, use a comma-separated string or an array of strings. 
 
         GUIDs are unique identifiers assigned to RSS feed items. They are often URLs or other unique strings.
-
-        Examples:
-        - `"https://example.com/article1,https://example.com/article2"`
-        - `["https://example.com/article1", "https://example.com/article2"]`
-        - `"1234567890abcdef,abcdef1234567890"`
 
         **Note**: You can use the `rss_guids` parameter in combination with `links` or `ids`, but at least one of these parameters must be provided.
       example: ["https://example.com/article1", "https://example.com/article2"]
