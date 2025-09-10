@@ -2787,7 +2787,9 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            message: "Invalid api key: INVALID_API_KEY"
+            message:
+              "The 'x-api-token' parameter has an invalid value. Please provide
+              a valid API key."
             status_code: 401
             status: "Unauthorized"
 
