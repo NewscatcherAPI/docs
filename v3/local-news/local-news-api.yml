@@ -257,6 +257,20 @@ components:
           schema:
             $ref: "#/components/schemas/SourcesRequestDto"
 
+    SearchAdvancedRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchAdvancedRequestDto"
+
+    LatestHeadlinesAdvancedRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LatestHeadlinesAdvancedRequestDto"
+
   responses:
     SearchResponse:
       description:
@@ -305,6 +319,30 @@ components:
             allOf:
               - $ref: "#/components/schemas/ArticleSearchResponseDto"
             title: Search By Response
+
+    SearchAdvancedResponse:
+      description: |
+        A successful response containing articles that match the specified search criteria with GeoNames location data. The response may include clustering information if enabled.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
+              - $ref: "#/components/schemas/ClusteringSearchAdvancedResponseDto"
+
+    LatestHeadlinesAdvancedResponse:
+      description: |
+        A successful response containing the latest headlines since the specified time with GeoNames location data. The response may include clustering information if enabled.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - allOf:
+                  - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
+                title: Advanced Latest Headlines Response
+              - allOf:
+                  - $ref: "#/components/schemas/ClusteringSearchAdvancedResponseDto"
+                title: Clustered Advanced Latest Headlines Response
 
     # Errors
     BadRequestError:
@@ -383,8 +421,66 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # v2.0.0 Updated BaseRequestDto
+    # Base schemas for composition
     BaseRequestDto:
+      type: object
+      description: Common parameters shared across standard endpoints.
+      properties:
+        locations:
+          type: array
+          items:
+            type: string
+          description: |
+            The location(s) to search for in articles. Format should be "City, State".
+            Example: `["San Francisco, California"]`
+          example: ["New York City, New York", "Los Angeles, California"]
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
+        lang:
+          $ref: "#/components/schemas/Lang"
+        countries: # New in v2.0
+          $ref: "#/components/schemas/Countries"
+        sources:
+          $ref: "#/components/schemas/Sources"
+        not_sources:
+          $ref: "#/components/schemas/NotSources"
+        parent_url:
+          $ref: "#/components/schemas/ParentUrl"
+        is_paid_content:
+          $ref: "#/components/schemas/IsPaidContent"
+        page:
+          $ref: "#/components/schemas/Page"
+        page_size:
+          $ref: "#/components/schemas/PageSize"
+        word_count_min:
+          $ref: "#/components/schemas/WordCountMin"
+        word_count_max:
+          $ref: "#/components/schemas/WordCountMax"
+        clustering:
+          $ref: "#/components/schemas/ClusteringEnabled"
+        theme:
+          $ref: "#/components/schemas/Theme"
+        PER_entity_name:
+          $ref: "#/components/schemas/PerEntityName"
+        LOC_entity_name:
+          $ref: "#/components/schemas/LocEntityName"
+        MISC_entity_name:
+          $ref: "#/components/schemas/MiscEntityName"
+        ORG_entity_name:
+          $ref: "#/components/schemas/OrgEntityName"
+        title_sentiment_min:
+          $ref: "#/components/schemas/TitleSentimentMin"
+        title_sentiment_max:
+          $ref: "#/components/schemas/TitleSentimentMax"
+        content_sentiment_min:
+          $ref: "#/components/schemas/ContentSentimentMin"
+        content_sentiment_max:
+          $ref: "#/components/schemas/ContentSentimentMax"
+        include_translation_fields: # New in v2.0
+          $ref: "#/components/schemas/IncludeTranslationFields"
+
+    # v2.0.0 Updated BaseRequestDto
+    BaseAdvancedRequestDto:
       type: object
       properties:
         geonames:
@@ -393,6 +489,8 @@ components:
           $ref: "#/components/schemas/GeoNamesOperator"
         lang:
           $ref: "#/components/schemas/Lang"
+        countries:
+          $ref: "#/components/schemas/Countries"
         sources:
           $ref: "#/components/schemas/Sources"
         not_sources:
@@ -432,6 +530,7 @@ components:
         include_translation_fields:
           $ref: "#/components/schemas/IncludeTranslationFields"
 
+    # Standard request DTOs (enhanced in v2.0)
     SearchRequestDto:
       allOf:
         - type: object
@@ -442,7 +541,7 @@ components:
               $ref: "#/components/schemas/From"
             to_:
               $ref: "#/components/schemas/To"
-            search_in:
+            search_in: # Enhanced in v2.0
               $ref: "#/components/schemas/SearchIn"
             sort_by:
               $ref: "#/components/schemas/SortBy"
@@ -483,6 +582,31 @@ components:
           $ref: "#/components/schemas/Page"
         page_size:
           $ref: "#/components/schemas/PageSize"
+
+    # Advanced request DTOs (new in v2.0)
+    SearchAdvancedRequestDto:
+      allOf:
+        - type: object
+          properties:
+            q:
+              $ref: "#/components/schemas/Q"
+            from_:
+              $ref: "#/components/schemas/From"
+            to_:
+              $ref: "#/components/schemas/To"
+            search_in:
+              $ref: "#/components/schemas/SearchIn"
+            sort_by:
+              $ref: "#/components/schemas/SortBy"
+        - $ref: "#/components/schemas/BaseAdvancedRequestDto"
+
+    LatestHeadlinesAdvancedRequestDto:
+      allOf:
+        - type: object
+          properties:
+            when:
+              $ref: "#/components/schemas/When"
+        - $ref: "#/components/schemas/BaseAdvancedRequestDto"
 
     # Parameter schemas
     ## BaseRequestDto (mixin model) parameters
@@ -1150,14 +1274,28 @@ components:
               description: The user input parameters for the search.
               type: object
 
-    ## Article object schema, used for `articles` in `ArticleSearchResponseDto`
-    ###  v1.1.0 Replace the associated_towns with locations entity
-    ArticleResultEntity:
+    # Advanced response DTOs (new in v2.0)
+    ArticleSearchAdvancedResponseDto:
+      title: Advanced Search Response
+      allOf:
+        - $ref: "#/components/schemas/SearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              type: array
+              items:
+                $ref: "#/components/schemas/ArticleAdvancedResultEntity"
+              default: []
+            user_input:
+              type: object
+
+    ## Article object schema, used for `articles` in `ArticleSearchAdvancedResponseDto`
+    BaseArticleEntity:
       title: Article Result
       description:
-        The data model representing a single article in the search results.
-        Required fields are always non-null. Optional fields may be
-        `null`/`undefined` if data extraction is unsuccessful.
+        The data model representing the commont properties of the article object
+        in the search results. Required fields are always non-null. Optional
+        fields may be `null`/`undefined` if data extraction is unsuccessful.
       type: object
       required:
         - id
@@ -1173,20 +1311,6 @@ components:
         id:
           type: string
           description: The unique identifier for the article.
-        geonames:
-          type: array
-          items:
-            $ref: "#/components/schemas/GeoNamesResponseEntity"
-          description: |
-            A list of GeoNames locations identified in the article with their detection methods and confidence scores.
-        locations:
-          type: array
-          items:
-            $ref: "#/components/schemas/LocationEntity"
-          description: |
-            **DEPRECATED:** A list of locations mentioned in the article along with their detection methods.
-
-            Use `geonames` field instead for structured geographic data.
         score:
           type: number
           format: float
@@ -1267,8 +1391,47 @@ components:
         paid_content:
           type: boolean
           description: Indicates if the article is paid content.
+        title_translated_en: #  New in v2.0
+          type: string
+          description: |
+            English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
+          nullable: true
+        content_translated_en: #  New in v2.0
+          type: string
+          description: |
+            English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
+          nullable: true
 
-    # v1.1.0 LocationEntity to replace v1.0.0 TownEntity, AssociatedTownEntity and AiAssociatedTownEntity -> **DEPRECATED:** Use geonames v2.0.0
+    # Standard article entity (with simple locations)
+    ArticleResultEntity:
+      title: Article Result
+      allOf:
+        - $ref: "#/components/schemas/BaseArticleEntity"
+        - type: object
+          properties:
+            locations:
+              type: array
+              items:
+                $ref: "#/components/schemas/LocationEntity"
+              description: |
+                Simple location data with detection methods. 
+                For structured GeoNames data, use the advanced endpoints.
+
+    # Advanced article entity (with GeoNames)
+    ArticleAdvancedResultEntity:
+      title: Article Result (Advanced)
+      allOf:
+        - $ref: "#/components/schemas/BaseArticleEntity"
+        - type: object
+          properties:
+            geonames:
+              type: array
+              items:
+                $ref: "#/components/schemas/GeoNamesResponseEntity"
+              description: |
+                A list of locations identified in the article, including detection methods, confidence, and localization scores. The location data adheres to the GeoNames format.
+
+    # v1.1.0 LocationEntity
     LocationEntity:
       type: object
       required:
@@ -1278,18 +1441,14 @@ components:
         name:
           type: string
           description: |
-            **DEPRECATED:** The full name of the location, including the state. 
+            The full name of the location, including the state. 
             Format is "City, State". For example, "San Francisco, California".
-
-            Use the `geonames` field in article responses for structured geographic data.
           example: "San Francisco, California"
         detection_methods:
           allOf:
             - $ref: "#/components/schemas/DetectionMethods"
             - description: |
-                **DEPRECATED:** Methods used to detect locations in articles.
-
-                Use the `geonames` field in article responses for structured geographic data with detection methods.
+                Methods used to detect locations in articles.
 
                 For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
 
@@ -1431,6 +1590,26 @@ components:
           description:
             Named Entity Recognition for location entities (cities, countries,
             geographic features).
+        translation_ner_PER:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for person entities (individuals' names) extracted from the English translation of the article.
+        translation_ner_ORG:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for organization entities (company names, institutions) extracted from the English translation of the article.
+        translation_ner_MISC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for miscellaneous entities (events, nationalities, products) extracted from the English translation of the article.
+        translation_ner_LOC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for location entities (cities, countries, geographic features) extracted from the English translation of the article.
 
     SentimentScores:
       type: object
