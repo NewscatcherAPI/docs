@@ -185,6 +185,7 @@
                   "v3/local-news/overview/introduction",
                   "v3/local-news/overview/quickstart",
                   "v3/local-news/overview/location-detection-methods",
+                  "v3/local-news/overview/geonames-filtering",
                   "v3/local-news/overview/local-news-api-subscription-plans"
                 ]
               },

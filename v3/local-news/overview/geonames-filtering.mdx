@@ -1,0 +1,480 @@
+---
+title: GeoNames filtering
+sidebarTitle: GeoNames filtering
+description:
+  Use structured geographic data to filter local news with precise
+  administrative hierarchy, coordinates, localization and confidence scores.
+---
+
+## Overview
+
+GeoNames filtering uses structured geographic data from the
+[GeoNames database](https://www.geonames.org/), the world's largest geographic
+database, to provide precise location-based search capabilities. Unlike simple
+location filtering that uses text strings like "San Francisco, California",
+GeoNames filtering allows you to search using administrative hierarchy,
+coordinates, feature classifications, and confidence thresholds.
+
+## GeoNames vs simple location filtering
+
+| Feature               | Simple filtering               | GeoNames filtering                                      |
+| --------------------- | ------------------------------ | ------------------------------------------------------- |
+| **Format**            | Text strings ("City, State")   | Structured objects with hierarchy                       |
+| **Precision**         | City-level matching            | Administrative levels (country → state → county → city) |
+| **Coordinates**       | Not available                  | Latitude/longitude coordinates                          |
+| **Confidence**        | Not available                  | Confidence and localization scores (0-10)               |
+| **Feature types**     | Not available                  | Geographic feature classification                       |
+| **Wildcards**         | Not available                  | Pattern matching with `*`                               |
+| **Alternative names** | Not available                  | Search alternative and historical names                 |
+| **Endpoints**         | `/search`, `/latest_headlines` | `/search/advanced`, `/latest_headlines/advanced`        |
+
+## Basic usage
+
+### GeoNames ID
+
+Search using the unique GeoNames identifier for exact location matching:
+
+```json
+{
+  "q": "technology",
+  "geonames": [
+    {
+      "geonames_id": "5391959"
+    }
+  ]
+}
+```
+
+This searches for articles about San Francisco using its unique GeoNames ID,
+providing the most precise location matching possible.
+
+### Simple GeoNames query
+
+Search for articles about a specific city:
+
+```json
+{
+  "q": "technology",
+  "geonames": [
+    {
+      "name": "San Francisco",
+      "country": "US"
+    }
+  ]
+}
+```
+
+### Administrative hierarchy
+
+Search within a specific administrative level:
+
+```json
+{
+  "q": "climate change",
+  "geonames": [
+    {
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      }
+    }
+  ]
+}
+```
+
+This finds articles about climate change anywhere in California.
+
+### Multiple locations with OR logic
+
+```json
+{
+  "q": "startup funding",
+  "geonames": [
+    {
+      "name": "San Francisco",
+      "country": "US"
+    },
+    {
+      "name": "New York City",
+      "country": "US"
+    }
+  ],
+  "geonames_operator": "OR"
+}
+```
+
+## Advanced filtering options
+
+### Administrative hierarchy levels
+
+The GeoNames system uses a hierarchical structure:
+
+- **Country**: Two-letter ISO code (e.g., `"US"`, `"DE"`, `"FR"`)
+- **Admin1**: First-level division (states, provinces, regions)
+- **Admin2**: Second-level division (counties, departments)
+- **Admin3**: Third-level division (townships, boroughs)
+- **Admin4**: Fourth-level division (neighborhoods, districts)
+
+### Coordinate-based filtering
+
+Search within a geographic area using coordinates:
+
+```json
+{
+  "q": "real estate",
+  "geonames": [
+    {
+      "coordinates": {
+        "lat": 37.7749,
+        "lon": -122.4194
+      }
+    }
+  ]
+}
+```
+
+### Confidence and localization scores
+
+Filter by how relevant articles are to specific locations:
+
+```json
+{
+  "q": "\"local business\"",
+  "geonames": [
+    {
+      "name": "Portland",
+      "country": "US",
+      "admin1": {
+        "name": "Oregon"
+      },
+      "localization_score": {
+        "min": 7
+      },
+      "confidence_score": {
+        "min": 8
+      }
+    }
+  ]
+}
+```
+
+**Localization score** (0-10): How locally relevant the article is
+
+- 10: Hyper-local (specific neighborhood impact)
+- 7-9: Regional relevance
+- 4-6: State/province level
+- 1-3: National mention only
+- 0: No local relevance
+
+**Confidence score** (0-10): How certain the model is about location
+identification
+
+- 10: Certain match
+- 7-9: High confidence
+- 4-6: Medium confidence
+- 1-3: Low confidence
+- 0: Uncertain
+
+### Feature classification
+
+Filter by geographic feature types:
+
+```json
+{
+  "q": "tourism",
+  "geonames": [
+    {
+      "country": "US",
+      "feature_class": "P",
+      "feature_code": "PPL"
+    }
+  ]
+}
+```
+
+**Common feature classes:**
+
+- **A**: Administrative divisions
+- **H**: Hydrographic features (rivers, lakes)
+- **L**: Area features (parks, regions)
+- **P**: Populated places (cities, towns)
+- **S**: Spots, buildings, farms
+- **T**: Mountain, hill, rock
+
+### Alternative names and wildcards
+
+Search using alternative names or pattern matching:
+
+```json
+{
+  "q": "\"financial district\"",
+  "geonames": [
+    {
+      "name": "NYC",
+      "country": "US",
+      "search_with_alt_names": true,
+      "enable_wildcard": true
+    }
+  ]
+}
+```
+
+With `search_with_alt_names: true`, "NYC" will match "New York City" and its
+alternative names.
+
+## Complex filtering examples
+
+### Regional business analysis
+
+Find articles about venture capital in the San Francisco Bay Area:
+
+```json
+{
+  "q": "\"venture capital\" OR \"startup funding\"",
+  "geonames": [
+    {
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      },
+      "admin2": {
+        "name": "San Francisco County"
+      },
+      "localization_score": {
+        "min": 6
+      }
+    },
+    {
+      "name": "San Jose",
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      },
+      "localization_score": {
+        "min": 6
+      }
+    }
+  ],
+  "geonames_operator": "OR"
+}
+```
+
+### Multi-country comparison
+
+Compare climate policy coverage across European cities:
+
+```json
+{
+  "q": "\"climate policy\" OR \"environmental regulation\"",
+  "geonames": [
+    {
+      "name": "Berlin",
+      "country": "DE"
+    },
+    {
+      "name": "Paris",
+      "country": "FR"
+    },
+    {
+      "name": "London",
+      "country": "GB"
+    }
+  ],
+  "geonames_operator": "OR",
+  "from_": "30 days ago"
+}
+```
+
+### Excluding specific areas
+
+Find articles about Texas but exclude Houston:
+
+```json
+{
+  "q": "\"energy industry\"",
+  "geonames": [
+    {
+      "country": "US",
+      "admin1": {
+        "name": "Texas"
+      }
+    },
+    {
+      "name": "-Houston",
+      "country": "US",
+      "admin1": {
+        "name": "Texas"
+      }
+    }
+  ],
+  "geonames_operator": "AND"
+}
+```
+
+Use the minus sign `-` before location names to exclude them.
+
+## Response structure
+
+Advanced endpoints return structured GeoNames data in article responses:
+
+```json
+{
+  "articles": [
+    {
+      "id": "249f0551574a6042ca375d0a9d64bae9",
+      "geonames": [
+        {
+          "geonames_id": "5391959",
+          "name": "San Francisco",
+          "country": "US",
+          "admin1": {
+            "geonames_id": "5332921",
+            "name": "California",
+            "code": "CA"
+          },
+          "admin2": {
+            "geonames_id": "5391997",
+            "name": "San Francisco County",
+            "code": null
+          },
+          "coordinates": {
+            "lat": 37.77493,
+            "lon": -122.41942
+          },
+          "feature_class": "P",
+          "feature_code": "PPL",
+          "detection_methods": ["ai_extracted"],
+          "reason": "San Francisco mentioned as the location of venture capital activity",
+          "localization_score": 8.5,
+          "confidence_score": 9.2
+        }
+      ],
+      "title": "Bay Area startup raises $50M in Series B funding"
+    }
+  ]
+}
+```
+
+## Best practices
+
+### Start simple
+
+Begin with basic city and country filtering before adding complex hierarchy:
+
+```json
+{
+  "geonames": [
+    {
+      "name": "Munich",
+      "country": "DE"
+    }
+  ]
+}
+```
+
+### Use appropriate confidence thresholds
+
+- **High precision needed**: Set `confidence_score.min` to 8+
+- **Broad coverage needed**: Set `confidence_score.min` to 5+
+- **Maximum recall**: Don't filter by confidence scores
+
+### Combine with detection methods
+
+Use specific detection methods for different precision levels:
+
+```json
+{
+  "geonames": [
+    {
+      "name": "Seattle",
+      "country": "US",
+      "detection_methods": ["dedicated_source", "local_section"]
+    }
+  ]
+}
+```
+
+### Handle ambiguous locations
+
+Use administrative hierarchy to disambiguate:
+
+```json
+{
+  "geonames": [
+    {
+      "name": "Portland",
+      "country": "US",
+      "admin1": {
+        "name": "Oregon"
+      }
+    }
+  ]
+}
+```
+
+This ensures you get Portland, Oregon, not Portland, Maine.
+
+### Use localization scores for local relevance
+
+For truly local news, set higher localization thresholds:
+
+```json
+{
+  "geonames": [
+    {
+      "name": "Austin",
+      "country": "US",
+      "localization_score": {
+        "min": 8
+      }
+    }
+  ]
+}
+```
+
+## Migration from simple filtering
+
+Convert simple location queries to GeoNames format:
+
+### Before (simple filtering)
+
+```json
+{
+  "locations": ["San Francisco, California"],
+  "detection_methods": ["dedicated_source"]
+}
+```
+
+### After (GeoNames filtering)
+
+```json
+{
+  "geonames": [
+    {
+      "name": "San Francisco",
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      },
+      "detection_methods": ["dedicated_source"]
+    }
+  ]
+}
+```
+
+## Limitations
+
+- GeoNames filtering is only available on advanced endpoints
+  (`/search/advanced`, `/latest_headlines/advanced`).
+- Some detection methods may have limited coverage in certain countries.
+- Coordinate-based filtering requires precise latitude/longitude values.
+- Alternative name search may return broader results than expected.
+
+## See also
+
+- [Quickstart guide](/v3/local-news/overview/quickstart) for basic usage
+  examples.
+- [Location detection methods](/v3/local-news/overview/location-detection-methods)
+  for understanding how locations are identified.
+- [Advanced endpoints API reference](/v3/local-news/endpoints/search/search-advanced-post)
+  for complete parameter documentation.
