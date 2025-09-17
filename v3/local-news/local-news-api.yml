@@ -1679,6 +1679,30 @@ components:
               description: The user input parameters for the search.
               type: object
 
+    ClusteringSearchAdvancedResponseDto:
+      title: Clustered Search Response (Advanced)
+      allOf:
+        - $ref: "#/components/schemas/SearchResponseDto"
+        - type: object
+          required:
+            - clusters_count
+            - agg_clusters
+            - clusters
+            - user_input
+          properties:
+            clusters_count:
+              type: integer
+            agg_clusters:
+              type: array
+              items:
+                type: string
+            clusters:
+              type: object
+              additionalProperties:
+                $ref: "#/components/schemas/ClusterAdvancedEntity"
+            user_input:
+              type: object
+
     ClusterEntity:
       title: Cluster Entity
       description: |
@@ -1721,6 +1745,26 @@ components:
             may be smaller than `original_cluster_size` if articles from major
             aggregators were filtered out to prioritize local sources.
 
+    ClusterAdvancedEntity:
+      title: Cluster Entity (Advanced)
+      type: object
+      required:
+        - articles
+        - agg_cluster
+        - original_cluster_size
+        - cluster_size
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClusterArticleAdvancedResultEntity"
+        agg_cluster:
+          type: boolean
+        original_cluster_size:
+          type: integer
+        cluster_size:
+          type: integer
+
     ClusterArticleResultEntity:
       title: Cluster Article Result
       description:
@@ -1744,6 +1788,20 @@ components:
                 The rank of the article within its cluster. Calculated using the DBSCAN clustering method, where rank 1 represents the centroid article of the cluster. Lower values indicate higher relevance within the cluster.
 
                 **Note:** Articles are sorted by `cluster_rank` only when the `sort_by` parameter is set to "rank". With default `sort_by`: "date", articles are sorted by published date regardless of cluster rank values.
+
+    ClusterArticleAdvancedResultEntity:
+      title: Cluster Article Result (Advanced)
+      allOf:
+        - $ref: "#/components/schemas/ArticleAdvancedResultEntity"
+        - type: object
+          required:
+            - cluster_id
+            - cluster_rank
+          properties:
+            cluster_id:
+              type: string
+            cluster_rank:
+              type: integer
 
     ## Sources response schemas
     SourcesResponseDto:
