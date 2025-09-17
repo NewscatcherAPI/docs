@@ -177,7 +177,7 @@ paths:
         - Search
       summary: Search articles with GeoNames filtering
       description: |
-        Searches for local news using structured GeoNames filtering with administrative hierarchy, coordinates, and confidence scores.
+        Searches for local news using structured GeoNames filtering with administrative hierarchy, coordinates, localization and confidence scores.
       operationId: SearchAdvanced_post
       requestBody:
         $ref: "#/components/requestBodies/SearchAdvancedRequestBody"
@@ -205,7 +205,7 @@ paths:
         - LatestHeadlines
       summary: Retrieve latest headlines with GeoNames filtering
       description: |
-        Retrieves the most recent news headlines using structured GeoNames filtering with administrative hierarchy, coordinates, and confidence scores.
+        Retrieves the most recent news headlines using structured GeoNames filtering with administrative hierarchy, coordinates, localization and confidence scores.
       operationId: LatestHeadlinesAdvanced_post
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesAdvancedRequestBody"
@@ -1208,11 +1208,9 @@ components:
       example: ["https://example.com/article1", "https://example.com/article2"]
 
     # Response schemas
-    ## Base Response
+    ## Base Response model containing common fields for search operations.
     SearchResponseDto:
       title: Base Search Response
-      description:
-        The base response model containing common fields for search operations.
       required:
         - status
         - total_hits
@@ -1275,6 +1273,13 @@ components:
     # Advanced response DTOs (new in v1.2.0)
     ArticleSearchAdvancedResponseDto:
       title: Advanced Search Response
+      description: |
+        The response model for the `Search advanced`, `Latest headlines advanced`, and `Search by` requests.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
@@ -1679,6 +1684,13 @@ components:
 
     ClusteringSearchAdvancedResponseDto:
       title: Clustered Search Response (Advanced)
+      description: |
+        The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search advanced` and `Latest headlines advanced` requests.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
       allOf:
         - $ref: "#/components/schemas/SearchResponseDto"
         - type: object
