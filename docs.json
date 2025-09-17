@@ -194,13 +194,15 @@
                   {
                     "group": "Search",
                     "pages": [
-                      "v3/local-news/endpoints/search/search-articles-post"
+                      "v3/local-news/endpoints/search/search-articles-post",
+                      "v3/local-news/endpoints/search/search-advanced-post"
                     ]
                   },
                   {
                     "group": "Latest headlines",
                     "pages": [
-                      "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post"
+                      "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post",
+                      "v3/local-news/endpoints/latest-headlines/latest-headlines-advanced-post"
                     ]
                   },
                   {
