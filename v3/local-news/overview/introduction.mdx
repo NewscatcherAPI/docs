@@ -2,37 +2,40 @@
 title: Introduction to Local News API
 sidebarTitle: Introduction
 description:
-  Access U.S. location-specific news with advanced geographic relevance
-  detection.
+  Access location-specific news with advanced geographic relevance detection and
+  structured filtering capabilities.
 ---
 
 ## What is Local News API?
 
-Local News API is a specialized service focused on U.S. location-specific
-content. Building on our core News API v3 infrastructure, it adds dedicated
-location detection capabilities optimized for city, county, and state-level news
-coverage. The system processes content from thousands of local news sources,
-including small city publishers, regional outlets, university newspapers, and
-local government news portals.
+Local News API provides location-specific news content across multiple countries
+including the United States, Canada, Great Britain, Germany, France, Italy,
+China, Thailand, and Switzerland. Building on our core News API v3
+infrastructure, it adds dedicated location detection capabilities optimized for
+city, county, and regional news coverage. The system processes content from
+thousands of local news sources, including small city publishers, regional
+outlets, university newspapers, and local government news portals.
 
 ## Features
 
 <Tabs>
   <Tab title="Location">
-    - Six distinct location detection methods
-    - Content from thousands of local U.S. news sources, including city
-      publishers, university newspapers, and government portals
-    - Specialized validation of location relevance, not just location mentions
+    - Six distinct location detection methods 
+    - Content from thousands of local news sources across multiple countries 
+    - Advanced GeoNames filtering with administrative hierarchy, localization 
+      and confidence scores 
+    - Cross-language search using English keywords
   </Tab>
   <Tab title="Content">
-    - NLP analysis including sentiment scoring, theme categorization, and entity
-      recognition
-    - Article clustering for related content grouping
+    - NLP analysis including summary, sentiment, theme, and entity recognition 
+    - Article clustering for related content grouping 
+    - English translations for non-English content with search and NLP support
   </Tab>
   <Tab title="Technical">
-    - Boolean query support with proximity search capabilities
-    - High-volume retrieval with up to 1000 articles per request
-    - Comprehensive API with search, headlines, and direct article lookup
+    - Advanced query syntax with logical operators, wildcards, and proximity 
+      search capabilities 
+    - High-volume retrieval with up to 1000 articles per page 
+    - Comprehensive API with standard and advanced endpoints 
   </Tab>
 </Tabs>
 
@@ -41,12 +44,12 @@ local government news portals.
 For users familiar with our core News API v3, Local News API offers these key
 enhancements:
 
-| Feature           | Local News API                                          | News API v3                               |
-| ----------------- | ------------------------------------------------------- | ----------------------------------------- |
-| Geographic focus  | U.S. local coverage with specialized location detection | Global news coverage                      |
-| Location handling | Basic NER plus six specialized detection methods        | Basic geographic filtering using NER      |
-| Historical data   | 30 days of history                                      | Up to 5 years of history                  |
-| Source types      | Local newspapers, government sites, university outlets  | Major publications, international sources |
+| Feature           | Local News API                                                               | News API v3                               |
+| ----------------- | ---------------------------------------------------------------------------- | ----------------------------------------- |
+| Geographic focus  | Local coverage across multiple countries with specialized location detection | Global news coverage                      |
+| Location handling | Simple location names plus structured GeoNames filtering                     | Basic geographic filtering                |
+| Historical data   | 30 days of history                                                           | Up to 5 years of history                  |
+| Source types      | Local newspapers, government sites, university outlets                       | Major publications, international sources |
 
 ## Location detection methods
 
@@ -90,17 +93,28 @@ https://local-news.newscatcherapi.com
 
 ## Endpoints
 
-| Endpoint                | Method | Description                              | Use Case                                                     |
-| ----------------------- | ------ | ---------------------------------------- | ------------------------------------------------------------ |
-| `/api/search`           | POST   | Full-text search with location filtering | Find articles matching specific criteria for given locations |
-| `/api/latest_headlines` | POST   | Recent articles by location              | Monitor latest news for specific towns or regions            |
-| `/api/search_by`        | POST   | Direct article lookup                    | Retrieve specific articles using URLs, IDs, or RSS GUIDs     |
-| `/api/sources`          | POST   | Available news sources                   | Discover local news providers by region                      |
+### Standard endpoints
+
+| Endpoint                | Method | Description                                     | Use Case                                                                  |
+| ----------------------- | ------ | ----------------------------------------------- | ------------------------------------------------------------------------- |
+| `/api/search`           | POST   | Full-text search with simple location filtering | Find articles using "City, State" or "City, Country" format for locations |
+| `/api/latest_headlines` | POST   | Recent articles by location                     | Monitor latest news for specific towns or regions                         |
+| `/api/search_by`        | POST   | Direct article lookup                           | Retrieve specific articles using URLs, IDs, or RSS GUIDs                  |
+| `/api/sources`          | POST   | Available news sources                          | Discover local news providers by region                                   |
+
+### Advanced endpoints
+
+| Endpoint                         | Method | Description                              | Use Case                                                                     |
+| -------------------------------- | ------ | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| `/api/search/advanced`           | POST   | Full-text search with GeoNames filtering | Find articles using structured geographic data with administrative hierarchy |
+| `/api/latest_headlines/advanced` | POST   | Recent articles with GeoNames filtering  | Monitor latest news with precise geographic targeting and confidence scores  |
 
 ## Request format
 
 Include your API key in the `x-api-token` header for each request. All requests
 must use HTTPS.
+
+### Standard endpoint example
 
 <CodeGroup>
 
@@ -110,7 +124,8 @@ must use HTTPS.
   "locations": ["San Francisco, California"],
   "detection_methods": ["dedicated_source", "standard_format"],
   "lang": "en",
-  "from_": "7 days ago"
+  "from_": "7 days ago",
+  "include_translation_fields": true
 }
 ```
 
@@ -130,7 +145,8 @@ PAYLOAD = {
     "locations": ["San Francisco, California"],
     "detection_methods": ["dedicated_source", "local_section"],
     "lang": "en",
-    "from_": "7 days ago"
+    "from_": "7 days ago",
+    "include_translation_fields": True
 }
 
 try:
@@ -151,257 +167,142 @@ curl -X POST \
     "locations": ["San Francisco, California"],
     "detection_methods": ["dedicated_source", "local_section"],
     "lang": "en",
-    "from_": "7 days ago"
+    "from_": "7 days ago",
+    "include_translation_fields": true
   }'
 ```
 
 </CodeGroup>
 
-## Response format
+### Advanced endpoint example
 
-All API responses are JSON objects containing articles and metadata. The key
-response fields include:
+<CodeGroup>
 
-<ResponseField name="status" type="string">
-  The status of the request. Always returns `"ok"` for successful requests.
-</ResponseField>
-
-<ResponseField name="total_hits" type="integer">
-  The total number of articles matching the query.
-</ResponseField>
-
-<ResponseField name="page" type="integer">
-  The current page number of the results.
-</ResponseField>
-
-<ResponseField name="total_pages" type="integer">
-  The total number of pages available for the given search criteria.
-</ResponseField>
-
-<ResponseField name="page_size" type="integer">
-  The number of articles per page.
-</ResponseField>
-
-<ResponseField name="articles" type="array">
-  An array of article objects, each containing location-specific metadata and content.
-
-  <Expandable title="properties">
-    <ResponseField name="id" type="string" required>
-      The unique identifier for the article.
-    </ResponseField>
-
-    <ResponseField name="locations" type="array">
-      A list of locations mentioned in the article along with their detection methods.
-      <Expandable title="Location properties">
-        <ResponseField name="name" type="string" required>
-          The full name of the location, including the state. Format is `"City, State"`.
-          For example, `"San Francisco, California"`.
-        </ResponseField>
-        <ResponseField name="detection_methods" type="array" required>
-          Methods used to detect this location in the article. Options:
-          `"dedicated_source"`, `"local_section"`, `"regional_source"`, `"standard_format"`,
-          `"proximity_mention"`, `"ai_extracted"`.
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-
-    <ResponseField name="score" type="number">
-      The relevance score of the article.
-    </ResponseField>
-
-    <ResponseField name="title" type="string" required>
-      The title of the article.
-    </ResponseField>
-
-    <ResponseField name="author" type="string">
-      The primary author of the article.
-    </ResponseField>
-
-    <ResponseField name="link" type="string" required>
-      The URL link to the article.
-    </ResponseField>
-
-    <ResponseField name="description" type="string">
-      A brief description of the article.
-    </ResponseField>
-
-    <ResponseField name="media" type="string">
-      The URL of the media associated with the article, typically an image.
-    </ResponseField>
-
-    <ResponseField name="content" type="string" required>
-      A snippet or summary of the article's content.
-    </ResponseField>
-
-    <ResponseField name="authors" type="array">
-      A list of authors of the article.
-    </ResponseField>
-
-    <ResponseField name="published_date" type="string" required>
-      The date and time the article was published.
-    </ResponseField>
-
-    <ResponseField name="published_date_precision" type="string" required>
-      The precision of the published date.
-    </ResponseField>
-
-    <ResponseField name="updated_date" type="string">
-      The date and time the article was last updated.
-    </ResponseField>
-
-    <ResponseField name="updated_date_precision" type="string">
-      The precision of the updated date.
-    </ResponseField>
-
-    <ResponseField name="is_opinion" type="boolean" required>
-      Indicates if the article is an opinion piece.
-    </ResponseField>
-
-    <ResponseField name="twitter_account" type="string">
-      The Twitter account associated with the article. Can be `null`.
-    </ResponseField>
-
-    <ResponseField name="domain_url" type="string" required>
-      The domain URL of the article's source.
-    </ResponseField>
-
-    <ResponseField name="parent_url" type="string">
-      The parent URL of the article, typically representing the homepage of the source.
-    </ResponseField>
-
-    <ResponseField name="word_count" type="integer">
-      The word count of the article.
-    </ResponseField>
-
-    <ResponseField name="rank" type="integer" required>
-      The rank of the article's source.
-    </ResponseField>
-
-    <ResponseField name="country" type="string">
-      The country code where the article was published.
-    </ResponseField>
-
-    <ResponseField name="rights" type="string">
-      The rights information for the article, typically the domain name.
-    </ResponseField>
-
-    <ResponseField name="language" type="string">
-      The language code in which the article is written.
-    </ResponseField>
-
-    <ResponseField name="paid_content" type="boolean">
-      Indicates if the article is paid content.
-    </ResponseField>
-
-    <ResponseField name="nlp" type="object">
-      Natural Language Processing data for the article.
-      <Expandable title="NLP properties">
-        <ResponseField name="theme" type="array">
-          The themes or categories identified in the article.
-        </ResponseField>
-        <ResponseField name="summary" type="string">
-          A brief AI-generated summary of the article content.
-        </ResponseField>
-        <ResponseField name="sentiment" type="object">
-          Sentiment scores for the article's title and content.
-          <Expandable title="Sentiment properties">
-            <ResponseField name="title" type="number">
-              The sentiment score for the article title (-1.0 to 1.0).
-            </ResponseField>
-            <ResponseField name="content" type="number">
-              The sentiment score for the article content (-1.0 to 1.0).
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
-        <ResponseField name="new_embedding" type="array">
-          A dense 1024-dimensional vector representation of the article content.
-          Only available in the `v3_local_news_nlp_embeddings` subscription plan.
-        </ResponseField>
-        <ResponseField name="ner_PER" type="array">
-          Named Entity Recognition for person entities (individuals' names).
-          <Expandable title="Entity properties">
-            <ResponseField name="entity_name" type="string">
-              The name of the entity identified in the article.
-            </ResponseField>
-            <ResponseField name="count" type="integer">
-              The number of times this entity appears in the article.
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
-        <ResponseField name="ner_ORG" type="array">
-          Named Entity Recognition for organization entities (company names, institutions).
-          <Expandable title="Entity properties">
-            <ResponseField name="entity_name" type="string">
-              The name of the entity identified in the article.
-            </ResponseField>
-            <ResponseField name="count" type="integer">
-              The number of times this entity appears in the article.
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
-        <ResponseField name="ner_MISC" type="array">
-          Named Entity Recognition for miscellaneous entities (events, nationalities, products).
-          <Expandable title="Entity properties">
-            <ResponseField name="entity_name" type="string">
-              The name of the entity identified in the article.
-            </ResponseField>
-            <ResponseField name="count" type="integer">
-              The number of times this entity appears in the article.
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
-        <ResponseField name="ner_LOC" type="array">
-          Named Entity Recognition for location entities (cities, countries, geographic features).
-          <Expandable title="Entity properties">
-            <ResponseField name="entity_name" type="string">
-              The name of the entity identified in the article.
-            </ResponseField>
-            <ResponseField name="count" type="integer">
-              The number of times this entity appears in the article.
-            </ResponseField>
-          </Expandable>
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-
-  </Expandable>
-</ResponseField>
-
-<ResponseField name="user_input" type="object">
-  The parameters used in your request for verification and debugging.
-</ResponseField>
-
-<Note>
-  For detailed descriptions of all available response fields, refer to the
-  specific endpoint documentation in the [Endpoints](/v3/local-news/endpoints/)
-  section.
-</Note>
-
-### Example response
-
-```json Response
+```json JSON
 {
-  "status": "ok",
-  "total_hits": 35,
-  "page": 1,
-  "total_pages": 1,
-  "page_size": 100,
-  "articles": [
+  "q": "venture capital",
+  "geonames": [
     {
-      "id": "dabf25a5cbee2705f1ab866eeafdc835",
-      "locations": [
-        {
-          "name": "San Francisco, California",
-          "detection_methods": ["dedicated_source"]
-        }
-      ],
-      "score": 17.720953,
-      "title": "Tech company to move headquarters from San Francisco to Texas"
-      // Additional fields omitted for brevity
+      "name": "San Francisco",
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      },
+      "localization_score": {
+        "min": 7
+      }
     }
-  ]
+  ],
+  "lang": "en",
+  "from_": "7 days ago",
+  "include_translation_fields": true
 }
 ```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://local-news.newscatcherapi.com/api/search/advanced"
+HEADERS = {
+    "x-api-token": API_KEY,
+    "Content-Type": "application/json"
+}
+
+PAYLOAD = {
+    "q": "venture capital",
+    "geonames": [{
+        "name": "San Francisco",
+        "country": "US",
+        "admin1": {
+            "name": "California"
+        },
+        "localization_score": {
+            "min": 7
+        }
+    }],
+    "lang": "en",
+    "from_": "7 days ago",
+    "include_translation_fields": True
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+```bash cURL
+curl -X POST \
+  'https://local-news.newscatcherapi.com/api/search/advanced' \
+  -H 'x-api-token: YOUR_API_KEY_HERE' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "q": "venture capital",
+    "geonames": [{
+      "name": "San Francisco",
+      "country": "US",
+      "admin1": {
+        "name": "California"
+      },
+      "localization_score": {
+        "min": 7
+      }
+    }],
+    "lang": "en",
+    "from_": "7 days ago",
+    "include_translation_fields": true
+  }'
+```
+
+</CodeGroup>
+
+## Response differences
+
+Both endpoint types include basic article information with metadata, NLP and 
+translation fields (`title_translated_en`, `content_translated_en`). The main 
+difference between standard and advanced endpoints is the location data
+structure.
+
+### Standard endpoints
+
+Return simple location data:
+
+```json
+"locations": [
+  {
+    "name": "San Francisco, California",
+    "detection_methods": ["dedicated_source"]
+  }
+]
+```
+
+### Advanced endpoints
+
+Return structured GeoNames data:
+
+```json
+"geonames": [
+  {
+    "geonames_id": "5391959",
+    "name": "San Francisco",
+    "country": "US",
+    "admin1": {"name": "California", "code": "CA"},
+    "coordinates": {"lat": 37.77493, "lon": -122.41942},
+    "localization_score": 8.5,
+    "confidence_score": 9.2,
+    "detection_methods": ["dedicated_source"]
+  }
+]
+```
+
+<Note>
+ For detailed information on all available response fields, see 
+ [API Reference](/v3/local-news/endpoints/search/search-articles-post).
+</Note>
 
 ## Use cases
 
@@ -429,5 +330,7 @@ intelligence:
    [Location detection methods](/v3/local-news/overview/location-detection-methods)
    documentation to understand how the system identifies and validates location
    mentions.
-4. Dive into the [API reference](/v3/local-news/endpoints) for detailed endpoint
+4. Learn about [GeoNames filtering](/v3/local-news/overview/geonames-filtering)
+   for advanced geographic targeting.
+5. Dive into the [API reference](/v3/local-news/endpoints) for detailed endpoint
    documentation and advanced query options.
