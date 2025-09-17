@@ -1,4 +1,26 @@
 {
   "printWidth": 80,
-  "proseWrap": "always"
+  "proseWrap": "always",
+  "singleQuote": false,
+  "overrides": [
+    {
+      "files": ["*.yaml", "*.yml"],
+      "options": {
+        "singleQuote": false,
+        "quoteProps": "preserve"
+      }
+    },
+    {
+      "files": ["*.py"],
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": ["*.md", "*.mdx"],
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
 }

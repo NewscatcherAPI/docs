@@ -185,6 +185,7 @@
                   "v3/local-news/overview/introduction",
                   "v3/local-news/overview/quickstart",
                   "v3/local-news/overview/location-detection-methods",
+                  "v3/local-news/overview/geonames-filtering",
                   "v3/local-news/overview/local-news-api-subscription-plans"
                 ]
               },
@@ -194,13 +195,15 @@
                   {
                     "group": "Search",
                     "pages": [
-                      "v3/local-news/endpoints/search/search-articles-post"
+                      "v3/local-news/endpoints/search/search-articles-post",
+                      "v3/local-news/endpoints/search/search-advanced-post"
                     ]
                   },
                   {
                     "group": "Latest headlines",
                     "pages": [
-                      "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post"
+                      "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post",
+                      "v3/local-news/endpoints/latest-headlines/latest-headlines-advanced-post"
                     ]
                   },
                   {
@@ -230,10 +233,6 @@
                   "v3/events/overview/parameter-formats",
                   "v3/events/overview/working-with-articles"
                 ]
-              },
-              {
-                "group": "How to",
-                "pages": ["v3/events/how-to/request-new-event-type"]
               },
               {
                 "group": "Event types",

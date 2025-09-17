@@ -2,36 +2,33 @@ openapi: 3.0.3
 info:
   title: Local News API
   description: |
-    Discover, analyze, and leverage location-specific news with unparalleled precision!
+    The Local News API provides access to local news articles with location-specific filtering capabilities.
 
-    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including AI-powered location detection, NLP analysis, and clustering of similar articles.
+    ## Standard endpoints
 
-    ## Key features
+    - `/search`: Search articles by keywords with simple location filtering ("City, State" format).
+    - `/latest_headlines`: Retrieve recent articles for specified locations and time periods.
+    - `/search_by`: Retrieve articles by URL, ID, or RSS GUID.
+    - `/sources`: List available news sources.
 
-    - **Smart Location Detection**: Multiple detection methods, including dedicated sources, proximity analysis, and AI extraction.
-    - **Advanced Querying**: Support for logical operators, wildcards, and multi-faceted filtering.
-    - **Flexible Retrieval**: Search by keywords, get the latest headlines, or fetch articles by URL, ID, or RSS GUID.
-    - **Rich Metadata**: Access detailed article information, including NLP-analysis insights.
-    - **Content Clustering**: Group similar articles for concise topic overviews.
-    - **Precise Location Matching**: Six distinct methods for accurate location detection:
-      - Dedicated local news sources
-      - Local sections of larger publications
-      - Regional news sources
-      - Standard location format matching
-      - Proximity-based detection
-      - AI-powered extraction
-    - **Customizable Filtering**: Filter by sentiment, word count, content type, and more.
-    - **Source Discovery**: Retrieve information on available local news sources.
-    - **Comprehensive Documentation**: Detailed overview and API reference with playground.
+    ## Advanced endpoints
 
-    Ideal for local media monitoring, personalized news aggregation, and location-specific content analysis.
+    - `/search/advanced`: Search with structured GeoNames filtering.
+    - `/latest_headlines/advanced`: Latest headlines with structured GeoNames filtering.
+
+    ## Features
+
+    - Multiple location detection methods including dedicated sources, proximity analysis, and AI extraction
+    - Natural language processing for sentiment analysis and entity recognition on original content and English translations
+    - Article clustering for topic analysis
+    - English translations for non-English content
 
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
     url: https://www.newscatcherapi.com/pricing
-  version: 1.1.0
+  version: 1.2.0
 
 externalDocs:
   description: Find out more about NewsCatcher
@@ -46,30 +43,17 @@ security:
 
 tags:
   - name: Search
-    description: Operations to search for local news articles.
-    externalDocs:
-      description:
-        Search for articles by keyword, language, country, source, and more.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/search/search-articles-post
+    description:
+      Operations to search for local news articles. Includes both standard
+      location filtering and advanced GeoNames filtering.
   - name: LatestHeadlines
-    description: Operations to retrieve local news latest headlines.
-    externalDocs:
-      description:
-        Retrieve the latest headlines since a specified date, with filtering
-        options.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post
+    description:
+      Operations to retrieve local news latest headlines. Includes both standard
+      location filtering and advanced GeoNames filtering.
   - name: SearchBy
     description: Operations to search local news by link, ID or RSS GUID.
-    externalDocs:
-      description: Search for local news by link, ID or RSS GUID.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/search-by/search-articles-by-identifiers-post
   - name: Sources
     description: Operations to retrieve local news sources.
-    externalDocs:
-      description:
-        Retrieve the list of available local news sources, filtered by language
-        and country.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/sources/retrieve-sources-post
 
 paths:
   /api/search:
@@ -78,8 +62,8 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for local news based on specified criteria such as keyword,
-        language, country, source, and more.
+        Searches for local news based on specified criteria such as keywords,
+        geographic locations, language, country, source, and more.
       operationId: Search_post
       requestBody:
         $ref: "#/components/requestBodies/SearchRequestBody"
@@ -186,6 +170,63 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
+  # Advanced endpoints (new in v1.2.0)
+  /api/search/advanced:
+    post:
+      tags:
+        - Search
+      summary: Search articles with GeoNames filtering
+      description: |
+        Searches for local news using structured GeoNames filtering with administrative hierarchy, coordinates, localization and confidence scores.
+      operationId: SearchAdvanced_post
+      requestBody:
+        $ref: "#/components/requestBodies/SearchAdvancedRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchAdvancedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/latest_headlines/advanced:
+    post:
+      tags:
+        - LatestHeadlines
+      summary: Retrieve latest headlines with GeoNames filtering
+      description: |
+        Retrieves the most recent news headlines using structured GeoNames filtering with administrative hierarchy, coordinates, localization and confidence scores.
+      operationId: LatestHeadlinesAdvanced_post
+      requestBody:
+        $ref: "#/components/requestBodies/LatestHeadlinesAdvancedRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/LatestHeadlinesAdvancedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
 components:
   requestBodies:
     SearchRequestBody:
@@ -215,6 +256,20 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/SourcesRequestDto"
+
+    SearchAdvancedRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SearchAdvancedRequestDto"
+
+    LatestHeadlinesAdvancedRequestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/LatestHeadlinesAdvancedRequestDto"
 
   responses:
     SearchResponse:
@@ -262,8 +317,32 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ArticleSearchResponseDto"
+              - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
             title: Search By Response
+
+    SearchAdvancedResponse:
+      description: |
+        A successful response containing articles that match the specified search criteria with GeoNames location data. The response may include clustering information if enabled.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
+              - $ref: "#/components/schemas/ClusteringSearchAdvancedResponseDto"
+
+    LatestHeadlinesAdvancedResponse:
+      description: |
+        A successful response containing the latest headlines since the specified time with GeoNames location data. The response may include clustering information if enabled.
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - allOf:
+                  - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
+                title: Advanced Latest Headlines Response
+              - allOf:
+                  - $ref: "#/components/schemas/ClusteringSearchAdvancedResponseDto"
+                title: Clustered Advanced Latest Headlines Response
 
     # Errors
     BadRequestError:
@@ -342,9 +421,10 @@ components:
           example: "Internal Server Error"
 
   schemas:
-    # v1.1.0 Updated BaseRequestDto
+    # Base schemas for composition
     BaseRequestDto:
       type: object
+      description: Common parameters shared across standard endpoints.
       properties:
         locations:
           type: array
@@ -352,13 +432,14 @@ components:
             type: string
           description: |
             The location(s) to search for in articles. Format should be "City, State".
-
             Example: `["San Francisco, California"]`
           example: ["New York City, New York", "Los Angeles, California"]
         detection_methods:
           $ref: "#/components/schemas/DetectionMethods"
         lang:
           $ref: "#/components/schemas/Lang"
+        countries: # New in v1.2.0
+          $ref: "#/components/schemas/Countries"
         sources:
           $ref: "#/components/schemas/Sources"
         not_sources:
@@ -395,7 +476,61 @@ components:
           $ref: "#/components/schemas/ContentSentimentMin"
         content_sentiment_max:
           $ref: "#/components/schemas/ContentSentimentMax"
+        include_translation_fields: # New in v1.2.0
+          $ref: "#/components/schemas/IncludeTranslationFields"
 
+    # v1.2.0 Updated BaseRequestDto
+    BaseAdvancedRequestDto:
+      type: object
+      properties:
+        geonames:
+          $ref: "#/components/schemas/GeoNamesFilter"
+        geonames_operator:
+          $ref: "#/components/schemas/GeoNamesOperator"
+        lang:
+          $ref: "#/components/schemas/Lang"
+        countries:
+          $ref: "#/components/schemas/Countries"
+        sources:
+          $ref: "#/components/schemas/Sources"
+        not_sources:
+          $ref: "#/components/schemas/NotSources"
+        parent_url:
+          $ref: "#/components/schemas/ParentUrl"
+        is_paid_content:
+          $ref: "#/components/schemas/IsPaidContent"
+        page:
+          $ref: "#/components/schemas/Page"
+        page_size:
+          $ref: "#/components/schemas/PageSize"
+        word_count_min:
+          $ref: "#/components/schemas/WordCountMin"
+        word_count_max:
+          $ref: "#/components/schemas/WordCountMax"
+        clustering:
+          $ref: "#/components/schemas/ClusteringEnabled"
+        theme:
+          $ref: "#/components/schemas/Theme"
+        PER_entity_name:
+          $ref: "#/components/schemas/PerEntityName"
+        LOC_entity_name:
+          $ref: "#/components/schemas/LocEntityName"
+        MISC_entity_name:
+          $ref: "#/components/schemas/MiscEntityName"
+        ORG_entity_name:
+          $ref: "#/components/schemas/OrgEntityName"
+        title_sentiment_min:
+          $ref: "#/components/schemas/TitleSentimentMin"
+        title_sentiment_max:
+          $ref: "#/components/schemas/TitleSentimentMax"
+        content_sentiment_min:
+          $ref: "#/components/schemas/ContentSentimentMin"
+        content_sentiment_max:
+          $ref: "#/components/schemas/ContentSentimentMax"
+        include_translation_fields:
+          $ref: "#/components/schemas/IncludeTranslationFields"
+
+    # Standard request DTOs (enhanced in v1.2.0)
     SearchRequestDto:
       allOf:
         - type: object
@@ -406,7 +541,7 @@ components:
               $ref: "#/components/schemas/From"
             to_:
               $ref: "#/components/schemas/To"
-            search_in:
+            search_in: # Enhanced in v1.2.0
               $ref: "#/components/schemas/SearchIn"
             sort_by:
               $ref: "#/components/schemas/SortBy"
@@ -448,9 +583,241 @@ components:
         page_size:
           $ref: "#/components/schemas/PageSize"
 
+    # Advanced request DTOs (new in v1.2.0)
+    SearchAdvancedRequestDto:
+      allOf:
+        - type: object
+          properties:
+            q:
+              $ref: "#/components/schemas/Q"
+            from_:
+              $ref: "#/components/schemas/From"
+            to_:
+              $ref: "#/components/schemas/To"
+            search_in:
+              $ref: "#/components/schemas/SearchIn"
+            sort_by:
+              $ref: "#/components/schemas/SortBy"
+        - $ref: "#/components/schemas/BaseAdvancedRequestDto"
+
+    LatestHeadlinesAdvancedRequestDto:
+      allOf:
+        - type: object
+          properties:
+            when:
+              $ref: "#/components/schemas/When"
+        - $ref: "#/components/schemas/BaseAdvancedRequestDto"
+
     # Parameter schemas
     ## BaseRequestDto (mixin model) parameters
-    ### v1.1.0 New schema for detection methods
+    ## v1.2.0 GeoNames schemas
+    GeoNamesFilter:
+      type: array
+      items:
+        $ref: "#/components/schemas/GeoNamesEntity"
+      description: |
+        Filters articles by geographic locations using structured GeoNames data. All location criteria within an object must be met (internal `AND`). Multiple objects are combined using the `geonames_operator` parameter.
+
+        For detailed information, see [GeoNames filtering](/v3/local-news/overview/geonames-filtering).
+      example:
+        - name: "New York City"
+          country: "US"
+          feature_class: "A"
+        - name: "San Francisco"
+          admin1:
+            name: "California"
+          localization_score:
+            min: 7
+
+    GeoNamesOperator:
+      type: string
+      enum:
+        - AND
+        - OR
+      default: AND
+      description: |
+        The operator to combine multiple `geonames` objects. If `AND`, all geonames objects must match. If `OR`, at least one geonames object must match.
+      example: AND
+
+    GeoNamesEntity:
+      type: object
+      description: |
+        A single geographic location filter using GeoNames structured data. All provided fields within this object are combined with `AND` logic.
+      properties:
+        geonames_id:
+          type: string
+          nullable: true
+          description: |
+            The unique GeoNames identifier for exact location matching.
+          example: "5128581"
+        name:
+          type: string
+          nullable: true
+          description: |
+            The location name to search in articles. Use leading minus `-` to exclude names (e.g., `-Boston`). Supports wildcard `*` for partial matching when `enable_wildcard` is `true`.
+
+            When the `search_with_alt_names` parameter is `true`, search in both canonical and alternative names from GeoNames database.
+          example: New York City
+        country:
+          type: string
+          nullable: true
+          description: |
+            Two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code.
+
+            To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+          example: "US"
+        admin1:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            First-order administrative division filter (e.g., states in US, provinces in Canada, regions in Italy).
+          example:
+            name: "California"
+            code: "CA"
+            geonames_id: "5332921"
+        admin2:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Second-order administrative division filter (e.g., counties in the US, departments in France).
+          example:
+            name: "Los Angeles County"
+            geonames_id: "5368361"
+        admin3:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Third-order administrative division filter (e.g., townships, boroughs, smaller regional divisions).
+          example:
+            name: "Manhattan"
+            geonames_id: "5125771"
+        admin4:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Fourth-order administrative division filter (smallest administrative units).
+          example:
+            name: "Downtown"
+        coordinates:
+          $ref: "#/components/schemas/Coordinates"
+        feature_class:
+          type: string
+          nullable: true
+          description: |
+            GeoNames feature class. Main classes: 
+            - `A`: Administrative
+            - `H`: Hydrographic
+            - `L`: Area
+            - `P`: Populated places
+            - `R`: Roads/rail
+            - `S`: Spots/buildings
+            - `T`: Topography
+            - `U`: Undersea
+            - `V`: Vegetation
+          example: "A"
+        feature_code:
+          type: string
+          nullable: true
+          description: |
+            Specific GeoNames feature code (e.g., `PPL` for populated place, `PPLA` for administrative seat). Supports wildcards.
+          example: "PPL"
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
+        localization_score:
+          allOf:
+            - $ref: "#/components/schemas/RangeModel"
+          description: |
+            Filter by geographic focus score (0-10):
+            - 10: Hyper-local — specific town or neighborhood named with clear local impact
+            - 7–9: Regional — nearby city, metro, or administrative region mentioned with some local detail
+            - 4–6: Subnational — province/state-level reference; town may be named but with limited context
+            - 1–3: National or broader — only national relevance; town appears only in passing
+            - 0: None — no mention or not relevant to the location
+        confidence_score:
+          allOf:
+            - $ref: "#/components/schemas/RangeModel"
+          description: |
+            Filter by model's confidence in location relevance (0-10):
+            - 10: Certain — Clear, unambiguous match; location is definitely relevant
+            - 7–9: High — Strong indications of relevance, but not absolute certainty
+            - 4–6: Medium — Some evidence or indirect relevance, but inconclusive
+            - 1–3: Low — Weak signal or unlikely relevance
+            - 0: Certain Not — Confident the location is not mentioned or relevant
+        search_with_alt_names:
+          type: boolean
+          default: false
+          description: |
+            If true, expands location search to alternative names, such as abbreviations, local language names, historical names, and other variants stored in the GeoNames database. For example, `"NYC"` finds articles about `"New York City"`. If false, searches only in canonical location names.
+
+            **Note**: This setting affects all location names within the `geonames` object, including the `name` field and all administrative-level names (`admin1.name`, `admin2.name`, etc.).
+          example: true
+        enable_wildcard:
+          type: boolean
+          default: false
+          description: |
+            If true, enables wildcard matching using `*` for partial matching location names. If false, requires exact matching.
+
+            **Note**: This setting affects all location names within the `geonames` object, including the `name` field and all administrative-level names (`admin1.name`, `admin2.name`, etc.).
+          example: false
+
+    GeoNamesLocationAdminEntity:
+      type: object
+      properties:
+        geonames_id:
+          type: string
+          description: GeoNames ID for the administrative division.
+        name:
+          type: string
+          description: |
+            Administrative division name. Use leading minus `-` to exclude the name.
+        code:
+          type: string
+          description: Administrative division code.
+
+    RangeModel:
+      type: object
+      description:
+        Numeric range filter with minimum and/or maximum values (inclusive).
+      properties:
+        min:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: Minimum value (inclusive).
+        max:
+          type: number
+          minimum: 0
+          maximum: 10
+          description: Maximum value (inclusive).
+      example:
+        min: 7
+        max: 10
+
+    Coordinates:
+      type: object
+      description: Geographic coordinates for a location.
+      properties:
+        lat:
+          type: number
+          format: float
+          nullable: true
+          description: The latitude coordinate.
+        lon:
+          type: number
+          format: float
+          nullable: true
+          description: The longitude coordinate.
+      example:
+        lat: 40.71427
+        lon: -74.00597
+
+    IncludeTranslationFields:
+      type: boolean
+      default: false
+      description: |
+        If true, includes English translation fields in the response (`title_translated_en`, `content_translated_en`, and NLP translation fields). If false, excludes translation fields.
+      example: true
+
     DetectionMethods:
       type: array
       items:
@@ -483,10 +850,6 @@ components:
       description: |
         The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"en,es"`
-        - `["en", "es"]`
-
         To learn more, see [Enumerated parameters > Language](/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
@@ -498,10 +861,6 @@ components:
             type: string
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable. To specify multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"nytimes.com, theguardian.com"`
-        - `["nytimes.com", "theguardian.com"]`
       example: ["nytimes.com", "theguardian.com"]
 
     NotSources:
@@ -512,10 +871,6 @@ components:
             type: string
       description: |
         The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"cnn.com, wsj.com"`
-        - `["cnn.com", "wsj.com"]`
       example: ["cnn.com", "wsj.com"]
 
     ParentUrl:
@@ -526,10 +881,6 @@ components:
             type: string
       description: |
         The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"wsj.com/politics,wsj.com/tech"`
-        - `["wsj.com/politics", "wsj.com/tech"]`
       example: ["wsj.com/politics", "wsj.com/tech"]
 
     Page:
@@ -553,7 +904,7 @@ components:
       type: boolean
       default: false
       description: |
-        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
+        If true, groups similar articles into clusters and returns clustered results. If false, returns individual articles without clustering.
 
         To learn more, see [Clustering news articles](/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
       example: true
@@ -567,78 +918,54 @@ components:
       description: |
         Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
 
-        Examples: 
-        - `"Finance, Tech"`
-        - `["Finance", "Tech"]`
-
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
 
     OrgEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific organization names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Apple, Microsoft"`
-        - `["Apple", "Microsoft"]`
+        - To specify multiple organizations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Apple", "Microsoft"]
+      example: '"Apple Inc" OR Microsoft'
 
     PerEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific person names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Elon Musk, Jeff Bezos"`
-        - `["Elon Musk", "Jeff Bezos"]`
+        - To specify multiple names, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Elon Musk", "Jeff Bezos"]
+      example: '"Elon Musk" OR "Jeff Bezos"'
 
     LocEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. 
+        Filters articles that mention specific location names, as identified by NLP analysis.
 
-        Examples: 
-        - `"California, New York"`
-        - `["California", "New York"]`
+        - To specify multiple locations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["California", "New York"]
+      example: '"San Francisco" OR "New York City"'
 
     MiscEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. 
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
 
-        Examples: 
-        - `"Bitcoin, Blockchain"`
-        - `["Bitcoin", "Blockchain"]`
+        - To specify multiple entities, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Bitcoin", "Blockchain"]
+      example: 'AWS OR "Microsoft Azure"'
 
     TitleSentimentMin:
       type: number
@@ -727,16 +1054,19 @@ components:
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
     Q:
       type: string
-      default: "*"
       description: |
         The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
-        - For an exact match, use double quotes. For example, `"technology news"`.
-        - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
-        - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
 
-        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
-      example: technology AND (Apple OR Microsoft) NOT Google
+        - For exact phrases, use escaped quotes: `\"technology news\"`
+        - Use `*` for wildcards: `technolog*` (cannot start with `*`)
+        - Use `+` to include and `-` to exclude: `+Apple`, `-Google`
+        - Boolean operators: `technology AND (Apple OR Microsoft) NOT Google`
+        - Forbidden characters: `[` `]` `/` `\\` `:` `^` and URL-encoded equivalents
+
+        **Note:** The API automatically inserts `AND` operators between standalone terms, so strings like `"machine learning"` become `"machine AND learning"`. To avoid syntax errors (especially in queries with `OR` operators), use literal escape `"\"machine learning\""`.
+
+        For detailed syntax rules, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
+      example: '"supply chain" AND Amazon NOT China'
 
     From:
       oneOf:
@@ -784,14 +1114,16 @@ components:
 
     SearchIn:
       type: string
-      default: title,content
+      default: title_content
       description: |
-        The article fields to search in. To search in multiple fields, use a comma-separated string. 
+        The article fields to search in. Use a comma-separated string for multiple options, with a maximum of 2 in a single request.
 
-        Example: `"title, summary"`
+        Available options: 
+        - Standard fields: `title`, `content`, `summary`, `title_content`
+        - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        Available options: `title`, `summary`, `content`.
-      example: title,content
+        **Note**: Search in summaries and translations is only available for NLP subscription plans.
+      example: title_content, title_content_translated
 
     SortBy:
       type: string
@@ -833,10 +1165,6 @@ components:
       description: |
         The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"US,CA"`
-        - `["US", "CA"]`
-
         To learn more, see [Enumerated parameters > Country](/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
@@ -848,11 +1176,7 @@ components:
           items:
             type: string
       description: |
-        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings. 
-
-        Examples:
-        - `"https://example.com/article1, https://example.com/article2"`
-        - `["https://example.com/article1", "https://example.com/article2"]`
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings.
 
         **Note**: You can use the `links` parameter in combination with `ids` or `rss_guids`, but at least one of these parameters must be provided.
       example: "https://nytimes.com/article1"
@@ -864,11 +1188,7 @@ components:
           items:
             type: string
       description: |
-        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings. 
-
-        Examples:
-        - `"1234567890abcdef, abcdef1234567890"`
-        - `["1234567890abcdef", "abcdef1234567890"]`
+        The Newscatcher article ID (see the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings.
 
         **Note**: You can use the `ids` parameter in combination with `links` or `rss_guids`, but at least one of these parameters must be provided.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
@@ -884,20 +1204,13 @@ components:
 
         GUIDs are unique identifiers assigned to RSS feed items. They are often URLs or other unique strings.
 
-        Examples:
-        - `"https://example.com/article1,https://example.com/article2"`
-        - `["https://example.com/article1", "https://example.com/article2"]`
-        - `"1234567890abcdef,abcdef1234567890"`
-
         **Note**: You can use the `rss_guids` parameter in combination with `links` or `ids`, but at least one of these parameters must be provided.
       example: ["https://example.com/article1", "https://example.com/article2"]
 
     # Response schemas
-    ## Base Response
+    ## Base Response model containing common fields for search operations.
     SearchResponseDto:
       title: Base Search Response
-      description:
-        The base response model containing common fields for search operations.
       required:
         - status
         - total_hits
@@ -957,14 +1270,35 @@ components:
               description: The user input parameters for the search.
               type: object
 
-    ## Article object schema, used for `articles` in `ArticleSearchResponseDto`
-    ###  v1.1.0 Replace the associated_towns with locations entity
-    ArticleResultEntity:
+    # Advanced response DTOs (new in v1.2.0)
+    ArticleSearchAdvancedResponseDto:
+      title: Advanced Search Response
+      description: |
+        The response model for the `Search advanced`, `Latest headlines advanced`, and `Search by` requests.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
+      allOf:
+        - $ref: "#/components/schemas/SearchResponseDto"
+        - type: object
+          properties:
+            articles:
+              type: array
+              items:
+                $ref: "#/components/schemas/ArticleAdvancedResultEntity"
+              default: []
+            user_input:
+              type: object
+
+    ## Article object schema, used for `articles` in `ArticleSearchAdvancedResponseDto`
+    BaseArticleEntity:
       title: Article Result
       description:
-        The data model representing a single article in the search results.
-        Required fields are always non-null. Optional fields may be
-        `null`/`undefined` if data extraction is unsuccessful.
+        The data model representing the commont properties of the article object
+        in the search results. Required fields are always non-null. Optional
+        fields may be `null`/`undefined` if data extraction is unsuccessful.
       type: object
       required:
         - id
@@ -980,12 +1314,6 @@ components:
         id:
           type: string
           description: The unique identifier for the article.
-        locations:
-          type: array
-          items:
-            $ref: "#/components/schemas/LocationEntity"
-          description: |
-            A list of locations mentioned in the article along with their detection methods.
         score:
           type: number
           format: float
@@ -1066,8 +1394,47 @@ components:
         paid_content:
           type: boolean
           description: Indicates if the article is paid content.
+        title_translated_en: #  New in v1.2.0
+          type: string
+          description: |
+            English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
+          nullable: true
+        content_translated_en: #  New in v1.2.0
+          type: string
+          description: |
+            English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
+          nullable: true
 
-    # v1.1.0 New LocationEntity to replace TownEntity, AssociatedTownEntity and AiAssociatedTownEntity
+    # Standard article entity (with simple locations)
+    ArticleResultEntity:
+      title: Article Result
+      allOf:
+        - $ref: "#/components/schemas/BaseArticleEntity"
+        - type: object
+          properties:
+            locations:
+              type: array
+              items:
+                $ref: "#/components/schemas/LocationEntity"
+              description: |
+                Simple location data with detection methods. 
+                For structured GeoNames data, use the advanced endpoints.
+
+    # Advanced article entity (with GeoNames)
+    ArticleAdvancedResultEntity:
+      title: Article Result (Advanced)
+      allOf:
+        - $ref: "#/components/schemas/BaseArticleEntity"
+        - type: object
+          properties:
+            geonames:
+              type: array
+              items:
+                $ref: "#/components/schemas/GeoNamesResponseEntity"
+              description: |
+                A list of locations identified in the article, including detection methods, confidence, and localization scores. The location data adheres to the GeoNames format.
+
+    # v1.1.0 LocationEntity
     LocationEntity:
       type: object
       required:
@@ -1087,6 +1454,98 @@ components:
                 Methods used to detect locations in articles.
 
                 For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
+
+    GeoNamesResponseEntity:
+      type: object
+      description: |
+        Represents a geographic location identified in an article using GeoNames structured data, including detection confidence and localization scores.
+      required:
+        - name
+        - detection_methods
+      properties:
+        geonames_id:
+          type: string
+          description: |
+            The unique GeoNames identifier for the location.
+          example: "5128581"
+        name:
+          type: string
+          description: |
+            The canonical name of the location from GeoNames database.
+          example: "New York City"
+        country:
+          type: string
+          description: |
+            Two-letter ISO 3166-1 alpha-2 country code.
+          example: "US"
+        admin1:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            First-order administrative division (e.g., state, province, region).
+        admin2:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Second-order administrative division (e.g., county, department).
+        admin3:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Third-order administrative division (e.g., township, borough).
+        admin4:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Fourth-order administrative division (smallest administrative units).
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+        feature_class:
+          type: string
+          description: |
+            GeoNames feature class (A: Administrative, H: Hydrographic, L: Area, P: Populated places, etc.).
+          example: "P"
+        feature_code:
+          type: string
+          description: |
+            Specific GeoNames feature code (e.g., PPL for populated place).
+          example: "PPL"
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
+        reason:
+          type: string
+          description: |
+            Explanation of why this location was identified in the article context.
+          example:
+            "New York City is mentioned as the location of the Icahn School of
+            Medicine."
+        localization_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: |
+            Geographic focus score (0-10) indicating how locally relevant the article is to this location.
+            - 10: Hyper-local with clear local impact
+            - 7-9: Regional relevance
+            - 4-6: Subnational relevance  
+            - 1-3: National relevance only
+            - 0: No local relevance
+          example: 10.0
+        confidence_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: |
+            Model confidence score (0-10) in location identification accuracy.
+            - 10: Certain match
+            - 7-9: High confidence
+            - 4-6: Medium confidence
+            - 1-3: Low confidence
+            - 0: Uncertain/not relevant
+          example: 10.0
 
     NlpDataEntity:
       type: object
@@ -1134,6 +1593,26 @@ components:
           description:
             Named Entity Recognition for location entities (cities, countries,
             geographic features).
+        translation_ner_PER:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for person entities (individuals' names) extracted from the English translation of the article.
+        translation_ner_ORG:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for organization entities (company names, institutions) extracted from the English translation of the article.
+        translation_ner_MISC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for miscellaneous entities (events, nationalities, products) extracted from the English translation of the article.
+        translation_ner_LOC:
+          allOf:
+            - $ref: "#/components/schemas/NamedEntityList"
+          description: |
+            Named Entity Recognition for location entities (cities, countries, geographic features) extracted from the English translation of the article.
 
     SentimentScores:
       type: object
@@ -1203,6 +1682,37 @@ components:
               description: The user input parameters for the search.
               type: object
 
+    ClusteringSearchAdvancedResponseDto:
+      title: Clustered Search Response (Advanced)
+      description: |
+        The response model when clustering is enabled, grouping similar articles into clusters. Applies to the `Search advanced` and `Latest headlines advanced` requests.
+
+        Response field behavior:
+        - Required fields are guaranteed to be present and non-null. 
+        - Optional fields may be `null`/`undefined` if the data couldn't be extracted during processing.
+        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
+      allOf:
+        - $ref: "#/components/schemas/SearchResponseDto"
+        - type: object
+          required:
+            - clusters_count
+            - agg_clusters
+            - clusters
+            - user_input
+          properties:
+            clusters_count:
+              type: integer
+            agg_clusters:
+              type: array
+              items:
+                type: string
+            clusters:
+              type: object
+              additionalProperties:
+                $ref: "#/components/schemas/ClusterAdvancedEntity"
+            user_input:
+              type: object
+
     ClusterEntity:
       title: Cluster Entity
       description: |
@@ -1245,6 +1755,26 @@ components:
             may be smaller than `original_cluster_size` if articles from major
             aggregators were filtered out to prioritize local sources.
 
+    ClusterAdvancedEntity:
+      title: Cluster Entity (Advanced)
+      type: object
+      required:
+        - articles
+        - agg_cluster
+        - original_cluster_size
+        - cluster_size
+      properties:
+        articles:
+          type: array
+          items:
+            $ref: "#/components/schemas/ClusterArticleAdvancedResultEntity"
+        agg_cluster:
+          type: boolean
+        original_cluster_size:
+          type: integer
+        cluster_size:
+          type: integer
+
     ClusterArticleResultEntity:
       title: Cluster Article Result
       description:
@@ -1268,6 +1798,20 @@ components:
                 The rank of the article within its cluster. Calculated using the DBSCAN clustering method, where rank 1 represents the centroid article of the cluster. Lower values indicate higher relevance within the cluster.
 
                 **Note:** Articles are sorted by `cluster_rank` only when the `sort_by` parameter is set to "rank". With default `sort_by`: "date", articles are sorted by published date regardless of cluster rank values.
+
+    ClusterArticleAdvancedResultEntity:
+      title: Cluster Article Result (Advanced)
+      allOf:
+        - $ref: "#/components/schemas/ArticleAdvancedResultEntity"
+        - type: object
+          required:
+            - cluster_id
+            - cluster_rank
+          properties:
+            cluster_id:
+              type: string
+            cluster_rank:
+              type: integer
 
     ## Sources response schemas
     SourcesResponseDto:

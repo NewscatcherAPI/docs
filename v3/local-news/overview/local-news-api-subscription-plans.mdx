@@ -7,9 +7,9 @@ description:
 ---
 
 <Note>
-  Each plan includes specialized location detection methods, articles
-  clustering, NLP analysis, and comprehensive metadata. Plans differ in their
-  specialized features and processing capabilities.
+  Each plan includes specialized location detection methods, GeoNames filtering,
+  articles clustering, NLP analysis, and comprehensive metadata. Plans differ in
+  their specialized features and processing capabilities.
 </Note>
 
 ## Available plans
@@ -26,6 +26,9 @@ description:
     <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
     <Check>Get AI-generated article summaries</Check>
     <Check>Use 5 location detection methods: `dedicated_source`, `local_section`, `regional_source`, `standard_format`, and `proximity_mention`</Check>
+    <Check>Access both standard and advanced endpoints with GeoNames filtering</Check>
+    <Check>Search across languages with English translation fields</Check>
+    <Check>Filter by publisher location with countries parameter</Check>
 
   </Tab>
   <Tab title="Embeddings">
@@ -38,7 +41,6 @@ description:
     <Check>Use the multilingual-e5-large model for embeddings generation</Check>
     <Check>Enable semantic search in your applications</Check>
     <Check>Build similarity-based news aggregations</Check>
-    <Check>Use 5 location detection methods: `dedicated_source`, `local_section`, `regional_source`, `standard_format`, and `proximity_mention`</Check>
 
   </Tab>
   <Tab title="AI Extraction">
@@ -57,20 +59,28 @@ description:
 
 ## Technical specifications
 
-| Feature                | Standard | Embeddings | AI Extraction |
-| ---------------------- | -------- | ---------- | ------------- |
-| **Core Features**      |
-| Article Metadata       | ✓        | ✓          | ✓             |
-| Clustering             | ✓        | ✓          | ✓             |
-| **NLP Features**       |
-| Theme Analysis         | ✓        | ✓          | ✓             |
-| Entity Recognition     | ✓        | ✓          | ✓             |
-| Sentiment Analysis     | ✓        | ✓          | ✓             |
-| Vector Embeddings      | -        | ✓          | -             |
-| **Location Features**  |
-| Location Filtering     | ✓        | ✓          | ✓             |
-| AI Location Extraction | -        | -          | ✓             |
-| Location Validation    | ✓        | ✓          | ✓             |
+| Feature                  | Standard | Embeddings | AI Extraction |
+| ------------------------ | -------- | ---------- | ------------- |
+| **Core Features**        |
+| Article Metadata         | ✓        | ✓          | ✓             |
+| Clustering               | ✓        | ✓          | ✓             |
+| **NLP Features**         |
+| Theme Analysis           | ✓        | ✓          | ✓             |
+| Entity Recognition       | ✓        | ✓          | ✓             |
+| Sentiment Analysis       | ✓        | ✓          | ✓             |
+| Vector Embeddings        | -        | ✓          | -             |
+| **Location Features**    |
+| Standard Endpoints       | ✓        | ✓          | ✓             |
+| Advanced Endpoints       | ✓        | ✓          | ✓             |
+| GeoNames Filtering       | ✓        | ✓          | ✓             |
+| AI Location Extraction   | -        | -          | ✓             |
+| Location Validation      | ✓        | ✓          | ✓             |
+| **Translation Features** |
+| Cross-language Search    | ✓        | ✓          | ✓             |
+| Translation Fields       | ✓        | ✓          | ✓             |
+| NLP on Translations      | ✓        | ✓          | ✓             |
+| **Publisher Filtering**  |
+| Countries Parameter      | ✓        | ✓          | ✓             |
 
 <Tip>
   For detailed information on location detection methods available in each plan,

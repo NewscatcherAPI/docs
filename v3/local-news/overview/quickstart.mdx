@@ -4,9 +4,8 @@ sidebarTitle: Quickstart
 description: Get started with location-specific news data using Local News API.
 ---
 
-Transform your data needs with precise location-specific news content! This
-guide helps you make your first API call to access local news articles with
-powerful location detection and filtering capabilities.
+This guide helps you make your first API call to access local news articles with
+location detection and filtering capabilities.
 
 ## Before you start
 
@@ -42,10 +41,9 @@ Before you begin, make sure you meet these prerequisites:
     </CodeGroup>
 
   </Step>
-  <Step title="Create your first script">
+  <Step title="Make your first request">
 
-    Run the curl command in your terminal, use JSON for the request body in Postman,
-    or create a script to fetch local news articles:
+    Search for local news articles using standard location filtering:
 
     <CodeGroup>
     ```bash curl
@@ -94,33 +92,27 @@ Before you begin, make sure you meet these prerequisites:
     }
 
     try:
-        # Fetch articles using POST method
         response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
-        response.raise_for_status()  # Check if the request was successful
-
-        # Print the raw JSON response
+        response.raise_for_status()
         print(json.dumps(response.json(), indent=2))
-
     except requests.exceptions.RequestException as e:
         print(f"Failed to fetch articles: {e}")
     ```
     ```typescript TypeScript
     async function fetchLocalNews() {
-      const API_KEY = "YOUR_API_KEY_HERE"; // Replace with your actual API key
+      const API_KEY = "YOUR_API_KEY_HERE";
       const URL = "https://local-news.newscatcherapi.com/api/search";
 
-      // Define the search parameters
       const payload = {
-        q: "*", // Search for all articles
-        locations: ["San Francisco, California"], // City to search for
-        detection_methods: ["local_section", "ai_extracted"], // How to detect location mentions
-        theme: "Tech", // Filter for tech news
-        lang: "en", // English language articles
-        from_: "7 days ago" // Articles from the last week
+        q: "*",
+        locations: ["San Francisco, California"],
+        detection_methods: ["local_section", "ai_extracted"],
+        theme: "Tech",
+        lang: "en",
+        from_: "7 days ago"
       };
 
       try {
-        // Fetch articles using POST method
         const response = await fetch(URL, {
           method: 'POST',
           headers: {
@@ -134,7 +126,6 @@ Before you begin, make sure you meet these prerequisites:
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        // Parse and log the response
         const data = await response.json();
         console.log(JSON.stringify(data, null, 2));
       } catch (error) {
@@ -142,21 +133,20 @@ Before you begin, make sure you meet these prerequisites:
       }
     }
 
-    // Execute the function
     fetchLocalNews();
     ```
 
     </CodeGroup>
 
     <Note>
-      Remember to replace `YOUR_API_KEY_HERE` with your actual API key.
+      Replace `YOUR_API_KEY_HERE` with your actual API key.
     </Note>
 
   </Step>
 
-  <Step title="Review the results">
+  <Step title="Review the response">
 
-    When you run the script, you receive a JSON response like this (shortened for readability):
+    The API returns a JSON response containing articles with location data:
 
     ```json JSON {10-15}
     {
@@ -181,36 +171,198 @@ Before you begin, make sure you meet these prerequisites:
           // ... other fields
           "nlp": {
             "theme": ["Tech", "Science"],
-            "summary": "Whisper, an AI-powered transcription tool, is prone to making up chunks of text or entire sentences. It's being used in industries worldwide to translate and transcribe interviews, generate text in popular consumer technologies and create subtitles for videos.",
+            "summary": "Whisper, an AI-powered transcription tool, is prone to making up chunks of text or entire sentences.",
             "sentiment": {
               "title": 0.8877,
               "content": -0.9958
-            },
-            // ... nlp other fields
+            }
+            // ... other nlp fields
           }
         }
-      ],
+      ]
     }
     ```
 
-    The response shows location-specific articles with rich metadata, including location detection methods,
-    NLP analysis, and article details.
+  </Step>
+
+  <Step title="Try advanced GeoNames filtering">
+
+    Use the advanced endpoint for structured geographic filtering with additional metadata:
+
+    <CodeGroup>
+    ```bash curl
+    curl -X POST https://local-news.newscatcherapi.com/api/search/advanced \
+      -H "x-api-token: YOUR_API_KEY_HERE" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "q": "venture capital",
+        "geonames": [{
+          "name": "San Francisco",
+          "country": "US",
+          "admin1": {
+            "name": "California"
+          },
+          "localization_score": {
+            "min": 7
+          }
+        }],
+        "from_": "7 days ago"
+      }'
+    ```
+    ```json JSON
+    {
+      "q": "venture capital",
+      "geonames": [{
+        "name": "San Francisco",
+        "country": "US",
+        "admin1": {
+          "name": "California"
+        },
+        "localization_score": {
+          "min": 7
+        }
+      }],
+      "from_": "7 days ago"
+    }
+    ```
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    URL = "https://local-news.newscatcherapi.com/api/search/advanced"
+    HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
+
+    PAYLOAD = {
+        "q": "venture capital",
+        "geonames": [{
+            "name": "San Francisco",
+            "country": "US",
+            "admin1": {
+                "name": "California"
+            },
+            "localization_score": {
+                "min": 7  # Only articles with high local relevance
+            }
+        }],
+        "from_": "7 days ago"
+    }
+
+    try:
+        response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch articles: {e}")
+    ```
+    ```typescript TypeScript
+    async function fetchAdvancedLocalNews() {
+      const API_KEY = "YOUR_API_KEY_HERE";
+      const URL = "https://local-news.newscatcherapi.com/api/search/advanced";
+
+      const payload = {
+        q: "venture capital",
+        geonames: [{
+          name: "San Francisco",
+          country: "US",
+          admin1: {
+            name: "California"
+          },
+          localization_score: {
+            min: 7
+          }
+        }],
+        from_: "7 days ago"
+      };
+
+      try {
+        const response = await fetch(URL, {
+          method: 'POST',
+          headers: {
+            'x-api-token': API_KEY,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log(JSON.stringify(data, null, 2));
+      } catch (error) {
+        console.error('Failed to fetch articles:', error);
+      }
+    }
+
+    fetchAdvancedLocalNews();
+    ```
+    </CodeGroup>
+
+  </Step>
+
+  <Step title="Review the advanced response">
+
+    The advanced endpoint returns structured GeoNames data:
+
+    ```json JSON {10-30}
+    {
+      "status": "ok",
+      "total_hits": 23,
+      "page": 1,
+      "total_pages": 1,
+      "page_size": 100,
+      "articles": [
+        {
+          "id": "249f0551574a6042ca375d0a9d64bae9",
+          "geonames": [
+            {
+              "geonames_id": "5391959",
+              "name": "San Francisco",
+              "country": "US",
+              "admin1": {
+                "geonames_id": "5332921",
+                "name": "California",
+                "code": "CA"
+              },
+              "coordinates": {
+                "lat": 37.77493,
+                "lon": -122.41942
+              },
+              "feature_class": "P",
+              "feature_code": "PPL",
+              "detection_methods": ["ai_extracted"],
+              "reason": "San Francisco mentioned as the location of venture capital activity",
+              "localization_score": 8.5,
+              "confidence_score": 9.2
+            }
+          ],
+          "title": "Bay Area startup raises $50M in Series B funding",
+          // ... other fields
+        }
+      ]
+    }
+    ```
+
+    The advanced response includes coordinates, administrative hierarchy, confidence scores, and detailed detection information.
 
   </Step>
 </Steps>
 
 ## What's next
 
-Now that you've made your first calls to the Local News API, here are some next
-steps:
+Now that you've made your first calls to the Local News API:
 
-1. Learn about
-   [Advanced querying](/v3/documentation/guides-and-concepts/advanced-querying)
-   to refine your searches
-2. Explore
+1. Explore
    [Location detection methods](/v3/local-news/overview/location-detection-methods)
-   for better location matching
-3. Read about [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
-   to extract insights from articles
+   for better location matching.
+2. Read about [GeoNames filtering](/v3/local-news/overview/geonames-filtering)
+   for advanced geographic targeting.
+3. Learn about
+   [Search in translations](/v3/documentation/how-to/search-in-translations) to
+   find articles across languages using English keywords.
+4. Read about [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
+   to extract insights from articles.
 
 <Note>Need help? Contact our support team at support@newscatcherapi.com</Note>

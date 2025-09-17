@@ -876,23 +876,11 @@ paths:
 components:
   parameters:
     Q:
-      description: |
-        The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
-
-        - For an exact match, use double quotes. For example, `"technology news"`.
-        - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases. 
-          For example, `+Apple`, `-Google`.
-        - Use `AND`, `OR`, and `NOT` to refine search results. 
-          For example, `technology AND (Apple OR Microsoft) NOT Google`.
-
-        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
       name: q
       in: query
       required: true
       schema:
-        type: string
-      example: technology AND (Apple OR Microsoft) NOT Google
+        $ref: "#/components/schemas/Q"
 
     Lang:
       description: |
@@ -2087,10 +2075,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: renewable energy
-              predefined_sources: top 50 US
-              from_: 2024/01/01
-              to_: 2024/06/30
+              q: '"supply chain" AND Amazon NOT China'
               aggregation_by: day
 
     AuthorsRequestBody:
@@ -2192,13 +2177,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              author_name: Joanna Stern
-              lang: en
-              sources:
-                - wsj.com
-                - nytimes.com
-              from_: 2024/01/01
-              to_: 2024/06/30
+              author_name: David Muir
 
     LatestHeadlinesRequestBody:
       description:
@@ -2297,12 +2276,8 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              lang: en
-              predefined_sources:
-                - top 50 US
-                - top 20 GB
-              is_opinion: false
-              page_size: 10
+              when: 7d
+              page_size: 1
 
     BreakingNewsRequestBody:
       description:
@@ -2358,9 +2333,8 @@ components:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
               sort_by: relevancy
-              page: 1
-              page_size: 100
-              include_nlp_data: true
+              ranked_only: true
+              top_n_articles: 1
 
     SearchRequestBody:
       description:
@@ -2487,15 +2461,8 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: renewable energy
-              predefined_sources:
-                - top 50 US
-              lang:
-                - en
-              from_: 2024/01/01
-              to_: 2024/06/30
-              additional_domain_info: true
-              is_news_domain: true
+              q: '"supply chain" AND Amazon NOT China'
+              page_size: 1
 
     SearchLinkRequestBody:
       description:
@@ -2543,12 +2510,7 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              ids:
-                - 8ea8a784568ffaa05cb6d1ab2d2e84dd
-                - 0146a551ef05ab1c494a55e806e3ce64
-              links:
-                - "https://www.nytimes.com/2024/08/30/technology/ai-chatbot-chatgpt-manipulation.html"
-                - "https://www.bbc.com/news/articles/c39k379grzlo"
+              links: https://www.reuters.com/business/energy/oil-prices-up-after-israeli-attacks-oversupply-caps-gains-2025-09-10/
 
     SearchSimilarRequestBody:
       description:
@@ -2651,9 +2613,10 @@ components:
               robots_compliant:
                 $ref: "#/components/schemas/RobotsCompliant"
             example:
-              q: artificial intelligence
+              q: '"supply chain" AND Amazon NOT China'
               include_similar_documents: true
               similar_documents_number: 5
+              page_size: 10
 
     SourcesRequestBody:
       description:
@@ -2688,12 +2651,7 @@ components:
               to_rank:
                 $ref: "#/components/schemas/ToRank"
             example:
-              predefined_sources:
-                - top 50 US
-              include_additional_info: true
-              is_news_domain: true
-              news_domain_type: "Original Content"
-              news_type: "General News Outlets"
+              predefined_sources: top 10 US
 
   responses:
     AggregationCountResponse:
@@ -2799,7 +2757,9 @@ components:
           schema:
             $ref: "#/components/schemas/Error"
           example:
-            message: "Invalid api key: INVALID_API_KEY"
+            message:
+              "The 'x-api-token' parameter has an invalid value. Please provide
+              a valid API key."
             status_code: 401
             status: "Unauthorized"
 
@@ -3861,19 +3821,22 @@ components:
         - status_code
         - status
 
-    # Parameters to use in Request Bodies
+    # Parameter schemas to use in Request Bodies
     Q:
       type: string
       description: |
         The keyword(s) to search for in articles. Query syntax supports logical operators (`AND`, `OR`, `NOT`) and wildcards:
 
-        - For an exact match, use double quotes. For example, `"technology news"`.
-        - Use `*` to search for any keyword.
-        - Use `+` to include and `-` to exclude specific words or phrases. For example, `+Apple`, `-Google`.
-        - Use `AND`, `OR`, and `NOT` to refine search results. For example, `technology AND (Apple OR Microsoft) NOT Google`.
+        - For exact phrases, use escaped quotes: `\"technology news\"`
+        - Use `*` for wildcards: `technolog*` (cannot start with `*`)
+        - Use `+` to include and `-` to exclude: `+Apple`, `-Google`
+        - Boolean operators: `technology AND (Apple OR Microsoft) NOT Google`
+        - Forbidden characters: `[` `]` `/` `\\` `:` `^` and URL-encoded equivalents
 
-        For more details, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
-      example: technology AND (Apple OR Microsoft) NOT Google
+        **Note:** The API automatically inserts `AND` operators between standalone terms, so strings like `"machine learning"` become `"machine AND learning"`. To avoid syntax errors (especially in queries with `OR` operators), use literal escape `"\"machine learning\""`.
+
+        For detailed syntax rules, see [Advanced querying](/docs/v3/documentation/guides-and-concepts/advanced-querying).
+      example: '"supply chain" AND Amazon NOT China'
 
     Lang:
       oneOf:
@@ -3917,16 +3880,13 @@ components:
         - Standard fields: `title`, `content`, `summary`, `title_content`
         - Translation fields: `title_translated`, `content_translated`, `summary_translated`, `title_content_translated`
 
-        **Note**: Search in summaries and translations is only available for NLP subscription plans.
       example: title_content, title_content_translated
 
     IncludeTranslationFields:
       type: boolean
       default: false
       description: |
-        If true, the response includes translation fields `title_translated_en` and `content_translated_en`.
-
-        **Note**: Article translations are available only in the NLP plan.
+        If true, includes English translation fields in the response (`title_translated_en`, `content_translated_en`, and NLP translation fields).
       example: true
 
     Countries:
@@ -4293,8 +4253,6 @@ components:
       description: |
         If true, includes an NLP object for each article in the response. This object provides results of NLP analysis, including article theme, summary, sentiment, tags, and named entity recognition if available.
 
-        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `include_nlp_data` parameter is available only in NLP subscription plans.
-
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
 
@@ -4303,8 +4261,6 @@ components:
       default: false
       description: |
         If true, filters results to include only articles that have NLP data.
-
-        **Note**: NLP coverage and analysis completeness may vary by language, with full data available for articles in English and Arabic. The `has_nlp` parameter is available only in NLP subscription plans.
 
         To learn more, see [NLP features](/docs/v3/documentation/guides-and-concepts/nlp-features).
       example: true
@@ -4348,76 +4304,47 @@ components:
       example: ["Crime"]
 
     OrgEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
+        Filters articles that mention specific organization names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Apple, Microsoft"`
-        - `["Apple", "Microsoft"]`
-
-        **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
+        - To specify multiple organizations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Apple", "Microsoft"]
+      example: '"Apple Inc" OR Microsoft'
 
     PerEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
+        Filters articles that mention specific person names, as identified by NLP analysis. 
 
-        Examples: 
-        - `"Elon Musk, Jeff Bezos"`
-        - `["Elon Musk", "Jeff Bezos"]`
-
-        **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
+        - To specify multiple names, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Elon Musk", "Jeff Bezos"]
-
+      example: '"Elon Musk" OR "Jeff Bezos"'
     LocEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
+        Filters articles that mention specific location names, as identified by NLP analysis.
 
-        Examples: 
-        - `"California, New York"`
-        - `["California", "New York"]`
-
-        **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
+        - To specify multiple locations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["California", "New York"]
+      example: '"San Francisco" OR "New York City"'
 
     MiscEntityName:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
       description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string or an array of strings. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
+        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more.
 
-        Examples: 
-        - `"Bitcoin, Blockchain"`
-        - `["Bitcoin", "Blockchain"]`
-
-        **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
+        - To specify multiple entities, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
+        - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
         To learn more, see [Search by entity](/docs/v3/documentation/how-to/search-by-entity).
-      example: ["Bitcoin", "Blockchain"]
+      example: 'AWS OR "Microsoft Azure"'
 
     TitleSentimentMin:
       type: number
