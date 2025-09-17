@@ -2,31 +2,26 @@ openapi: 3.0.3
 info:
   title: Local News API
   description: |
-    Discover, analyze, and leverage location-specific news with unparalleled precision!
+    The Local News API provides access to local news articles with location-specific filtering capabilities.
 
-    The Local News API provides access to local news articles and related information. It offers advanced search capabilities, including GeoNames-powered location filtering, cross-language search, and NLP analysis.
+    ## Standard endpoints
 
-    ## Key features
+    - `/search`: Search articles by keywords with simple location filtering ("City, State" format).
+    - `/latest_headlines`: Retrieve recent articles for specified locations and time periods.
+    - `/search_by`: Retrieve articles by URL, ID, or RSS GUID.
+    - `/sources`: List available news sources.
 
-    - **GeoNames Integration**: Structured geographic filtering using the world's largest geographic database with 25+ million locations.
-    - **Global Coverage**: Support for Italy, Germany, France, Canada, Great Britain, China, United States, Thailand, and Switzerland, with more countries added monthly.
-    - **Cross-Language Search**: Find articles using English keywords even when the original content is in other languages.
-    - **Advanced Querying**: Support for logical operators, wildcards, and multi-faceted filtering.
-    - **Flexible Retrieval**: Search by keywords, get the latest headlines, or fetch articles by URL, ID, or RSS GUID.
-    - **Rich Metadata**: Access detailed article information, including NLP-analysis insights and translation fields.
-    - **Content Clustering**: Group similar articles for concise topic overviews.
-    - **Precise Location Matching**: Six distinct methods for accurate location detection:
-      - Dedicated local news sources
-      - Local sections of larger publications
-      - Regional news sources
-      - Standard location format matching
-      - Proximity-based detection
-      - AI-powered extraction
-    - **Geographic Filtering**: Filter by coordinates, administrative levels, feature types, and location relevance scores.
-    - **Source Discovery**: Retrieve information on available local news sources.
-    - **Comprehensive Documentation**: Detailed overview and API reference with playground.
+    ## Advanced endpoints
 
-    Ideal for local media monitoring, personalized news aggregation, and location-specific content analysis.
+    - `/search/advanced`: Search with structured GeoNames filtering.
+    - `/latest_headlines/advanced`: Latest headlines with structured GeoNames filtering.
+
+    ## Features
+
+    - Multiple location detection methods including dedicated sources, proximity analysis, and AI extraction
+    - Natural language processing for sentiment analysis and entity recognition on original content and English translations
+    - Article clustering for topic analysis
+    - English translations for non-English content
 
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
@@ -48,30 +43,17 @@ security:
 
 tags:
   - name: Search
-    description: Operations to search for local news articles.
-    externalDocs:
-      description:
-        Search for articles by keyword, language, country, source, and more.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/search/search-articles-post
+    description:
+      Operations to search for local news articles. Includes both standard
+      location filtering and advanced GeoNames filtering.
   - name: LatestHeadlines
-    description: Operations to retrieve local news latest headlines.
-    externalDocs:
-      description:
-        Retrieve the latest headlines since a specified date, with filtering
-        options.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post
+    description:
+      Operations to retrieve local news latest headlines. Includes both standard
+      location filtering and advanced GeoNames filtering.
   - name: SearchBy
     description: Operations to search local news by link, ID or RSS GUID.
-    externalDocs:
-      description: Search for local news by link, ID or RSS GUID.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/search-by/search-articles-by-identifiers-post
   - name: Sources
     description: Operations to retrieve local news sources.
-    externalDocs:
-      description:
-        Retrieve the list of available local news sources, filtered by language
-        and country.
-      url: https://newscatcherapi.com/docs/v3/local-news/endpoints/sources/retrieve-sources-post
 
 paths:
   /api/search:
@@ -173,6 +155,63 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchByResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  # Advanced endpoints (new in v2.0)
+  /api/search/advanced:
+    post:
+      tags:
+        - Search
+      summary: Search articles with GeoNames filtering
+      description: |
+        Searches for local news using structured GeoNames filtering with administrative hierarchy, coordinates, and confidence scores.
+      operationId: SearchAdvanced_post
+      requestBody:
+        $ref: "#/components/requestBodies/SearchAdvancedRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/SearchAdvancedResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "408":
+          $ref: "#/components/responses/RequestTimeoutError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/RateLimitError"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/latest_headlines/advanced:
+    post:
+      tags:
+        - LatestHeadlines
+      summary: Retrieve latest headlines with GeoNames filtering
+      description: |
+        Retrieves the most recent news headlines using structured GeoNames filtering with administrative hierarchy, coordinates, and confidence scores.
+      operationId: LatestHeadlinesAdvanced_post
+      requestBody:
+        $ref: "#/components/requestBodies/LatestHeadlinesAdvancedRequestBody"
+      responses:
+        "200":
+          $ref: "#/components/responses/LatestHeadlinesAdvancedResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1134,12 +1173,20 @@ components:
         id:
           type: string
           description: The unique identifier for the article.
+        geonames:
+          type: array
+          items:
+            $ref: "#/components/schemas/GeoNamesResponseEntity"
+          description: |
+            A list of GeoNames locations identified in the article with their detection methods and confidence scores.
         locations:
           type: array
           items:
             $ref: "#/components/schemas/LocationEntity"
           description: |
-            A list of locations mentioned in the article along with their detection methods.
+            **DEPRECATED:** A list of locations mentioned in the article along with their detection methods.
+
+            Use `geonames` field instead for structured geographic data.
         score:
           type: number
           format: float
@@ -1221,7 +1268,7 @@ components:
           type: boolean
           description: Indicates if the article is paid content.
 
-    # v1.1.0 New LocationEntity to replace TownEntity, AssociatedTownEntity and AiAssociatedTownEntity
+    # v1.1.0 LocationEntity to replace v1.0.0 TownEntity, AssociatedTownEntity and AiAssociatedTownEntity -> **DEPRECATED:** Use geonames v2.0.0
     LocationEntity:
       type: object
       required:
@@ -1231,16 +1278,112 @@ components:
         name:
           type: string
           description: |
-            The full name of the location, including the state. 
+            **DEPRECATED:** The full name of the location, including the state. 
             Format is "City, State". For example, "San Francisco, California".
+
+            Use the `geonames` field in article responses for structured geographic data.
           example: "San Francisco, California"
         detection_methods:
           allOf:
             - $ref: "#/components/schemas/DetectionMethods"
             - description: |
-                Methods used to detect locations in articles.
+                **DEPRECATED:** Methods used to detect locations in articles.
+
+                Use the `geonames` field in article responses for structured geographic data with detection methods.
 
                 For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
+
+    GeoNamesResponseEntity:
+      type: object
+      description: |
+        Represents a geographic location identified in an article using GeoNames structured data, including detection confidence and localization scores.
+      required:
+        - name
+        - detection_methods
+      properties:
+        geonames_id:
+          type: string
+          description: |
+            The unique GeoNames identifier for the location.
+          example: "5128581"
+        name:
+          type: string
+          description: |
+            The canonical name of the location from GeoNames database.
+          example: "New York City"
+        country:
+          type: string
+          description: |
+            Two-letter ISO 3166-1 alpha-2 country code.
+          example: "US"
+        admin1:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            First-order administrative division (e.g., state, province, region).
+        admin2:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Second-order administrative division (e.g., county, department).
+        admin3:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Third-order administrative division (e.g., township, borough).
+        admin4:
+          allOf:
+            - $ref: "#/components/schemas/GeoNamesLocationAdminEntity"
+          description: |
+            Fourth-order administrative division (smallest administrative units).
+        coordinates:
+          allOf:
+            - $ref: "#/components/schemas/Coordinates"
+        feature_class:
+          type: string
+          description: |
+            GeoNames feature class (A: Administrative, H: Hydrographic, L: Area, P: Populated places, etc.).
+          example: "P"
+        feature_code:
+          type: string
+          description: |
+            Specific GeoNames feature code (e.g., PPL for populated place).
+          example: "PPL"
+        detection_methods:
+          $ref: "#/components/schemas/DetectionMethods"
+        reason:
+          type: string
+          description: |
+            Explanation of why this location was identified in the article context.
+          example:
+            "New York City is mentioned as the location of the Icahn School of
+            Medicine."
+        localization_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: |
+            Geographic focus score (0-10) indicating how locally relevant the article is to this location.
+            - 10: Hyper-local with clear local impact
+            - 7-9: Regional relevance
+            - 4-6: Subnational relevance  
+            - 1-3: National relevance only
+            - 0: No local relevance
+          example: 10.0
+        confidence_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 10
+          description: |
+            Model confidence score (0-10) in location identification accuracy.
+            - 10: Certain match
+            - 7-9: High confidence
+            - 4-6: Medium confidence
+            - 1-3: Low confidence
+            - 0: Uncertain/not relevant
+          example: 10.0
 
     NlpDataEntity:
       type: object
