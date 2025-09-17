@@ -28,7 +28,7 @@ info:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
     url: https://www.newscatcherapi.com/pricing
-  version: 2.0.0
+  version: 1.2.0
 
 externalDocs:
   description: Find out more about NewsCatcher
@@ -170,7 +170,7 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  # Advanced endpoints (new in v2.0)
+  # Advanced endpoints (new in v1.2.0)
   /api/search/advanced:
     post:
       tags:
@@ -317,7 +317,7 @@ components:
         application/json:
           schema:
             allOf:
-              - $ref: "#/components/schemas/ArticleSearchResponseDto"
+              - $ref: "#/components/schemas/ArticleSearchAdvancedResponseDto"
             title: Search By Response
 
     SearchAdvancedResponse:
@@ -438,7 +438,7 @@ components:
           $ref: "#/components/schemas/DetectionMethods"
         lang:
           $ref: "#/components/schemas/Lang"
-        countries: # New in v2.0
+        countries: # New in v1.2.0
           $ref: "#/components/schemas/Countries"
         sources:
           $ref: "#/components/schemas/Sources"
@@ -476,10 +476,10 @@ components:
           $ref: "#/components/schemas/ContentSentimentMin"
         content_sentiment_max:
           $ref: "#/components/schemas/ContentSentimentMax"
-        include_translation_fields: # New in v2.0
+        include_translation_fields: # New in v1.2.0
           $ref: "#/components/schemas/IncludeTranslationFields"
 
-    # v2.0.0 Updated BaseRequestDto
+    # v1.2.0 Updated BaseRequestDto
     BaseAdvancedRequestDto:
       type: object
       properties:
@@ -530,7 +530,7 @@ components:
         include_translation_fields:
           $ref: "#/components/schemas/IncludeTranslationFields"
 
-    # Standard request DTOs (enhanced in v2.0)
+    # Standard request DTOs (enhanced in v1.2.0)
     SearchRequestDto:
       allOf:
         - type: object
@@ -541,7 +541,7 @@ components:
               $ref: "#/components/schemas/From"
             to_:
               $ref: "#/components/schemas/To"
-            search_in: # Enhanced in v2.0
+            search_in: # Enhanced in v1.2.0
               $ref: "#/components/schemas/SearchIn"
             sort_by:
               $ref: "#/components/schemas/SortBy"
@@ -583,7 +583,7 @@ components:
         page_size:
           $ref: "#/components/schemas/PageSize"
 
-    # Advanced request DTOs (new in v2.0)
+    # Advanced request DTOs (new in v1.2.0)
     SearchAdvancedRequestDto:
       allOf:
         - type: object
@@ -610,13 +610,13 @@ components:
 
     # Parameter schemas
     ## BaseRequestDto (mixin model) parameters
-    ## v2.0.0 GeoNames schemas
+    ## v1.2.0 GeoNames schemas
     GeoNamesFilter:
       type: array
       items:
         $ref: "#/components/schemas/GeoNamesEntity"
       description: |
-        Filter articles by geographic locations using structured GeoNames data. Each object defines location criteria that must all be met (internal `AND`). Multiple objects are combined using the `geonames_operator` parameter.
+        Filters articles by geographic locations using structured GeoNames data. All location criteria within an object must be met (internal `AND`). Multiple objects are combined using the `geonames_operator` parameter.
 
         For detailed information, see [GeoNames filtering](/v3/local-news/overview/geonames-filtering).
       example:
@@ -743,7 +743,6 @@ components:
             - 4–6: Medium — Some evidence or indirect relevance, but inconclusive
             - 1–3: Low — Weak signal or unlikely relevance
             - 0: Certain Not — Confident the location is not mentioned or relevant
-
         search_with_alt_names:
           type: boolean
           default: false
@@ -752,7 +751,6 @@ components:
 
             **Note**: This setting affects all location names within the `geonames` object, including the `name` field and all administrative-level names (`admin1.name`, `admin2.name`, etc.).
           example: true
-
         enable_wildcard:
           type: boolean
           default: false
@@ -1274,7 +1272,7 @@ components:
               description: The user input parameters for the search.
               type: object
 
-    # Advanced response DTOs (new in v2.0)
+    # Advanced response DTOs (new in v1.2.0)
     ArticleSearchAdvancedResponseDto:
       title: Advanced Search Response
       allOf:
@@ -1391,12 +1389,12 @@ components:
         paid_content:
           type: boolean
           description: Indicates if the article is paid content.
-        title_translated_en: #  New in v2.0
+        title_translated_en: #  New in v1.2.0
           type: string
           description: |
             English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
           nullable: true
-        content_translated_en: #  New in v2.0
+        content_translated_en: #  New in v1.2.0
           type: string
           description: |
             English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
