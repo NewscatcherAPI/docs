@@ -18,6 +18,11 @@ When you search for location-specific news, you can specify which detection
 methods to include in your results. This gives you control over the
 precision-recall tradeoff in your location-based queries.
 
+If you don't specify detection methods in your request, the response includes
+articles found using any available method for your subscription plan. Locations
+are provided along with detection methods, helping you understand how the
+particular location was identified.
+
 ## How location detection works
 
 <Frame caption="Location detection pipeline">
@@ -167,52 +172,6 @@ The AI-based detection process works differently from other methods:
   provides additional coverage beyond what pattern-based methods can identify.
 </Note>
 
-## Using detection methods in API requests
-
-When making API requests, you can specify which detection methods to filter your
-results by:
-
-```json
-{
-  "locations": ["San Francisco, California"],
-  "detection_methods": ["dedicated_source", "standard_format"]
-}
-```
-
-The API response shows which methods were used to identify locations in each
-article:
-
-```json
-{
-  "status": "ok",
-  "total_hits": 13,
-  "page": 1,
-  "total_pages": 1,
-  "page_size": 100,
-  "articles": [
-    {
-      "id": "7d755d4db23a46a4d27e236d21498d24",
-      "locations": [
-        {
-          "name": "San Francisco, California",
-          "detection_methods": ["dedicated_source"]
-        }
-      ],
-      "title": "Lyzr Launches 2nd AI Agent under Banking suite: Teller Assistance Agent",
-      "author": "Anirudh Narayan",
-      "link": "https://apnews.com/press-release/ein-presswire-newsmatics/new-jersey-artificial-intelligence-78f4c6ccd15ca77a2b467fd8e996c450",
-      "published_date": "2025-02-23T12:16:19",
-      "domain_url": "apnews.com"
-    }
-  ]
-}
-```
-
-If you don't specify detection methods in your request, the response includes
-articles found using any available method for your subscription plan. Locations
-are provided along with detection methods, helping you understand how the
-particular location was identified.
-
 ## Choosing detection methods
 
 When deciding which detection methods to use, consider the following criteria:
@@ -248,3 +207,4 @@ When deciding which detection methods to use, consider the following criteria:
 
 - [Quickstart guide](/v3/local-news/overview/quickstart)
 - [API reference](/v3/local-news/endpoints/search/search-articles-post)
+- [GeoNames filtering](/v3/local-news/overview/geonames-filtering)
