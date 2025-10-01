@@ -1,0 +1,313 @@
+---
+title: Introduction to CatchAll API
+sidebarTitle: Introduction
+description:
+  Transform natural language questions into structured, validated records from
+  web sources.
+---
+
+CatchAll transforms your natural language questions into structured, validated
+records from web sources. Ask questions in plain English and receive organized
+data with source citations—no need for complex keywords or filters.
+
+## What is CatchAll API?
+
+CatchAll provides an end-to-end pipeline for converting natural language queries
+into structured event data. The system analyzes your question, retrieves
+relevant content from diverse sources (news sites, government databases, public
+records, corporate sites), clusters similar information, validates relevance,
+and extracts structured data tailored to your specific query.
+
+## How it works
+
+When you submit a query, CatchAll follows the multi-stage pipeline:
+
+1. **Analyse**: The LLM analyzes your inputs (`query`, `context`,
+   `summary_template`) to:
+   - Understand what information you need, produce keywords and search queries.
+   - Generate validators to filter relevant content.
+   - Create enrichments that define the output schema (which fields to extract
+     and their names).
+2. **Fetch**: Retrieves content from web sources using generated search queries.
+3. **Cluster**: Groups similar content into distinct events using embeddings.
+4. **Validate**: Applies generated validators (from step 1) to filter relevant
+   clusters.
+5. **Extract**: Applies the pre-defined enrichments (from step 1) to extract
+   structured data.
+6. **Return**: Provides records according to generated output schema.
+
+Processing typically takes 10-15 minutes per job.
+
+## Characteristics
+
+### Dynamic schemas
+
+The system generates response formats dynamically based on your query. The
+enrichment fields in records vary based on your inputs (`query`, `context`,
+`summary_template`). Only `record_id`, `record_title`, and `citations` are
+guaranteed in every record. If you specify `summary_template`, the `enrichment`
+object also includes the `template_base_summary` field.
+
+To learn more, see the
+[Result response](/v3/catch-all/overview/introduction#results-response) example.
+
+### Non-deterministic results
+
+Identical queries can produce different results because:
+
+- LLMs may generate different keywords, validators, and extractors.
+- Different content sources may be retrieved.
+- Field names and structure vary between runs.
+- The number of records extracted can differ significantly.
+
+This flexibility allows the system to adapt to any query type without predefined
+schemas.
+
+### Asynchronous processing
+
+Each query creates a job that processes asynchronously. You receive a `job_id`
+to poll for status and retrieve results when complete.
+
+## Base URL
+
+For API requests use the following base URL:
+
+```bash
+https://catchall.newscatcherapi.xyz
+```
+
+## Endpoints
+
+| Endpoint                    | Method | Description      | Use Case                                                                                                 |
+| --------------------------- | ------ | ---------------- | -------------------------------------------------------------------------------------------------------- |
+| `/catchAll/submit`          | POST   | Create a new job | Submit a natural language query to start processing                                                      |
+| `/catchAll/status/{job_id}` | GET    | Check job status | Monitor processing progress through 12 [status stages](/v3/catch-all/overview/introduction#job-statuses) |
+| `/catchAll/pull/{job_id}`   | GET    | Get job results  | Retrieve structured records when job completes                                                           |
+
+## Request format
+
+Include your API key in the `x-api-key` header for each request. All requests
+must use HTTPS.
+
+### Basic request
+
+<CodeGroup>
+
+```json JSON
+{
+  "query": "Tech company earnings this quarter",
+  "context": "Focus on revenue and profit margins",
+  "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+}
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY"
+URL = "https://catchall.newscatcherapi.xyz/catchAll/submit"
+HEADERS = {
+    "x-api-key": API_KEY,
+    "Content-Type": "application/json"
+}
+
+PAYLOAD = {
+    "query": "Tech company earnings this quarter",
+    "context": "Focus on revenue and profit margins",
+    "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+}
+
+try:
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to create job: {e}")
+```
+
+```typescript TypeScript
+const API_KEY = "YOUR_API_KEY";
+const URL = "https://catchall.newscatcherapi.xyz/catchAll/submit";
+
+const payload = {
+  query: "Tech company earnings this quarter",
+  context: "Focus on revenue and profit margins",
+  summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]",
+};
+
+try {
+  const response = await fetch(URL, {
+    method: "POST",
+    headers: {
+      "x-api-key": API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error ${response.status}`);
+  }
+
+  const data = await response.json();
+  console.log(JSON.stringify(data, null, 2));
+} catch (error) {
+  console.error("Failed to create job:", error);
+}
+```
+
+```bash cURL
+curl -X POST \
+  'https://catchall.newscatcherapi.xyz/catchAll/submit' \
+  -H 'x-api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "query": "Tech company earnings this quarter",
+    "context": "Focus on revenue and profit margins",
+    "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+  }'
+```
+
+</CodeGroup>
+
+### Request parameters
+
+- **query** (string, required): Natural language question describing what to
+  find
+- **context** (string, optional): Additional context to focus search and
+  extraction
+- **summary_template** (string, optional): Template to guide record summary
+  formatting. When provided, adds a `template_based_summary` field to each
+  record
+
+## Response format
+
+### Job creation response
+
+```json
+{
+  "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+}
+```
+
+### Job status response
+
+```json
+{
+  "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+  "status": "data_fetched"
+}
+```
+
+The list of all job statuses available in the
+[Job statuses](/v3/catch-all/overview/introduction#job-statuses) section of this
+document.
+
+### Results response
+
+```json
+{
+  "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+  "query": "Tech company earnings this quarter",
+  "status": "job_completed",
+  "processing_time": "15m",
+  "sources_count": 59150,
+  "total_records": 2865,
+  "records": [
+    {
+      "record_id": "5262823697790152939",
+      "enrichment": {
+        "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
+        "company_name": "Oracle",
+        "quarter_identifier": "Q1 2026",
+        "revenue": "$14.9 billion",
+        "revenue_change": "up 12%",
+        "profit_margin": "42% non-GAAP operating margin",
+        "template_based_summary": "Company Oracle earned $14.9 billion in Q1 2026"
+      },
+      "citations": [
+        {
+          "title": "Oracle Reports Strong Q1 2026 Results",
+          "link": "https://example.com/article",
+          "published_date": "2025-09-26 08:54:20"
+        }
+      ]
+    }
+  ]
+}
+```
+
+<Warning>
+  The field names in the `enrichment` object are LLM-generated and may vary
+  event for the same inputs. The example above shows one possible structure for
+  earnings queries.
+</Warning>
+
+---
+
+## Job statuses
+
+To monitor the progress of your job, use the `/status/{job_id}` endpoint. We
+recommend polling this endpoint every 30-60 seconds.
+
+Jobs move through the following statuses:
+
+| Status                           | Description                                   | Typical Duration |
+| -------------------------------- | --------------------------------------------- | ---------------- |
+| `pending`                        | Job queued, waiting to start                  | Seconds          |
+| `analysis_started`               | Beginning query analysis                      | Seconds          |
+| `analysis_keywords_extracted`    | Keywords identified from query                | 30-60 seconds    |
+| `analysis_enrichments_extracted` | Validators and extractors generated           | 30-60 seconds    |
+| `analysis_queries_extracted`     | Search queries created (typically 10 queries) | 30-60 seconds    |
+| `retrieval_dispatched`           | Queries sent to fetching service              | Seconds          |
+| `data_fetched`                   | Articles retrieved from news database         | 3-5 minutes      |
+| `clustering_dispatched`          | Clustering process initiated                  | Seconds          |
+| `data_grouped`                   | Similar articles clustered                    | 2-4 minutes      |
+| `enrichment_dispatched`          | Validation and extraction started             | Seconds          |
+| `data_enriched`                  | Structured data extracted from valid clusters | 4-6 minutes      |
+| `job_completed`                  | Job finished, results ready                   | -                |
+
+---
+
+## Use cases
+
+CatchAll is designed for applications requiring structured data from
+unstructured web content:
+
+- **Market intelligence**: Track company earnings, M&A activity, product
+  launches.
+- **Regulatory monitoring**: Follow policy changes, government actions,
+  compliance updates.
+- **Business development**: Discover partnerships, funding rounds, market
+  entries.
+- **Competitive analysis**: Monitor competitor activities and announcements.
+- **Research automation**: Extract structured data for academic or business
+  research.
+- **News aggregation**: Build topic-specific news applications with structured
+  output.
+
+## Beta limitations
+
+These features are planned for implementation after the beta period:
+
+- Formal error handling and `failed` status
+- Error response objects with detailed failure information
+- Maximum job duration enforcement
+- Result expiration and cleanup
+- Query deduplication (submitting the same query creates separate jobs)
+- Pagination for large result sets
+
+## Get started
+
+1. [Book a demo](https://www.newscatcherapi.com/book-a-demo) and get your API
+   key.
+2. Follow the [Quickstart guide](/v3/catch-all/overview/quickstart) to make your
+   first request.
+3. Review
+   [Understanding dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas)
+   to learn how to handle variable response structures.
+4. Explore the [API Reference](/v3/catch-all/endpoints/create-job) for detailed
+   endpoint documentation.
+
+For technical support, contact us at support@newscatcherapi.com.

@@ -2,25 +2,31 @@
 
 [![Documentation Status](https://img.shields.io/website?url=https%3A%2F%2Fwww.newscatcherapi.com%2Fdocs)](https://www.newscatcherapi.com/docs)
 
-Documentation repository for the NewsCatcher API, built with [Mintlify](https://mintlify.com/) and hosted at [newscatcherapi.com/docs](https://www.newscatcherapi.com/docs).
+Documentation repository for the NewsCatcher API, built with
+[Mintlify](https://mintlify.com/) and hosted at
+[newscatcherapi.com/docs](https://www.newscatcherapi.com/docs).
 
 ## Table of Contents
 
 1. [About](#about)
-2. [Repository Structure](#repository-structure)  
+2. [Repository Structure](#repository-structure)
 3. [Getting Started](#getting-started)
 4. [Contributing](#contributing)
 5. [Support](#support)
 
 ## About
 
-NewsCatcher API provides access to news articles from over 90,000 sources worldwide with three main public APIs:
+NewsCatcher API provides access to news articles from over 90,000 sources
+worldwide with three main public APIs:
 
-- **News API v3**: Search and retrieve news articles with metadata enrichment and NLP.
+- **News API v3**: Search and retrieve news articles with metadata enrichment
+  and NLP.
 - **Local News API**: Hyper local news with geographic detection and NLP.
-- **Events API**: Structured event data (data breaches, fundraising, layoffs, supply chain disruptions, tariffs, etc.)
+- **Events API**: Structured event data (data breaches, fundraising, layoffs,
+  supply chain disruptions, tariffs, etc.)
 
-NLP featues include summarisation, topic modeling, sentiment analysis, entity recognition, clustering, and deduplication.
+NLP featues include summarisation, topic modeling, sentiment analysis, entity
+recognition, clustering, and deduplication.
 
 ## Repository Structure
 
@@ -74,7 +80,8 @@ curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelli
 ### Documentation Updates
 
 1. Create a new branch: `git checkout -b docs/your-change`
-2. Make changes following the [Google Developer Documentation Style Guide](https://developers.google.com/style)
+2. Make changes following the
+   [Google Developer Documentation Style Guide](https://developers.google.com/style)
 3. Test locally: `mint dev`
 4. Submit a pull request
 
@@ -89,15 +96,16 @@ curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelli
 
 1. Update navigation in `docs.json`
 2. Create MDX files in appropriate directories
-3. For each MDX file, include proper frontmatter (title, sidebarTitle, description)
+3. For each MDX file, include proper frontmatter (title, sidebarTitle,
+   description)
 
 ### Common Issues
 
-| Issue | Solution |
-|-------|----------|
-| `mint dev` not found | Install globally: `npm i -g mint` |
-| Port 3000 in use | Use different port: `mint dev --port 3001` |
-| Python script errors | Ensure Python 3.10+ is installed |
+| Issue                | Solution                                   |
+| -------------------- | ------------------------------------------ |
+| `mint dev` not found | Install globally: `npm i -g mint`          |
+| Port 3000 in use     | Use different port: `mint dev --port 3001` |
+| Python script errors | Ensure Python 3.10+ is installed           |
 
 ## Support
 
@@ -108,15 +116,17 @@ curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelli
 
 ### API Support
 
-- **Customer Portal**: [support.newscatcherapi.com](https://support.newscatcherapi.com/customer-portal)
+- **Customer Portal**:
+  [support.newscatcherapi.com](https://support.newscatcherapi.com/customer-portal)
 - **Email**: [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
-- **Status Page**: [status.newscatcherapi.com](https://status.newscatcherapi.com)
+- **Status Page**:
+  [status.newscatcherapi.com](https://status.newscatcherapi.com)
 
 ## Resources
 
-- [NewsCatcher API Homepage](https://www.newscatcherapi.com)
-- [API Pricing](https://www.newscatcherapi.com/pricing)
-- [Postman Collections](https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview)
+- [NewsCatcher API homepage](https://www.newscatcherapi.com)
+- [Book a demo](https://www.newscatcherapi.com/book-a-demo)
+- [Postman collections](https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview)
 
 ---
 

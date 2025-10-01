@@ -255,6 +255,27 @@
                 ]
               }
             ]
+          },
+          {
+            "tab": "CatchAll (Beta)",
+            "groups": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "v3/catch-all/overview/introduction",
+                  "v3/catch-all/overview/quickstart",
+                  "v3/catch-all/overview/understanding-dynamic-schemas"
+                ]
+              },
+              {
+                "group": "Endpoints",
+                "pages": [
+                  "v3/catch-all/endpoints/create-job",
+                  "v3/catch-all/endpoints/get-job-status",
+                  "v3/catch-all/endpoints/get-job-results"
+                ]
+              }
+            ]
           }
         ]
       },
