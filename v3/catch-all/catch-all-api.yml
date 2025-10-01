@@ -128,7 +128,8 @@ components:
       name: job_id
       in: path
       required: true
-      description: Unique job identifier returned from the submit endpoint
+      description: |
+        Unique job identifier returned from the `/catchAll/submit` endpoint
       schema:
         type: string
         format: uuid
@@ -190,9 +191,10 @@ components:
     Query:
       type: string
       description: |
-        Natural language question describing what to find. Can be any topic: company earnings, policy changes, product launches, M&A activity, etc.
+        Natural language question that describes what you want to find. You can ask about any topic: company earnings, policy changes, product launches, M&A activity, and more.
 
-        The query is analyzed by an LLM to generate search queries, validators, and extractors. More specific queries produce more focused results.
+        The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
+
       example: "Tech company earnings this quarter"
 
     Context:
