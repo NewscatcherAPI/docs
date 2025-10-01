@@ -89,7 +89,7 @@ job.
 
 ## Handle variable schemas
 
-### 1. Don't hardcode field names
+### Don't hardcode field names
 
 <CodeGroup>
 
@@ -105,7 +105,7 @@ const revenue = record.enrichment.revenue;
 
 </CodeGroup>
 
-### 2. Check multiple possible names
+### Check multiple possible names
 
 <CodeGroup>
 
@@ -130,7 +130,7 @@ const revenue =
 
 </CodeGroup>
 
-### 3. Process all fields dynamically
+### Process all fields dynamically
 
 <CodeGroup>
 
@@ -166,7 +166,7 @@ for (const [key, value] of Object.entries(enrichment)) {
 
 </CodeGroup>
 
-### 4. Use pattern matching for key fields
+### Use pattern matching for key fields
 
 <CodeGroup>
 
