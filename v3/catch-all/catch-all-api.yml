@@ -1,0 +1,440 @@
+openapi: 3.1.0
+info:
+  title: NewsCatcher CatchAll API - Beta
+  version: 0.1.0
+  description: |
+    CatchAll transforms natural language questions into structured, validated records extracted from web sources.
+
+    ### Endpoints
+    - **POST /catchAll/submit**  
+      Create a new job. Requires `x-api-key` header. Request body: `{ "query": "..." }`
+
+    - **GET /catchAll/status/{job_id}**  
+      Returns the current status of a job
+
+    - **GET /catchAll/pull/{job_id}**  
+      Retrieves final results for a completed job
+
+    ### Authentication
+    All endpoints require `x-api-key` header. Invalid or missing key returns `403 Forbidden`.
+
+    ### Workflow
+    1. Submit a query with `/catchAll/submit`
+    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes)
+    3. Retrieve results with `/catchAll/pull/{job_id}`
+
+    ### Important Notes
+
+    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object vary between requests and are not fixed.
+
+    **Non-Deterministic**: Identical queries can produce different results due to LLM-based processing.
+
+  contact:
+    name: NewsCatcher AI
+    url: https://newscatcherapi.com
+    email: support@newscatcherapi.com
+
+externalDocs:
+  description: Find out more about NewsCatcher CatchAll API
+  url: https://newscatcherapi.com/docs/v3/catch-all
+
+servers:
+  - url: https://catchall.newscatcherapi.xyz
+    description: Production server
+
+tags:
+  - name: Jobs
+    description: Operations to create, monitor, and retrieve job results
+    externalDocs:
+      description: Learn about job lifecycle and status tracking
+      url: https://newscatcherapi.com/docs/v3/catch-all
+
+security:
+  - ApiKeyAuth: []
+
+paths:
+  /catchAll/submit:
+    post:
+      tags:
+        - Jobs
+      summary: Create job
+      description:
+        Submit a natural language query to create a new processing job.
+      operationId: createJob
+      externalDocs:
+        description: Detailed documentation for job creation
+        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/create-job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitRequest"
+            example:
+              query: "Tech company earnings this quarter"
+              context: "Focus on revenue and profit margins"
+              summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]"
+      responses:
+        "200":
+          $ref: "#/components/responses/SubmitResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/status/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job status
+      description: Retrieve the current processing status of a job.
+      operationId: getJobStatus
+      externalDocs:
+        description: Understanding job statuses and polling
+        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-status
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          $ref: "#/components/responses/StatusResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/pull/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job results
+      description: Retrieve the final results for a completed job.
+      operationId: getJobResults
+      externalDocs:
+        description: Working with job results and dynamic schemas
+        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-results
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          $ref: "#/components/responses/PullResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+components:
+  parameters:
+    JobId:
+      name: job_id
+      in: path
+      required: true
+      description: Unique job identifier returned from the submit endpoint
+      schema:
+        type: string
+        format: uuid
+      example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+  responses:
+    SubmitResponse:
+      description: Job created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SubmitResponseBody"
+          example:
+            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+    StatusResponse:
+      description: Status retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/StatusResponseBody"
+          example:
+            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            status: "data_fetched"
+
+    PullResponse:
+      description: Results retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PullResponseBody"
+
+    ForbiddenError:
+      description: Invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            detail: "Invalid API key"
+
+    NotFoundError:
+      description: Job not found or results not available
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            detail: "Job not found"
+
+    ValidationError:
+      description: Validation error in request body
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidationErrorResponse"
+
+  schemas:
+    Query:
+      type: string
+      description: |
+        Natural language question describing what to find. Can be any topic: company earnings, policy changes, product launches, M&A activity, etc.
+
+        The query is analyzed by an LLM to generate search queries, validators, and extractors. More specific queries produce more focused results.
+      example: "Tech company earnings this quarter"
+
+    Context:
+      type: string
+      description: |
+        Additional context to focus the search and extraction. Use this to narrow results to specific aspects of your query.
+
+        The context influences which articles are retrieved and which fields are extracted.
+      example: "Focus on revenue and profit margins"
+
+    SummaryTemplate:
+      type: string
+      description: |
+        Template string to guide record summary formatting. Use placeholder syntax like `[NAME]`, `[VALUE]`, `[DATE]` to indicate desired fields.
+
+        When provided, the API adds a `template_based_summary` field to each record's enrichment object following your template format. This does not guarantee specific field names in the enrichment object.
+      example: "Company [NAME] earned [REVENUE] in [QUARTER]"
+
+    SubmitRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          $ref: "#/components/schemas/Query"
+        context:
+          $ref: "#/components/schemas/Context"
+        summary_template:
+          $ref: "#/components/schemas/SummaryTemplate"
+
+    SubmitResponseBody:
+      type: object
+      required:
+        - job_id
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description:
+            Unique identifier for the created job. Use this to check status and
+            retrieve results.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+    JobStatus:
+      type: string
+      enum:
+        - pending
+        - analysis_started
+        - analysis_keywords_extracted
+        - analysis_enrichments_extracted
+        - analysis_queries_extracted
+        - retrieval_dispatched
+        - data_fetched
+        - clustering_dispatched
+        - data_grouped
+        - enrichment_dispatched
+        - data_enriched
+        - job_completed
+      description: |
+        Current job processing status. Jobs progress through these stages:
+
+        - `pending`: Job queued, waiting to start
+        - `analysis_started`: Beginning query analysis
+        - `analysis_keywords_extracted`: Keywords identified
+        - `analysis_enrichments_extracted`: Validators and extractors generated
+        - `analysis_queries_extracted`: Search queries created
+        - `retrieval_dispatched`: Queries sent to fetching service
+        - `data_fetched`: Articles retrieved
+        - `clustering_dispatched`: Clustering initiated
+        - `data_grouped`: Similar articles clustered
+        - `enrichment_dispatched`: Validation and extraction started
+        - `data_enriched`: Structured data extracted
+        - `job_completed`: Job finished, results ready
+
+        Poll every 30-60 seconds until status is `job_completed`.
+      example: "data_fetched"
+
+    StatusResponseBody:
+      type: object
+      required:
+        - job_id
+        - status
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        status:
+          $ref: "#/components/schemas/JobStatus"
+
+    PullResponseBody:
+      type: object
+      required:
+        - job_id
+        - status
+        - total_records
+        - records
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier
+        query:
+          type: string
+          description: Original natural language query
+          example: Tech company earnings this quarter
+        context:
+          type: string
+          description: Context provided with the query
+          example: Focus on revenue and profit margins
+        validation_criteria:
+          type: array
+          items:
+            type: string
+          description:
+            List of validation rules that were applied to filter results
+          example: ["is_current_quarter", "contains_financial_data"]
+        status:
+          type: string
+          description:
+            Job status (should be `job_completed` when pulling results)
+          example: "job_completed"
+        processing_time:
+          type: string
+          description: Total time taken to process the job
+          example: "15m"
+        sources_count:
+          type: integer
+          description: Number of articles initially retrieved from sources
+          example: 59150
+        total_records:
+          type: integer
+          description: Total number of validated records extracted
+          example: 2865
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+          description:
+            Array of extracted records with structured data and citations
+
+    Record:
+      type: object
+      required:
+        - record_id
+        - enrichment
+        - citations
+      properties:
+        record_id:
+          type: string
+          description: Unique identifier for the record
+          example: "5262823697790152939"
+        enrichment:
+          type: object
+          description: |
+            Structured data extracted from articles. **Fields vary dynamically based on your query.**
+
+            Only `record_title` is guaranteed to be present. All other fields are generated by the LLM and adapt to the content found.
+
+            Field names are chosen semantically to match the content. For earnings data, you might see `revenue` or `quarterly_revenue`. For M&A data, you might see `acquirer` or `acquiring_company`.
+
+            See [Understanding dynamic schemas](https://newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
+          required:
+            - record_title
+          properties:
+            record_title:
+              type: string
+              description: Short title summarizing the record (always present)
+              example: "Oracle Q1 2026 Earnings Exceed Expectations"
+          additionalProperties: {}
+          example:
+            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
+            company_name: "Oracle"
+            quarter_identifier: "Q1 2026"
+            revenue: "$14.9 billion"
+            revenue_change: "up 12%"
+            profit_margin: "42% non-GAAP operating margin"
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/Citation"
+          description: Source articles that were used to extract this record
+
+    Citation:
+      type: object
+      required:
+        - title
+        - link
+        - published_date
+      properties:
+        title:
+          type: string
+          description: Article title
+          example: "Oracle Reports Strong Q1 2026 Results"
+        link:
+          type: string
+          format: uri
+          description: URL to the source article
+          example: "https://example.com/article"
+        published_date:
+          type: string
+          format: date-time
+          description: Article publication date in YYYY-MM-DD HH:MM:SS format
+          example: "2025-09-26 08:54:20"
+
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message
+          example: "Invalid API key"
+
+    ValidationErrorDetail:
+      type: object
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+          description: Location of the validation error
+        msg:
+          type: string
+          description: Error message
+        type:
+          type: string
+          description: Error type
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidationErrorDetail"
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key for authentication
