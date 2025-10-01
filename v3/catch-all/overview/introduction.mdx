@@ -7,8 +7,8 @@ description:
 ---
 
 CatchAll transforms natural language questions into structured, validated
-records extracted from web sources. Instead of searching with keywords and
-filters, you ask a question in plain English and receive organized data with
+records extracted from web sources. The API lets you ask questions in plain
+English instead of using keywords and filters, and receive organized data with
 source citations.
 
 ## What is CatchAll API?
@@ -19,22 +19,27 @@ relevant content from diverse sources (news sites, government databases, public
 records, corporate sites), clusters similar information, validates relevance,
 and extracts structured data tailored to your specific query.
 
-## How it works
+## How CatchAll works
 
-CatchAll processes your query through a multi-stage pipeline:
+When you submit a query, CatchAll follows the multi-stage pipeline:
 
-1. **Analyze**: Extracts keywords, generates validation rules and data.
-   extractors from your natural language query.
-2. **Fetch**: Retrieves relevant content from web sources using generated search
-   queries (typically 10 queries per job).
+1. **Analyse**: The LLM analyzes your inputs (`query`, `context`,
+   `summary_template`) to:
+   - Understand what information you need, produce keywords and search queries.
+   - Generate validators to filter relevant content.
+   - Create enrichments that define the output schema (which fields to extract
+     and their names).
+2. **Fetch**: Retrieves content from web sources using generated search queries.
 3. **Cluster**: Groups similar content into distinct events using embeddings.
-4. **Validate**: Applies LLM-based validation to filter relevant clusters.
-5. **Extract**: Extracts structured data with dynamically generated field names.
-6. **Return**: Provides structured records with source citations.
+4. **Validate**: Applies generated validators (from step 1) to filter relevant
+   clusters.
+5. **Extract**: Applies the pre-defined enrichments (from step 1) to extract
+   structured data.
+6. **Return**: Provides records according to generated output schema.
 
 Processing typically takes 10-15 minutes per job.
 
-## Key characteristics
+## Characteristics
 
 ### Dynamic schemas
 
@@ -283,7 +288,7 @@ unstructured web content:
 - **News aggregation**: Build topic-specific news applications with structured
   output.
 
-## Current limitations (Beta)
+## Beta limitations
 
 These features are planned for implementation after the beta period:
 
@@ -294,7 +299,7 @@ These features are planned for implementation after the beta period:
 - Query deduplication (submitting the same query creates separate jobs)
 - Pagination for large result sets
 
-## Getting started
+## Get started
 
 1. [Book a demo](https://www.newscatcherapi.com/book-a-demo) and get your API
    key.
