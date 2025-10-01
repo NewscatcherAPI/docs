@@ -6,10 +6,9 @@ description:
   web sources.
 ---
 
-CatchAll transforms natural language questions into structured, validated
-records extracted from web sources. The API lets you ask questions in plain
-English instead of using keywords and filters, and receive organized data with
-source citations.
+CatchAll transforms your natural language questions into structured, validated
+records from web sources. Ask questions in plain English and receive organized
+data with source citations—no need for complex keywords or filters.
 
 ## What is CatchAll API?
 
@@ -43,11 +42,11 @@ Processing typically takes 10-15 minutes per job.
 
 ### Dynamic schemas
 
-LLMs generate response schemas at runtime. The enrichment fields in records vary
-based on your inputs (`query`, `context`, `summary_template`). Only `record_id`,
-`record_title`, and `citations` are guaranteed in every record. If you specify
-`summary_template`, the `enrichment` object also includes the
-`template_base_summary` field.
+The system generates response formats dynamically based on your query. The
+enrichment fields in records vary based on your inputs (`query`, `context`,
+`summary_template`). Only `record_id`, `record_title`, and `citations` are
+guaranteed in every record. If you specify `summary_template`, the `enrichment`
+object also includes the `template_base_summary` field.
 
 To learn more, see the
 [Result response](/v3/catch-all/overview/introduction#results-response) example.
@@ -61,8 +60,8 @@ Identical queries can produce different results because:
 - Field names and structure vary between runs.
 - The number of records extracted can differ significantly.
 
-This behavior is expected and allows the system to adapt to any query type
-without predefined schemas.
+This flexibility allows the system to adapt to any query type without predefined
+schemas.
 
 ### Asynchronous processing
 
