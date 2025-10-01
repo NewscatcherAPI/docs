@@ -20,36 +20,46 @@ and extracts structured data tailored to your specific query.
 
 ## How it works
 
-When you submit a query, CatchAll follows the multi-stage pipeline:
+When you submit a query, CatchAll follows this multi-stage pipeline:
 
-1. **Analyse**: The LLM analyzes your inputs (`query`, `context`,
-   `summary_template`) to:
-   - Understand what information you need, produce keywords and search queries.
-   - Generate validators to filter relevant content.
-   - Create enrichments that define the output schema (which fields to extract
-     and their names).
-2. **Fetch**: Retrieves content from web sources using generated search queries.
-3. **Cluster**: Groups similar content into distinct events using embeddings.
-4. **Validate**: Applies generated validators (from step 1) to filter relevant
-   clusters.
-5. **Extract**: Applies the pre-defined enrichments (from step 1) to extract
-   structured data.
-6. **Return**: Provides records according to generated output schema.
+1. **Analyze**: Understands your query and generates search queries, validators,
+   and extractors.
+2. **Fetch**: Retrieves relevant content from web sources.
+3. **Cluster**: Groups similar content into distinct events.
+4. **Validate**: Filters clusters to keep only relevant ones.
+5. **Extract**: Pulls structured data from validated clusters.
+6. **Return**: Delivers records with citations.
 
 Processing typically takes 10-15 minutes per job.
 
-## Characteristics
+## What to expect
 
 ### Dynamic schemas
 
-The system generates response formats dynamically based on your query. The
-enrichment fields in records vary based on your inputs (`query`, `context`,
-`summary_template`). Only `record_id`, `record_title`, and `citations` are
-guaranteed in every record. If you specify `summary_template`, the `enrichment`
-object also includes the `template_base_summary` field.
+Response schemas are generated uniquely for each query. Field names and
+structure in the `enrichment` object vary between jobs—even with identical
+inputs.
 
-To learn more, see the
-[Result response](/v3/catch-all/overview/introduction#results-response) example.
+**What's guaranteed in every record:**
+
+- `record_id`
+- `enrichment.record_title`
+- `citations` array
+
+**What varies:**
+
+- All other fields in `enrichment` (names, types, structure)
+- Number of records returned
+- Specific content extracted
+
+This flexibility lets CatchAll adapt to any query type without predefined
+schemas.
+
+<Tip>
+  See [Understanding dynamic
+  schemas](/v3/catch-all/overview/understanding-dynamic-schemas) to learn how to
+  build integrations that handle variable response structures.
+</Tip>
 
 ### Non-deterministic results
 
