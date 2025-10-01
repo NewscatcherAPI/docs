@@ -1,0 +1,409 @@
+---
+title: CatchAll API quickstart guide
+sidebarTitle: Quickstart
+description: Get started with CatchAll API.
+---
+
+This guide helps you make your first API call to transform natural language
+questions into structured, validated records with source citations.
+
+## Before you start
+
+Before you begin, make sure you meet these prerequisites:
+
+- An API key (obtain one through our
+  [pricing page](https://www.newscatcherapi.com/pricing))
+- Basic understanding of REST APIs
+- Your preferred programming language and HTTP client
+- Basic knowledge of JSON data format
+
+## Steps
+
+<Steps>
+  <Step title="Set up your environment">
+
+    Make sure you have the necessary HTTP client library installed for your programming language:
+
+    <CodeGroup>
+    ```bash curl
+    # cURL is typically included in your system
+    # To check, open the terminal and type the following:
+    curl --version
+    ```
+
+    ```bash Python
+    pip install requests
+    ```
+
+    ```bash TypeScript
+    npm install axios
+    ```
+    </CodeGroup>
+
+  </Step>
+
+  <Step title="Create a job">
+
+    Submit a natural language query to create a new processing job:
+
+    <CodeGroup>
+    ```bash curl
+    curl -X POST https://catchall.newscatcherapi.xyz/catchAll/submit \
+      -H "x-api-key: YOUR_API_KEY_HERE" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "Tech company earnings this quarter",
+        "context": "Focus on revenue and profit margins",
+        "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+      }'
+    ```
+
+    ```json JSON
+    {
+      "query": "Tech company earnings this quarter",
+      "context": "Focus on revenue and profit margins",
+      "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+    }
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    # Configuration
+    API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
+    URL = "https://catchall.newscatcherapi.xyz/catchAll/submit"
+    HEADERS = {"x-api-key": API_KEY, "Content-Type": "application/json"}
+
+    # Define the job parameters
+    PAYLOAD = {
+        "query": "Tech company earnings this quarter",  # Natural language question
+        "context": "Focus on revenue and profit margins",  # Optional context
+        "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"  # Optional template
+    }
+
+    try:
+        response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+        response.raise_for_status()
+        print(json.dumps(response.json(), indent=2))
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to create job: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY_HERE";
+    const URL: string = "https://catchall.newscatcherapi.xyz/catchAll/submit";
+
+    interface JobPayload {
+      query: string;
+      context?: string;
+      summary_template?: string;
+    }
+
+    const payload: JobPayload = {
+      query: "Tech company earnings this quarter",
+      context: "Focus on revenue and profit margins",
+      summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]"
+    };
+
+    axios
+      .post(URL, payload, {
+        headers: {
+          "x-api-key": API_KEY,
+          "Content-Type": "application/json"
+        }
+      })
+      .then((response: AxiosResponse) => {
+        console.log(JSON.stringify(response.data, null, 2));
+      })
+      .catch((error) => {
+        console.error(`Failed to create job: ${error.message}`);
+      });
+    ```
+    </CodeGroup>
+
+    <Note>
+      Replace `YOUR_API_KEY_HERE` with your actual API key.
+    </Note>
+
+    You should receive a response with a job ID:
+
+    ```json
+    {
+      "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+    }
+    ```
+
+    Use this `job_id` to check the status and retrieve results.
+
+  </Step>
+
+  <Step title="Check job status">
+
+    Wait 1-2 minutes, then check the processing status. Poll this endpoint every 30-60 seconds until the status is `job_completed`:
+
+    <CodeGroup>
+    ```bash curl
+    curl -X GET https://catchall.newscatcherapi.xyz/catchAll/status/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
+      -H "x-api-key: YOUR_API_KEY_HERE"
+    ```
+
+    ```python Python
+    import requests
+    import time
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"  # Job ID from previous step
+    URL = f"https://catchall.newscatcherapi.xyz/catchAll/status/{JOB_ID}"
+    HEADERS = {"x-api-key": API_KEY}
+
+    # Poll until job completes
+    while True:
+        try:
+            response = requests.get(URL, headers=HEADERS)
+            response.raise_for_status()
+            status_data = response.json()
+
+            print(f"Current status: {status_data['status']}")
+
+            if status_data['status'] == 'job_completed':
+                print("Job completed!")
+                break
+
+            time.sleep(60)  # Wait 60 seconds before next check
+
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to check status: {e}")
+            break
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY_HERE";
+    const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+    const URL: string = `https://catchall.newscatcherapi.xyz/catchAll/status/${JOB_ID}`;
+
+    interface StatusResponse {
+      job_id: string;
+      status: string;
+    }
+
+    async function pollJobStatus() {
+      while (true) {
+        try {
+          const response: AxiosResponse<StatusResponse> = await axios.get(URL, {
+            headers: { "x-api-key": API_KEY }
+          });
+
+          console.log(`Current status: ${response.data.status}`);
+
+          if (response.data.status === "job_completed") {
+            console.log("Job completed!");
+            break;
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
+        } catch (error) {
+          console.error(`Failed to check status: ${error.message}`);
+          break;
+        }
+      }
+    }
+
+    pollJobStatus();
+    ```
+    </CodeGroup>
+
+    The response shows the current processing stage:
+
+    ```json
+    {
+      "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+      "status": "data_fetched"
+    }
+    ```
+
+    Jobs progress through statuses from `pending` to `job_completed`.
+    The list of all job statuses available in the [Introduction > Job statuses](/v3/catch-all/overview/introduction#job-statuses).
+
+    Processing typically takes 10-15 minutes.
+
+  </Step>
+
+  <Step title="Retrieve results">
+
+    Once the status is `job_completed`, retrieve the structured records:
+
+    <CodeGroup>
+    ```bash curl
+    curl -X GET https://catchall.newscatcherapi.xyz/catchAll/pull/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
+      -H "x-api-key: YOUR_API_KEY_HERE"
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+    URL = f"https://catchall.newscatcherapi.xyz/catchAll/pull/{JOB_ID}"
+    HEADERS = {"x-api-key": API_KEY}
+
+    try:
+        response = requests.get(URL, headers=HEADERS)
+        response.raise_for_status()
+        results = response.json()
+
+        print(f"Query: {results['query']}")
+        print(f"Total records: {results['total_records']}")
+        print(f"Sources processed: {results['sources_count']}")
+        print(f"Processing time: {results['processing_time']}")
+
+        # Display first record
+        if results['records']:
+            record = results['records'][0]
+            print(f"\nFirst record: {record['enrichment']['record_title']}")
+            print("\nExtracted fields:")
+            for key, value in record['enrichment'].items():
+                if key != 'record_title':
+                    print(f"  {key}: {value}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to retrieve results: {e}")
+    ```
+
+    ```typescript TypeScript
+    import axios, { AxiosResponse } from "axios";
+
+    const API_KEY: string = "YOUR_API_KEY_HERE";
+    const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+    const URL: string = `https://catchall.newscatcherapi.xyz/catchAll/pull/${JOB_ID}`;
+
+    interface Enrichment {
+      record_title: string;
+      [key: string]: any;
+    }
+
+    interface Record {
+      record_id: string;
+      enrichment: Enrichment;
+      citations: Array<{
+        title: string;
+        link: string;
+        published_date: string;
+      }>;
+    }
+
+    interface ResultsResponse {
+      job_id: string;
+      query: string;
+      status: string;
+      processing_time: string;
+      sources_count: number;
+      total_records: number;
+      records: Record[];
+    }
+
+    axios
+      .get<ResultsResponse>(URL, {
+        headers: { "x-api-key": API_KEY }
+      })
+      .then((response: AxiosResponse<ResultsResponse>) => {
+        const results = response.data;
+
+        console.log(`Query: ${results.query}`);
+        console.log(`Total records: ${results.total_records}`);
+        console.log(`Sources processed: ${results.sources_count}`);
+        console.log(`Processing time: ${results.processing_time}`);
+
+        if (results.records.length > 0) {
+          const record = results.records[0];
+          console.log(`\nFirst record: ${record.enrichment.record_title}`);
+          console.log("\nExtracted fields:");
+          Object.entries(record.enrichment).forEach(([key, value]) => {
+            if (key !== "record_title") {
+              console.log(`  ${key}: ${value}`);
+            }
+          });
+        }
+      })
+      .catch((error) => {
+        console.error(`Failed to retrieve results: ${error.message}`);
+      });
+    ```
+    </CodeGroup>
+
+  </Step>
+
+  <Step title="Review the response">
+
+    The API returns structured records according to LLM-generated enrichment schema:
+
+    <Expandable title="Example response">
+
+    ```json JSON {17-26}
+    {
+      "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+      "query": "Tech company earnings this quarter",
+      "context": "Focus on revenue and profit margins",
+      "validation_criteria": [
+        "is_current_quarter",
+        "contains_financial_data",
+        "is_about_tech_company_earnings"
+      ],
+      "status": "job_completed",
+      "processing_time": "12m",
+      "sources_count": 59150,
+      "total_records": 2865,
+      "records": [
+        {
+          "record_id": "5262823697790152939",
+          "enrichment": {
+            "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
+            "company_name": "Oracle",
+            "quarter_identifier": "Q1 2026",
+            "revenue": "$14.9 billion",
+            "revenue_change": "up 12%",
+            "profit_margin": "42% non-GAAP operating margin",
+            "eps": "$1.47",
+            "template_based_summary": "Company Oracle earned $14.9 billion in Q1 2026"
+          },
+          "citations": [
+            {
+              "title": "Oracle Reports Strong Q1 2026 Results",
+              "link": "https://example.com/article",
+              "published_date": "2025-09-26 08:54:20"
+            }
+          ]
+        }
+      ]
+    }
+    ```
+
+    </Expandable>
+
+  </Step>
+</Steps>
+
+<Warning>
+  The field names in the `enrichment` object are LLM-generated and may vary
+  event for the same inputs. The example above shows one possible structure for
+  earnings queries.
+</Warning>
+
+## What's next
+
+Now that you've made your first calls to the CatchAll API:
+
+1. Read [Understanding dynamic schemas](understanding-dynamic-schemas.md) to
+   learn how to handle variable response structures in your code.
+2. Explore the [API Reference](https://catchall.newscatcherapi.xyz/docs) for
+   detailed endpoint documentation.
+3. Review the [Introduction](introduction.md) to understand how the processing
+   pipeline works.
+
+<Note>Need help? Contact our support team at support@newscatcherapi.com</Note>
