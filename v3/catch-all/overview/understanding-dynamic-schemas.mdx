@@ -1,0 +1,552 @@
+---
+title: Understand dynamic schemas
+sidebarTitle: Dynamic schemas
+description:
+  Learn how CatchAll generates schemas dynamically with LLMs and how to build
+  integrations that handle non-deterministic responses.
+---
+
+CatchAll generates response schemas dynamically with LLMs. Each job creates a
+new schema, even with identical inputs. This guide explains this
+non-deterministic behavior and shows you how to build integrations that handle
+it.
+
+## Each job generates new schema
+
+When you submit a query, the LLM analyzes your inputs (`query`, `context`,
+`summary_template`) and generates extractors that define the output schema.
+Because LLMs are non-deterministic, the same inputs can produce different
+schemas on different runs.
+
+Expect the following variations:
+
+- Field names vary between jobs (even with identical inputs)
+- The number of fields can differ
+- Field structures may change (for example, combined fields versus separate
+  fields)
+- Results can vary significantly
+
+This is expected behavior, not a bug.
+
+## Example: Same inputs, different schemas
+
+This example shows how identical inputs produce different schemas.
+
+**Query:** "Tech company earnings this quarter"
+
+**Job 1 produced:**
+
+```json
+{
+  "record_title": "Oracle Q1 2026 Earnings",
+  "company_name": "Oracle",
+  "quarter_identifier": "Q1 2026",
+  "revenue": "$14.9 billion",
+  "revenue_change": "up 12%",
+  "profit_margin": "42%"
+}
+```
+
+**Job 2 produced:**
+
+```json
+{
+  "record_title": "Oracle Q1 2026 Results",
+  "company": "Oracle",
+  "quarter": "Q1",
+  "fiscal_year": "2026",
+  "total_revenue": "$14.9B",
+  "yoy_growth": "+12%",
+  "operating_margin": "42%"
+}
+```
+
+The field names differ:
+
+- `company_name` versus `company`
+- `quarter_identifier` versus `quarter` + `fiscal_year`
+- `revenue` versus `total_revenue`
+- `revenue_change` versus `yoy_growth`
+- `profit_margin` versus `operating_margin`
+
+Both schemas are valid. The LLM generated different extractors from the same
+inputs.
+
+## Fields that are always present
+
+The following fields appear in every record:
+
+- `record_id`
+- `enrichment.record_title`
+- `citations` array
+
+If you provide a `summary_template`, the enrichment object also includes:
+
+- `template_based_summary`
+
+All other fields in the `enrichment` object are generated dynamically for each
+job.
+
+## Handle variable schemas
+
+### 1. Don't hardcode field names
+
+<CodeGroup>
+
+```python Python
+# ❌ Breaks when field names change
+revenue = record["enrichment"]["revenue"]
+```
+
+```typescript TypeScript
+// ❌ Breaks when field names change
+const revenue = record.enrichment.revenue;
+```
+
+</CodeGroup>
+
+### 2. Check multiple possible names
+
+<CodeGroup>
+
+```python Python
+# ✅ Handles variations
+revenue = (
+    record["enrichment"].get("revenue") or
+    record["enrichment"].get("total_revenue") or
+    record["enrichment"].get("quarterly_revenue") or
+    "N/A"
+)
+```
+
+```typescript TypeScript
+// ✅ Handles variations
+const revenue =
+  record.enrichment.revenue ||
+  record.enrichment.total_revenue ||
+  record.enrichment.quarterly_revenue ||
+  "N/A";
+```
+
+</CodeGroup>
+
+### 3. Process all fields dynamically
+
+<CodeGroup>
+
+```python Python
+# ✅ Works with any schema
+enrichment = record["enrichment"]
+
+print(f"Title: {enrichment['record_title']}\n")
+
+for key, value in enrichment.items():
+    if key != "record_title":
+        display_name = key.replace("_", " ").title()
+        print(f"{display_name}: {value}")
+```
+
+```typescript TypeScript
+// ✅ Works with any schema
+const enrichment = record.enrichment;
+
+console.log(`Title: ${enrichment.record_title}\n`);
+
+for (const [key, value] of Object.entries(enrichment)) {
+  if (key !== "record_title") {
+    const displayName = key
+      .replace(/_/g, " ")
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+    console.log(`${displayName}: ${value}`);
+  }
+}
+```
+
+</CodeGroup>
+
+### 4. Use pattern matching for key fields
+
+<CodeGroup>
+
+```python Python
+# ✅ Find fields by content, not exact name
+def find_field(enrichment, patterns):
+    """Find first field matching any pattern."""
+    for key, value in enrichment.items():
+        if any(pattern in key.lower() for pattern in patterns):
+            return value
+    return None
+
+# Usage
+revenue = find_field(record["enrichment"], ["revenue", "sales"])
+profit = find_field(record["enrichment"], ["profit", "margin", "income"])
+```
+
+```typescript TypeScript
+// ✅ Find fields by content, not exact name
+function findField(
+  enrichment: Record<string, any>,
+  patterns: string[]
+): any | null {
+  for (const [key, value] of Object.entries(enrichment)) {
+    if (patterns.some((pattern) => key.toLowerCase().includes(pattern))) {
+      return value;
+    }
+  }
+  return null;
+}
+
+// Usage
+const revenue = findField(record.enrichment, ["revenue", "sales"]);
+const profit = findField(record.enrichment, ["profit", "margin", "income"]);
+```
+
+</CodeGroup>
+
+## Integration strategies
+
+### Strategy 1: Store raw data
+
+Store the entire `enrichment` object as JSON. This preserves all fields
+regardless of schema:
+
+<CodeGroup>
+
+```python Python
+import json
+
+db.insert({
+    "record_id": record["record_id"],
+    "title": record["enrichment"]["record_title"],
+    "raw_data": json.dumps(record["enrichment"]),
+    "citations": json.dumps(record["citations"])
+})
+```
+
+```typescript TypeScript
+const dbRecord = {
+  record_id: record.record_id,
+  title: record.enrichment.record_title,
+  raw_data: JSON.stringify(record.enrichment),
+  citations: JSON.stringify(record.citations),
+};
+
+await db.insert(dbRecord);
+```
+
+</CodeGroup>
+
+### Strategy 2: Map to canonical fields
+
+Create a mapping layer between variable field names and your application's
+canonical names:
+
+<CodeGroup>
+
+```python Python
+FIELD_PATTERNS = {
+    "revenue": ["revenue", "sales", "total_revenue"],
+    "profit": ["profit", "margin", "income", "earnings"],
+    "quarter": ["quarter", "q", "period"],
+}
+
+def normalize_record(enrichment):
+    """Extract canonical fields from any schema."""
+    normalized = {"title": enrichment["record_title"]}
+
+    for canonical_name, patterns in FIELD_PATTERNS.items():
+        for key, value in enrichment.items():
+            if any(p in key.lower() for p in patterns):
+                normalized[canonical_name] = value
+                break
+
+    return normalized
+```
+
+```typescript TypeScript
+const FIELD_PATTERNS: Record<string, string[]> = {
+  revenue: ["revenue", "sales", "total_revenue"],
+  profit: ["profit", "margin", "income", "earnings"],
+  quarter: ["quarter", "q", "period"],
+};
+
+function normalizeRecord(enrichment: Record<string, any>): Record<string, any> {
+  const normalized: Record<string, any> = {
+    title: enrichment.record_title,
+  };
+
+  for (const [canonicalName, patterns] of Object.entries(FIELD_PATTERNS)) {
+    for (const [key, value] of Object.entries(enrichment)) {
+      if (patterns.some((p) => key.toLowerCase().includes(p))) {
+        normalized[canonicalName] = value;
+        break;
+      }
+    }
+  }
+
+  return normalized;
+}
+```
+
+</CodeGroup>
+
+### Strategy 3: Use flexible validation
+
+Validate structure, not specific fields:
+
+<CodeGroup>
+
+```python Python
+def is_valid_record(record):
+    """Validate record has required structure."""
+    # Check structure
+    if "enrichment" not in record or "citations" not in record:
+        return False
+
+    # Check guaranteed fields only
+    if "record_title" not in record["enrichment"]:
+        return False
+
+    # All other fields are optional
+    return True
+```
+
+```typescript TypeScript
+function isValidRecord(record: any): boolean {
+  // Check structure
+  if (!record.enrichment || !record.citations) {
+    return false;
+  }
+
+  // Check guaranteed fields only
+  if (!record.enrichment.record_title) {
+    return false;
+  }
+
+  // All other fields are optional
+  return true;
+}
+```
+
+</CodeGroup>
+
+## Use summary_template as guidance
+
+The `summary_template` parameter can influence field naming:
+
+```json
+{
+  "query": "Tech earnings",
+  "summary_template": "[COMPANY] earned [REVENUE] in [QUARTER]"
+}
+```
+
+This adds a `template_based_summary` field and may guide the LLM toward similar
+field names (for example, `company`, `revenue`, `quarter`), but doesn't
+guarantee them.
+
+Expect the following:
+
+- `template_based_summary` is always added
+- Field names may align with your placeholders
+- Specific field names are not guaranteed
+
+## Test for schema variations
+
+To understand how schemas vary, submit the same query multiple times:
+
+<CodeGroup>
+
+```python Python
+import time
+import requests
+
+# Submit same query 3 times
+job_ids = []
+for i in range(3):
+    response = requests.post(url, json={"query": "Tech earnings Q3"})
+    job_ids.append(response.json()["job_id"])
+    time.sleep(1)
+
+# Wait for completion and compare schemas
+for job_id in job_ids:
+    # Poll until complete
+    results = get_results(job_id)
+
+    # Print first record's fields
+    first_record = results["records"][0]["enrichment"]
+    print(f"\nJob {job_id} fields:")
+    print(list(first_record.keys()))
+```
+
+```typescript TypeScript
+import axios from "axios";
+
+// Submit same query 3 times
+const jobIds: string[] = [];
+for (let i = 0; i < 3; i++) {
+  const response = await axios.post(url, { query: "Tech earnings Q3" });
+  jobIds.push(response.data.job_id);
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+}
+
+// Wait for completion and compare schemas
+for (const jobId of jobIds) {
+  // Poll until complete
+  const results = await getResults(jobId);
+
+  // Print first record's fields
+  const firstRecord = results.records[0].enrichment;
+  console.log(`\nJob ${jobId} fields:`);
+  console.log(Object.keys(firstRecord));
+}
+```
+
+</CodeGroup>
+
+This reveals the range of schema variations you need to handle.
+
+## Avoid common mistakes
+
+### Don't expect consistency
+
+<CodeGroup>
+
+```python Python
+# ❌ Assumes all records have same fields
+df = pd.DataFrame([
+    {"company": r["enrichment"]["company_name"]}
+    for r in records
+])
+```
+
+```typescript TypeScript
+// ❌ Assumes all records have same fields
+const data = records.map((r) => ({
+  company: r.enrichment.company_name,
+}));
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Handles variable fields
+data = []
+for record in records:
+    row = {"title": record["enrichment"]["record_title"]}
+    # Add all other fields dynamically
+    row.update(record["enrichment"])
+    data.append(row)
+
+df = pd.DataFrame(data)
+```
+
+```typescript TypeScript
+// ✅ Handles variable fields
+const data = records.map((record) => ({
+  title: record.enrichment.record_title,
+  // Add all other fields dynamically
+  ...record.enrichment,
+}));
+```
+
+</CodeGroup>
+
+### Don't use rigid validation
+
+<CodeGroup>
+
+```python Python
+# ❌ Breaks on schema changes
+required_fields = ["company_name", "revenue", "quarter"]
+for field in required_fields:
+    assert field in enrichment
+```
+
+```typescript TypeScript
+// ❌ Breaks on schema changes
+const requiredFields = ["company_name", "revenue", "quarter"];
+requiredFields.forEach((field) => {
+  if (!(field in enrichment)) {
+    throw new Error(`Missing field: ${field}`);
+  }
+});
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Flexible validation
+assert "record_title" in enrichment  # Only check guaranteed fields
+```
+
+```typescript TypeScript
+// ✅ Flexible validation
+if (!("record_title" in enrichment)) {
+  throw new Error("Missing required field: record_title");
+}
+```
+
+</CodeGroup>
+
+### Don't assume field types
+
+<CodeGroup>
+
+```python Python
+# ❌ Field format can vary
+revenue_float = float(enrichment["revenue"].replace("$", ""))
+```
+
+```typescript TypeScript
+// ❌ Field format can vary
+const revenueFloat = parseFloat(enrichment.revenue.replace("$", ""));
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Handle different formats
+import re
+
+revenue_str = enrichment.get("revenue", "0")
+# Extract numbers from "$14.9B", "14.9 billion", "14900000000", etc.
+numbers = re.findall(r'[\d.]+', revenue_str)
+revenue_value = float(numbers[0]) if numbers else 0.0
+```
+
+```typescript TypeScript
+// ✅ Handle different formats
+const revenueStr = enrichment.revenue || "0";
+// Extract numbers from "$14.9B", "14.9 billion", "14900000000", etc.
+const numbers = revenueStr.match(/[\d.]+/);
+const revenueValue = numbers ? parseFloat(numbers[0]) : 0.0;
+```
+
+</CodeGroup>
+
+## Best practices
+
+To work effectively with CatchAll's LLM-generated schemas:
+
+1. **Store raw JSON**: Always preserve the original `enrichment` object.
+2. **Use pattern matching**: Match fields by content, not exact names.
+3. **Build mapping layers**: Translate variable schemas to your canonical model.
+4. **Test with multiple runs**: Submit identical queries to see variations.
+5. **Document variability**: Inform users that schemas change between jobs.
+6. **Handle missing fields gracefully**: Use `.get()` with defaults in Python or
+   optional chaining in TypeScript.
+
+<Tip>
+  The non-deterministic behavior lets CatchAll handle any query type without
+  predefined schemas. Build flexible integrations to leverage this capability
+  while maintaining robust code.
+</Tip>
