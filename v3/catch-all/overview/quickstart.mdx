@@ -48,7 +48,7 @@ Before you begin, make sure you meet these prerequisites:
 
     <CodeGroup>
     ```bash curl
-    curl -X POST https://catchall.newscatcherapi.xyz/catchAll/submit \
+    curl -X POST https://catchall.newscatcherapi.com/catchAll/submit \
       -H "x-api-key: YOUR_API_KEY_HERE" \
       -H "Content-Type: application/json" \
       -d '{
@@ -72,7 +72,7 @@ Before you begin, make sure you meet these prerequisites:
 
     # Configuration
     API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
-    URL = "https://catchall.newscatcherapi.xyz/catchAll/submit"
+    URL = "https://catchall.newscatcherapi.com/catchAll/submit"
     HEADERS = {"x-api-key": API_KEY, "Content-Type": "application/json"}
 
     # Define the job parameters
@@ -94,7 +94,7 @@ Before you begin, make sure you meet these prerequisites:
     import axios, { AxiosResponse } from "axios";
 
     const API_KEY: string = "YOUR_API_KEY_HERE";
-    const URL: string = "https://catchall.newscatcherapi.xyz/catchAll/submit";
+    const URL: string = "https://catchall.newscatcherapi.com/catchAll/submit";
 
     interface JobPayload {
       query: string;
@@ -146,7 +146,7 @@ Before you begin, make sure you meet these prerequisites:
 
     <CodeGroup>
     ```bash curl
-    curl -X GET https://catchall.newscatcherapi.xyz/catchAll/status/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
+    curl -X GET https://catchall.newscatcherapi.com/catchAll/status/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
       -H "x-api-key: YOUR_API_KEY_HERE"
     ```
 
@@ -157,7 +157,7 @@ Before you begin, make sure you meet these prerequisites:
 
     API_KEY = "YOUR_API_KEY_HERE"
     JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"  # Job ID from previous step
-    URL = f"https://catchall.newscatcherapi.xyz/catchAll/status/{JOB_ID}"
+    URL = f"https://catchall.newscatcherapi.com/catchAll/status/{JOB_ID}"
     HEADERS = {"x-api-key": API_KEY}
 
     # Poll until job completes
@@ -185,7 +185,7 @@ Before you begin, make sure you meet these prerequisites:
 
     const API_KEY: string = "YOUR_API_KEY_HERE";
     const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
-    const URL: string = `https://catchall.newscatcherapi.xyz/catchAll/status/${JOB_ID}`;
+    const URL: string = `https://catchall.newscatcherapi.com/catchAll/status/${JOB_ID}`;
 
     interface StatusResponse {
       job_id: string;
@@ -240,7 +240,7 @@ Before you begin, make sure you meet these prerequisites:
 
     <CodeGroup>
     ```bash curl
-    curl -X GET https://catchall.newscatcherapi.xyz/catchAll/pull/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
+    curl -X GET https://catchall.newscatcherapi.com/catchAll/pull/af7a26d6-cf0b-458c-a6ed-4b6318c74da3 \
       -H "x-api-key: YOUR_API_KEY_HERE"
     ```
 
@@ -250,7 +250,7 @@ Before you begin, make sure you meet these prerequisites:
 
     API_KEY = "YOUR_API_KEY_HERE"
     JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-    URL = f"https://catchall.newscatcherapi.xyz/catchAll/pull/{JOB_ID}"
+    URL = f"https://catchall.newscatcherapi.com/catchAll/pull/{JOB_ID}"
     HEADERS = {"x-api-key": API_KEY}
 
     try:
@@ -281,7 +281,7 @@ Before you begin, make sure you meet these prerequisites:
 
     const API_KEY: string = "YOUR_API_KEY_HERE";
     const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
-    const URL: string = `https://catchall.newscatcherapi.xyz/catchAll/pull/${JOB_ID}`;
+    const URL: string = `https://catchall.newscatcherapi.com/catchAll/pull/${JOB_ID}`;
 
     interface Enrichment {
       record_title: string;
@@ -401,7 +401,7 @@ Now that you've made your first calls to the CatchAll API:
 
 1. Read [Understanding dynamic schemas](understanding-dynamic-schemas.md) to
    learn how to handle variable response structures in your code.
-2. Explore the [API Reference](https://catchall.newscatcherapi.xyz/docs) for
+2. Explore the [API Reference](https://catchall.newscatcherapi.com/docs) for
    detailed endpoint documentation.
 3. Review the [Introduction](introduction.md) to understand how the processing
    pipeline works.

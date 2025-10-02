@@ -39,7 +39,7 @@ externalDocs:
   url: https://newscatcherapi.com/docs/v3/catch-all
 
 servers:
-  - url: https://catchall.newscatcherapi.xyz
+  - url: https://catchall.newscatcherapi.com
     description: Production server
 
 tags:

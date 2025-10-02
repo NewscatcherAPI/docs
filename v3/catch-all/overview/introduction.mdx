@@ -83,7 +83,7 @@ to poll for status and retrieve results when complete.
 For API requests use the following base URL:
 
 ```bash
-https://catchall.newscatcherapi.xyz
+https://catchall.newscatcherapi.com
 ```
 
 ## Endpoints
@@ -116,7 +116,7 @@ import requests
 import json
 
 API_KEY = "YOUR_API_KEY"
-URL = "https://catchall.newscatcherapi.xyz/catchAll/submit"
+URL = "https://catchall.newscatcherapi.com/catchAll/submit"
 HEADERS = {
     "x-api-key": API_KEY,
     "Content-Type": "application/json"
@@ -138,7 +138,7 @@ except requests.exceptions.RequestException as e:
 
 ```typescript TypeScript
 const API_KEY = "YOUR_API_KEY";
-const URL = "https://catchall.newscatcherapi.xyz/catchAll/submit";
+const URL = "https://catchall.newscatcherapi.com/catchAll/submit";
 
 const payload = {
   query: "Tech company earnings this quarter",
@@ -169,7 +169,7 @@ try {
 
 ```bash cURL
 curl -X POST \
-  'https://catchall.newscatcherapi.xyz/catchAll/submit' \
+  'https://catchall.newscatcherapi.com/catchAll/submit' \
   -H 'x-api-key: YOUR_API_KEY' \
   -H 'Content-Type: application/json' \
   -d '{
