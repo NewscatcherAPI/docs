@@ -34,7 +34,7 @@ info:
 
 externalDocs:
   description: Find out more about Events API
-  url: https://newscatcherapi.com/docs/v3/events
+  url: https://www.newscatcherapi.com/docs/v3/events
 
 servers:
   - url: https://events.newscatcherapi.xyz

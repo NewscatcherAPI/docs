@@ -32,7 +32,7 @@ info:
 
 externalDocs:
   description: Find out more about NewsCatcher
-  url: https://newscatcherapi.com/docs/v3/local-news
+  url: https://www.newscatcherapi.com/docs/v3/local-news
 
 servers:
   - url: https://local-news.newscatcherapi.com

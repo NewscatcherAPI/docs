@@ -36,7 +36,7 @@ info:
 
 externalDocs:
   description: Find out more about NewsCatcher CatchAll API
-  url: https://newscatcherapi.com/docs/v3/catch-all
+  url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
 
 servers:
   - url: https://catchall.newscatcherapi.com
@@ -47,7 +47,7 @@ tags:
     description: Operations to create, monitor, and retrieve job results
     externalDocs:
       description: Learn about job lifecycle and status tracking
-      url: https://newscatcherapi.com/docs/v3/catch-all
+      url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
 
 security:
   - ApiKeyAuth: []
@@ -63,7 +63,7 @@ paths:
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
-        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/create-job
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/create-job
       requestBody:
         required: true
         content:
@@ -91,7 +91,7 @@ paths:
       operationId: getJobStatus
       externalDocs:
         description: Understanding job statuses and polling
-        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-status
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-status
       parameters:
         - $ref: "#/components/parameters/JobId"
       responses:
@@ -111,7 +111,7 @@ paths:
       operationId: getJobResults
       externalDocs:
         description: Working with job results and dynamic schemas
-        url: https://newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-results
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-results
       parameters:
         - $ref: "#/components/parameters/JobId"
       responses:
@@ -357,7 +357,7 @@ components:
 
             Field names are chosen semantically to match the content. For earnings data, you might see `revenue` or `quarterly_revenue`. For M&A data, you might see `acquirer` or `acquiring_company`.
 
-            See [Understanding dynamic schemas](https://newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
           required:
             - record_title
           properties:
