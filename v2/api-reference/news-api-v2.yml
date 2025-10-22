@@ -7,14 +7,14 @@ info:
     In other words, we're like Google for the news part of the web, which you can access as a source of data.
 
     Some useful links:
-    - [How NewsCatcher Works](https://newscatcherapi.com/docs/v2/documentation/guides-and-concepts/how-newscatcher-works)
+    - [How NewsCatcher Works](https://www.newscatcherapi.com/docs/v2/documentation/guides-and-concepts/how-newscatcher-works)
     - [GitHub for the Python SDK](https://github.com/NewscatcherAPI/newscatcherapi-sdk-python)
   contact:
     email: team@newscatcherapi.com
   version: 1.0.1
 externalDocs:
   description: Find out more about NewsCatcher
-  url: https://newscatcherapi.com/docs/
+  url: https://www.newscatcherapi.com/docs
 servers:
   - url: https://api.newscatcherapi.com/v2
 security:
