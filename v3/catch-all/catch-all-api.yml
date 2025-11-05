@@ -109,6 +109,17 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /catchAll/jobs/user:
+    get:
+      tags:
+        - Jobs
+      summary: List all user jobs
+      description: Returns all jobs created by the authenticated user.
+      operationId: getUserJobs
+      responses:
+        "200":
+          $ref: "#/components/responses/ListUserJobsResponse"
+
   /catchAll/pull/{job_id}:
     get:
       tags:
@@ -268,6 +279,15 @@ components:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
             status: "data_fetched"
 
+    ListUserJobsResponse:
+      description: List of user jobs
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ListUserJobsResponseDto"
+
     PullJobResponse:
       description: Results retrieved successfully
       content:
@@ -420,6 +440,20 @@ components:
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         status:
           $ref: "#/components/schemas/JobStatus"
+
+    ListUserJobsResponseDto:
+      type: object
+      required:
+        - job_id
+        - query
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier.
+        query:
+          type: string
+          description: The natural language query for this job.
 
     PullJobResponseDTO:
       type: object
