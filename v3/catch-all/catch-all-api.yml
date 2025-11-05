@@ -44,10 +44,17 @@ servers:
 
 tags:
   - name: Jobs
-    description: Operations to create, monitor, and retrieve job results
+    description: Operations to create, monitor, and retrieve job results.
     externalDocs:
       description: Learn about job lifecycle and status tracking
       url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
+  - name: Monitors
+    description: Operations to create, operate and retrieve monitor results.
+    externalDocs:
+      description:
+        Automate recurring queries with scheduled jobs and webhook
+        notifications.
+      url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/monitors
 
 security:
   - ApiKeyAuth: []
@@ -118,11 +125,92 @@ paths:
         - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
-          $ref: "#/components/responses/PullResponse"
+          $ref: "#/components/responses/PullJobResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/monitors/create:
+    post:
+      tags:
+        - Monitors
+      summary: Create scheduled monitor
+      description: |
+        Create a monitor that runs jobs based on a reference job with a specified schedule.
+
+        WARNING: Schedule validation is limited. Invalid schedules may be parsed incorrectly. 
+        Always test schedules before production use.
+      operationId: createMonitor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMonitorRequestDTO"
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateMonitorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}/jobs:
+    get:
+      tags:
+        - Monitors
+      summary: List monitor jobs
+      description: |
+        Returns all jobs associated with a monitor, sorted by start_date.
+        Each job includes job_id, start_date, and end_date.
+      operationId: listMonitorJobs
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["asc", "desc"]
+            default: "asc"
+          description: Sort by start_date (asc or desc).
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMonitorJobsResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/pull/{monitor_id}:
+    get:
+      tags:
+        - Monitors
+      summary: Get monitor results
+      description: |
+        Retrieve aggregated results from all jobs executed by this monitor.
+        Includes monitor configuration, execution history, and all records collected.
+      operationId: pullMonitorResults
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier
+      responses:
+        "200":
+          $ref: "#/components/responses/PullMonitorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
 components:
   parameters:
@@ -180,12 +268,35 @@ components:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
             status: "data_fetched"
 
-    PullResponse:
+    PullJobResponse:
       description: Results retrieved successfully
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullResponseDTO"
+            $ref: "#/components/schemas/PullJobResponseDTO"
+
+    CreateMonitorResponse:
+      description: Monitor created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateMonitorResponseDTO"
+
+    ListMonitorJobsResponse:
+      description: List of monitor jobs
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MonitorJobItem"
+
+    PullMonitorResponse:
+      description: Monitor results retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PullMonitorResponseDTO"
 
     ForbiddenError:
       description: Invalid or missing API key
@@ -197,16 +308,14 @@ components:
             detail: "Invalid API key"
 
     NotFoundError:
-      description: Job not found or results not available
+      description: Job/monitor not found or results not available
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-          example:
-            detail: "Job not found"
 
     ValidationError:
-      description: Validation error in request body
+      description: Validation error
       content:
         application/json:
           schema:
@@ -312,7 +421,7 @@ components:
         status:
           $ref: "#/components/schemas/JobStatus"
 
-    PullResponseDTO:
+    PullJobResponseDTO:
       type: object
       required:
         - job_id
@@ -447,12 +556,172 @@ components:
           description: Article publication date in YYYY-MM-DD HH:MM:SS format
           example: "2025-09-26 08:54:20"
 
+    CreateMonitorRequestDTO:
+      type: object
+      required:
+        - reference_job_id
+        - schedule
+      properties:
+        reference_job_id:
+          type: string
+          format: uuid
+          description: Job ID to use as template for scheduled runs.
+        schedule:
+          type: string
+          description: |
+            Natural language schedule description. Examples:
+            - "every day at 12 PM UTC"
+            - "every Monday at 9 AM EST"
+            - "every 6 hours"
+
+            WARNING: Schedule validation is limited. Test carefully before production.
+          example: "every day at 12 PM UTC"
+        webhook:
+          $ref: "#/components/schemas/WebhookDTO"
+          description:
+            Optional webhook to receive notifications when jobs complete.
+
+    WebhookDTO:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL.
+        method:
+          type: string
+          enum: ["POST", "PUT"]
+          default: "POST"
+          description: HTTP method to use.
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP headers to include in request.
+        params:
+          type: object
+          description: Query string parameters.
+        auth:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+          description: Basic auth credentials [username, password].
+
+    CreateMonitorResponseDTO:
+      type: object
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          description: Monitor ID if successful, null if error.
+        status:
+          type: string
+          description: Creation status or error message
+          example: "Monitor Created Successfully"
+
+    PullMonitorResponseDTO:
+      type: object
+      required:
+        - monitor_id
+        - reference_job
+        - status
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+        cron_expression:
+          type: string
+          description: Parsed cron expression from natural language schedule
+        timezone:
+          type: string
+        reference_job:
+          type: object
+          properties:
+            query:
+              type: string
+            context:
+              type: string
+        date_range:
+          type: object
+          description: Time range covered by monitor results
+        records:
+          type: integer
+          default: 0
+          description: Total number of records across all monitor jobs
+        status:
+          type: string
+          description: Monitor status or error message
+        last_run_date:
+          type: string
+          format: date-time
+          description: Timestamp of last scheduled job execution
+        all_records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+          description: Aggregated records from all monitor jobs
+
+    WebhookPayload:
+      type: object
+      description: |
+        Payload sent to webhook URL when a monitor job completes.
+        Content-Type: application/json
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+        reference_job_id:
+          type: string
+          format: uuid
+        latest_job_id:
+          type: string
+          format: uuid
+          description: Job ID of the most recent execution
+        records_count:
+          type: integer
+          description: Number of records from latest job
+        jobs_processed:
+          type: integer
+          description: Total number of jobs run by this monitor
+        updated_at:
+          type: string
+          format: date-time
+        cron_expression:
+          type: string
+        timezone:
+          type: string
+
+    MonitorJobItem:
+      type: object
+      description: Information about a single job execution within a monitor.
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this job execution.
+        start_date:
+          type: string
+          format: date-time
+          description: When the job started processing.
+        end_date:
+          type: string
+          format: date-time
+          description: When the job completed (null if still running).
+        status:
+          type: string
+          description: Job status.
+          example: "job_completed"
+
     Error:
       type: object
       properties:
         detail:
           type: string
-          description: Error message
+          description: Error message.
           example: "Invalid API key"
 
     ValidationErrorDetail:
