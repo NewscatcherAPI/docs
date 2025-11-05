@@ -69,11 +69,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubmitRequest"
+              $ref: "#/components/schemas/SubmitRequestDTO"
             example:
               query: "Tech company earnings this quarter"
               context: "Focus on revenue and profit margins"
-              summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]"
+              schema: "Company [NAME] earned [REVENUE] in [QUARTER]"
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
@@ -191,7 +191,7 @@ components:
     Query:
       type: string
       description: |
-        Natural language question that describes what you want to find. You can ask about any topic: company earnings, policy changes, product launches, M&A activity, and more.
+        Natural language question describing what to find.
 
         The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
 
@@ -200,30 +200,31 @@ components:
     Context:
       type: string
       description: |
-        Additional context to focus the search and extraction. Use this to narrow results to specific aspects of your query.
-
-        The context influences which articles are retrieved and which fields are extracted.
+        Additional context to focus on specific aspects of your query.
       example: "Focus on revenue and profit margins"
 
-    SummaryTemplate:
+    Schema:
       type: string
       description: |
-        Template string to guide record summary formatting. Use placeholder syntax like `[NAME]`, `[VALUE]`, `[DATE]` to indicate desired fields.
+        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields to indicate desired fields: [COMPANY], [REVENUE], [DATE], etc.
 
-        When provided, the API adds a `template_based_summary` field to each record's enrichment object following your template format. This does not guarantee specific field names in the enrichment object.
-      example: "Company [NAME] earned [REVENUE] in [QUARTER]"
+        When provided, the system generates a `schema_based_summary` field for each record following this template.  
 
-    SubmitRequest:
+        **Note:** This does not guarantee specific field names in the enrichment object
+        due to dynamic schema generation.
+      example: "[COMPANY] earned [REVENUE] in [QUARTER]"
+
+    SubmitRequestDTO:
       type: object
       required:
         - query
       properties:
         query:
           $ref: "#/components/schemas/Query"
+        schema:
+          $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
-        summary_template:
-          $ref: "#/components/schemas/SummaryTemplate"
 
     SubmitResponseBody:
       type: object
