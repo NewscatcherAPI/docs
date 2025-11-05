@@ -317,6 +317,9 @@ components:
       required:
         - job_id
         - status
+        - page
+        - total_pages
+        - page_size
       properties:
         job_id:
           type: string
@@ -365,6 +368,18 @@ components:
               type: string
               format: date-time
               example: "2025-09-30T23:59:59Z"
+        page:
+          title: Page
+          description: The current page number.
+          type: integer
+        total_pages:
+          title: Total Pages
+          description: The total number of pages available.
+          type: integer
+        page_size:
+          title: Page Size
+          description: The number of records per page.
+          type: integer
         all_records:
           type: array
           items:
