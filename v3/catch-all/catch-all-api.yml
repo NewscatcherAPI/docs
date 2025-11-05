@@ -1,33 +1,45 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.1.0
+  version: 0.3.8
   description: |
     CatchAll transforms natural language questions into structured, validated records extracted from web sources.
 
     ### Endpoints
-    - **POST /catchAll/submit**  
-      Create a new job. Requires `x-api-key` header. Request body: `{ "query": "..." }`
 
-    - **GET /catchAll/status/{job_id}**  
-      Returns the current status of a job
+    **Jobs:**
+    - **POST /catchAll/submit** - Create a new job.
+    - **GET /catchAll/status/{job_id}** - Get job processing status.
+    - **GET /catchAll/pull/{job_id}** - Retrieve job results.
+    - **GET /catchAll/jobs/user** - List user jobs.
 
-    - **GET /catchAll/pull/{job_id}**  
-      Retrieves final results for a completed job
+    **Monitors:**
+    - **POST /catchAll/monitors/create** - Create monitor.
+    - **GET /catchAll/monitors/{monitor_id}/jobs** - List monitor jobs.
+    - **GET /catchAll/monitors/pull/{monitor_id}** - Get monitor results.
+
+    **Meta:**
+    - **GET /health** - API health check
+    - **GET /version** - Current API version
 
     ### Authentication
-    All endpoints require `x-api-key` header. Invalid or missing key returns `403 Forbidden`.
+    All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Workflow
-    1. Submit a query with `/catchAll/submit`
-    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes)
-    3. Retrieve results with `/catchAll/pull/{job_id}`
+    ### Basic Workflow
+    1. Submit a query with `/catchAll/submit`.
+    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes).
+    3. Retrieve results with `/catchAll/pull/{job_id}`.
+
+    ### Monitor Workflow
+    1. Create a successful job.
+    2. Create a monitor with `/catchAll/monitors/create` using the job ID as a reference.
+    3. System automatically runs jobs on your schedule.
+    4. (Optional) Receive webhook notifications on completion.
+    5. Retrieve aggregated results with `/catchAll/monitors/pull/{monitor_id}`.
 
     ### Important Notes
 
-    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object vary between requests and are not fixed.
-
-    **Non-Deterministic**: Identical queries can produce different results due to LLM-based processing.
+    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
 
   contact:
     name: NewsCatcher AI
