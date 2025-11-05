@@ -115,7 +115,7 @@ paths:
     get:
       tags:
         - Jobs
-      summary: List all user jobs
+      summary: List user jobs
       description: Returns all jobs created by the authenticated user.
       operationId: getUserJobs
       responses:
@@ -148,11 +148,11 @@ paths:
     post:
       tags:
         - Monitors
-      summary: Create scheduled monitor
+      summary: Create monitor
       description: |
         Create a monitor that runs jobs based on a reference job with a specified schedule.
 
-        WARNING: Schedule validation is limited. Invalid schedules may be parsed incorrectly. 
+        **Warning**: Schedule validation is limited. Invalid schedules may be parsed incorrectly. 
         Always test schedules before production use.
       operationId: createMonitor
       requestBody:
@@ -216,7 +216,7 @@ paths:
           schema:
             type: string
             format: uuid
-          description: Monitor identifier
+          description: Monitor identifier.
       responses:
         "200":
           $ref: "#/components/responses/PullMonitorResponse"
@@ -229,9 +229,10 @@ paths:
     get:
       tags:
         - Meta
-      summary: Health check
-      description: Check API availability
+      summary: Check health
+      description: Check API availability.
       operationId: healthCheck
+      security: []
       responses:
         "200":
           $ref: "#/components/responses/HealthCheckResponse"
@@ -240,9 +241,10 @@ paths:
     get:
       tags:
         - Meta
-      summary: Get API version
-      description: Returns current API version
+      summary: Get version
+      description: Returns current API version.
       operationId: getVersion
+      security: []
       responses:
         "200":
           $ref: "#/components/responses/VersionResponse"
@@ -254,7 +256,7 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the `/catchAll/submit` endpoint
+        Unique job identifier returned from the `/catchAll/submit` endpoint.
       schema:
         type: string
         format: uuid
@@ -294,7 +296,7 @@ components:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
     StatusResponse:
-      description: Status retrieved successfully
+      description: Status retrieved successfully.
       content:
         application/json:
           schema:
@@ -336,7 +338,7 @@ components:
               $ref: "#/components/schemas/MonitorJobItem"
 
     PullMonitorResponse:
-      description: Monitor results retrieved successfully
+      description: Monitor results retrieved successfully.
       content:
         application/json:
           schema:
@@ -406,12 +408,9 @@ components:
     Schema:
       type: string
       description: |
-        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields to indicate desired fields: [COMPANY], [REVENUE], [DATE], etc.
+        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields: [COMPANY], [REVENUE], [DATE], etc.
 
-        When provided, the system generates a `schema_based_summary` field for each record following this template.  
-
-        **Note:** This does not guarantee specific field names in the enrichment object
-        due to dynamic schema generation.
+        When provided, the system generates a `schema_based_summary` field for each record following this template.
       example: "[COMPANY] earned [REVENUE] in [QUARTER]"
 
     SubmitRequestDTO:
@@ -457,18 +456,18 @@ components:
       description: |
         Current job processing status. Jobs progress through these stages:
 
-        - `pending`: Job queued, waiting to start
-        - `analysis_started`: Beginning query analysis
-        - `analysis_keywords_extracted`: Keywords identified
-        - `analysis_enrichments_extracted`: Validators and extractors generated
-        - `analysis_queries_extracted`: Search queries created
-        - `retrieval_dispatched`: Queries sent to fetching service
-        - `data_fetched`: Articles retrieved
-        - `clustering_dispatched`: Clustering initiated
-        - `data_grouped`: Similar articles clustered
-        - `enrichment_dispatched`: Validation and extraction started
-        - `data_enriched`: Structured data extracted
-        - `job_completed`: Job finished, results ready
+        - `pending`: Job queued, waiting to start.
+        - `analysis_started`: Beginning query analysis.
+        - `analysis_keywords_extracted`: Keywords identified.
+        - `analysis_enrichments_extracted`: Validators and extractors generated.
+        - `analysis_queries_extracted`: Search queries created.
+        - `retrieval_dispatched`: Queries sent to fetching service.
+        - `data_fetched`: Articles retrieved.
+        - `clustering_dispatched`: Clustering initiated.
+        - `data_grouped`: Similar articles clustered.
+        - `enrichment_dispatched`: Validation and extraction started.
+        - `data_enriched`: Structured data extracted.
+        - `job_completed`: Job finished, results ready.
 
         Poll every 30-60 seconds until status is `job_completed`.
       example: "data_fetched"
@@ -482,7 +481,7 @@ components:
         job_id:
           type: string
           format: uuid
-          description: Job identifier
+          description: Job identifier.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         status:
           $ref: "#/components/schemas/JobStatus"
@@ -595,9 +594,7 @@ components:
         enrichment:
           type: object
           description: |
-            Structured data extracted from articles. Schema is dynamically generated per job.
-
-            Field names are chosen semantically to match the content. For earnings data, you might see `revenue` or `quarterly_revenue`. For M&A data, you might see `acquirer` or `acquiring_company`.
+            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
           additionalProperties: {}
@@ -633,7 +630,7 @@ components:
         published_date:
           type: string
           format: date-time
-          description: Article publication date in YYYY-MM-DD HH:MM:SS format
+          description: Article publication date in YYYY-MM-DD HH:MM:SS format.
           example: "2025-09-26 08:54:20"
 
     CreateMonitorRequestDTO:
@@ -654,7 +651,7 @@ components:
             - "every Monday at 9 AM EST"
             - "every 6 hours"
 
-            WARNING: Schedule validation is limited. Test carefully before production.
+            **Warning**: Schedule validation is limited. Test carefully before production.
           example: "every day at 12 PM UTC"
         webhook:
           $ref: "#/components/schemas/WebhookDTO"
@@ -715,7 +712,7 @@ components:
           format: uuid
         cron_expression:
           type: string
-          description: Parsed cron expression from natural language schedule
+          description: Parsed cron expression from natural language schedule.
         timezone:
           type: string
         reference_job:
@@ -727,23 +724,23 @@ components:
               type: string
         date_range:
           type: object
-          description: Time range covered by monitor results
+          description: Time range covered by monitor results.
         records:
           type: integer
           default: 0
-          description: Total number of records across all monitor jobs
+          description: Total number of records across all monitor jobs.
         status:
           type: string
-          description: Monitor status or error message
+          description: Monitor status or error message.
         last_run_date:
           type: string
           format: date-time
-          description: Timestamp of last scheduled job execution
+          description: Timestamp of last scheduled job execution.
         all_records:
           type: array
           items:
             $ref: "#/components/schemas/Record"
-          description: Aggregated records from all monitor jobs
+          description: Aggregated records from all monitor jobs.
 
     WebhookPayload:
       type: object
@@ -834,4 +831,4 @@ components:
       type: apiKey
       in: header
       name: x-api-key
-      description: API key for authentication
+      description: API key for authentication.
