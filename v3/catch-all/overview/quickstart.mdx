@@ -54,7 +54,7 @@ Before you begin, make sure you meet these prerequisites:
       -d '{
         "query": "Tech company earnings this quarter",
         "context": "Focus on revenue and profit margins",
-        "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+        "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"
       }'
     ```
 
@@ -62,7 +62,7 @@ Before you begin, make sure you meet these prerequisites:
     {
       "query": "Tech company earnings this quarter",
       "context": "Focus on revenue and profit margins",
-      "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"
+      "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"
     }
     ```
 
@@ -79,7 +79,7 @@ Before you begin, make sure you meet these prerequisites:
     PAYLOAD = {
         "query": "Tech company earnings this quarter",  # Natural language question
         "context": "Focus on revenue and profit margins",  # Optional context
-        "summary_template": "Company [NAME] earned [REVENUE] in [QUARTER]"  # Optional template
+        "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"  # Optional template
     }
 
     try:
@@ -99,13 +99,13 @@ Before you begin, make sure you meet these prerequisites:
     interface JobPayload {
       query: string;
       context?: string;
-      summary_template?: string;
+      schema?: string;
     }
 
     const payload: JobPayload = {
       query: "Tech company earnings this quarter",
       context: "Focus on revenue and profit margins",
-      summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]"
+      schema: "Company [NAME] earned [REVENUE] in [QUARTER]"
     };
 
     axios
@@ -228,7 +228,7 @@ Before you begin, make sure you meet these prerequisites:
     ```
 
     Jobs progress through statuses from `pending` to `job_completed`.
-    The list of all job statuses available in the [Introduction > Job statuses](/v3/catch-all/overview/introduction#job-statuses).
+    The list of all job statuses available in the [Get job status > status](/v3/catch-all/endpoints/get-job-status#response-status).
 
     Processing typically takes 10-15 minutes.
 
@@ -259,18 +259,17 @@ Before you begin, make sure you meet these prerequisites:
         results = response.json()
 
         print(f"Query: {results['query']}")
-        print(f"Total records: {results['total_records']}")
-        print(f"Sources processed: {results['sources_count']}")
-        print(f"Processing time: {results['processing_time']}")
+        print(f"Valid records: {results['valid_records']}")
+        print(f"Candidate records: {results['candidate_records']}")
+        print(f"Duration: {results['duration']}")
 
         # Display first record
-        if results['records']:
-            record = results['records'][0]
-            print(f"\nFirst record: {record['enrichment']['record_title']}")
+        if results['all_records']:
+            record = results['all_records'][0]
+            print(f"\nFirst record: {record['record_title']}")
             print("\nExtracted fields:")
             for key, value in record['enrichment'].items():
-                if key != 'record_title':
-                    print(f"  {key}: {value}")
+                print(f"  {key}: {value}")
 
     except requests.exceptions.RequestException as e:
         print(f"Failed to retrieve results: {e}")
@@ -284,28 +283,30 @@ Before you begin, make sure you meet these prerequisites:
     const URL: string = `https://catchall.newscatcherapi.com/catchAll/pull/${JOB_ID}`;
 
     interface Enrichment {
-      record_title: string;
       [key: string]: any;
+    }
+
+    interface Citation {
+      title: string;
+      link: string;
+      published_date: string;
     }
 
     interface Record {
       record_id: string;
+      record_title: string;
       enrichment: Enrichment;
-      citations: Array<{
-        title: string;
-        link: string;
-        published_date: string;
-      }>;
+      citations: Citation[];
     }
 
     interface ResultsResponse {
       job_id: string;
       query: string;
       status: string;
-      processing_time: string;
-      sources_count: number;
-      total_records: number;
-      records: Record[];
+      duration: string;
+      candidate_records: number;
+      valid_records: number;
+      all_records: Record[];
     }
 
     axios
@@ -316,18 +317,16 @@ Before you begin, make sure you meet these prerequisites:
         const results = response.data;
 
         console.log(`Query: ${results.query}`);
-        console.log(`Total records: ${results.total_records}`);
-        console.log(`Sources processed: ${results.sources_count}`);
-        console.log(`Processing time: ${results.processing_time}`);
+        console.log(`Valid records: ${results.valid_records}`);
+        console.log(`Candidate records: ${results.candidate_records}`);
+        console.log(`Duration: ${results.duration}`);
 
-        if (results.records.length > 0) {
-          const record = results.records[0];
-          console.log(`\nFirst record: ${record.enrichment.record_title}`);
+        if (results.all_records.length > 0) {
+          const record = results.all_records[0];
+          console.log(`\nFirst record: ${record.record_title}`);
           console.log("\nExtracted fields:");
           Object.entries(record.enrichment).forEach(([key, value]) => {
-            if (key !== "record_title") {
-              console.log(`  ${key}: ${value}`);
-            }
+            console.log(`  ${key}: ${value}`);
           });
         }
       })
@@ -345,25 +344,25 @@ Before you begin, make sure you meet these prerequisites:
 
     <Expandable title="Example response">
 
-    ```json JSON {22-30}
+    ```json JSON {22-29}
     {
       "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
       "query": "Tech company earnings this quarter",
       "context": "Focus on revenue and profit margins",
-      "validation_criteria": [
+      "validators": [
         "is_current_quarter",
         "contains_financial_data",
         "is_about_tech_company_earnings"
       ],
       "status": "job_completed",
-      "processing_time": "12m",
-      "sources_count": 59150,
-      "total_records": 2865,
+      "duration": "12m",
+      "candidate_records": 59150,
+      "valid_records": 156,
       "date_range": {
         "start_date": "2025-11-05T13:06:10Z",
         "end_date": "2025-11-05T14:06:10Z"
       },
-      "records": [
+      "all_records": [
         {
           "record_id": "5262823697790152939",
           "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
@@ -374,7 +373,7 @@ Before you begin, make sure you meet these prerequisites:
             "revenue_change": "up 12%",
             "profit_margin": "42% non-GAAP operating margin",
             "eps": "$1.47",
-            "template_based_summary": "Company Oracle earned $14.9 billion in Q1 2026"
+            "schema_based_summary": "Company Oracle earned $14.9 billion in Q1 2026"
           },
           "citations": [
             {
@@ -394,8 +393,8 @@ Before you begin, make sure you meet these prerequisites:
 </Steps>
 
 <Warning>
-  The field names in the `enrichment` object are LLM-generated and may vary
-  event for the same inputs. The example above shows one possible structure for
+  The field names in the `enrichment` object are LLM-generated and may vary even
+  for the same inputs. The example above shows one possible structure for
   earnings queries.
 </Warning>
 
@@ -403,10 +402,11 @@ Before you begin, make sure you meet these prerequisites:
 
 Now that you've made your first calls to the CatchAll API:
 
-1. Learn how to automate recurring queries with [Monitors](/v3/catch-all/overview/monitors).
-2. Read [Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas) to
-   understand variable response structures in your code.
-3. Explore the [API Reference](v3/catch-all/endpoints/create-job) for
-   detailed endpoint documentation.
+1. Learn how to automate recurring queries with
+   [Monitors](/v3/catch-all/overview/monitors).
+2. Read [Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas)
+   to understand variable response structures in your code.
+3. Explore the [API Reference](/v3/catch-all/endpoints/create-job) for detailed
+   endpoint documentation.
 
 <Note>Need help? Contact our support team at support@newscatcherapi.com</Note>
