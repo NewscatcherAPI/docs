@@ -1,0 +1,292 @@
+---
+title: Troubleshoot monitors
+sidebarTitle: Troubleshoot monitors
+description: Diagnose and fix common monitor issues.
+---
+
+This guide helps you diagnose and resolve common monitor issues.
+
+<Tip>
+  For preventive measures and configuration guidance, see [Configure
+  monitors](/v3/catch-all/how-to/configure-monitors).
+</Tip>
+
+## Monitor returns zero records
+
+**Symptom**: Webhook shows `"records_count": 0` on every execution after the
+first.
+
+**Cause**: Time-constrained query created date-specific validators.
+
+**Solution**:
+
+1. Check the reference job's `validators` array for time-based validators.
+2. Create a new job with an open-ended query (no time constraints).
+3. Create a new monitor from the corrected job.
+4. Disable the problematic monitor.
+
+**Example fix**:
+
+❌ **Original query**: `"AI company acquisitions announced this week"`
+
+✅ **Corrected query**: `"AI company acquisitions"`
+
+<Tip>
+For more details on avoiding time-constrained queries, see [Configure monitors:
+Verify reference job
+quality](/v3/catch-all/how-to/configure-monitors#verify-reference-job-quality).
+</Tip>
+
+---
+
+## Webhook not firing
+
+**Symptoms**:
+
+- No POST requests received at your endpoint.
+- Monitor shows jobs executing but no notifications.
+
+**Troubleshooting steps**:
+
+<Steps>
+  <Step title="Check endpoint accessibility">
+    Verify your webhook URL is publicly accessible:
+    ```bash
+    curl -X POST https://your-endpoint.com/webhook \
+      -H "Content-Type: application/json" \
+      -d '{"test": "data"}'
+    ```
+    
+    Should return 2xx status code.
+  </Step>
+
+  <Step title="Verify HTTPS">
+    Ensure your webhook URL uses HTTPS (not HTTP):
+
+    - ✅ `https://your-endpoint.com/webhook` 
+    - ❌ `http://your-endpoint.com/webhook`
+  </Step>
+
+  <Step title="Check firewall rules">
+    Ensure your server's firewall allows incoming POST requests on the webhook
+    port.
+  </Step>
+
+  <Step title="Test with webhook.site">
+    Create a temporary webhook at [webhook.site](https://webhook.site) and update
+    your monitor to verify the issue is with your endpoint.
+  </Step>
+
+  <Step title="Review server logs">
+    Check your server logs for:
+    - Incoming requests that failed
+    - Authentication errors
+    - Timeout errors
+  </Step>
+</Steps>
+
+---
+
+## Schedule not running as expected
+
+**Symptom**: Monitor executes at wrong times or wrong intervals.
+
+**Cause**: Invalid schedule format was parsed incorrectly.
+
+**Solution**:
+
+Check the parsed cron expression in your monitor results:
+
+```bash
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY" | jq .cron_expression
+```
+
+**Common patterns**:
+
+- `0 12 * * *` = Daily at 12:00 PM UTC ✅
+- `0 */6 * * *` = Every 6 hours ✅
+- `0 * * * *` = Top of every hour ✅
+- `* * * * *` = Every minute ❌ **(parsing error)**
+
+If the cron expression is incorrect, create a new monitor with a different
+schedule format.
+
+<Tip>
+For valid schedule formats, testing procedures, and a complete cron expression
+reference, see [Configure monitors: Test schedules before
+production](/v3/catch-all/how-to/configure-monitors#test-schedules-before-production).
+</Tip>
+
+---
+
+## Duplicate records appearing
+
+**Symptom**: Same event appears multiple times in aggregated results.
+
+**Expected behavior**: The system automatically deduplicates records across
+executions. If you're seeing duplicates, this indicates a potential issue.
+
+**Troubleshooting**:
+
+1. Check if the duplicates have different `record_id` values.
+2. Verify that citations differ between duplicate records.
+3. If true duplicates exist, contact support with:
+   - `monitor_id`
+   - `record_id` values of duplicates
+   - Example records
+
+---
+
+## High costs from frequent execution
+
+**Symptom**: Unexpected billing due to high job count.
+
+**Diagnosis**:
+
+Check your monitor's schedule frequency:
+
+```bash
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY" | jq .cron_expression
+```
+
+If it shows `* * * * *`, your schedule was parsed as every-minute execution.
+
+**Solutions**:
+
+<Steps>
+  <Step title="Disable current monitor">
+    ```bash
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/disable" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Step>
+
+  <Step title="Create new monitor with correct schedule">
+    Create a monitor with an appropriate frequency for your use case.
+  </Step>
+</Steps>
+
+<Tip>
+For recommended schedule frequencies by use case and cost optimization guidance,
+see [Configure monitors: Choose appropriate
+schedules](/v3/catch-all/how-to/configure-monitors#choose-appropriate-schedules).
+</Tip>
+
+---
+
+## Webhook returns 500 errors
+
+**Symptom**: Webhook endpoint returns 500 Internal Server Error.
+
+**Common causes**:
+
+- Processing takes longer than 5 seconds
+- Unhandled exceptions in webhook handler
+- Database connection issues
+
+**Solutions**:
+
+<Steps>
+  <Step title="Return 200 immediately">
+    Acknowledge receipt before processing:
+    
+    ```python
+    @app.route('/webhook', methods=['POST'])
+    def webhook():
+        payload = request.json
+        
+        # Return 200 immediately
+        process_webhook_async(payload)  # Queue for background processing
+        return jsonify({"status": "received"}), 200
+    ```
+  </Step>
+
+  <Step title="Add error handling">
+    Always return 200, even on errors:
+    
+    ```python
+    try:
+        payload = request.json
+        process_webhook_async(payload)
+        return jsonify({"status": "received"}), 200
+    except Exception as e:
+        logging.error(f"Webhook error: {e}")
+        # Still return 200 to avoid retries
+        return jsonify({"status": "error"}), 200
+    ```
+  </Step>
+
+  <Step title="Check server logs">
+    Review logs for specific error messages about what's failing.
+  </Step>
+</Steps>
+
+<Tip>
+For complete webhook implementation with retry logic and logging, see [Configure
+monitors: Implement robust
+webhooks](/v3/catch-all/how-to/configure-monitors#implement-robust-webhooks).
+</Tip>
+
+---
+
+## Monitor created but not executing
+
+**Symptom**: Monitor created successfully but no jobs appear in execution
+history.
+
+**Possible causes**:
+
+- Monitor is disabled
+- Schedule hasn't triggered yet
+- Invalid schedule format defaulting to never
+
+**Solutions**:
+
+<Steps>
+  <Step title="Check monitor status">
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+
+    Verify `"enabled": true` in the response.
+  </Step>
+
+  <Step title="Enable the monitor if disabled">
+    ```bash
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/enable" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Step>
+
+  <Step title="Wait for scheduled execution">
+    Allow time for the next scheduled execution based on your schedule interval.
+  </Step>
+
+  <Step title="Test with short interval">
+    Create a test monitor with `"every 5 minutes"` to confirm scheduling works, then create your production monitor.
+  </Step>
+</Steps>
+
+---
+
+## Need more help?
+
+If you encounter issues not covered in this guide:
+
+1. Check the [Changelog](/v3/catch-all/overview/changelog) for recent updates.
+2. Review [Monitors overview](/v3/catch-all/overview/monitors) for how monitors
+   work.
+3. Contact support at support@newscatcherapi.com with:
+   - `monitor_id` or `job_id`
+   - Detailed description of the issue
+   - Steps to reproduce
+   - Expected vs. actual behavior
+
+## See also
+
+- [Configure monitors](/v3/catch-all/how-to/configure-monitors)
+- [Monitors overview](/v3/catch-all/overview/monitors)
+- [API reference](/v3/catch-all/endpoints/create-monitor)
