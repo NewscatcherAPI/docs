@@ -1,0 +1,120 @@
+---
+title: CatchAll API changelog
+sidebarTitle: Changelog
+description: Track updates, improvements, and fixes to the CatchAll API.
+rss: true
+---
+
+<Note>
+  CatchAll API is currently in beta (v0.x.x). The API may change as we refine
+  features and gather feedback. Breaking changes may occur in minor version
+  updates during this phase.
+</Note>
+
+<Update label="0.3.8" description="2025-11-02">
+  Fix pagination to return the correct page of results instead of all records.
+</Update>
+
+<Update label="0.3.7" description="2025-10-31">
+  Fix jobs failing during the data extraction phase, preventing completion.
+</Update>
+
+<Update label="0.3.6" description="2025-10-31">
+  Fix corrupted special characters in the article text due to encoding errors.
+</Update>
+
+<Update label="0.3.5" description="2025-10-29">
+  Add [`GET /catchAll/monitors/pull/{monitor_id}
+  `](/v3/catch-all/endpoints/get-monitor-results) endpoint to retrieve aggregated
+  results from all monitor jobs.
+</Update>
+
+<Update label="0.3.4" description="2025-10-28">
+Add pagination support with `page` and `page_size` parameters to the [`GET /catchAll/pull/{job_id}`](/v3/catch-all/endpoints/get-job-results) endpoint for handling large result sets.
+
+Add [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) endpoint
+to list all jobs created with your API key.
+
+Fix response format inconsistencies that caused JSON parsing errors in the pull
+endpoint.
+
+</Update>
+
+<Update label="0.3.3" description="2025-10-24">
+  Fix timezone conversion errors when scheduling monitor jobs.
+</Update>
+
+<Update label="0.3.2" description="2025-10-24">
+  Fix monitors failing to execute all configured queries, causing incomplete
+  data collection.
+</Update>
+
+<Update label="0.3.0" description="2025-10-23">
+## Monitors feature released
+
+Introduced [monitors for automated queries](/v3/catch-all/overview/monitors) —
+schedule recurring data collection with natural language and webhook
+notifications.
+
+**Features:**
+
+- **Schedule automation**: Create monitors that run queries on schedules defined
+  in natural language (e.g., "every day at 12 PM UTC").
+- **Job tracking**: Track all jobs associated with a monitor.
+- **Execution history**: Retrieve job execution history and status for each
+  monitor.
+- **Webhook notifications**: Get notified when scheduled jobs complete.
+
+**New endpoints:**
+
+- [`POST /catchAll/monitors/create`](/v3/catch-all/endpoints/create-monitor) —
+  Create scheduled monitor.
+- [`GET /catchAll/monitors/{monitor_id}/jobs`](/v3/catch-all/endpoints/list-monitor-jobs)
+  — List monitor jobs.
+
+**Additional improvements:**
+
+- Job status responses now include complete job details during analysis phase
+  for better visibility into processing progress.
+
+</Update>
+
+<Update label="0.2.3" description="2025-10-21">
+  Fix incorrect date filtering in search results.
+</Update>
+
+<Update label="0.2.1" description="2025-10-20">
+  Add date range information to API responses showing the time period covered by
+  results.
+</Update>
+
+<Update label="0.1.0" description="2025-10-20">
+## Initial beta release
+
+CatchAll API transforms natural language questions into structured, validated
+data extracted from web sources.
+
+**Features:**
+
+- **Natural language processing**: Submit queries in plain English and receive
+  structured data with source citations.
+- **[Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas)**:
+  Response structures adapt to your query, generating relevant fields
+  automatically.
+- **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
+  validation, and extraction phases.
+- **Real-time status tracking**: Monitor job progress from submission to
+  completion.
+
+**Available endpoints:**
+
+- [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job) — Create jobs
+  with natural language queries.
+- [`GET /catchAll/status/{job_id}`](/v3/catch-all/endpoints/get-job-status) —
+  Check processing status.
+- [`GET /catchAll/pull/{job_id}`](/v3/catch-all/endpoints/get-job-results) —
+  Retrieve structured results with citations.
+
+→ [Get started with the quickstart guide](/v3/catch-all/overview/quickstart)
+
+</Update>

@@ -1,33 +1,45 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.1.0
+  version: 0.3.8
   description: |
     CatchAll transforms natural language questions into structured, validated records extracted from web sources.
 
     ### Endpoints
-    - **POST /catchAll/submit**  
-      Create a new job. Requires `x-api-key` header. Request body: `{ "query": "..." }`
 
-    - **GET /catchAll/status/{job_id}**  
-      Returns the current status of a job
+    **Jobs:**
+    - **POST /catchAll/submit** - Create a new job.
+    - **GET /catchAll/status/{job_id}** - Get job processing status.
+    - **GET /catchAll/pull/{job_id}** - Retrieve job results.
+    - **GET /catchAll/jobs/user** - List user jobs.
 
-    - **GET /catchAll/pull/{job_id}**  
-      Retrieves final results for a completed job
+    **Monitors:**
+    - **POST /catchAll/monitors/create** - Create monitor.
+    - **GET /catchAll/monitors/{monitor_id}/jobs** - List monitor jobs.
+    - **GET /catchAll/monitors/pull/{monitor_id}** - Get monitor results.
+
+    **Meta:**
+    - **GET /health** - API health check
+    - **GET /version** - Current API version
 
     ### Authentication
-    All endpoints require `x-api-key` header. Invalid or missing key returns `403 Forbidden`.
+    All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Workflow
-    1. Submit a query with `/catchAll/submit`
-    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes)
-    3. Retrieve results with `/catchAll/pull/{job_id}`
+    ### Basic Workflow
+    1. Submit a query with `/catchAll/submit`.
+    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes).
+    3. Retrieve results with `/catchAll/pull/{job_id}`.
+
+    ### Monitor Workflow
+    1. Create a successful job.
+    2. Create a monitor with `/catchAll/monitors/create` using the job ID as a reference.
+    3. System automatically runs jobs on your schedule.
+    4. (Optional) Receive webhook notifications on completion.
+    5. Retrieve aggregated results with `/catchAll/monitors/pull/{monitor_id}`.
 
     ### Important Notes
 
-    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object vary between requests and are not fixed.
-
-    **Non-Deterministic**: Identical queries can produce different results due to LLM-based processing.
+    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
 
   contact:
     name: NewsCatcher AI
@@ -44,10 +56,19 @@ servers:
 
 tags:
   - name: Jobs
-    description: Operations to create, monitor, and retrieve job results
+    description: Operations to create, monitor, and retrieve job results.
     externalDocs:
       description: Learn about job lifecycle and status tracking
       url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
+  - name: Monitors
+    description: Operations to create, operate and retrieve monitor results.
+    externalDocs:
+      description:
+        Automate recurring queries with scheduled jobs and webhook
+        notifications.
+      url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/monitors
+  - name: Meta
+    description: Operations to check API health and version.
 
 security:
   - ApiKeyAuth: []
@@ -69,11 +90,11 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubmitRequest"
+              $ref: "#/components/schemas/SubmitRequestDTO"
             example:
               query: "Tech company earnings this quarter"
               context: "Focus on revenue and profit margins"
-              summary_template: "Company [NAME] earned [REVENUE] in [QUARTER]"
+              schema: "Company [NAME] earned [REVENUE] in [QUARTER]"
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
@@ -102,6 +123,17 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /catchAll/jobs/user:
+    get:
+      tags:
+        - Jobs
+      summary: List user jobs
+      description: Returns all jobs created by the authenticated user.
+      operationId: getUserJobs
+      responses:
+        "200":
+          $ref: "#/components/responses/ListUserJobsResponse"
+
   /catchAll/pull/{job_id}:
     get:
       tags:
@@ -114,13 +146,120 @@ paths:
         url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-results
       parameters:
         - $ref: "#/components/parameters/JobId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
-          $ref: "#/components/responses/PullResponse"
+          $ref: "#/components/responses/PullJobResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/monitors/create:
+    post:
+      tags:
+        - Monitors
+      summary: Create monitor
+      description: |
+        Create a monitor that runs jobs based on a reference job with a specified schedule.
+
+        **Warning**: Schedule validation is limited. Invalid schedules may be parsed incorrectly. 
+        Always test schedules before production use.
+      operationId: createMonitor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMonitorRequestDTO"
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateMonitorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}/jobs:
+    get:
+      tags:
+        - Monitors
+      summary: List monitor jobs
+      description: |
+        Returns all jobs associated with a monitor, sorted by start_date.
+        Each job includes job_id, start_date, and end_date.
+      operationId: listMonitorJobs
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+        - name: sort
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["asc", "desc"]
+            default: "asc"
+          description: Sort by start_date (asc or desc).
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMonitorJobsResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/pull/{monitor_id}:
+    get:
+      tags:
+        - Monitors
+      summary: Get monitor results
+      description: |
+        Retrieve aggregated results from all jobs executed by this monitor.
+        Includes monitor configuration, execution history, and all records collected.
+      operationId: pullMonitorResults
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          $ref: "#/components/responses/PullMonitorResponse"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /health:
+    get:
+      tags:
+        - Meta
+      summary: Check health
+      description: Check API availability.
+      operationId: healthCheck
+      security: []
+      responses:
+        "200":
+          $ref: "#/components/responses/HealthCheckResponse"
+
+  /version:
+    get:
+      tags:
+        - Meta
+      summary: Get version
+      description: Returns current API version.
+      operationId: getVersion
+      security: []
+      responses:
+        "200":
+          $ref: "#/components/responses/VersionResponse"
 
 components:
   parameters:
@@ -129,11 +268,34 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the `/catchAll/submit` endpoint
+        Unique job identifier returned from the `/catchAll/submit` endpoint.
       schema:
         type: string
         format: uuid
       example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+    Page:
+      name: page
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      description: |
+        Page number to retrieve.
+
+    PageSize:
+      name: page_size
+      in: query
+      required: false
+      schema:
+        type: integer
+        default: 100
+        minimum: 1
+        maximum: 1000
+      description: |
+        Number of records per page.
 
   responses:
     SubmitResponse:
@@ -146,21 +308,75 @@ components:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
     StatusResponse:
-      description: Status retrieved successfully
+      description: Status retrieved successfully.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StatusResponseBody"
+            $ref: "#/components/schemas/StatusResponseDTO"
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
             status: "data_fetched"
 
-    PullResponse:
+    ListUserJobsResponse:
+      description: List of user jobs
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/ListUserJobsResponseDto"
+
+    PullJobResponse:
       description: Results retrieved successfully
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullResponseBody"
+            $ref: "#/components/schemas/PullJobResponseDTO"
+
+    CreateMonitorResponse:
+      description: Monitor created successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateMonitorResponseDTO"
+
+    ListMonitorJobsResponse:
+      description: List of monitor jobs
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/MonitorJobItem"
+
+    PullMonitorResponse:
+      description: Monitor results retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/PullMonitorResponseDTO"
+
+    HealthCheckResponse:
+      description: API is healthy
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              healthy:
+                type: boolean
+                example: true
+
+    VersionResponse:
+      description: API version
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              version:
+                type: string
+                example: "0.3.8"
 
     ForbiddenError:
       description: Invalid or missing API key
@@ -172,16 +388,14 @@ components:
             detail: "Invalid API key"
 
     NotFoundError:
-      description: Job not found or results not available
+      description: Job/monitor not found or results not available
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-          example:
-            detail: "Job not found"
 
     ValidationError:
-      description: Validation error in request body
+      description: Validation error
       content:
         application/json:
           schema:
@@ -191,7 +405,7 @@ components:
     Query:
       type: string
       description: |
-        Natural language question that describes what you want to find. You can ask about any topic: company earnings, policy changes, product launches, M&A activity, and more.
+        Natural language question describing what to find.
 
         The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
 
@@ -200,30 +414,28 @@ components:
     Context:
       type: string
       description: |
-        Additional context to focus the search and extraction. Use this to narrow results to specific aspects of your query.
-
-        The context influences which articles are retrieved and which fields are extracted.
+        Additional context to focus on specific aspects of your query.
       example: "Focus on revenue and profit margins"
 
-    SummaryTemplate:
+    Schema:
       type: string
       description: |
-        Template string to guide record summary formatting. Use placeholder syntax like `[NAME]`, `[VALUE]`, `[DATE]` to indicate desired fields.
+        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields: [COMPANY], [REVENUE], [DATE], etc.
 
-        When provided, the API adds a `template_based_summary` field to each record's enrichment object following your template format. This does not guarantee specific field names in the enrichment object.
-      example: "Company [NAME] earned [REVENUE] in [QUARTER]"
+        When provided, the system generates a `schema_based_summary` field for each record following this template.
+      example: "[COMPANY] earned [REVENUE] in [QUARTER]"
 
-    SubmitRequest:
+    SubmitRequestDTO:
       type: object
       required:
         - query
       properties:
         query:
           $ref: "#/components/schemas/Query"
+        schema:
+          $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
-        summary_template:
-          $ref: "#/components/schemas/SummaryTemplate"
 
     SubmitResponseBody:
       type: object
@@ -256,23 +468,23 @@ components:
       description: |
         Current job processing status. Jobs progress through these stages:
 
-        - `pending`: Job queued, waiting to start
-        - `analysis_started`: Beginning query analysis
-        - `analysis_keywords_extracted`: Keywords identified
-        - `analysis_enrichments_extracted`: Validators and extractors generated
-        - `analysis_queries_extracted`: Search queries created
-        - `retrieval_dispatched`: Queries sent to fetching service
-        - `data_fetched`: Articles retrieved
-        - `clustering_dispatched`: Clustering initiated
-        - `data_grouped`: Similar articles clustered
-        - `enrichment_dispatched`: Validation and extraction started
-        - `data_enriched`: Structured data extracted
-        - `job_completed`: Job finished, results ready
+        - `pending`: Job queued, waiting to start.
+        - `analysis_started`: Beginning query analysis.
+        - `analysis_keywords_extracted`: Keywords identified.
+        - `analysis_enrichments_extracted`: Validators and extractors generated.
+        - `analysis_queries_extracted`: Search queries created.
+        - `retrieval_dispatched`: Queries sent to fetching service.
+        - `data_fetched`: Articles retrieved.
+        - `clustering_dispatched`: Clustering initiated.
+        - `data_grouped`: Similar articles clustered.
+        - `enrichment_dispatched`: Validation and extraction started.
+        - `data_enriched`: Structured data extracted.
+        - `job_completed`: Job finished, results ready.
 
         Poll every 30-60 seconds until status is `job_completed`.
       example: "data_fetched"
 
-    StatusResponseBody:
+    StatusResponseDTO:
       type: object
       required:
         - job_id
@@ -281,90 +493,122 @@ components:
         job_id:
           type: string
           format: uuid
-          description: Job identifier
+          description: Job identifier.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         status:
           $ref: "#/components/schemas/JobStatus"
 
-    PullResponseBody:
+    ListUserJobsResponseDto:
       type: object
       required:
         - job_id
-        - status
-        - total_records
-        - records
+        - query
       properties:
         job_id:
           type: string
           format: uuid
-          description: Job identifier
+          description: Job identifier.
         query:
           type: string
-          description: Original natural language query
-          example: Tech company earnings this quarter
+          description: The natural language query for this job.
+
+    PullJobResponseDTO:
+      type: object
+      required:
+        - job_id
+        - status
+        - page
+        - total_pages
+        - page_size
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier.
+        query:
+          type: string
+          description: Original natural language query.
+          example: Tech company earnings this quarter.
         context:
           type: string
-          description: Context provided with the query
-          example: Focus on revenue and profit margins
-        validation_criteria:
+          description: Context provided with the query.
+          example: Focus on revenue and profit margins.
+        validators:
           type: array
           items:
             type: string
-          description:
-            List of validation rules that were applied to filter results
+          description: List of validation criteria applied to filter results.
+          default: []
           example: ["is_current_quarter", "contains_financial_data"]
         status:
           type: string
-          description:
-            Job status (should be `job_completed` when pulling results)
-          example: "job_completed"
-        processing_time:
+          description: |
+            Job status.
+          example: job_completed
+        duration:
           type: string
-          description: Total time taken to process the job
-          example: "15m"
-        sources_count:
+          description: Total time taken to process the job.
+          example: 15m
+        candidate_records:
           type: integer
-          description: Number of articles initially retrieved from sources
-          example: 59150
-        total_records:
+          description: Number of candidate records before validation.
+          example: 3200
+        valid_records:
           type: integer
-          description: Total number of validated records extracted
-          example: 2865
-        records:
+          description: Number of validated records extracted.
+          example: 156
+        date_range:
+          type: object
+          properties:
+            start_date:
+              type: string
+              format: date-time
+              example: "2025-09-15T00:00:00Z"
+            end_date:
+              type: string
+              format: date-time
+              example: "2025-09-30T23:59:59Z"
+        page:
+          title: Page
+          description: The current page number.
+          type: integer
+        total_pages:
+          title: Total Pages
+          description: The total number of pages available.
+          type: integer
+        page_size:
+          title: Page Size
+          description: The number of records per page.
+          type: integer
+        all_records:
           type: array
           items:
             $ref: "#/components/schemas/Record"
           description:
-            Array of extracted records with structured data and citations
+            Array of extracted records with structured data and citations.
 
     Record:
       type: object
       required:
         - record_id
+        - record_title
         - enrichment
         - citations
       properties:
         record_id:
           type: string
-          description: Unique identifier for the record
+          description: Unique identifier for the record.
           example: "5262823697790152939"
+        record_title:
+          type: string
+          description: Short title summarizing the record.
+          example: "Oracle Q1 2026 Earnings Exceed Expectations"
         enrichment:
           type: object
           description: |
-            Structured data extracted from articles. **Fields vary dynamically based on your query.**
-
-            Only `record_title` is guaranteed to be present. All other fields are generated by the LLM and adapt to the content found.
-
-            Field names are chosen semantically to match the content. For earnings data, you might see `revenue` or `quarterly_revenue`. For M&A data, you might see `acquirer` or `acquiring_company`.
+            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
-          required:
-            - record_title
-          properties:
-            record_title:
-              type: string
-              description: Short title summarizing the record (always present)
-              example: "Oracle Q1 2026 Earnings Exceed Expectations"
           additionalProperties: {}
           example:
             record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
@@ -377,7 +621,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Citation"
-          description: Source articles that were used to extract this record
+          description: Source articles that were used to extract this record.
 
     Citation:
       type: object
@@ -398,15 +642,175 @@ components:
         published_date:
           type: string
           format: date-time
-          description: Article publication date in YYYY-MM-DD HH:MM:SS format
+          description: Article publication date in YYYY-MM-DD HH:MM:SS format.
           example: "2025-09-26 08:54:20"
+
+    CreateMonitorRequestDTO:
+      type: object
+      required:
+        - reference_job_id
+        - schedule
+      properties:
+        reference_job_id:
+          type: string
+          format: uuid
+          description: Job ID to use as template for scheduled runs.
+        schedule:
+          type: string
+          description: |
+            Natural language schedule description. Examples:
+            - "every day at 12 PM UTC"
+            - "every Monday at 9 AM EST"
+            - "every 6 hours"
+
+            **Warning**: Schedule validation is limited. Test carefully before production.
+          example: "every day at 12 PM UTC"
+        webhook:
+          $ref: "#/components/schemas/WebhookDTO"
+          description:
+            Optional webhook to receive notifications when jobs complete.
+
+    WebhookDTO:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Webhook endpoint URL.
+        method:
+          type: string
+          enum: ["POST", "PUT"]
+          default: "POST"
+          description: HTTP method to use.
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: HTTP headers to include in request.
+        params:
+          type: object
+          description: Query string parameters.
+        auth:
+          type: array
+          items:
+            type: string
+          minItems: 2
+          maxItems: 2
+          description: Basic auth credentials [username, password].
+
+    CreateMonitorResponseDTO:
+      type: object
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          description: Monitor ID if successful, null if error.
+        status:
+          type: string
+          description: Creation status or error message
+          example: "Monitor Created Successfully"
+
+    PullMonitorResponseDTO:
+      type: object
+      required:
+        - monitor_id
+        - reference_job
+        - status
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+        cron_expression:
+          type: string
+          description: Parsed cron expression from natural language schedule.
+        timezone:
+          type: string
+        reference_job:
+          type: object
+          properties:
+            query:
+              type: string
+            context:
+              type: string
+        date_range:
+          type: object
+          description: Time range covered by monitor results.
+        records:
+          type: integer
+          default: 0
+          description: Total number of records across all monitor jobs.
+        status:
+          type: string
+          description: Monitor status or error message.
+        last_run_date:
+          type: string
+          format: date-time
+          description: Timestamp of last scheduled job execution.
+        all_records:
+          type: array
+          items:
+            $ref: "#/components/schemas/Record"
+          description: Aggregated records from all monitor jobs.
+
+    WebhookPayload:
+      type: object
+      description: |
+        Payload sent to webhook URL when a monitor job completes.
+        Content-Type: application/json
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+        reference_job_id:
+          type: string
+          format: uuid
+        latest_job_id:
+          type: string
+          format: uuid
+          description: Job ID of the most recent execution
+        records_count:
+          type: integer
+          description: Number of records from latest job
+        jobs_processed:
+          type: integer
+          description: Total number of jobs run by this monitor
+        updated_at:
+          type: string
+          format: date-time
+        cron_expression:
+          type: string
+        timezone:
+          type: string
+
+    MonitorJobItem:
+      type: object
+      description: Information about a single job execution within a monitor.
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Unique identifier for this job execution.
+        start_date:
+          type: string
+          format: date-time
+          description: When the job started processing.
+        end_date:
+          type: string
+          format: date-time
+          description: When the job completed (null if still running).
+        status:
+          type: string
+          description: Job status.
+          example: "job_completed"
 
     Error:
       type: object
       properties:
         detail:
           type: string
-          description: Error message
+          description: Error message.
           example: "Invalid API key"
 
     ValidationErrorDetail:
@@ -439,4 +843,4 @@ components:
       type: apiKey
       in: header
       name: x-api-key
-      description: API key for authentication
+      description: API key for authentication.

@@ -1,0 +1,361 @@
+{
+  "summary": {
+    "total_links": 74,
+    "working": 30,
+    "broken_404": 7,
+    "redirects": 0,
+    "errors": 37
+  },
+  "broken_links": [
+    {
+      "url": "https://app.newscatcherapi.com/",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v2/documentation/guides-and-concepts/use-news-api-v2-in-postman.mdx"
+      ]
+    },
+    {
+      "url": "https://app.newscatcherapi.com/auth/login",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v2/documentation/tutorials/export-news-into-csv-with-python.mdx",
+        "v2/api-reference/overview/authentication.mdx"
+      ]
+    },
+    {
+      "url": "https://app.newscatcherapi.com/dashboard/",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api.mdx",
+        "v2/api-reference/overview/rate-limits-quotas.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v3/catch-all/overview/introduction.mdx",
+        "v3/catch-all/catch-all-api.yml"
+      ]
+    },
+    {
+      "url": "https://local-news.newscatcherapi.com",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v3/local-news/overview/introduction.mdx",
+        "v3/local-news/local-news-api.yml"
+      ]
+    },
+    {
+      "url": "https://newscatcherapi.com/news-api#news-api-pricing",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx",
+        "v2/api-reference/overview/rate-limits-quotas.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com",
+      "status_code": 404,
+      "status_text": "Not Found",
+      "files": [
+        "v3/api-reference/libraries/legacy/java.mdx",
+        "v3/api-reference/news-api-v3.yml"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "url": "https://api.newscatcherapi.com",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-for-person-company-product.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2",
+      "status_text": "Connection Error",
+      "files": [
+        "v3/documentation/migration/migration-guide.mdx",
+        "v2/api-reference/news-api-v2.yml"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=12h",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/latest_headlines?countries=US&topic=business&when=1h",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/guides-and-concepts/migrate-from-v1-rapid-api.mdx",
+        "v2/documentation/how-to/scroll-through-pages.mdx",
+        "v2/documentation/tutorials/export-news-into-csv-with-python.mdx",
+        "v2/documentation/get-started/quickstart.mdx",
+        "v2/api-reference/overview/authentication.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?lang=en&from=2021/12/01&q=Tesla%20AND%20UI&to=2022/01/31",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?lang=en&from=three%20months%20ago&q=Tesla%20AND%20UI&to=6%20weeks%20ago",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/get-more-than-10000-articles.mdx",
+        "v2/documentation/how-to/scroll-through-pages.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=*%20page_size=100%20sources=nytimes.com,theguardian.com%20from=1",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/tutorials/build-news-aggregator.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2021/12/02",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/01&to=2022/31/01",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/02&to=2021/12/03",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Apple&lang=en&from=2021/12/03&to=2021/12/04",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/how-to/search-by-date-time.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Tesla",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/get-started/quickstart.mdx",
+        "v2/api-reference/overview/authentication.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=Tesla&lang=en&sort_by=relevancy&page=1",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/get-started/quickstart.mdx",
+        "v2/api-reference/overview/authentication.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v2/search?q=\\",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/api-reference/overview/authentication.mdx"
+      ]
+    },
+    {
+      "url": "https://api.newscatcherapi.com/v3/search",
+      "status_text": "Connection Error",
+      "files": [
+        "v3/documentation/troubleshooting/report-bugs.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/pull/${JOB_ID",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/pull/af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/pull/{JOB_ID",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/status/${JOB_ID",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/status/af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/status/{JOB_ID",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://catchall.newscatcherapi.com/catchAll/submit",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/catch-all/overview/introduction.mdx",
+        "v3/catch-all/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://crypto-news.newscatcherapi.com/",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/tutorials/build-news-aggregator.mdx"
+      ]
+    },
+    {
+      "url": "https://local-news.newscatcherapi.com/api/search",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/local-news/overview/introduction.mdx",
+        "v3/local-news/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://local-news.newscatcherapi.com/api/search/advanced",
+      "status_text": "Forbidden",
+      "files": [
+        "v3/local-news/overview/introduction.mdx",
+        "v3/local-news/overview/quickstart.mdx"
+      ]
+    },
+    {
+      "url": "https://newscatcherapi.com",
+      "status_text": "Connection Error",
+      "files": [
+        "v3/catch-all/catch-all-api.yml"
+      ]
+    },
+    {
+      "url": "https://newscatcherapi.com/",
+      "status_text": "Connection Error",
+      "files": [
+        "v2/documentation/pygooglenews/overview.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/documentation/migration/migration-guide.mdx",
+        "v3/api-reference/overview/introduction.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/breaking_news",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/documentation/guides-and-concepts/breaking-news.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/breaking_news?theme=Business&page_size=100&top_n_articles=5",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/documentation/guides-and-concepts/breaking-news.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/search",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/documentation/guides-and-concepts/clustering-news-articles.mdx",
+        "v3/documentation/guides-and-concepts/articles-deduplication.mdx",
+        "v3/documentation/guides-and-concepts/custom-tags.mdx",
+        "v3/documentation/guides-and-concepts/nlp-features.mdx",
+        "v3/documentation/how-to/search-in-translations.mdx",
+        "v3/documentation/how-to/search-by-entity.mdx",
+        "v3/documentation/how-to/use-boolean-operators.mdx",
+        "v3/documentation/how-to/paginate-large-datasets.mdx",
+        "v3/documentation/how-to/search-with-near.mdx",
+        "v3/documentation/how-to/search-by-url.mdx",
+        "v3/documentation/get-started/quickstart.mdx",
+        "v3/api-reference/overview/authentication.mdx",
+        "v3/api-reference/overview/introduction.mdx",
+        "v3/api-reference/overview/http-headers.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/api-reference/overview/authentication.mdx",
+        "v3/api-reference/overview/introduction.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence&lang=en",
+      "status_text": "Unauthorized",
+      "files": [
+        "README.md"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/sources",
+      "status_text": "Unauthorized",
+      "files": [
+        "v3/documentation/how-to/check-sources-coverage.mdx"
+      ]
+    },
+    {
+      "url": "https://v3-api.newscatcherapi.com/api/subscription",
+      "status_text": "<none>",
+      "files": [
+        "v3/api-reference/overview/rate-limits.mdx"
+      ]
+    }
+  ],
+  "redirects": []
+}

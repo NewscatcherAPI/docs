@@ -264,15 +264,38 @@
                 "pages": [
                   "v3/catch-all/overview/introduction",
                   "v3/catch-all/overview/quickstart",
-                  "v3/catch-all/overview/understanding-dynamic-schemas"
+                  "v3/catch-all/overview/understanding-dynamic-schemas",
+                  "v3/catch-all/overview/monitors",
+                  "v3/catch-all/overview/changelog"
                 ]
               },
               {
                 "group": "Endpoints",
                 "pages": [
-                  "v3/catch-all/endpoints/create-job",
-                  "v3/catch-all/endpoints/get-job-status",
-                  "v3/catch-all/endpoints/get-job-results"
+                  {
+                    "group": "Jobs",
+                    "pages": [
+                      "v3/catch-all/endpoints/create-job",
+                      "v3/catch-all/endpoints/get-job-status",
+                      "v3/catch-all/endpoints/get-job-results",
+                      "v3/catch-all/endpoints/list-user-jobs"
+                    ]
+                  },
+                  {
+                    "group": "Monitors",
+                    "pages": [
+                      "v3/catch-all/endpoints/create-monitor",
+                      "v3/catch-all/endpoints/get-monitor-results",
+                      "v3/catch-all/endpoints/list-monitor-jobs"
+                    ]
+                  },
+                  {
+                    "group": "Meta",
+                    "pages": [
+                      "v3/catch-all/endpoints/health",
+                      "v3/catch-all/endpoints/version"
+                    ]
+                  }
                 ]
               }
             ]
