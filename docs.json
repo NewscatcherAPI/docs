@@ -264,9 +264,16 @@
                 "pages": [
                   "v3/catch-all/overview/introduction",
                   "v3/catch-all/overview/quickstart",
-                  "v3/catch-all/overview/understanding-dynamic-schemas",
                   "v3/catch-all/overview/monitors",
+                  "v3/catch-all/overview/understanding-dynamic-schemas",
                   "v3/catch-all/overview/changelog"
+                ]
+              },
+              {
+                "group": "How to",
+                "pages": [
+                  "v3/catch-all/how-to/configure-monitors",
+                  "v3/catch-all/how-to/troubleshoot-monitors"
                 ]
               },
               {
