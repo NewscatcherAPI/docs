@@ -11,46 +11,66 @@ rss: true
   updates during this phase.
 </Note>
 
+<Update label="0.4.5" description="2025-11-08">
+## Monitor webhooks and deduplication
+
+Introduced webhook notifications and intelligent deduplication for monitors to
+streamline automated data collection workflows.
+
+**Features:**
+
+- **Webhook notifications**: Receive real-time POST notifications when scheduled
+  monitor jobs complete, including monitor ID, latest job ID, and record counts.
+- **Intelligent deduplication**: Monitors automatically eliminate duplicate
+  records across job executions, sending only new results to webhooks.
+- **Monitor management**: Enable or disable monitors to control automated job
+  execution.
+
+**Endpoints:**
+
+- [`GET /catchAll/monitors`](/v3/catch-all/endpoints/list-monitors) — List all
+  monitors for your API key.
+- [`POST /catchAll/monitors/{monitor_id}/enable`](/v3/catch-all/endpoints/enable-monitor)
+  — Enable a disabled monitor.
+- [`POST /catchAll/monitors/{monitor_id}/disable`](/v3/catch-all/endpoints/disable-monitor)
+  — Disable an active monitor.
+
+**Improvements:**
+
+- Reduced default date range from 14 days to 5 days for faster job processing.
+- Limited maximum date range to 30 days to maintain optimal performance.
+- Fixed special characters displaying incorrectly in article text.
+- Improved error handling when monitor jobs have incomplete data.
+
+</Update>
+
 <Update label="0.3.8" description="2025-11-02">
-  Fix pagination to return the correct page of results instead of all records.
-</Update>
+## Pagination and reliability improvements
 
-<Update label="0.3.7" description="2025-10-31">
-  Fix jobs failing during the data extraction phase, preventing completion.
-</Update>
+Enhanced core functionality with pagination fixes, job tracking capabilities,
+and improved data quality.
 
-<Update label="0.3.6" description="2025-10-31">
-  Fix corrupted special characters in the article text due to encoding errors.
-</Update>
+**Endpoints:**
 
-<Update label="0.3.5" description="2025-10-29">
-  Add [`GET /catchAll/monitors/pull/{monitor_id}
-  `](/v3/catch-all/endpoints/get-monitor-results) endpoint to retrieve aggregated
-  results from all monitor jobs.
-</Update>
+- [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) — List all
+  jobs created with your API key.
+- [`GET /catchAll/monitors/pull/{monitor_id}`](/v3/catch-all/endpoints/get-monitor-results)
+  — Retrieve aggregated results from all monitor jobs.
 
-<Update label="0.3.4" description="2025-10-28">
-Add pagination support with `page` and `page_size` parameters to the [`GET /catchAll/pull/{job_id}`](/v3/catch-all/endpoints/get-job-results) endpoint for handling large result sets.
+**Improvements:**
 
-Add [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) endpoint
-to list all jobs created with your API key.
+- Fixed pagination returning all records instead of the requested page.
+- Enhanced pagination support for handling large result sets with `page` and
+  `page_size` parameters.
+- Fixed jobs failing to complete during data extraction.
+- Fixed special characters displaying incorrectly in article text.
+- Fixed timezone errors when scheduling monitor jobs.
+- Fixed monitors failing to execute all configured queries.
 
-Fix response format inconsistencies that caused JSON parsing errors in the pull
-endpoint.
-
-</Update>
-
-<Update label="0.3.3" description="2025-10-24">
-  Fix timezone conversion errors when scheduling monitor jobs.
-</Update>
-
-<Update label="0.3.2" description="2025-10-24">
-  Fix monitors failing to execute all configured queries, causing incomplete
-  data collection.
 </Update>
 
 <Update label="0.3.0" description="2025-10-23">
-## Monitors feature released
+## Monitors feature
 
 Introduced [monitors for automated queries](/v3/catch-all/overview/monitors) —
 schedule recurring data collection with natural language and webhook
@@ -65,27 +85,18 @@ notifications.
   monitor.
 - **Webhook notifications**: Get notified when scheduled jobs complete.
 
-**New endpoints:**
+**Endpoints:**
 
 - [`POST /catchAll/monitors/create`](/v3/catch-all/endpoints/create-monitor) —
   Create scheduled monitor.
 - [`GET /catchAll/monitors/{monitor_id}/jobs`](/v3/catch-all/endpoints/list-monitor-jobs)
   — List monitor jobs.
 
-**Additional improvements:**
+**Improvements:**
 
-- Job status responses now include complete job details during analysis phase
-  for better visibility into processing progress.
+- Added date range information to results showing the time period covered.
+- Fixed incorrect date filtering in search results.
 
-</Update>
-
-<Update label="0.2.3" description="2025-10-21">
-  Fix incorrect date filtering in search results.
-</Update>
-
-<Update label="0.2.1" description="2025-10-20">
-  Add date range information to API responses showing the time period covered by
-  results.
 </Update>
 
 <Update label="0.1.0" description="2025-10-20">
@@ -98,7 +109,7 @@ data extracted from web sources.
 
 - **Natural language processing**: Submit queries in plain English and receive
   structured data with source citations.
-- **[Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas)**:
+- **[Dynamic schemas](/v3/catch-all/overview/dynamic-schemas)**:
   Response structures adapt to your query, generating relevant fields
   automatically.
 - **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
@@ -106,7 +117,7 @@ data extracted from web sources.
 - **Real-time status tracking**: Monitor job progress from submission to
   completion.
 
-**Available endpoints:**
+**Endpoints:**
 
 - [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job) — Create jobs
   with natural language queries.

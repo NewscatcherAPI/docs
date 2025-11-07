@@ -1,0 +1,505 @@
+---
+title: Working with dynamic schemas
+sidebarTitle: Dynamic schemas
+description: Build integrations that handle variable field names and structures.
+---
+
+CatchAll generates response schemas dynamically—field names change between jobs,
+even with identical inputs. This guide shows how to build integrations that
+handle this variability.
+
+<Warning>
+**Only 3 fields are guaranteed:**
+- `record_id`
+- `record_title`
+- `citations` array
+
+All other fields in `enrichment` vary between jobs.
+
+</Warning>
+
+## Why schemas vary
+
+Submit the same query twice, get different field names:
+
+<CodeGroup>
+
+```json Job 1 result
+{
+  "record_id": "5262823697790152939",
+  "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
+  "enrichment": {
+    "company_name": "Oracle",
+    "revenue": "$14.9 billion",
+    "profit_margin": "42%"
+  }
+}
+```
+
+```json Job 2 result
+{
+  "record_id": "7930223600790151893",
+  "record_title": "Oracle Q1 2026 Results",
+  "enrichment": {
+    "company": "Oracle",
+    "total_revenue": "$14.9B",
+    "operating_margin": "42%"
+  }
+}
+```
+
+</CodeGroup>
+
+**Why this happens:**
+
+- LLMs generate extractors dynamically for each job
+- Different keywords, validators, and extractors are created
+- Field names are chosen semantically to match content
+
+**This is expected behavior, not a bug.**
+
+## Integration strategies
+
+### Store raw data
+
+Preserve the entire `enrichment` object as JSON:
+
+<CodeGroup>
+
+```python Python
+import json
+
+db.insert({
+    "record_id": record["record_id"],
+    "title": record["record_title"],
+    "raw_data": json.dumps(record["enrichment"]),
+    "citations": json.dumps(record["citations"])
+})
+```
+
+```typescript TypeScript
+await db.insert({
+  record_id: record.record_id,
+  title: record.record_title,
+  raw_data: JSON.stringify(record.enrichment),
+  citations: JSON.stringify(record.citations),
+});
+```
+
+</CodeGroup>
+
+**Use when:** You need to preserve all data without loss. Query dynamically
+later.
+
+### Map to canonical fields
+
+Translate variable field names to your fixed schema using pattern matching:
+
+<CodeGroup>
+
+```python Python
+FIELD_PATTERNS = {
+    "revenue": ["revenue", "sales", "total_revenue"],
+    "profit": ["profit", "margin", "income", "earnings"],
+    "quarter": ["quarter", "q", "period"],
+}
+
+def normalize_record(record):
+    normalized = {"title": record["record_title"]}
+
+    for canonical, patterns in FIELD_PATTERNS.items():
+        for key, value in record["enrichment"].items():
+            if any(p in key.lower() for p in patterns):
+                normalized[canonical] = value
+                break
+
+    return normalized
+```
+
+```typescript TypeScript
+const FIELD_PATTERNS: Record<string, string[]> = {
+  revenue: ["revenue", "sales", "total_revenue"],
+  profit: ["profit", "margin", "income", "earnings"],
+  quarter: ["quarter", "q", "period"],
+};
+
+function normalizeRecord(record: Record<string, any>): Record<string, any> {
+  const normalized: Record<string, any> = {
+    title: record.record_title,
+  };
+
+  for (const [canonical, patterns] of Object.entries(FIELD_PATTERNS)) {
+    for (const [key, value] of Object.entries(record.enrichment)) {
+      if (patterns.some((p) => key.toLowerCase().includes(p))) {
+        normalized[canonical] = value;
+        break;
+      }
+    }
+  }
+
+  return normalized;
+}
+```
+
+</CodeGroup>
+
+**Use when:** You have a fixed database schema and need consistent field names.
+
+### Process dynamically
+
+Handle all fields without assumptions:
+
+<CodeGroup>
+
+```python Python
+print(f"Title: {record['record_title']}\n")
+
+for key, value in record["enrichment"].items():
+    display_name = key.replace("_", " ").title()
+    print(f"{display_name}: {value}")
+```
+
+```typescript TypeScript
+console.log(`Title: ${record.record_title}\n`);
+
+for (const [key, value] of Object.entries(record.enrichment)) {
+  const displayName = key
+    .replace(/_/g, " ")
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  console.log(`${displayName}: ${value}`);
+}
+```
+
+</CodeGroup>
+
+**Use when:** Your application can display fields without fixed structure
+(dashboards, search results).
+
+## Common patterns
+
+### Find fields by pattern
+
+<CodeGroup>
+
+```python Python
+def find_field(enrichment, patterns):
+    """Find first field matching any pattern."""
+    for key, value in enrichment.items():
+        if any(pattern in key.lower() for pattern in patterns):
+            return value
+    return None
+
+# Usage
+revenue = find_field(record["enrichment"], ["revenue", "sales"])
+profit = find_field(record["enrichment"], ["profit", "margin", "income"])
+```
+
+```typescript TypeScript
+function findField(
+  enrichment: Record<string, any>,
+  patterns: string[]
+): any | null {
+  for (const [key, value] of Object.entries(enrichment)) {
+    if (patterns.some((pattern) => key.toLowerCase().includes(pattern))) {
+      return value;
+    }
+  }
+  return null;
+}
+
+// Usage
+const revenue = findField(record.enrichment, ["revenue", "sales"]);
+const profit = findField(record.enrichment, ["profit", "margin", "income"]);
+```
+
+</CodeGroup>
+
+### Handle multiple possible names
+
+<CodeGroup>
+
+```python Python
+# Check variations with fallback
+revenue = (
+    record["enrichment"].get("revenue") or
+    record["enrichment"].get("total_revenue") or
+    record["enrichment"].get("sales") or
+    "N/A"
+)
+```
+
+```typescript TypeScript
+// Check variations with fallback
+const revenue =
+  record.enrichment.revenue ||
+  record.enrichment.total_revenue ||
+  record.enrichment.sales ||
+  "N/A";
+```
+
+</CodeGroup>
+
+### Parse different formats
+
+Revenue can appear as `"$14.9 billion"`, `"$14.9B"`, `"14900000000"`, or `14.9`:
+
+<CodeGroup>
+
+```python Python
+import re
+
+revenue_str = record["enrichment"].get("revenue", "0")
+numbers = re.findall(r'[\d.]+', revenue_str)
+revenue_value = float(numbers[0]) if numbers else 0.0
+```
+
+```typescript TypeScript
+const revenueStr = record.enrichment.revenue || "0";
+const numbers = revenueStr.match(/[\d.]+/);
+const revenueValue = numbers ? parseFloat(numbers[0]) : 0.0;
+```
+
+</CodeGroup>
+
+## What not to do
+
+### Don't hardcode field names
+
+<CodeGroup>
+
+```python Python
+# ❌ Breaks when field name differs
+revenue = record["enrichment"]["revenue"]  # KeyError
+```
+
+```typescript TypeScript
+// ❌ Breaks when field name differs
+const revenue = record.enrichment.revenue; // undefined
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Handle variations
+revenue = record["enrichment"].get("revenue", "N/A")
+```
+
+```typescript TypeScript
+// ✅ Handle variations
+const revenue = record.enrichment.revenue || "N/A";
+```
+
+</CodeGroup>
+
+### Don't validate specific fields
+
+<CodeGroup>
+
+```python Python
+# ❌ Breaks when schema changes
+required_fields = ["company_name", "revenue", "quarter"]
+for field in required_fields:
+    assert field in record["enrichment"]
+```
+
+```typescript TypeScript
+// ❌ Breaks when schema changes
+const requiredFields = ["company_name", "revenue", "quarter"];
+requiredFields.forEach((field) => {
+  if (!(field in record.enrichment)) {
+    throw new Error(`Missing field: ${field}`);
+  }
+});
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Only check guaranteed fields
+assert "record_id" in record
+assert "record_title" in record
+assert "citations" in record
+```
+
+```typescript TypeScript
+// ✅ Only check guaranteed fields
+if (!record.record_id || !record.record_title || !record.citations) {
+  throw new Error("Missing guaranteed fields");
+}
+```
+
+</CodeGroup>
+
+### Don't assume consistent fields across records
+
+<CodeGroup>
+
+```python Python
+# ❌ Assumes all records have same fields
+df = pd.DataFrame([
+    {"company": r["enrichment"]["company_name"]}
+    for r in results["all_records"]
+])
+```
+
+```typescript TypeScript
+// ❌ Assumes all records have same fields
+const data = results.all_records.map((r) => ({
+  company: r.enrichment.company_name, // undefined for some records
+}));
+```
+
+</CodeGroup>
+
+<CodeGroup>
+
+```python Python
+# ✅ Handle variable fields
+data = []
+for record in results["all_records"]:
+    row = {"title": record["record_title"]}
+    row.update(record["enrichment"])  # Add all fields dynamically
+    data.append(row)
+
+df = pd.DataFrame(data)
+```
+
+```typescript TypeScript
+// ✅ Handle variable fields
+const data = results.all_records.map((record) => ({
+  title: record.record_title,
+  ...record.enrichment, // Spread all enrichment fields
+}));
+```
+
+</CodeGroup>
+
+## Test your integration
+
+Submit the same query multiple times to see schema variations:
+
+<CodeGroup>
+
+```python Python
+import requests
+import time
+
+API_KEY = "YOUR_API_KEY"
+BASE_URL = "https://catchall.newscatcherapi.com"
+HEADERS = {"x-api-key": API_KEY}
+
+# Submit same query 3 times
+job_ids = []
+for i in range(3):
+    response = requests.post(
+        f"{BASE_URL}/catchAll/submit",
+        headers=HEADERS,
+        json={"query": "Tech earnings Q3"}
+    )
+    job_ids.append(response.json()["job_id"])
+    print(f"Created job {i+1}: {job_ids[-1]}")
+
+# Wait for jobs to complete
+print("\nWaiting for jobs to complete...")
+time.sleep(900)  # Wait 15 minutes
+
+# Compare schemas
+print("\nComparing schemas across jobs:\n")
+for idx, job_id in enumerate(job_ids, 1):
+    response = requests.get(
+        f"{BASE_URL}/catchAll/pull/{job_id}",
+        headers=HEADERS
+    )
+    results = response.json()
+
+    if results.get("all_records"):
+        first_record = results["all_records"][0]["enrichment"]
+        field_names = list(first_record.keys())
+        print(f"Job {idx} fields: {field_names}")
+    else:
+        print(f"Job {idx}: No records yet")
+```
+
+```typescript TypeScript
+import axios from "axios";
+
+const API_KEY = "YOUR_API_KEY";
+const BASE_URL = "https://catchall.newscatcherapi.com";
+const headers = { "x-api-key": API_KEY };
+
+async function testSchemaVariations() {
+  // Submit same query 3 times
+  const jobIds: string[] = [];
+  for (let i = 0; i < 3; i++) {
+    const response = await axios.post(
+      `${BASE_URL}/catchAll/submit`,
+      { query: "Tech earnings Q3" },
+      { headers }
+    );
+    jobIds.push(response.data.job_id);
+    console.log(`Created job ${i + 1}: ${jobIds[jobIds.length - 1]}`);
+  }
+
+  // Wait for jobs to complete
+  console.log("\nWaiting for jobs to complete...");
+  await new Promise((resolve) => setTimeout(resolve, 900000)); // Wait 15 minutes
+
+  // Compare schemas
+  console.log("\nComparing schemas across jobs:\n");
+  for (let idx = 0; idx < jobIds.length; idx++) {
+    const response = await axios.get(
+      `${BASE_URL}/catchAll/pull/${jobIds[idx]}`,
+      { headers }
+    );
+    const results = response.data;
+
+    if (results.all_records && results.all_records.length > 0) {
+      const firstRecord = results.all_records[0].enrichment;
+      const fieldNames = Object.keys(firstRecord);
+      console.log(`Job ${idx + 1} fields: ${fieldNames}`);
+    } else {
+      console.log(`Job ${idx + 1}: No records yet`);
+    }
+  }
+}
+
+testSchemaVariations();
+```
+
+</CodeGroup>
+
+**Verify your code:**
+
+- Doesn't crash when field names differ
+- Extracts data from all variations
+- Handles missing fields gracefully
+- Works with both empty and populated enrichment objects
+
+## Using schema parameter
+
+The `schema` parameter can influence field naming but doesn't guarantee specific
+names:
+
+```json
+{
+  "query": "Tech earnings",
+  "schema": "[COMPANY] earned [REVENUE] in [QUARTER]"
+}
+```
+
+**What you get:**
+
+- `schema_based_summary` field is added to enrichment
+- Field names may align with placeholders (`company`, `revenue`, `quarter`)
+- Specific field names are **not guaranteed**
+
+## See also
+
+- [API reference](/v3/catch-all/endpoints/create-job)
+- [Monitors](/v3/catch-all/overview/monitors)

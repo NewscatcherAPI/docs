@@ -264,9 +264,16 @@
                 "pages": [
                   "v3/catch-all/overview/introduction",
                   "v3/catch-all/overview/quickstart",
-                  "v3/catch-all/overview/understanding-dynamic-schemas",
                   "v3/catch-all/overview/monitors",
+                  "v3/catch-all/overview/dynamic-schemas",
                   "v3/catch-all/overview/changelog"
+                ]
+              },
+              {
+                "group": "How to",
+                "pages": [
+                  "v3/catch-all/how-to/configure-monitors",
+                  "v3/catch-all/how-to/troubleshoot-monitors"
                 ]
               },
               {
@@ -276,17 +283,20 @@
                     "group": "Jobs",
                     "pages": [
                       "v3/catch-all/endpoints/create-job",
+                      "v3/catch-all/endpoints/list-user-jobs",
                       "v3/catch-all/endpoints/get-job-status",
-                      "v3/catch-all/endpoints/get-job-results",
-                      "v3/catch-all/endpoints/list-user-jobs"
+                      "v3/catch-all/endpoints/get-job-results"
                     ]
                   },
                   {
                     "group": "Monitors",
                     "pages": [
                       "v3/catch-all/endpoints/create-monitor",
+                      "v3/catch-all/endpoints/list-monitors",
+                      "v3/catch-all/endpoints/list-monitor-jobs",
                       "v3/catch-all/endpoints/get-monitor-results",
-                      "v3/catch-all/endpoints/list-monitor-jobs"
+                      "v3/catch-all/endpoints/enable-monitor",
+                      "v3/catch-all/endpoints/disable-monitor"
                     ]
                   },
                   {
