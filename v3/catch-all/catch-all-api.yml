@@ -703,7 +703,7 @@ components:
           description: |
             Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/understanding-dynamic-schemas) for integration guidance.
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/dynamic-schemas) for integration guidance.
           additionalProperties: {}
           example:
             record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
