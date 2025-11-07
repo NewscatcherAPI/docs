@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.3.8
+  version: 0.4.4
   description: |
     CatchAll transforms natural language questions into structured, validated records extracted from web sources.
 
@@ -15,8 +15,11 @@ info:
 
     **Monitors:**
     - **POST /catchAll/monitors/create** - Create monitor.
+    - **GET /catchAll/monitors** - List all monitors.
     - **GET /catchAll/monitors/{monitor_id}/jobs** - List monitor jobs.
     - **GET /catchAll/monitors/pull/{monitor_id}** - Get monitor results.
+    - **POST /catchAll/monitors/{monitor_id}/enable** - Enable monitor.
+    - **POST /catchAll/monitors/{monitor_id}/disable** - Disable monitor.
 
     **Meta:**
     - **GET /health** - API health check
@@ -25,21 +28,21 @@ info:
     ### Authentication
     All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Basic Workflow
+    ### Basic workflow
     1. Submit a query with `/catchAll/submit`.
     2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes).
     3. Retrieve results with `/catchAll/pull/{job_id}`.
 
-    ### Monitor Workflow
+    ### Monitor workflow
     1. Create a successful job.
     2. Create a monitor with `/catchAll/monitors/create` using the job ID as a reference.
     3. System automatically runs jobs on your schedule.
     4. (Optional) Receive webhook notifications on completion.
     5. Retrieve aggregated results with `/catchAll/monitors/pull/{monitor_id}`.
 
-    ### Important Notes
+    ### Important notes
 
-    **Dynamic Schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
+    **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
 
   contact:
     name: NewsCatcher AI
@@ -237,6 +240,91 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/monitors/{monitor_id}/disable:
+    post:
+      tags:
+        - Monitors
+      summary: Disable monitor
+      description: |
+        Disables a monitor to stop executing scheduled jobs.
+        Validates that the provided API key is associated with the monitor.
+      operationId: disableMonitor
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          description: Monitor disabled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Monitor disabled successfully"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}/enable:
+    post:
+      tags:
+        - Monitors
+      summary: Enable monitor
+      description: |
+        Enables a monitor to resume executing scheduled jobs.
+        Validates that the provided API key is associated with the monitor.
+      operationId: enableMonitor
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          description: Monitor enabled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "Monitor enabled successfully"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors:
+    get:
+      tags:
+        - Monitors
+      summary: List monitors
+      description: Returns all monitors created by the authenticated user.
+      operationId: listMonitors
+      responses:
+        "200":
+          $ref: "#/components/responses/ListMonitorsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /health:
     get:
       tags:
@@ -355,6 +443,13 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PullMonitorResponseDTO"
+
+    ListMonitorsResponse:
+      description: List of user monitors
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListMonitorsResponseDTO"
 
     HealthCheckResponse:
       description: API is healthy
@@ -722,37 +817,126 @@ components:
         monitor_id:
           type: string
           format: uuid
+          description: Unique identifier for the monitor.
+          example: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
         cron_expression:
           type: string
-          description: Parsed cron expression from natural language schedule.
+          description: |
+            Parsed cron expression from the natural language schedule.
+            Standard cron format (minute hour day month day-of-week).
+          example: "0 12 * * *"
         timezone:
           type: string
+          description: Timezone used for schedule execution.
+          example: "UTC"
         reference_job:
           type: object
+          description:
+            Configuration from the job used as template for this monitor.
           properties:
             query:
               type: string
+              description: Natural language query from the reference job.
+              example: "Tech company earnings this quarter"
             context:
               type: string
+              description: Context provided with the reference job query.
+              example: "Focus on revenue and profit margins"
         date_range:
           type: object
-          description: Time range covered by monitor results.
+          description: Time range covered by all monitor job results.
+          properties:
+            start_date:
+              type: string
+              format: date-time
+              description: Earliest date from collected records.
+              example: "2025-10-23T00:00:00Z"
+            end_date:
+              type: string
+              format: date-time
+              description: Latest date from collected records.
+              example: "2025-11-07T23:59:59Z"
         records:
           type: integer
           default: 0
-          description: Total number of records across all monitor jobs.
+          description:
+            Total number of records collected across all monitor jobs.
+          example: 487
         status:
           type: string
-          description: Monitor status or error message.
+          description:
+            Current monitor status or error message if monitor creation failed.
+          example: "active"
         last_run_date:
           type: string
           format: date-time
-          description: Timestamp of last scheduled job execution.
+          description: |
+            Timestamp of the most recent scheduled job execution.
+            Null if no jobs have been executed yet.
+          example: "2025-11-07T12:00:00Z"
         all_records:
           type: array
           items:
             $ref: "#/components/schemas/Record"
-          description: Aggregated records from all monitor jobs.
+          description: |
+            Aggregated records from all jobs executed by this monitor.
+            Each record includes structured data extracted from web sources with citations.
+
+    ListMonitorsResponseDTO:
+      type: object
+      required:
+        - total_monitors
+        - monitors
+      properties:
+        total_monitors:
+          type: integer
+          description: Total number of monitors for this user.
+          example: 3
+        monitors:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonitorListItem"
+          description: Array of monitor summaries.
+
+    MonitorListItem:
+      type: object
+      required:
+        - monitor_id
+        - reference_job_id
+        - reference_job_query
+        - enabled
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          description: Monitor identifier.
+          example: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+        reference_job_id:
+          type: string
+          format: uuid
+          description: Job identifier used as a reference for this monitor.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        reference_job_query:
+          type: string
+          description: Natural language query from the reference job.
+          example: "Tech company earnings this quarter"
+        enabled:
+          type: boolean
+          description: Whether the monitor is currently active.
+          example: true
+        schedule:
+          type: string
+          description: Natural language schedule description.
+          example: "every day at 12 PM UTC"
+        timezone:
+          type: string
+          description: Timezone for schedule execution.
+          example: "UTC"
+        created_at:
+          type: string
+          format: date-time
+          description: When the monitor was created.
+          example: "2025-10-23T14:30:00Z"
 
     WebhookPayload:
       type: object
