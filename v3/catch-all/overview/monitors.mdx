@@ -1,0 +1,607 @@
+---
+title: Monitors
+sidebarTitle: Monitors
+description: Schedule recurring CatchAll jobs with webhook notifications.
+---
+
+Monitors automate data collection by running CatchAll jobs on a schedule. Create
+a monitor from a successful job, define when to run it, and receive webhook
+notifications when new results are available.
+
+## How it works
+
+Each scheduled execution:
+
+- Creates a new job with its own `job_id`.
+- Uses a rolling date window based on schedule frequency.
+- Applies the reference job's validators, extractors, and schema.
+- Deduplicates records across all runs and merges the results.
+
+<Note>
+  Reference job records are **not** included in monitor results. Only records
+  from scheduled executions appear in aggregated results.
+</Note>
+
+## Before you start
+
+First, create a successful job following the
+[Quickstart guide](/v3/catch-all/overview/quickstart).
+
+<Warning>
+  **Use queries without time constraints.** When creating your reference job,
+  avoid time restrictions like “this week”, “last hour”, or “from Oct 10-15”.
+  These might create date-specific validators that fail on subsequent monitor
+  runs, returning zero results after the first execution.
+</Warning>
+
+## Create a monitor
+
+Once your reference job completes with `status: job_completed`, use `job_id` to
+create a monitor:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+    "schedule": "every day at 12 PM UTC",
+    "webhook": {
+      "url": "https://your-endpoint.com/catchall",
+      "method": "POST"
+    }
+  }'
+```
+
+```json JSON
+{
+  "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+  "schedule": "every day at 12 PM UTC",
+  "webhook": {
+    "url": "https://your-endpoint.com/catchall",
+    "method": "POST"
+  }
+}
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    "https://catchall.newscatcherapi.com/catchAll/monitors/create",
+    headers={"x-api-key": "YOUR_API_KEY"},
+    json={
+        "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+        "schedule": "every day at 12 PM UTC",
+        "webhook": {
+            "url": "https://your-endpoint.com/catchall",
+            "method": "POST"
+        }
+    }
+)
+
+monitor = response.json()
+print(f"Monitor created: {monitor['monitor_id']}")
+```
+
+```typescript TypeScript
+const response = await fetch(
+  "https://catchall.newscatcherapi.com/catchAll/monitors/create",
+  {
+    method: "POST",
+    headers: {
+      "x-api-key": "YOUR_API_KEY",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      reference_job_id: "295b95d8-6041-4f4b-b132-9f009fc6af70",
+      schedule: "every day at 12 PM UTC",
+      webhook: {
+        url: "https://your-endpoint.com/catchall",
+        method: "POST",
+      },
+    }),
+  }
+);
+
+const monitor = await response.json();
+console.log(`Monitor created: ${monitor.monitor_id}`);
+```
+
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "status": "Monitor Created Successfully"
+}
+```
+
+<Note>
+  The `webhook` parameter is optional. For webhook payload structure and
+  authentication options, see the [Webhooks](#webhooks) section.
+</Note>
+
+## Retrieve results
+
+### List all monitors
+
+Get all monitors for your API key:
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/monitors" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    "https://catchall.newscatcherapi.com/catchAll/monitors",
+    headers={"x-api-key": "YOUR_API_KEY"}
+)
+
+monitors = response.json()
+print(f"Total monitors: {monitors['total_monitors']}")
+for monitor in monitors['monitors']:
+    print(f"{monitor['monitor_id']}: {monitor['reference_job_query']}")
+    print(f"  Enabled: {monitor['enabled']}, Schedule: {monitor['schedule']}")
+```
+
+```typescript TypeScript
+const response = await fetch(
+  "https://catchall.newscatcherapi.com/catchAll/monitors",
+  {
+    headers: { "x-api-key": "YOUR_API_KEY" },
+  }
+);
+
+const monitors = await response.json();
+console.log(`Total monitors: ${monitors.total_monitors}`);
+monitors.monitors.forEach((monitor) => {
+  console.log(`${monitor.monitor_id}: ${monitor.reference_job_query}`);
+  console.log(`  Enabled: ${monitor.enabled}, Schedule: ${monitor.schedule}`);
+});
+```
+
+</CodeGroup>
+
+<Expandable title="Response structure">
+
+```json
+{
+  "total_monitors": 2,
+  "monitors": [
+    {
+      "monitor_id": "0bcbf554-1f38-460e-9f6d-4bb9338560a4",
+      "reference_job_id": "2acada6a-3e55-423d-9406-00f5c6dc73da",
+      "reference_job_query": "Cross-border mergers and acquisitions involving US companies",
+      "enabled": false,
+      "schedule": "every day at 12 PM UTC",
+      "timezone": "UTC",
+      "created_at": "2025-11-04 21:04:22"
+    },
+    {
+      "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+      "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+      "reference_job_query": "AI company acquisitions and mergers",
+      "enabled": true,
+      "schedule": "every 5 minutes",
+      "timezone": "UTC",
+      "created_at": "2025-11-07 10:54:42"
+    }
+  ]
+}
+```
+
+**Key fields:**
+
+- `enabled` (boolean): Whether the monitor is currently active
+- `reference_job_query` (string): Original query text from the reference job
+- `schedule` (string): Natural language schedule description
+- `created_at` (string): Monitor creation timestamp
+
+</Expandable>
+
+### List monitor jobs
+
+Get execution history for a specific monitor:
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs",
+    headers={"x-api-key": "YOUR_API_KEY"}
+)
+
+data = response.json()
+print(f"Total jobs: {data['total_jobs']}")
+for job in data['jobs']:
+    print(f"Job {job['job_id']}")
+    print(f"  Started: {job['start_date']}")
+    print(f"  Ended: {job['end_date']}")
+```
+
+```typescript TypeScript
+const response = await fetch(
+  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/jobs`,
+  {
+    headers: { "x-api-key": "YOUR_API_KEY" },
+  }
+);
+
+const data = await response.json();
+console.log(`Total jobs: ${data.total_jobs}`);
+data.jobs.forEach((job) => {
+  console.log(`Job ${job.job_id}`);
+  console.log(`  Started: ${job.start_date}`);
+  console.log(`  Ended: ${job.end_date}`);
+});
+```
+
+</CodeGroup>
+
+<Expandable title="Response structure">
+
+```json
+{
+  "monitor_id": "3fec5b07-8786-86d7-9486-d43ff67eccd4",
+  "sort_order": "asc",
+  "total_jobs": 2,
+  "jobs": [
+    {
+      "job_id": "8a9763dd-3611-4b3b-a6cf-3e893a0c6746",
+      "start_date": "2025-11-07T10:50:00",
+      "end_date": "2025-11-07T10:55:00"
+    },
+    {
+      "job_id": "288387df-7e05-4722-83cc-ecbebb6d8123",
+      "start_date": "2025-11-07T10:55:00",
+      "end_date": "2025-11-07T11:00:00"
+    }
+  ]
+}
+```
+
+Use the `job_id` to retrieve detailed results for a specific execution via
+`/catchAll/pull/{job_id}`.
+
+</Expandable>
+
+### Get aggregated results
+
+Retrieve all deduplicated records from all monitor jobs:
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.get(
+    f"https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}",
+    headers={"x-api-key": "YOUR_API_KEY"}
+)
+
+results = response.json()
+print(f"Monitor: {results['monitor_id']}")
+print(f"Schedule: {results['cron_expression']} ({results['timezone']})")
+print(f"Total records: {results['records']}")
+print(f"Date range: {results['date_range']}")
+
+for record in results['all_records']:
+    print(f"\n{record['record_title']}")
+    print(f"  Citations: {len(record['citations'])}")
+```
+
+```typescript TypeScript
+const response = await fetch(
+  `https://catchall.newscatcherapi.com/catchAll/monitors/pull/${monitorId}`,
+  {
+    headers: { "x-api-key": "YOUR_API_KEY" },
+  }
+);
+
+const results = await response.json();
+console.log(`Monitor: ${results.monitor_id}`);
+console.log(`Schedule: ${results.cron_expression} (${results.timezone})`);
+console.log(`Total records: ${results.records}`);
+console.log(`Date range:`, results.date_range);
+
+results.all_records.forEach((record) => {
+  console.log(`\n${record.record_title}`);
+  console.log(`  Citations: ${record.citations.length}`);
+});
+```
+
+</CodeGroup>
+
+<Expandable title="Response structure">
+
+```json
+{
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "cron_expression": "*/5 * * * *",
+  "timezone": "UTC",
+  "reference_job": {
+    "query": "AI company acquisitions and mergers",
+    "context": "Focus on technology companies, include deal size if mentioned"
+  },
+  "date_range": {
+    "start_date": "2025-11-07T10:50:00Z",
+    "end_date": "2025-11-07T11:30:00Z"
+  },
+  "records": 2,
+  "status": "Done",
+  "all_records": [
+    {
+      "record_id": "6417909601438475967",
+      "record_title": "Samsung Electronics Acquires Oxford Semantic Technologies",
+      "enrichment": {
+        "acquiring_company": "Samsung Electronics",
+        "acquired_company": "Oxford Semantic Technologies",
+        "acquisition_date": "2024",
+        "deal_type": "acquisition",
+        "ai_technology_focus": ["knowledge graphs", "personalized AI"],
+        "confidence": "high"
+      },
+      "citations": [
+        {
+          "title": "Samsung invests in AI and M&A",
+          "link": "https://n.news.naver.com/mnews/article/629/0000441563",
+          "published_date": "2025-11-07 11:15:11",
+          "job_id": "c4cb35e9-c8a5-46bc-87aa-5fdbf36f8e33"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Key fields:**
+
+- `cron_expression` (string): Parsed cron format from your natural language
+  schedule
+- `reference_job` (object): Original query and context from the reference job
+- `date_range` (object): Time span covered by all collected records
+- `all_records` (array): Deduplicated records from all monitor executions
+
+</Expandable>
+
+## Manage monitors
+
+### Enable a monitor
+
+Resume execution of a disabled monitor:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/enable" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/enable",
+    headers={"x-api-key": "YOUR_API_KEY"}
+)
+
+print(response.json())
+```
+
+```typescript TypeScript
+const response = await fetch(
+  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/enable`,
+  {
+    method: "POST",
+    headers: { "x-api-key": "YOUR_API_KEY" },
+  }
+);
+
+const result = await response.json();
+console.log(result);
+```
+
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Monitor enabled successfully.",
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+}
+```
+
+### Disable a monitor
+
+Pause execution without deleting the monitor:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/disable" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import requests
+
+response = requests.post(
+    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/disable",
+    headers={"x-api-key": "YOUR_API_KEY"}
+)
+
+print(response.json())
+```
+
+```typescript TypeScript
+const response = await fetch(
+  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/disable`,
+  {
+    method: "POST",
+    headers: { "x-api-key": "YOUR_API_KEY" },
+  }
+);
+
+const result = await response.json();
+console.log(result);
+```
+
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Monitor disabled successfully.",
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+}
+```
+
+<Note>
+  To delete a monitor permanently, contact support at support@newscatcherapi.com
+  with the `monitor_id`.
+</Note>
+
+## Webhooks
+
+Receive HTTP POST notifications when monitor jobs complete. Add a `webhook`
+object when creating the monitor (shown in
+[Create a monitor](#create-a-monitor)).
+
+### Webhook payload
+
+<Expandable title="Full payload structure">
+
+When a monitor job completes, your endpoint receives:
+
+```json
+{
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+  "latest_job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced",
+  "records_count": 2,
+  "jobs_processed": 3,
+  "updated_at": "2025-11-07T11:25:33.877039",
+  "cron_expression": "*/5 * * * *",
+  "timezone": "UTC",
+  "records": [
+    {
+      "record_id": "-39216465981207817",
+      "record_title": "Homeplus Seeks Buyer, Receives LOI from AI Firm Harex Infotech",
+      "enrichment": {
+        "schema_based_summary": "Harex Infotech acquired Homeplus Co. for null on null",
+        "acquisition_date": null,
+        "deal_type": "acquisition",
+        "deal_status": "in talks",
+        "confidence": "high",
+        "acquired_company": "Homeplus Co.",
+        "acquiring_company": "Harex Infotech"
+      },
+      "citations": [
+        {
+          "title": "Court extends Homeplus' rehabilitation plan submission deadline",
+          "link": "https://n.news.naver.com/mnews/article/009/0005586304",
+          "published_date": "2025-11-07 11:21:21",
+          "job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**Key fields:**
+
+- `latest_job_id`: Use to retrieve full job results via
+  `/catchAll/pull/{job_id}`
+- `records_count`: Number of new records in this execution (after deduplication)
+- `jobs_processed`: Total number of jobs executed by this monitor
+- `records`: Array of new records from the latest job
+
+<Note>
+  Webhooks fire on every job completion, even when `records_count` is 0 (no new
+  events after deduplication).
+</Note>
+
+</Expandable>
+
+### Authentication
+
+<Expandable title="Authentication examples">
+
+**Bearer token:**
+
+```json
+{
+  "webhook": {
+    "url": "https://api.example.com/catchall",
+    "method": "POST",
+    "headers": {
+      "Authorization": "Bearer YOUR_TOKEN",
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
+
+**Basic authentication:**
+
+```json
+{
+  "webhook": {
+    "url": "https://your-endpoint.com/webhook",
+    "method": "POST",
+    "auth": ["username", "password"]
+  }
+}
+```
+
+**Custom headers:**
+
+```json
+{
+  "webhook": {
+    "url": "https://your-endpoint.com/webhook",
+    "method": "POST",
+    "headers": {
+      "X-Custom-Header": "value",
+      "X-API-Key": "your-key",
+      "Content-Type": "application/json"
+    }
+  }
+}
+```
+
+</Expandable>
+
+## See also
+
+- [Quickstart](/v3/catch-all/overview/quickstart)
+- [API reference](/v3/catch-all/endpoints/create-monitor)
+- [Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas)
+- [Changelog](/v3/catch-all/overview/changelog)
