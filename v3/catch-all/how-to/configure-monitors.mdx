@@ -1,0 +1,427 @@
+---
+title: Configure monitors
+sidebarTitle: Configure monitors
+description: Configure reliable, efficient monitors and optimize performance.
+---
+
+This guide covers best practices for monitor configuration, webhook
+implementation, and performance optimization.
+
+<Tip>
+  Encountering issues? See [Troubleshoot
+  monitors](/v3/catch-all/how-to/troubleshoot-monitors) for solutions to common
+  problems.
+</Tip>
+
+## Choose appropriate schedules
+
+Match schedule frequency to your data needs and budget. Each scheduled run
+creates a billable job.
+
+### Recommended frequencies
+
+| Use Case            | Schedule             | Rationale                                        |
+| ------------------- | -------------------- | ------------------------------------------------ |
+| News monitoring     | Every 6-12 hours     | Balances freshness with cost                     |
+| Regulatory updates  | Daily                | Regulations rarely change more frequently        |
+| Market intelligence | Daily or twice daily | Financial data updates during business hours     |
+| Real-time alerts    | Hourly               | Minimum recommended for time-sensitive use cases |
+
+<Warning>
+  Avoid schedules more frequent than hourly unless necessary. High-frequency
+  monitors with broad queries may produce many duplicate-free runs (zero new
+  records), increasing costs without adding value.
+</Warning>
+
+### Schedule frequency vs. deduplication
+
+More frequent schedules may result in more executions with zero new records:
+
+- **Every hour**: Higher likelihood of finding new events in each run
+- **Every 15 minutes**: Most runs may return zero records after deduplication
+- **Every 5 minutes**: Very likely to have consecutive runs with no new results
+
+**Recommendation**: Start with hourly or less frequent schedules and adjust
+based on actual data velocity.
+
+## Test schedules before production
+
+Invalid schedules may be parsed as every-minute execution (`* * * * *`), leading
+to unexpected costs and rate limits.
+
+### Testing procedure
+
+<Steps>
+  <Step title="Create test monitor">
+    Create a monitor with a short interval: `"every 5 minutes"`
+  </Step>
+
+<Step title="Wait for executions">
+  Wait 10-15 minutes for 2-3 executions to complete.
+</Step>
+
+<Step title="Check execution times">
+
+```bash curl
+"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
+-H "x-api-key: YOUR_API_KEY"
+```
+
+</Step>
+
+<Step title="Verify cron expression">
+  Check the `cron_expression` field in results or webhook payload. For `"every 5
+  minutes"`, expect `*/5 * * * *`.
+</Step>
+
+  <Step title="Create production monitor">
+    If correct, disable the test monitor and create your production monitor with the desired schedule. If incorrect, try a different schedule format.
+  </Step>
+</Steps>
+
+<Expandable title="Valid schedule formats and cron expressions">
+
+Define schedules in natural language with explicit timezone.
+
+**Time-based schedules** (recommended):
+
+- `"every day at 12 PM UTC"`
+- `"every Monday at 9 AM EST"`
+- `"every Friday at 5 PM GMT"`
+
+**Interval-based schedules**:
+
+- `"every 6 hours"`
+- `"every 12 hours"`
+- `"every hour"`
+
+**Invalid formats** (avoid):
+
+- ❌ `"daily at noon"`
+- ❌ `"twice per day"`
+- ❌ `"every weekday"`
+
+**Common cron patterns**:
+
+| Schedule                     | Cron Expression | Meaning                  |
+| ---------------------------- | --------------- | ------------------------ |
+| `"every day at 12 PM UTC"`   | `0 12 * * *`    | Daily at noon UTC        |
+| `"every 6 hours"`            | `0 */6 * * *`   | Every 6 hours            |
+| `"every hour"`               | `0 * * * *`     | Top of every hour        |
+| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | Weekly on Monday at 9 AM |
+| `* * * * *`                  | Every minute    | **Parsing error**        |
+
+</Expandable>
+
+## Verify reference job quality
+
+Before creating a monitor, ensure your reference job produces high-quality
+results.
+
+<Accordion title="Reference job quality checklist">
+
+- **Record count**: 10-500 records (adjust for your use case)
+  - Too few (less than 10): Query may be too specific
+  - Too many (more than 500): Query may be too broad
+- **No time-based validators**: Check the `validators` array for time
+  constraints
+  - ❌ Avoid: `event_in_last_hour`, `event_in_last_7_days`,
+    `announcement_within_date_range`
+  - These indicate time-constrained queries that can fail on subsequent runs
+- **Clean extraction**: Review the `enrichment` object structure
+  - All important fields extracted
+  - Field names are semantic and consistent
+  - Data is accurate
+- **Quality citations**: Verify sources are authoritative and relevant
+  - Sources are credible
+  - Publication dates are recent
+  - Citations support the extracted data
+
+</Accordion>
+
+<Warning>
+❌ **Time-based validators indicate problems**. If your reference job contains
+validators like `event_in_last_hour` or `announcement_within_date_range`, your
+monitor can return zero records after the first execution.
+
+**Solution**: Create a new job with an open-ended query (no time constraints
+like "this week", "today", or "last hour"), then create a monitor from that job.
+
+[Fix zero records issue →](/v3/catch-all/how-to/troubleshoot-monitors#monitor-returns-zero-records)
+
+</Warning>
+
+## Implement robust webhooks
+
+Configure webhook endpoints to handle notifications reliably.
+
+### Endpoint requirements
+
+Your webhook endpoint must:
+
+1. **Return 2xx status code** within 5 seconds.
+2. **Be publicly accessible** (not localhost or private network).
+3. **Use HTTPS** (not HTTP).
+4. **Handle POST requests** with JSON body.
+
+### Quick implementation
+
+Return 200 immediately and process asynchronously to avoid timeouts:
+
+<Tabs>
+  <Tab title="Python">
+
+    ```python
+    from flask import Flask, request, jsonify
+    import logging
+
+    app = Flask(__name__)
+    logging.basicConfig(level=logging.INFO)
+
+    @app.route('/catchall/webhook', methods=['POST'])
+    def handle_catchall_webhook():
+        try:
+            # Get payload
+            payload = request.json
+            logging.info(f"Received webhook: {payload['monitor_id']}")
+
+            # Return 200 immediately - process async
+            process_webhook_async(payload)
+            return jsonify({"status": "received"}), 200
+
+        except Exception as e:
+            logging.error(f"Webhook error: {e}")
+            # Return 200 even on error to avoid retries
+            return jsonify({"status": "error"}), 200
+
+    def process_webhook_async(payload):
+        """Queue for background processing"""
+        monitor_id = payload['monitor_id']
+        records_count = payload['records_count']
+
+        if records_count > 0:
+            # Your processing logic here
+            save_records(payload['records'])
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    import express from "express";
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/catchall/webhook", async (req, res) => {
+      try {
+        // Get payload
+        const payload = req.body;
+        console.log(`Received webhook: ${payload.monitor_id}`);
+
+        // Return 200 immediately
+        res.status(200).json({ status: "received" });
+
+        // Process asynchronously (don't await)
+        processWebhookAsync(payload);
+      } catch (error) {
+        console.error("Webhook error:", error);
+        // Return 200 even on error to avoid retries
+        res.status(200).json({ status: "error" });
+      }
+    });
+
+    async function processWebhookAsync(payload: any) {
+      const { monitor_id, records_count } = payload;
+
+      if (records_count > 0) {
+        // Your processing logic here
+        await saveRecords(payload.records);
+      }
+    }
+
+    app.listen(3000, () => {
+      console.log("Webhook server running on port 3000");
+    });
+    ```
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  If webhooks aren't firing, see [Troubleshoot: Webhook not
+  firing](/v3/catch-all/how-to/troubleshoot-monitors#webhook-not-firing).
+</Tip>
+
+<Expandable title="Add retry logic with exponential backoff">
+
+Implement exponential backoff for webhook processing failures:
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import time
+
+    def process_webhook_with_retry(payload, max_retries=3):
+        """Process webhook with exponential backoff"""
+        for attempt in range(max_retries):
+            try:
+                # Your processing logic
+                process_records(payload['records'])
+                return True
+
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    # Log failure after all retries
+                    log_webhook_failure(payload, str(e))
+                    return False
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    async function processWebhookWithRetry(
+      payload: any,
+      maxRetries: number = 3
+    ): Promise<boolean> {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          // Your processing logic
+          await processRecords(payload.records);
+          return true;
+        } catch (error) {
+          if (attempt < maxRetries - 1) {
+            const waitTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+            continue;
+          } else {
+            // Log failure after all retries
+            await logWebhookFailure(payload, error.message);
+            return false;
+          }
+        }
+      }
+      return false;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Expandable>
+
+<Expandable title="Add webhook logging">
+
+Log all webhook events for debugging:
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import json
+    from datetime import datetime
+
+    def log_webhook(payload, status):
+        """Log webhook receipt and processing status"""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "monitor_id": payload['monitor_id'],
+            "latest_job_id": payload['latest_job_id'],
+            "records_count": payload['records_count'],
+            "status": status
+        }
+
+        with open('webhook_log.jsonl', 'a') as f:
+            f.write(json.dumps(log_entry) + '\n')
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    import * as fs from "fs";
+
+    function logWebhook(payload: any, status: string): void {
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        monitor_id: payload.monitor_id,
+        latest_job_id: payload.latest_job_id,
+        records_count: payload.records_count,
+        status: status,
+      };
+
+      fs.appendFileSync(
+        "webhook_log.jsonl",
+        JSON.stringify(logEntry) + "\n",
+        "utf8"
+      );
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+</Expandable>
+
+## Optimize performance
+
+### Query specificity
+
+Balance query specificity with result volume:
+
+**Too broad** (high volume, many duplicates):
+
+```json
+"query": "company news"
+```
+
+**Too specific** (low volume, may miss events):
+
+```json
+"query": "Series C funding rounds for AI companies in San Francisco over $50M"
+```
+
+**Optimal** (focused but flexible):
+
+```json
+"query": "AI company funding rounds",
+"context": "Focus on Series B and later, amounts over $10M"
+```
+
+### Context usage
+
+Use `context` to refine results without creating overly specific validators:
+
+```json
+{
+  "query": "Technology company acquisitions",
+  "context": "Include deal size if available, focus on public companies"
+}
+```
+
+This provides guidance to the LLM without generating restrictive validators.
+
+### Schema design
+
+Design schemas that extract core fields consistently:
+
+**Good schema** (flexible, semantic):
+
+```json
+"schema": "[ACQUIRER] acquired [TARGET] for [AMOUNT] on [DATE]"
+```
+
+**Problematic schema** (too specific):
+
+```json
+"schema": "[ACQUIRER] acquired [TARGET] in [CITY], [COUNTRY] for exactly [AMOUNT] USD on [SPECIFIC_DATE]"
+```
+
+## See also
+
+- [Monitors overview](/v3/catch-all/overview/monitors)
+- [Troubleshoot monitors](/v3/catch-all/how-to/troubleshoot-monitors)
+- [API reference](/v3/catch-all/endpoints/create-monitor)
