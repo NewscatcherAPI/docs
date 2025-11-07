@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.4.4
+  version: 0.4.5
   description: |
     CatchAll transforms natural language questions into structured, validated records extracted from web sources.
 
