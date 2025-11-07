@@ -345,7 +345,7 @@ Before you begin, make sure you meet these prerequisites:
 
     <Expandable title="Example response">
 
-    ```json JSON {17-26}
+    ```json JSON {22-30}
     {
       "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
       "query": "Tech company earnings this quarter",
@@ -359,11 +359,15 @@ Before you begin, make sure you meet these prerequisites:
       "processing_time": "12m",
       "sources_count": 59150,
       "total_records": 2865,
+      "date_range": {
+        "start_date": "2025-11-05T13:06:10Z",
+        "end_date": "2025-11-05T14:06:10Z"
+      },
       "records": [
         {
           "record_id": "5262823697790152939",
+          "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
           "enrichment": {
-            "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
             "company_name": "Oracle",
             "quarter_identifier": "Q1 2026",
             "revenue": "$14.9 billion",
@@ -399,11 +403,10 @@ Before you begin, make sure you meet these prerequisites:
 
 Now that you've made your first calls to the CatchAll API:
 
-1. Read [Understanding dynamic schemas](understanding-dynamic-schemas.md) to
-   learn how to handle variable response structures in your code.
-2. Explore the [API Reference](https://catchall.newscatcherapi.com/docs) for
+1. Learn how to automate recurring queries with [Monitors](/v3/catch-all/overview/monitors).
+2. Read [Dynamic schemas](/v3/catch-all/overview/understanding-dynamic-schemas) to
+   understand variable response structures in your code.
+3. Explore the [API Reference](v3/catch-all/endpoints/create-job) for
    detailed endpoint documentation.
-3. Review the [Introduction](introduction.md) to understand how the processing
-   pipeline works.
 
 <Note>Need help? Contact our support team at support@newscatcherapi.com</Note>
