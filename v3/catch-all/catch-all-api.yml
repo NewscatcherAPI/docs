@@ -844,6 +844,18 @@ components:
           description: Creation status or error message
           example: "Monitor Created Successfully"
 
+    ReferenceJob:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Natural language query from the reference job.
+          example: "Tech company earnings this quarter"
+        context:
+          type: string
+          description: Context provided with the reference job query.
+          example: "Focus on revenue and profit margins"
+
     PullMonitorResponseDTO:
       type: object
       required:
