@@ -926,10 +926,10 @@ components:
         monitors:
           type: array
           items:
-            $ref: "#/components/schemas/MonitorListItem"
+            $ref: "#/components/schemas/MonitorListItemDTO"
           description: Array of monitor summaries.
 
-    MonitorListItem:
+    MonitorListItemDTO:
       type: object
       required:
         - monitor_id
@@ -965,9 +965,9 @@ components:
           example: "UTC"
         created_at:
           type: string
-          format: date-time
-          description: When the monitor was created.
-          example: "2025-10-23T14:30:00Z"
+          description:
+            When the monitor was created (YYYY-MM-DD HH:MM:SS format).
+          example: "2025-10-23 14:30:00"
 
     WebhookPayload:
       type: object
