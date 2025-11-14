@@ -30,7 +30,7 @@ info:
 
     ### Basic workflow
     1. Submit a query with `/catchAll/submit`.
-    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes).
+    2. Poll `/catchAll/status/{job_id}` until status is `completed` (typically 10-15 minutes).
     3. Retrieve results with `/catchAll/pull/{job_id}`.
 
     ### Monitor workflow
@@ -403,7 +403,7 @@ components:
             $ref: "#/components/schemas/StatusResponseDTO"
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-            status: "data_fetched"
+            status: "fetching"
 
     ListUserJobsResponse:
       description: List of user jobs
@@ -548,36 +548,26 @@ components:
     JobStatus:
       type: string
       enum:
-        - pending
-        - analysis_started
-        - analysis_keywords_extracted
-        - analysis_enrichments_extracted
-        - analysis_queries_extracted
-        - retrieval_dispatched
-        - data_fetched
-        - clustering_dispatched
-        - data_grouped
-        - enrichment_dispatched
-        - data_enriched
-        - job_completed
+        - submitted
+        - analyzing
+        - fetching
+        - clustering
+        - enriching
+        - completed
+        - failed
       description: |
         Current job processing status. Jobs progress through these stages:
 
-        - `pending`: Job queued, waiting to start.
-        - `analysis_started`: Beginning query analysis.
-        - `analysis_keywords_extracted`: Keywords identified.
-        - `analysis_enrichments_extracted`: Validators and extractors generated.
-        - `analysis_queries_extracted`: Search queries created.
-        - `retrieval_dispatched`: Queries sent to fetching service.
-        - `data_fetched`: Articles retrieved.
-        - `clustering_dispatched`: Clustering initiated.
-        - `data_grouped`: Similar articles clustered.
-        - `enrichment_dispatched`: Validation and extraction started.
-        - `data_enriched`: Structured data extracted.
-        - `job_completed`: Job finished, results ready.
+        - `submitted`: Job queued, waiting to start processing.
+        - `analyzing`: Extracting keywords, generating search queries, and creating validators/extractors.
+        - `fetching`: Retrieving articles from web sources.
+        - `clustering`: Grouping similar articles into distinct events.
+        - `enriching`: Validating clusters and extracting structured data.
+        - `completed`: Job finished successfully, results ready.
+        - `failed`: Job processing failed.
 
-        Poll every 30-60 seconds until status is `job_completed`.
-      example: "data_fetched"
+        Poll `/catchAll/status/{job_id}` every 30-60 seconds until status is `completed` (typically 10-15 minutes).
+      example: "fetching"
 
     StatusResponseDTO:
       type: object
@@ -639,7 +629,7 @@ components:
           type: string
           description: |
             Job status.
-          example: job_completed
+          example: completed
         duration:
           type: string
           description: Total time taken to process the job.
@@ -987,7 +977,7 @@ components:
         status:
           type: string
           description: Job status.
-          example: "job_completed"
+          example: "completed"
 
     Error:
       type: object
