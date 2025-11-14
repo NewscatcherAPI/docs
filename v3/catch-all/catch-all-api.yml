@@ -649,9 +649,6 @@ components:
       required:
         - job_id
         - status
-        - page
-        - total_pages
-        - page_size
       properties:
         job_id:
           type: string
