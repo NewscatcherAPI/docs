@@ -403,7 +403,29 @@ components:
             $ref: "#/components/schemas/StatusResponseDTO"
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-            status: "fetching"
+            status: "analyzing"
+            steps:
+              - status: "submitted"
+                order: 1
+                completed: true
+              - status: "analyzing"
+                order: 2
+                completed: false
+              - status: "fetching"
+                order: 3
+                completed: false
+              - status: "clustering"
+                order: 4
+                completed: false
+              - status: "enriching"
+                order: 5
+                completed: false
+              - status: "completed"
+                order: 6
+                completed: false
+              - status: "failed"
+                order: 7
+                completed: false
 
     ListUserJobsResponse:
       description: List of user jobs
@@ -592,7 +614,7 @@ components:
       type: object
       required:
         - job_id
-        - status
+        - steps
       properties:
         job_id:
           type: string
@@ -601,6 +623,12 @@ components:
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         status:
           $ref: "#/components/schemas/JobStatus"
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobStep"
+          description: |
+            Detailed progress tracking for each processing stage. Steps progress sequentially from order 1 (submitted) through 5 (enriching), ending at order 6 (completed) or 7 (failed).
 
     ListUserJobsResponseDto:
       type: object
