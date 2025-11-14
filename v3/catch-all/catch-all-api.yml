@@ -879,32 +879,21 @@ components:
           description: Timezone used for schedule execution.
           example: "UTC"
         reference_job:
+          $ref: "#/components/schemas/ReferenceJob"
+        run_info:
           type: object
-          description:
-            Configuration from the job used as template for this monitor.
+          description: Execution time range for this monitor.
           properties:
-            query:
-              type: string
-              description: Natural language query from the reference job.
-              example: "Tech company earnings this quarter"
-            context:
-              type: string
-              description: Context provided with the reference job query.
-              example: "Focus on revenue and profit margins"
-        date_range:
-          type: object
-          description: Time range covered by all monitor job results.
-          properties:
-            start_date:
+            first_run:
               type: string
               format: date-time
-              description: Earliest date from collected records.
-              example: "2025-10-23T00:00:00Z"
-            end_date:
+              description: Timestamp of the first job execution.
+              example: "2025-10-23T12:00:00Z"
+            last_run:
               type: string
               format: date-time
-              description: Latest date from collected records.
-              example: "2025-11-07T23:59:59Z"
+              description: Timestamp of the most recent job execution.
+              example: "2025-11-07T12:00:00Z"
         records:
           type: integer
           default: 0
@@ -915,14 +904,7 @@ components:
           type: string
           description:
             Current monitor status or error message if monitor creation failed.
-          example: "active"
-        last_run_date:
-          type: string
-          format: date-time
-          description: |
-            Timestamp of the most recent scheduled job execution.
-            Null if no jobs have been executed yet.
-          example: "2025-11-07T12:00:00Z"
+          example: "Done"
         all_records:
           type: array
           items:
