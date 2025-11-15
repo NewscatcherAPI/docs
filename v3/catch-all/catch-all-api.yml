@@ -264,10 +264,23 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - success
+                  - message
+                  - monitor_id
                 properties:
-                  status:
+                  success:
+                    type: boolean
+                    description: Whether the operation succeeded.
+                    example: true
+                  message:
                     type: string
-                    example: "Monitor disabled successfully"
+                    description: Human-readable success message.
+                    example: "Monitor disabled successfully."
+                  monitor_id:
+                    type: string
+                    format: uuid
+                    description: ID of the disabled monitor.
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -299,10 +312,23 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - success
+                  - message
+                  - monitor_id
                 properties:
-                  status:
+                  success:
+                    type: boolean
+                    description: Whether the operation succeeded.
+                    example: true
+                  message:
                     type: string
-                    example: "Monitor enabled successfully"
+                    description: Human-readable success message.
+                    example: "Monitor enabled successfully."
+                  monitor_id:
+                    type: string
+                    format: uuid
+                    description: ID of the enabled monitor.
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
