@@ -793,21 +793,96 @@ components:
           format: date-time
           description: Article publication date in YYYY-MM-DD HH:MM:SS format.
           example: "2025-09-26 08:54:20"
-        id:
+
+    MonitorCitation:
+      type: object
+      required:
+        - title
+        - link
+        - published_date
+        - job_id
+        - added_on
+      properties:
+        title:
           type: string
-          description:
-            Internal citation identifier (present in webhook payloads).
+          description: Article title
+          example: "Oracle Reports Strong Q1 2026 Results"
+        link:
+          type: string
+          format: uri
+          description: URL to the source article
+          example: "https://example.com/article"
+        published_date:
+          type: string
+          format: date-time
+          description: Article publication date in YYYY-MM-DD HH:MM:SS format.
+          example: "2025-09-26 08:54:20"
         job_id:
           type: string
           format: uuid
-          description:
-            Job ID that found this citation (only present in monitor results).
+          description: Job ID that found this citation.
+          example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
         added_on:
           type: string
           format: date-time
+          description: When this specific citation was added to the record.
+          example: "2025-11-14T21:00:00"
+      description: |
+        Citation with monitor-specific metadata. Used in monitor results and webhook payloads.
+        Extends base citation with tracking information for job_id and timestamps.
+
+    MonitorRecord:
+      type: object
+      required:
+        - record_id
+        - record_title
+        - enrichment
+        - citations
+      properties:
+        record_id:
+          type: string
+          description: Unique identifier for the record.
+          example: "5262823697790152939"
+        record_title:
+          type: string
+          description: Short title summarizing the record.
+          example: "Oracle Q1 2026 Earnings Exceed Expectations"
+        enrichment:
+          type: object
+          description: |
+            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
+
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/dynamic-schemas) for integration guidance.
+          additionalProperties: {}
+          example:
+            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
+            company_name: "Oracle"
+            quarter_identifier: "Q1 2026"
+            revenue: "$14.9 billion"
+            revenue_change: "up 12%"
+            profit_margin: "42% non-GAAP operating margin"
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonitorCitation"
           description:
-            When this citation was added to monitor results (only present in
-            monitor results).
+            Source articles with monitor-specific metadata (job_id, added_on
+            timestamps).
+        added_on:
+          type: string
+          format: date-time
+          description: When this record was first added to monitor results.
+          example: "2025-11-14T21:00:00"
+        updated_on:
+          type: string
+          format: date-time
+          description:
+            When this record was last updated in monitor results (e.g., when new
+            citations were added).
+          example: "2025-11-14T21:00:00"
+      description: |
+        Record with monitor-specific metadata. Used in monitor results and webhook payloads.
+        Includes timestamps tracking when records were added and updated, and citations include job tracking.
 
     CreateMonitorRequestDTO:
       type: object
@@ -940,7 +1015,7 @@ components:
         all_records:
           type: array
           items:
-            $ref: "#/components/schemas/Record"
+            $ref: "#/components/schemas/MonitorRecord"
           description: |
             Aggregated records from all jobs executed by this monitor.
             Each record includes structured data extracted from web sources with citations.
@@ -1006,30 +1081,46 @@ components:
       description: |
         Payload sent to webhook URL when a monitor job completes.
         Content-Type: application/json
+
+        Note: Citations in webhook payloads include an additional 'id' field 
+        (string, internal identifier) not present in API GET responses.
       properties:
         monitor_id:
           type: string
           format: uuid
+          description: Monitor identifier.
         reference_job_id:
           type: string
           format: uuid
+          description: Reference job used as template for this monitor.
         latest_job_id:
           type: string
           format: uuid
-          description: Job ID of the most recent execution
+          description: Job ID of the most recent execution.
         records_count:
           type: integer
-          description: Number of records from latest job
+          description:
+            Number of new records from latest job (after deduplication).
         jobs_processed:
           type: integer
-          description: Total number of jobs run by this monitor
+          description: Total number of jobs executed by this monitor.
         updated_at:
           type: string
           format: date-time
+          description: Timestamp when the webhook was triggered.
         cron_expression:
           type: string
+          description: Cron expression defining the monitor schedule.
         timezone:
           type: string
+          description: Timezone for schedule execution.
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonitorRecord"
+          description:
+            Array of new records from the latest job execution (includes
+            monitor-specific fields like added_on, updated_on).
 
     MonitorJobItem:
       type: object
