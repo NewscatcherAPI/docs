@@ -967,6 +967,8 @@ components:
 
     CreateMonitorResponseDTO:
       type: object
+      required:
+        - status
       properties:
         monitor_id:
           type: string
