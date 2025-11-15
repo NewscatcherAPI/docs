@@ -1090,8 +1090,8 @@ components:
           example: true
         schedule:
           type: string
-          description: Natural language schedule description.
-          example: "every day at 12 PM UTC"
+          description: Cron expression for monitor schedule.
+          example: "0 12 * * *"
         timezone:
           type: string
           description: Timezone for schedule execution.
