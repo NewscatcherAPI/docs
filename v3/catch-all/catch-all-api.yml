@@ -455,9 +455,29 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/MonitorJobItem"
+            type: object
+            required:
+              - monitor_id
+              - sort_order
+              - total_jobs
+              - jobs
+            properties:
+              monitor_id:
+                type: string
+                format: uuid
+                description: Monitor identifier.
+              sort_order:
+                type: string
+                enum: ["asc", "desc"]
+                description: Sort order applied to results.
+              total_jobs:
+                type: integer
+                description: Total number of jobs for this monitor.
+              jobs:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonitorJobItem"
+                description: Array of job executions for this monitor.
 
     PullMonitorResponse:
       description: Monitor results retrieved successfully.
@@ -773,6 +793,21 @@ components:
           format: date-time
           description: Article publication date in YYYY-MM-DD HH:MM:SS format.
           example: "2025-09-26 08:54:20"
+        id:
+          type: string
+          description:
+            Internal citation identifier (present in webhook payloads).
+        job_id:
+          type: string
+          format: uuid
+          description:
+            Job ID that found this citation (only present in monitor results).
+        added_on:
+          type: string
+          format: date-time
+          description:
+            When this citation was added to monitor results (only present in
+            monitor results).
 
     CreateMonitorRequestDTO:
       type: object
@@ -998,7 +1033,10 @@ components:
 
     MonitorJobItem:
       type: object
-      description: Information about a single job execution within a monitor.
+      required:
+        - job_id
+        - start_date
+        - end_date
       properties:
         job_id:
           type: string
@@ -1007,15 +1045,15 @@ components:
         start_date:
           type: string
           format: date-time
-          description: When the job started processing.
+          description:
+            Start of the data collection time window for this job execution
+            (based on monitor schedule).
         end_date:
           type: string
           format: date-time
-          description: When the job completed (null if still running).
-        status:
-          type: string
-          description: Job status.
-          example: "completed"
+          description:
+            End of the data collection time window for this job execution (based
+            on monitor schedule).
 
     Error:
       type: object
