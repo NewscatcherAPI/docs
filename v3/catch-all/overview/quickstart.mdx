@@ -167,10 +167,18 @@ Before you begin, make sure you meet these prerequisites:
             response.raise_for_status()
             status_data = response.json()
 
-            print(f"Current status: {status_data['status']}")
+            print(f"Current status: {status_data.get('status', 'unknown')}")
 
-            if status_data['status'] == 'job_completed':
+            # Check if job is completed by examining steps
+            steps = status_data.get('steps', [])
+            completed_step = next((s for s in steps if s['status'] == 'completed' and s.get('completed')), None)
+            failed_step = next((s for s in steps if s['status'] == 'failed' and s.get('completed')), None)
+
+            if completed_step:
                 print("Job completed!")
+                break
+            elif failed_step:
+                print("Job failed!")
                 break
 
             time.sleep(60)  # Wait 60 seconds before next check
@@ -187,9 +195,16 @@ Before you begin, make sure you meet these prerequisites:
     const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
     const URL: string = `https://catchall.newscatcherapi.com/catchAll/status/${JOB_ID}`;
 
+    interface JobStep {
+      status: string;
+      order: number;
+      completed?: boolean;
+    }
+
     interface StatusResponse {
       job_id: string;
-      status: string;
+      status?: string;
+      steps?: JobStep[];
     }
 
     async function pollJobStatus() {
@@ -201,8 +216,16 @@ Before you begin, make sure you meet these prerequisites:
 
           console.log(`Current status: ${response.data.status}`);
 
-          if (response.data.status === "job_completed") {
+          // Check if job is completed by examining steps
+          const steps = response.data.steps || [];
+          const completedStep = steps.find(s => s.status === 'completed' && s.completed);
+          const failedStep = steps.find(s => s.status === 'failed' && s.completed);
+
+          if (completedStep) {
             console.log("Job completed!");
+            break;
+          } else if (failedStep) {
+            console.log("Job failed!");
             break;
           }
 
@@ -220,17 +243,57 @@ Before you begin, make sure you meet these prerequisites:
 
     The response shows the current processing stage:
 
+    <Expandable title="Example response">
+
     ```json
     {
       "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
-      "status": "data_fetched"
+      "status": "fetching",
+      "steps": [
+        {
+          "status": "submitted",
+          "order": 1,
+          "completed": true
+        },
+        {
+          "status": "analyzing",
+          "order": 2,
+          "completed": true
+        },
+        {
+          "status": "fetching",
+          "order": 3,
+          "completed": false
+        },
+        {
+          "status": "clustering",
+          "order": 4,
+          "completed": false
+        },
+        {
+          "status": "enriching",
+          "order": 5,
+          "completed": false
+        },
+        {
+          "status": "completed",
+          "order": 6,
+          "completed": false
+        },
+        {
+          "status": "failed",
+          "order": 7,
+          "completed": false
+        }
+      ]
     }
     ```
 
-    Jobs progress through statuses from `pending` to `job_completed`.
-    The list of all job statuses available in the [Get job status > status](/v3/catch-all/endpoints/get-job-status#response-status).
+    </Expandable>
 
-    Processing typically takes 10-15 minutes.
+    Jobs advance through stages sequentially from `submitted` (order 1) to
+    either `completed` (order 6) or `failed` (order 7). Processing typically
+    takes 10-15 minutes.
 
   </Step>
 
