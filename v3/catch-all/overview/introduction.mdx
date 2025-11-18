@@ -20,9 +20,8 @@ CatchAll processes queries through a multi-stage pipeline:
   </Step>
   <Step title="Fetch">Retrieves relevant content from web sources</Step>
   <Step title="Cluster">Groups similar content into distinct events</Step>
-  <Step title="Validate">Filters clusters based on relevance criteria</Step>
-  <Step title="Extract">Pulls structured data from validated clusters</Step>
-  <Step title="Return">Delivers records with source citations</Step>
+  <Step title="Enrich">Validates clusters and extracts structured data</Step>
+  <Step title="Complete">Delivers records with source citations</Step>
 </Steps>
 
 <Note>
@@ -52,17 +51,20 @@ CatchAll processes queries through a multi-stage pipeline:
 
   </Accordion>
 
-<Accordion title="Non-deterministic processing" icon="shuffle">
-  Identical queries can produce different results: 
-  - LLMs may generate different keywords, validators, and extractors. 
-  - Different content sources may be retrieved.
-  - Field names and structure vary between runs.
-  - Record counts differ.
-</Accordion>
+  <Accordion title="Non-deterministic processing" icon="shuffle">
+
+    Identical queries can produce different results:
+    - LLMs may generate different keywords, validators, and extractors.
+    - Different content sources may be retrieved.
+    - Field names and structure vary between runs.
+    - Record counts differ.
+
+  </Accordion>
 
   <Accordion title="Asynchronous operation" icon="clock">
     Each query creates a job that processes asynchronously. 
-    Use the returned `job_id` to poll for status and retrieve results when the job completes.
+    Use the returned `job_id` to poll the job status from [`steps`](http://localhost:3000/v3/catch-all/endpoints/get-job-status#response-steps-status)
+    and retrieve results when the job is completed.
   </Accordion>
 </AccordionGroup>
 
@@ -78,7 +80,15 @@ CatchAll processes queries through a multi-stage pipeline:
     | `/catchAll/jobs/user`       | GET    | List all jobs for your API key  |
     | `/catchAll/status/{job_id}` | GET    | Check job processing status     |
     | `/catchAll/pull/{job_id}`   | GET    | Retrieve job results            |
+  
+    <Tip>
+      Track detailed progress using the `steps` array in the status endpoint response. 
+      See [Job status > steps](/v3/catch-all/endpoints/get-job-status#response-steps) for details.
+    </Tip>
+  
   </Tab>
+
+
 
   <Tab title="Monitors">
     | Endpoint                                  | Method | Description                    |
@@ -103,7 +113,8 @@ CatchAll processes queries through a multi-stage pipeline:
 ## Use cases
 
 - **Market intelligence**: Company earnings, M&A activity, product launches
-- **Regulatory monitoring**: Policy changes, government actions, compliance updates
+- **Regulatory monitoring**: Policy changes, government actions, compliance
+  updates
 - **Business development**: Partnerships, funding rounds, market entries
 - **Competitive analysis**: Competitor activities and announcements
 - **Research automation**: Structured data extraction for analysis
@@ -129,7 +140,7 @@ CatchAll processes queries through a multi-stage pipeline:
   >
     Detailed endpoint documentation and parameters
   </Card>
-    <Card
+  <Card
     title="Dynamic Schemas"
     icon="code"
     href="/v3/catch-all/overview/dynamic-schemas"
