@@ -667,8 +667,13 @@ components:
           format: uuid
           description: Job identifier.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        # status:
+        #   $ref: "#/components/schemas/JobStatus"
         status:
-          $ref: "#/components/schemas/JobStatus"
+          type: string
+          description:
+            Internal job processing status. Use the `steps` array for reliable
+            status tracking.
         steps:
           type: array
           items:
@@ -719,7 +724,7 @@ components:
           type: string
           description: |
             Job status.
-          example: completed
+          example: "job_completed"
         duration:
           type: string
           description: Total time taken to process the job.
