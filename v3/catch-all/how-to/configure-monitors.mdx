@@ -123,11 +123,11 @@ results.
 - **Record count**: 10-500 records (adjust for your use case)
   - Too few (less than 10): Query may be too specific
   - Too many (more than 500): Query may be too broad
-- **No time-based validators**: Check the `validators` array for time
-  constraints
-  - ❌ Avoid: `event_in_last_hour`, `event_in_last_7_days`,
+- **Review validators**: Check the `validators` array for time constraints
+  - Time-based validators are supported but may affect result consistency
+  - Examples: `event_in_last_hour`, `event_in_last_7_days`,
     `announcement_within_date_range`
-  - These indicate time-constrained queries that can fail on subsequent runs
+  - Consider using open-ended queries for more predictable results
 - **Clean extraction**: Review the `enrichment` object structure
   - All important fields extracted
   - Field names are semantic and consistent
@@ -139,17 +139,14 @@ results.
 
 </Accordion>
 
-<Warning>
-❌ **Time-based validators indicate problems**. If your reference job contains
-validators like `event_in_last_hour` or `announcement_within_date_range`, your
-monitor can return zero records after the first execution.
+<Note>
+**Time-based validators** like `event_in_last_hour` or `announcement_within_date_range` 
+are automatically adapted for recurring execution. However, overly specific time 
+constraints may limit result variety across monitor runs.
 
-**Solution**: Create a new job with an open-ended query (no time constraints
-like "this week", "today", or "last hour"), then create a monitor from that job.
-
-[Fix zero records issue →](/v3/catch-all/how-to/troubleshoot-monitors#monitor-returns-zero-records)
-
-</Warning>
+**Best practice**: Use open-ended queries (e.g., "AI company acquisitions" instead 
+of "AI acquisitions announced this week") for consistent results across executions.
+</Note>
 
 ## Implement robust webhooks
 

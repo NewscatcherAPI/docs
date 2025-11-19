@@ -27,13 +27,6 @@ Each scheduled execution:
 First, create a successful job following the
 [Quickstart guide](/v3/catch-all/overview/quickstart).
 
-<Warning>
-  **Use queries without time constraints.** When creating your reference job,
-  avoid time restrictions like “this week”, “last hour”, or “from Oct 10-15”.
-  These might create date-specific validators that fail on subsequent monitor
-  runs, returning zero results after the first execution.
-</Warning>
-
 ## Create a monitor
 
 Once your reference job completes with `status: job_completed`, use `job_id` to
@@ -185,7 +178,7 @@ monitors.monitors.forEach((monitor) => {
       "enabled": false,
       "schedule": "every day at 12 PM UTC",
       "timezone": "UTC",
-      "created_at": "2025-11-04 21:04:22"
+      "created_at": "2025-11-04T21:04:22Z"
     },
     {
       "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
@@ -194,7 +187,7 @@ monitors.monitors.forEach((monitor) => {
       "enabled": true,
       "schedule": "every 5 minutes",
       "timezone": "UTC",
-      "created_at": "2025-11-07 10:54:42"
+      "created_at": "2025-11-07T10:54:42Z"
     }
   ]
 }
@@ -265,13 +258,13 @@ data.jobs.forEach((job) => {
   "jobs": [
     {
       "job_id": "8a9763dd-3611-4b3b-a6cf-3e893a0c6746",
-      "start_date": "2025-11-07T10:50:00",
-      "end_date": "2025-11-07T10:55:00"
+      "start_date": "2025-11-07T10:50:00Z",
+      "end_date": "2025-11-07T10:55:00Z"
     },
     {
       "job_id": "288387df-7e05-4722-83cc-ecbebb6d8123",
-      "start_date": "2025-11-07T10:55:00",
-      "end_date": "2025-11-07T11:00:00"
+      "start_date": "2025-11-07T10:55:00Z",
+      "end_date": "2025-11-07T11:00:00Z"
     }
   ]
 }
@@ -345,9 +338,9 @@ results.all_records.forEach((record) => {
     "query": "AI company acquisitions and mergers",
     "context": "Focus on technology companies, include deal size if mentioned"
   },
-  "date_range": {
-    "start_date": "2025-11-07T10:50:00Z",
-    "end_date": "2025-11-07T11:30:00Z"
+  "run_info": {
+    "first_run": "2025-11-07T10:50:00Z",
+    "last_run": "2025-11-07T11:30:00Z"
   },
   "records": 2,
   "status": "Done",
@@ -355,6 +348,7 @@ results.all_records.forEach((record) => {
     {
       "record_id": "6417909601438475967",
       "record_title": "Samsung Electronics Acquires Oxford Semantic Technologies",
+      "added_on": "2025-11-07T10:55:00Z",
       "enrichment": {
         "acquiring_company": "Samsung Electronics",
         "acquired_company": "Oxford Semantic Technologies",
@@ -367,10 +361,13 @@ results.all_records.forEach((record) => {
         {
           "title": "Samsung invests in AI and M&A",
           "link": "https://n.news.naver.com/mnews/article/629/0000441563",
-          "published_date": "2025-11-07 11:15:11",
-          "job_id": "c4cb35e9-c8a5-46bc-87aa-5fdbf36f8e33"
+          "published_date": "2025-11-07T11:15:11Z",
+          "job_id": "c4cb35e9-c8a5-46bc-87aa-5fdbf36f8e33",
+          "added_on": "2025-11-07T10:55:00Z"
         }
-      ]
+      ],
+      "added_on": "2025-11-07T10:55:00Z",
+      "updated_on": "2025-11-07T10:55:00Z"
     }
   ]
 }
@@ -381,7 +378,7 @@ results.all_records.forEach((record) => {
 - `cron_expression` (string): Parsed cron format from your natural language
   schedule
 - `reference_job` (object): Original query and context from the reference job
-- `date_range` (object): Time span covered by all collected records
+- `run_info` (object): Execution timeframe showing first and last monitor runs
 - `all_records` (array): Deduplicated records from all monitor executions
 
 </Expandable>
@@ -513,6 +510,7 @@ When a monitor job completes, your endpoint receives:
     {
       "record_id": "-39216465981207817",
       "record_title": "Homeplus Seeks Buyer, Receives LOI from AI Firm Harex Infotech",
+      "added_on": "2025-11-07T11:25:33Z",
       "enrichment": {
         "schema_based_summary": "Harex Infotech acquired Homeplus Co. for null on null",
         "acquisition_date": null,
@@ -526,8 +524,9 @@ When a monitor job completes, your endpoint receives:
         {
           "title": "Court extends Homeplus' rehabilitation plan submission deadline",
           "link": "https://n.news.naver.com/mnews/article/009/0005586304",
-          "published_date": "2025-11-07 11:21:21",
-          "job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced"
+          "published_date": "2025-11-07T11:21:21Z",
+          "job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced",
+          "added_on": "2025-11-07T11:25:33Z"
         }
       ]
     }
@@ -542,6 +541,8 @@ When a monitor job completes, your endpoint receives:
 - `records_count`: Number of new records in this execution (after deduplication)
 - `jobs_processed`: Total number of jobs executed by this monitor
 - `records`: Array of new records from the latest job
+- `records[].added_on`: Timestamp when this record was first collected
+- `records[].citations[].added_on`: Timestamp when this citation was added
 
 <Note>
   Webhooks fire on every job completion, even when `records_count` is 0 (no new

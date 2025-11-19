@@ -13,28 +13,60 @@ This guide helps you diagnose and resolve common monitor issues.
 
 ## Monitor returns zero records
 
-**Symptom**: Webhook shows `"records_count": 0` on every execution after the
-first.
+**Symptom**: Webhook shows `"records_count": 0` on every execution after the first.
 
-**Cause**: Time-constrained query created date-specific validators.
+**Possible causes**:
 
-**Solution**:
+1. Query is too specific and matching events don't occur frequently.
+2. Data sources aren't publishing new content in the topic area.
+3. Reference job had very restrictive validators.
 
-1. Check the reference job's `validators` array for time-based validators.
-2. Create a new job with an open-ended query (no time constraints).
-3. Create a new monitor from the corrected job.
-4. Disable the problematic monitor.
+**Troubleshooting steps**:
 
-**Example fix**:
+<Steps>
+  <Step title="Check reference job validators">
+    Review the `validators` array in your reference job results:
+```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/pull/{reference_job_id}" \
+      -H "x-api-key: YOUR_API_KEY" | jq .validators
+```
+    
+    Overly specific validators may limit results.
+  </Step>
 
-❌ **Original query**: `"AI company acquisitions announced this week"`
+  <Step title="Verify query scope">
+    Ensure your query isn't too narrow. Compare these examples:
+    
+    ❌ **Too specific**: `"Series C funding for AI startups in San Francisco over $50M announced this week"`
+    
+    ✅ **Better scope**: `"AI startup funding rounds"`
+    
+    Broader queries produce more consistent results.
+  </Step>
 
-✅ **Corrected query**: `"AI company acquisitions"`
+  <Step title="Check monitor execution history">
+    List recent monitor jobs to see if any returned records:
+    ```bash
+        curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
+          -H "x-api-key: YOUR_API_KEY"
+    ```
+    
+    If multiple consecutive runs return zero records, consider broadening your query.
+  </Step>
+
+  <Step title="Create monitor with broader query">
+    If needed, create a new reference job with a less restrictive query:
+    
+    1. Create new job with broader scope.
+    2. Wait for completion.
+    3. Create new monitor from the improved job.
+    4. Disable the old monitor.
+  </Step>
+</Steps>
 
 <Tip>
-For more details on avoiding time-constrained queries, see [Configure monitors:
-Verify reference job
-quality](/v3/catch-all/how-to/configure-monitors#verify-reference-job-quality).
+Monitor deduplication uses a 7-day rolling window. New records appear only when 
+genuinely new events occur in your topic area.
 </Tip>
 
 ---

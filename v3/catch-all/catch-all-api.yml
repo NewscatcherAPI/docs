@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.4.5
+  version: 0.4.10
   description: |
     CatchAll transforms natural language questions into structured, validated records extracted from web sources.
 
@@ -30,7 +30,7 @@ info:
 
     ### Basic workflow
     1. Submit a query with `/catchAll/submit`.
-    2. Poll `/catchAll/status/{job_id}` until status is `job_completed` (typically 10-15 minutes).
+    2. Poll `/catchAll/status/{job_id}` until status is `completed` (typically 10-15 minutes).
     3. Retrieve results with `/catchAll/pull/{job_id}`.
 
     ### Monitor workflow
@@ -264,10 +264,23 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - success
+                  - message
+                  - monitor_id
                 properties:
-                  status:
+                  success:
+                    type: boolean
+                    description: Whether the operation succeeded.
+                    example: true
+                  message:
                     type: string
-                    example: "Monitor disabled successfully"
+                    description: Human-readable success message.
+                    example: "Monitor disabled successfully."
+                  monitor_id:
+                    type: string
+                    format: uuid
+                    description: ID of the disabled monitor.
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -299,10 +312,23 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - success
+                  - message
+                  - monitor_id
                 properties:
-                  status:
+                  success:
+                    type: boolean
+                    description: Whether the operation succeeded.
+                    example: true
+                  message:
                     type: string
-                    example: "Monitor enabled successfully"
+                    description: Human-readable success message.
+                    example: "Monitor enabled successfully."
+                  monitor_id:
+                    type: string
+                    format: uuid
+                    description: ID of the enabled monitor.
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -403,7 +429,29 @@ components:
             $ref: "#/components/schemas/StatusResponseDTO"
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-            status: "data_fetched"
+            status: "analyzing"
+            steps:
+              - status: "submitted"
+                order: 1
+                completed: true
+              - status: "analyzing"
+                order: 2
+                completed: false
+              - status: "fetching"
+                order: 3
+                completed: false
+              - status: "clustering"
+                order: 4
+                completed: false
+              - status: "enriching"
+                order: 5
+                completed: false
+              - status: "completed"
+                order: 6
+                completed: false
+              - status: "failed"
+                order: 7
+                completed: false
 
     ListUserJobsResponse:
       description: List of user jobs
@@ -433,9 +481,29 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/MonitorJobItem"
+            type: object
+            required:
+              - monitor_id
+              - sort_order
+              - total_jobs
+              - jobs
+            properties:
+              monitor_id:
+                type: string
+                format: uuid
+                description: Monitor identifier.
+              sort_order:
+                type: string
+                enum: ["asc", "desc"]
+                description: Sort order applied to results.
+              total_jobs:
+                type: integer
+                description: Total number of jobs for this monitor.
+              jobs:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonitorJobItem"
+                description: Array of job executions for this monitor.
 
     PullMonitorResponse:
       description: Monitor results retrieved successfully.
@@ -548,50 +616,70 @@ components:
     JobStatus:
       type: string
       enum:
-        - pending
-        - analysis_started
-        - analysis_keywords_extracted
-        - analysis_enrichments_extracted
-        - analysis_queries_extracted
-        - retrieval_dispatched
-        - data_fetched
-        - clustering_dispatched
-        - data_grouped
-        - enrichment_dispatched
-        - data_enriched
-        - job_completed
+        - submitted
+        - analyzing
+        - fetching
+        - clustering
+        - enriching
+        - completed
+        - failed
       description: |
         Current job processing status. Jobs progress through these stages:
 
-        - `pending`: Job queued, waiting to start.
-        - `analysis_started`: Beginning query analysis.
-        - `analysis_keywords_extracted`: Keywords identified.
-        - `analysis_enrichments_extracted`: Validators and extractors generated.
-        - `analysis_queries_extracted`: Search queries created.
-        - `retrieval_dispatched`: Queries sent to fetching service.
-        - `data_fetched`: Articles retrieved.
-        - `clustering_dispatched`: Clustering initiated.
-        - `data_grouped`: Similar articles clustered.
-        - `enrichment_dispatched`: Validation and extraction started.
-        - `data_enriched`: Structured data extracted.
-        - `job_completed`: Job finished, results ready.
+        - `submitted`: Job queued, waiting to start processing.
+        - `analyzing`: Extracting keywords, generating search queries, and creating validators/extractors.
+        - `fetching`: Retrieving articles from web sources.
+        - `clustering`: Grouping similar articles into distinct events.
+        - `enriching`: Validating clusters and extracting structured data.
+        - `completed`: Job finished successfully, results ready.
+        - `failed`: Job processing failed.
 
-        Poll every 30-60 seconds until status is `job_completed`.
-      example: "data_fetched"
+        Poll `/catchAll/status/{job_id}` every 30-60 seconds until status is `completed` (typically 10-15 minutes).
+      example: "fetching"
+
+    JobStep:
+      type: object
+      required:
+        - status
+        - order
+      properties:
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        order:
+          type: integer
+          description: Sequential position of this step in the pipeline (1-7).
+          minimum: 1
+          maximum: 7
+          example: 2
+        completed:
+          type: boolean
+          default: false
+          description: Whether this step has finished processing.
 
     StatusResponseDTO:
       type: object
       required:
         - job_id
-        - status
+        - steps
       properties:
         job_id:
           type: string
           format: uuid
           description: Job identifier.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        # status:
+        #   $ref: "#/components/schemas/JobStatus"
         status:
-          $ref: "#/components/schemas/JobStatus"
+          type: string
+          description:
+            Internal job processing status. Use the `steps` array for reliable
+            status tracking.
+        steps:
+          type: array
+          items:
+            $ref: "#/components/schemas/JobStep"
+          description: |
+            Detailed progress tracking for each processing stage. Steps progress sequentially from order 1 (submitted) through 5 (enriching), ending at order 6 (completed) or 7 (failed).
 
     ListUserJobsResponseDto:
       type: object
@@ -612,9 +700,6 @@ components:
       required:
         - job_id
         - status
-        - page
-        - total_pages
-        - page_size
       properties:
         job_id:
           type: string
@@ -639,7 +724,7 @@ components:
           type: string
           description: |
             Job status.
-          example: job_completed
+          example: "job_completed"
         duration:
           type: string
           description: Total time taken to process the job.
@@ -737,8 +822,104 @@ components:
         published_date:
           type: string
           format: date-time
-          description: Article publication date in YYYY-MM-DD HH:MM:SS format.
-          example: "2025-09-26 08:54:20"
+          description:
+            Article publication date in ISO 8601 format with UTC timezone.
+          example: "2025-09-26T08:54:20Z"
+
+    MonitorCitation:
+      type: object
+      required:
+        - title
+        - link
+        - published_date
+        - job_id
+        - added_on
+      properties:
+        title:
+          type: string
+          description: Article title
+          example: "Oracle Reports Strong Q1 2026 Results"
+        link:
+          type: string
+          format: uri
+          description: URL to the source article
+          example: "https://example.com/article"
+        published_date:
+          type: string
+          format: date-time
+          description:
+            Article publication date in ISO 8601 format with UTC timezone.
+          example: "2025-09-26T08:54:20Z"
+        job_id:
+          type: string
+          format: uuid
+          description: Job ID that found this citation.
+          example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
+        added_on:
+          type: string
+          format: date-time
+          description:
+            The date when the citation was added to the record in ISO 8601
+            format with UTC timezone.
+          example: "2025-11-14T21:00:00Z"
+      description: |
+        Citation with monitor-specific metadata. Used in monitor results and webhook payloads.
+        Extends base citation with tracking information for job_id and timestamps.
+
+    MonitorRecord:
+      type: object
+      required:
+        - record_id
+        - record_title
+        - enrichment
+        - citations
+      properties:
+        record_id:
+          type: string
+          description: Unique identifier for the record.
+          example: "5262823697790152939"
+        record_title:
+          type: string
+          description: Short title summarizing the record.
+          example: "Oracle Q1 2026 Earnings Exceed Expectations"
+        enrichment:
+          type: object
+          description: |
+            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
+
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/dynamic-schemas) for integration guidance.
+          additionalProperties: {}
+          example:
+            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
+            company_name: "Oracle"
+            quarter_identifier: "Q1 2026"
+            revenue: "$14.9 billion"
+            revenue_change: "up 12%"
+            profit_margin: "42% non-GAAP operating margin"
+        citations:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonitorCitation"
+          description:
+            Source articles with monitor-specific metadata (job_id, added_on
+            timestamps).
+        added_on:
+          type: string
+          format: date-time
+          description:
+            The date when this record was first added to monitor results in ISO
+            8601 format with UTC timezone.
+          example: "2025-11-14T21:00:00Z"
+        updated_on:
+          type: string
+          format: date-time
+          description:
+            The date when this record was last updated in monitor results in ISO
+            8601 format with UTC timezone.
+          example: "2025-11-14T21:00:00Z"
+      description: |
+        Record with monitor-specific metadata. Used in monitor results and webhook payloads.
+        Includes timestamps tracking when records were added and updated, and citations include job tracking.
 
     CreateMonitorRequestDTO:
       type: object
@@ -797,6 +978,8 @@ components:
 
     CreateMonitorResponseDTO:
       type: object
+      required:
+        - status
       properties:
         monitor_id:
           type: string
@@ -806,6 +989,18 @@ components:
           type: string
           description: Creation status or error message
           example: "Monitor Created Successfully"
+
+    ReferenceJob:
+      type: object
+      properties:
+        query:
+          type: string
+          description: Natural language query from the reference job.
+          example: "Tech company earnings this quarter"
+        context:
+          type: string
+          description: Context provided with the reference job query.
+          example: "Focus on revenue and profit margins"
 
     PullMonitorResponseDTO:
       type: object
@@ -830,32 +1025,21 @@ components:
           description: Timezone used for schedule execution.
           example: "UTC"
         reference_job:
+          $ref: "#/components/schemas/ReferenceJob"
+        run_info:
           type: object
-          description:
-            Configuration from the job used as template for this monitor.
+          description: Execution time range for this monitor.
           properties:
-            query:
-              type: string
-              description: Natural language query from the reference job.
-              example: "Tech company earnings this quarter"
-            context:
-              type: string
-              description: Context provided with the reference job query.
-              example: "Focus on revenue and profit margins"
-        date_range:
-          type: object
-          description: Time range covered by all monitor job results.
-          properties:
-            start_date:
+            first_run:
               type: string
               format: date-time
-              description: Earliest date from collected records.
-              example: "2025-10-23T00:00:00Z"
-            end_date:
+              description: Timestamp of the first job execution.
+              example: "2025-10-23T12:00:00Z"
+            last_run:
               type: string
               format: date-time
-              description: Latest date from collected records.
-              example: "2025-11-07T23:59:59Z"
+              description: Timestamp of the most recent job execution.
+              example: "2025-11-07T12:00:00Z"
         records:
           type: integer
           default: 0
@@ -866,18 +1050,11 @@ components:
           type: string
           description:
             Current monitor status or error message if monitor creation failed.
-          example: "active"
-        last_run_date:
-          type: string
-          format: date-time
-          description: |
-            Timestamp of the most recent scheduled job execution.
-            Null if no jobs have been executed yet.
-          example: "2025-11-07T12:00:00Z"
+          example: "Done"
         all_records:
           type: array
           items:
-            $ref: "#/components/schemas/Record"
+            $ref: "#/components/schemas/MonitorRecord"
           description: |
             Aggregated records from all jobs executed by this monitor.
             Each record includes structured data extracted from web sources with citations.
@@ -895,10 +1072,10 @@ components:
         monitors:
           type: array
           items:
-            $ref: "#/components/schemas/MonitorListItem"
+            $ref: "#/components/schemas/MonitorListItemDTO"
           description: Array of monitor summaries.
 
-    MonitorListItem:
+    MonitorListItemDTO:
       type: object
       required:
         - monitor_id
@@ -926,8 +1103,8 @@ components:
           example: true
         schedule:
           type: string
-          description: Natural language schedule description.
-          example: "every day at 12 PM UTC"
+          description: Cron expression for monitor schedule.
+          example: "0 12 * * *"
         timezone:
           type: string
           description: Timezone for schedule execution.
@@ -935,7 +1112,7 @@ components:
         created_at:
           type: string
           format: date-time
-          description: When the monitor was created.
+          description: The date when the monitor was created.
           example: "2025-10-23T14:30:00Z"
 
     WebhookPayload:
@@ -943,34 +1120,56 @@ components:
       description: |
         Payload sent to webhook URL when a monitor job completes.
         Content-Type: application/json
+
+        Note: Citations in webhook payloads include an additional 'id' field 
+        (string, internal identifier) not present in API GET responses.
       properties:
         monitor_id:
           type: string
           format: uuid
+          description: Monitor identifier.
         reference_job_id:
           type: string
           format: uuid
+          description: Reference job used as template for this monitor.
         latest_job_id:
           type: string
           format: uuid
-          description: Job ID of the most recent execution
+          description: Job ID of the most recent execution.
         records_count:
           type: integer
-          description: Number of records from latest job
+          description:
+            Number of new records from latest job (after deduplication).
         jobs_processed:
           type: integer
-          description: Total number of jobs run by this monitor
+          description: Total number of jobs executed by this monitor.
         updated_at:
           type: string
           format: date-time
+          description:
+            The date when the webhook was triggered in ISO 8601 format with UTC
+            timezone.
+          example: "2025-11-15T06:01:57Z"
         cron_expression:
           type: string
+          description: Cron expression defining the monitor schedule.
         timezone:
           type: string
+          description: Timezone for schedule execution.
+        records:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonitorRecord"
+          description:
+            Array of new records from the latest job execution (includes
+            monitor-specific fields like added_on, updated_on).
 
     MonitorJobItem:
       type: object
-      description: Information about a single job execution within a monitor.
+      required:
+        - job_id
+        - start_date
+        - end_date
       properties:
         job_id:
           type: string
@@ -979,15 +1178,17 @@ components:
         start_date:
           type: string
           format: date-time
-          description: When the job started processing.
+          description:
+            Start of the data collection time window for this job execution
+            (based on monitor schedule) in ISO 8601 format with UTC timezone.
+          example: "2025-11-14T21:00:00Z"
         end_date:
           type: string
           format: date-time
-          description: When the job completed (null if still running).
-        status:
-          type: string
-          description: Job status.
-          example: "job_completed"
+          description:
+            End of the data collection time window for this job execution (based
+            on monitor schedule) in ISO 8601 format with UTC timezone.
+          example: "2025-11-15T00:00:00Z"
 
     Error:
       type: object

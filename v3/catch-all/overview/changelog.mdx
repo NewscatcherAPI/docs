@@ -11,6 +11,37 @@ rss: true
   updates during this phase.
 </Note>
 
+<Update label="0.4.10" description="2025-11-18">
+## Status tracking and monitor improvements
+
+Enhanced status tracking with processing steps and improved monitor
+functionality for time-constrained queries.
+
+**Features:**
+
+- **Progress tracking**: Status endpoint now returns detailed
+  [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps) array showing
+  completion state for each processing stage.
+- **Monitor timestamps**: Monitor records include `added_on` and `updated_on`
+  fields to track when each data record was first collected and last updated
+  across job executions.
+- **Time-constrained jobs**: Monitors now work with reference jobs that include
+  time constraints. The system automatically adapts date-specific validators for
+  each execution.
+
+**Improvements:**
+
+- [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) now
+  returns only user-created jobs, excluding repeated monitor jobs.
+- Monitor responses use
+  [`run_info`](/v3/catch-all/endpoints/get-monitor-results#response-run-info)
+  structure with `first_run` and `last_run` timestamps instead of `date_range`
+  for clearer execution metadata.
+- Improved error handling in monitor creation endpoint with specific validation
+  messages for invalid schedules and incomplete reference jobs.
+
+</Update>
+
 <Update label="0.4.5" description="2025-11-08">
 ## Monitor webhooks and deduplication
 
@@ -109,9 +140,8 @@ data extracted from web sources.
 
 - **Natural language processing**: Submit queries in plain English and receive
   structured data with source citations.
-- **[Dynamic schemas](/v3/catch-all/overview/dynamic-schemas)**:
-  Response structures adapt to your query, generating relevant fields
-  automatically.
+- **[Dynamic schemas](/v3/catch-all/overview/dynamic-schemas)**: Response
+  structures adapt to your query, generating relevant fields automatically.
 - **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
   validation, and extraction phases.
 - **Real-time status tracking**: Monitor job progress from submission to
