@@ -1,0 +1,183 @@
+---
+title: Python SDK
+sidebarTitle: Python
+description: Python client library for CatchAll API
+---
+
+<Note>
+  CatchAll API is currently in beta. Breaking changes may occur in minor version
+  updates. See the [Changelog](/v3/catch-all/overview/changelog) for updates.
+</Note>
+
+Python SDK provides access to the CatchAll API from Python applications with
+support for both synchronous and asynchronous operations.
+
+## Installation
+
+```bash
+pip install newscatcher-catchall-sdk
+```
+
+## Basic usage
+
+### Jobs
+
+Submit a query and retrieve structured results:
+
+```python
+from newscatcher_catchall import CatchAllApi
+import time
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+# Create a job
+job = client.jobs.create_job(
+    query="Tech company earnings this quarter",
+    context="Focus on revenue and profit margins",
+    schema="Company [NAME] earned [REVENUE] in [QUARTER]",
+)
+print(f"Job created: {job.job_id}")
+
+# Poll for completion
+while True:
+    status = client.jobs.get_job_status(job.job_id)
+
+    completed = any(s.status == "completed" and s.completed for s in status.steps)
+    if completed:
+        print("Job completed!")
+        break
+
+    current_step = next((s for s in status.steps if not s.completed), None)
+    if current_step:
+        print(f"Processing: {current_step.status} (step {current_step.order}/7)")
+
+    time.sleep(60)
+
+# Retrieve results
+results = client.jobs.get_job_results(job.job_id)
+print(f"Found {results.valid_records} records")
+
+for record in results.all_records:
+    print(record.record_title)
+```
+
+<Note>
+  Jobs process asynchronously and typically complete in 10-15 minutes. See the
+  [Quickstart](/v3/catch-all/overview/quickstart) for a complete walkthrough.
+</Note>
+
+### Monitors
+
+Automate recurring queries with scheduled execution:
+
+```python
+# Create a monitor from a completed job
+monitor = client.monitors.create_monitor(
+    reference_job_id=job.job_id,
+    schedule="every day at 12 PM UTC",
+    webhook={
+        "url": "https://your-endpoint.com/webhook",
+        "method": "POST",
+        "headers": {"Authorization": "Bearer YOUR_TOKEN"},
+    },
+)
+print(f"Monitor created: {monitor.monitor_id}")
+
+# Get aggregated results
+results = client.monitors.pull_monitor_results(monitor.monitor_id)
+print(f"Collected {results.records} records")
+```
+
+Learn more about monitors in the
+[Monitors documentation](/v3/catch-all/overview/monitors).
+
+## Async usage
+
+Use the async client for non-blocking API calls:
+
+```python
+import asyncio
+
+async def main():
+    job = await client.jobs.create_job(
+        query="Tech company earnings this quarter",
+        context="Focus on revenue and profit margins",
+    )
+
+    while True:
+        status = await client.jobs.get_job_status(job.job_id)
+        completed = any(s.status == "completed" and s.completed for s in status.steps)
+        if completed:
+            break
+        await asyncio.sleep(60)
+
+asyncio.run(main())
+```
+
+## Error handling
+
+```python
+from newscatcher_catchall.core.api_error import ApiError
+
+try:
+    client.jobs.create_job(query="...")
+except ApiError as e:
+    print(f"Status: {e.status_code}")
+    print(f"Error: {e.body}")
+```
+
+## Advanced features
+
+### Pagination
+
+Retrieve large result sets with pagination:
+
+```python
+page = 1
+while True:
+    results = client.jobs.get_job_results(
+        job_id="...",
+        page=page,
+        page_size=100,
+    )
+
+    for record in results.all_records:
+        print(f"  - {record.record_title}")
+
+    if results.page >= results.total_pages:
+        break
+    page += 1
+```
+
+### Timeouts
+
+Set custom timeouts at the client or request level:
+
+```python
+# Client-level timeout
+client = CatchAllApi(api_key="YOUR_API_KEY", timeout=30.0)
+
+# Request-level timeout
+client.jobs.create_job(
+    query="...",
+    request_options={"timeout_in_seconds": 10},
+)
+```
+
+### Retries
+
+Configure retry behavior for failed requests:
+
+```python
+client.jobs.create_job(
+    query="...",
+    request_options={"max_retries": 3},
+)
+```
+
+## Resources
+
+- [GitHub Repository](https://github.com/Newscatcher/newscatcher-catchall-python)
+- [PyPI Package](https://pypi.org/project/newscatcher-catchall-sdk/)
+- [API Reference](/v3/catch-all/endpoints/create-job)
+- [Quickstart Guide](/v3/catch-all/overview/quickstart)
