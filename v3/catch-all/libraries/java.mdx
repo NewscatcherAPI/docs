@@ -5,77 +5,221 @@ description: Java client library for CatchAll API
 ---
 
 <Note>
-  The Java SDK for CatchAll API is currently under development and will be
-  available soon.
+  CatchAll API is currently in beta. Breaking changes may occur in minor version
+  updates. See the [Changelog](/v3/catch-all/overview/changelog) for updates.
 </Note>
 
-## Coming soon
+Java SDK provides access to the CatchAll API from Java applications.
 
-We're actively developing a Java SDK for the CatchAll API. In the meantime, you
-can use the REST API directly with your preferred HTTP client.
+## Installation
 
-### Using the REST API
+### Gradle
 
-Here's a basic example using Java's built-in HTTP client:
+```groovy
+dependencies {
+    implementation 'com.newscatcherapi:newscatcher-catchall-sdk:0.1.0'
+}
+```
+
+### Maven
+
+```xml
+<dependency>
+    <groupId>com.newscatcherapi</groupId>
+    <artifactId>newscatcher-catchall-sdk</artifactId>
+    <version>0.1.0</version>
+</dependency>
+```
+
+## Basic usage
+
+### Jobs
+
+Submit a query and retrieve structured results:
 
 ```java
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+import com.newscatcher.catchall.types.StatusResponseDto;
+import com.newscatcher.catchall.types.PullJobResponseDto;
 
-public class CatchAllExample {
-    public static void main(String[] args) throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
-
-        // Create a job
-        String requestBody = """
-            {
-                "query": "Tech company earnings this quarter",
-                "context": "Focus on revenue and profit margins"
-            }
-            """;
-
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("https://catchall.newscatcherapi.com/catchAll/submit"))
-            .header("x-api-key", "YOUR_API_KEY")
-            .header("Content-Type", "application/json")
-            .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+public class JobsExample {
+    public static void main(String[] args) throws InterruptedException {
+        CatchAllApi client = CatchAllApi.builder()
+            .apiKey("YOUR_API_KEY")
             .build();
 
-        HttpResponse<String> response = client.send(
-            request,
-            HttpResponse.BodyHandlers.ofString()
+        // Create a job
+        var job = client.jobs().createJob(
+            SubmitRequestDto.builder()
+                .query("Tech company earnings this quarter")
+                .context("Focus on revenue and profit margins")
+                .schema("Company [NAME] earned [REVENUE] in [QUARTER]")
+                .build()
         );
+        System.out.println("Job created: " + job.getJobId());
 
-        System.out.println(response.body());
+        // Poll for completion
+        String jobId = job.getJobId();
+        while (true) {
+            StatusResponseDto status = client.jobs().getJobStatus(jobId);
+
+            if ("job_completed".equals(status.getStatus())) {
+                System.out.println("Job completed!");
+                break;
+            }
+
+            Thread.sleep(60000); // Wait 60 seconds
+        }
+
+        // Retrieve results
+        PullJobResponseDto results = client.jobs().getJobResults(jobId);
+        System.out.println(String.format(
+            "Found %d valid records",
+            results.getValidRecords()
+        ));
+
+        results.getAllRecords().forEach(record ->
+            System.out.println(record.getRecordTitle())
+        );
     }
 }
 ```
 
-## Stay updated
+<Note>
+  Jobs process asynchronously and typically complete in 10-15 minutes. See the
+  [Quickstart](/v3/catch-all/overview/quickstart) for a complete walkthrough.
+</Note>
 
-To be notified when the Java SDK is released:
+### Monitors
 
-- Watch the
-  [GitHub Java SDK repository](https://github.com/Newscatcher/newscatcher-catchall-java)
-  for updates.
-- Check the [Changelog](/v3/catch-all/overview/changelog) regularly.
-- Contact [support@newscatcherapi.com](mailto:support@newscatcherapi.com) to
-  express interest.
+Automate recurring queries with scheduled execution:
 
-## Alternative approaches
+```java
+import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+import com.newscatcher.catchall.types.WebhookDto;
+import java.util.Map;
 
-Until the Java SDK is available, consider:
+// Create a monitor from a completed job
+var monitor = client.monitors().createMonitor(
+    CreateMonitorRequestDto.builder()
+        .referenceJobId(jobId)
+        .schedule("every day at 12 PM UTC")
+        .webhook(WebhookDto.builder()
+            .url("https://your-endpoint.com/webhook")
+            .method("POST")
+            .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
+            .build())
+        .build()
+);
+System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
 
-- Using the [Python SDK](/v3/catch-all/libraries/python) or
-  [TypeScript SDK](/v3/catch-all/libraries/typescript) if your architecture
-  supports it.
-- Making direct HTTP requests to the
-  [REST API endpoints](/v3/catch-all/endpoints/create-job).
-- Using a Java HTTP client library like OkHttp or Apache HttpClient.
+// Get aggregated results
+monitor.getMonitorId().ifPresent(monitorId -> {
+    var results = client.monitors().pullMonitorResults(monitorId);
+    System.out.println("Collected " + results.getRecords() + " records");
+});
+```
+
+Learn more about monitors in the
+[Monitors documentation](/v3/catch-all/overview/monitors).
+
+## Error handling
+
+```java
+import com.newscatcher.catchall.core.CatchAllApiApiException;
+
+try {
+    client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("Tech company earnings this quarter")
+            .build()
+    );
+} catch (CatchAllApiApiException e) {
+    System.out.println("Status: " + e.statusCode());
+    System.out.println("Error: " + e.body());
+}
+```
+
+## Advanced features
+
+### Pagination
+
+Retrieve large result sets with pagination:
+
+```java
+import com.newscatcher.catchall.resources.jobs.requests.GetJobResultsRequest;
+
+int page = 1;
+while (true) {
+    var results = client.jobs().getJobResults(
+        jobId,
+        GetJobResultsRequest.builder()
+            .page(page)
+            .pageSize(100)
+            .build()
+    );
+
+    results.getAllRecords().forEach(record -> {
+        System.out.println("  - " + record.getRecordTitle());
+    });
+
+    if (results.getPage() >= results.getTotalPages()) {
+        break;
+    }
+    page++;
+}
+```
+
+### Timeouts
+
+Set custom timeouts at the client or request level:
+
+```java
+import com.newscatcher.catchall.core.RequestOptions;
+
+// Client-level timeout
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .timeout(30) // 30 seconds
+    .build();
+
+// Request-level timeout
+client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("Tech company earnings this quarter")
+        .build(),
+    RequestOptions.builder()
+        .timeout(10)
+        .build()
+);
+```
+
+### Retries
+
+Configure retry behavior for failed requests:
+
+```java
+// Client-level retries
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .maxRetries(3)
+    .build();
+
+// Request-level retries
+client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("Tech company earnings this quarter")
+        .build(),
+    RequestOptions.builder()
+        .maxRetries(3)
+        .build()
+);
+```
 
 ## Resources
 
+- [GitHub Repository](https://github.com/Newscatcher/newscatcher-catchall-java)
+- [Maven Central](https://central.sonatype.com/artifact/com.newscatcherapi/newscatcher-catchall-sdk)
 - [API Reference](/v3/catch-all/endpoints/create-job)
 - [Quickstart Guide](/v3/catch-all/overview/quickstart)
