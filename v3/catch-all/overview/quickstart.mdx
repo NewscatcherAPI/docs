@@ -22,7 +22,7 @@ Before you begin, make sure you meet these prerequisites:
 <Steps>
   <Step title="Set up your environment">
 
-    Install the HTTP client library for your programming language:
+    Install the CatchAll client library for your programming language:
 
     <CodeGroup>
     ```bash curl
@@ -32,11 +32,25 @@ Before you begin, make sure you meet these prerequisites:
     ```
 
     ```bash Python
-    pip install requests
+    pip install newscatcher-catchall-sdk
     ```
 
     ```bash TypeScript
-    npm install axios
+    npm install newscatcher-catchall-sdk
+    ```
+
+    ```bash Java (Gradle)
+    dependencies {
+        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:0.1.0'
+    }
+    ```
+
+    ```bash Java (Maven)
+    <dependency>
+        <groupId>com.newscatcherapi</groupId>
+        <artifactId>newscatcher-catchall-sdk</artifactId>
+        <version>0.1.0</version>
+    </dependency>
     ```
     </CodeGroup>
 
@@ -67,60 +81,56 @@ Before you begin, make sure you meet these prerequisites:
     ```
 
     ```python Python
-    import requests
-    import json
+    from newscatcher_catchall import CatchAllApi
 
-    # Configuration
-    API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
-    URL = "https://catchall.newscatcherapi.com/catchAll/submit"
-    HEADERS = {"x-api-key": API_KEY, "Content-Type": "application/json"}
+    # Initialize the client
+    client = CatchAllApi(api_key="YOUR_API_KEY_HERE")
 
-    # Define the job parameters
-    PAYLOAD = {
-        "query": "Tech company earnings this quarter",  # Natural language question
-        "context": "Focus on revenue and profit margins",  # Optional context
-        "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"  # Optional template
-    }
+    # Create a job
+    job = client.jobs.create_job(
+        query="Tech company earnings this quarter",
+        context="Focus on revenue and profit margins",
+        schema="Company [NAME] earned [REVENUE] in [QUARTER]"
+    )
 
-    try:
-        response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
-        response.raise_for_status()
-        print(json.dumps(response.json(), indent=2))
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to create job: {e}")
+    print(f"Job created: {job.job_id}")
     ```
 
     ```typescript TypeScript
-    import axios, { AxiosResponse } from "axios";
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-    const API_KEY: string = "YOUR_API_KEY_HERE";
-    const URL: string = "https://catchall.newscatcherapi.com/catchAll/submit";
+    // Initialize the client
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY_HERE" });
 
-    interface JobPayload {
-      query: string;
-      context?: string;
-      schema?: string;
-    }
-
-    const payload: JobPayload = {
+    // Create a job
+    const job = await client.jobs.createJob({
       query: "Tech company earnings this quarter",
       context: "Focus on revenue and profit margins",
       schema: "Company [NAME] earned [REVENUE] in [QUARTER]"
-    };
+    });
 
-    axios
-      .post(URL, payload, {
-        headers: {
-          "x-api-key": API_KEY,
-          "Content-Type": "application/json"
-        }
-      })
-      .then((response: AxiosResponse) => {
-        console.log(JSON.stringify(response.data, null, 2));
-      })
-      .catch((error) => {
-        console.error(`Failed to create job: ${error.message}`);
-      });
+    console.log(`Job created: ${job.jobId}`);
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+
+    // Initialize the client
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY_HERE")
+        .build();
+
+    // Create a job
+    var job = client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("Tech company earnings this quarter")
+            .context("Focus on revenue and profit margins")
+            .schema("Company [NAME] earned [REVENUE] in [QUARTER]")
+            .build()
+    );
+
+    System.out.println("Job created: " + job.getJobId());
     ```
     </CodeGroup>
 
@@ -151,93 +161,94 @@ Before you begin, make sure you meet these prerequisites:
     ```
 
     ```python Python
-    import requests
+    from newscatcher_catchall import CatchAllApi
     import time
-    import json
 
-    API_KEY = "YOUR_API_KEY_HERE"
-    JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"  # Job ID from previous step
-    URL = f"https://catchall.newscatcherapi.com/catchAll/status/{JOB_ID}"
-    HEADERS = {"x-api-key": API_KEY}
+    client = CatchAllApi(api_key="YOUR_API_KEY_HERE")
+    job_id = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
     # Poll until job completes
     while True:
-        try:
-            response = requests.get(URL, headers=HEADERS)
-            response.raise_for_status()
-            status_data = response.json()
+        status = client.jobs.get_job_status(job_id)
 
-            print(f"Current status: {status_data.get('status', 'unknown')}")
+        print(f"Current status: {status.status}")
 
-            # Check if job is completed by examining steps
-            steps = status_data.get('steps', [])
-            completed_step = next((s for s in steps if s['status'] == 'completed' and s.get('completed')), None)
-            failed_step = next((s for s in steps if s['status'] == 'failed' and s.get('completed')), None)
+        # Check if job is completed by examining steps
+        completed_step = next((s for s in status.steps if s.status == 'completed' and s.completed), None)
+        failed_step = next((s for s in status.steps if s.status == 'failed' and s.completed), None)
 
-            if completed_step:
-                print("Job completed!")
-                break
-            elif failed_step:
-                print("Job failed!")
-                break
-
-            time.sleep(60)  # Wait 60 seconds before next check
-
-        except requests.exceptions.RequestException as e:
-            print(f"Failed to check status: {e}")
+        if completed_step:
+            print("Job completed!")
             break
+        elif failed_step:
+            print("Job failed!")
+            break
+
+        time.sleep(60)  # Wait 60 seconds before next check
     ```
 
     ```typescript TypeScript
-    import axios, { AxiosResponse } from "axios";
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-    const API_KEY: string = "YOUR_API_KEY_HERE";
-    const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
-    const URL: string = `https://catchall.newscatcherapi.com/catchAll/status/${JOB_ID}`;
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY_HERE" });
+    const jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
 
-    interface JobStep {
-      status: string;
-      order: number;
-      completed?: boolean;
-    }
+    // Poll until job completes
+    while (true) {
+      const status = await client.jobs.getJobStatus(jobId);
 
-    interface StatusResponse {
-      job_id: string;
-      status?: string;
-      steps?: JobStep[];
-    }
+      console.log(`Current status: ${status.status}`);
 
-    async function pollJobStatus() {
-      while (true) {
-        try {
-          const response: AxiosResponse<StatusResponse> = await axios.get(URL, {
-            headers: { "x-api-key": API_KEY }
-          });
+      // Check if job is completed by examining steps
+      const completedStep = status.steps.find(s => s.status === 'completed' && s.completed);
+      const failedStep = status.steps.find(s => s.status === 'failed' && s.completed);
 
-          console.log(`Current status: ${response.data.status}`);
-
-          // Check if job is completed by examining steps
-          const steps = response.data.steps || [];
-          const completedStep = steps.find(s => s.status === 'completed' && s.completed);
-          const failedStep = steps.find(s => s.status === 'failed' && s.completed);
-
-          if (completedStep) {
-            console.log("Job completed!");
-            break;
-          } else if (failedStep) {
-            console.log("Job failed!");
-            break;
-          }
-
-          await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
-        } catch (error) {
-          console.error(`Failed to check status: ${error.message}`);
-          break;
-        }
+      if (completedStep) {
+        console.log("Job completed!");
+        break;
+      } else if (failedStep) {
+        console.log("Job failed!");
+        break;
       }
-    }
 
-    pollJobStatus();
+      await new Promise(resolve => setTimeout(resolve, 60000)); // Wait 60 seconds
+    }
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.types.StatusResponseDto;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY_HERE")
+        .build();
+
+    String jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+
+    // Poll until job completes
+    while (true) {
+        StatusResponseDto status = client.jobs().getJobStatus(jobId);
+
+        System.out.println("Current status: " + status.getStatus());
+
+        // Check if job is completed by examining steps
+        var completedStep = status.getSteps().stream()
+            .filter(s -> "completed".equals(s.getStatus()) && s.getCompleted())
+            .findFirst();
+        var failedStep = status.getSteps().stream()
+            .filter(s -> "failed".equals(s.getStatus()) && s.getCompleted())
+            .findFirst();
+
+        if (completedStep.isPresent()) {
+            System.out.println("Job completed!");
+            break;
+        } else if (failedStep.isPresent()) {
+            System.out.println("Job failed!");
+            break;
+        }
+
+        Thread.sleep(60000); // Wait 60 seconds
+    }
     ```
     </CodeGroup>
 
@@ -308,94 +319,80 @@ Before you begin, make sure you meet these prerequisites:
     ```
 
     ```python Python
-    import requests
-    import json
+    from newscatcher_catchall import CatchAllApi
 
-    API_KEY = "YOUR_API_KEY_HERE"
-    JOB_ID = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-    URL = f"https://catchall.newscatcherapi.com/catchAll/pull/{JOB_ID}"
-    HEADERS = {"x-api-key": API_KEY}
+    client = CatchAllApi(api_key="YOUR_API_KEY_HERE")
+    job_id = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
-    try:
-        response = requests.get(URL, headers=HEADERS)
-        response.raise_for_status()
-        results = response.json()
+    # Retrieve results
+    results = client.jobs.get_job_results(job_id)
 
-        print(f"Query: {results['query']}")
-        print(f"Valid records: {results['valid_records']}")
-        print(f"Candidate records: {results['candidate_records']}")
-        print(f"Duration: {results['duration']}")
+    print(f"Query: {results.query}")
+    print(f"Valid records: {results.valid_records}")
+    print(f"Candidate records: {results.candidate_records}")
+    print(f"Duration: {results.duration}")
 
-        # Display first record
-        if results['all_records']:
-            record = results['all_records'][0]
-            print(f"\nFirst record: {record['record_title']}")
-            print("\nExtracted fields:")
-            for key, value in record['enrichment'].items():
-                print(f"  {key}: {value}")
-
-    except requests.exceptions.RequestException as e:
-        print(f"Failed to retrieve results: {e}")
+    # Display first record
+    if results.all_records:
+        record = results.all_records[0]
+        print(f"\nFirst record: {record.record_title}")
+        print("\nExtracted fields:")
+        for key, value in record.enrichment.items():
+            print(f"  {key}: {value}")
     ```
 
     ```typescript TypeScript
-    import axios, { AxiosResponse } from "axios";
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-    const API_KEY: string = "YOUR_API_KEY_HERE";
-    const JOB_ID: string = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
-    const URL: string = `https://catchall.newscatcherapi.com/catchAll/pull/${JOB_ID}`;
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY_HERE" });
+    const jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
 
-    interface Enrichment {
-      [key: string]: any;
-    }
+    // Retrieve results
+    const results = await client.jobs.getJobResults(jobId);
 
-    interface Citation {
-      title: string;
-      link: string;
-      published_date: string;
-    }
+    console.log(`Query: ${results.query}`);
+    console.log(`Valid records: ${results.validRecords}`);
+    console.log(`Candidate records: ${results.candidateRecords}`);
+    console.log(`Duration: ${results.duration}`);
 
-    interface Record {
-      record_id: string;
-      record_title: string;
-      enrichment: Enrichment;
-      citations: Citation[];
-    }
-
-    interface ResultsResponse {
-      job_id: string;
-      query: string;
-      status: string;
-      duration: string;
-      candidate_records: number;
-      valid_records: number;
-      all_records: Record[];
-    }
-
-    axios
-      .get<ResultsResponse>(URL, {
-        headers: { "x-api-key": API_KEY }
-      })
-      .then((response: AxiosResponse<ResultsResponse>) => {
-        const results = response.data;
-
-        console.log(`Query: ${results.query}`);
-        console.log(`Valid records: ${results.valid_records}`);
-        console.log(`Candidate records: ${results.candidate_records}`);
-        console.log(`Duration: ${results.duration}`);
-
-        if (results.all_records.length > 0) {
-          const record = results.all_records[0];
-          console.log(`\nFirst record: ${record.record_title}`);
-          console.log("\nExtracted fields:");
-          Object.entries(record.enrichment).forEach(([key, value]) => {
-            console.log(`  ${key}: ${value}`);
-          });
-        }
-      })
-      .catch((error) => {
-        console.error(`Failed to retrieve results: ${error.message}`);
+    // Display first record
+    if (results.allRecords.length > 0) {
+      const record = results.allRecords[0];
+      console.log(`\nFirst record: ${record.recordTitle}`);
+      console.log("\nExtracted fields:");
+      Object.entries(record.enrichment).forEach(([key, value]) => {
+        console.log(`  ${key}: ${value}`);
       });
+    }
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.types.PullJobResponseDto;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY_HERE")
+        .build();
+
+    String jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+
+    // Retrieve results
+    PullJobResponseDto results = client.jobs().getJobResults(jobId);
+
+    System.out.println("Query: " + results.getQuery());
+    System.out.println("Valid records: " + results.getValidRecords());
+    System.out.println("Candidate records: " + results.getCandidateRecords());
+    System.out.println("Duration: " + results.getDuration());
+
+    // Display first record
+    if (!results.getAllRecords().isEmpty()) {
+        var record = results.getAllRecords().get(0);
+        System.out.println("\nFirst record: " + record.getRecordTitle());
+        System.out.println("\nExtracted fields:");
+        record.getEnrichment().forEach((key, value) -> {
+            System.out.println("  " + key + ": " + value);
+        });
+    }
     ```
     </CodeGroup>
 

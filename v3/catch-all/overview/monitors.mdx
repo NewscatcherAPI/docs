@@ -60,47 +60,63 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.post(
-    "https://catchall.newscatcherapi.com/catchAll/monitors/create",
-    headers={"x-api-key": "YOUR_API_KEY"},
-    json={
-        "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
-        "schedule": "every day at 12 PM UTC",
-        "webhook": {
-            "url": "https://your-endpoint.com/catchall",
-            "method": "POST"
-        }
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+# Create a monitor
+monitor = client.monitors.create_monitor(
+    reference_job_id="295b95d8-6041-4f4b-b132-9f009fc6af70",
+    schedule="every day at 12 PM UTC",
+    webhook={
+        "url": "https://your-endpoint.com/catchall",
+        "method": "POST"
     }
 )
 
-monitor = response.json()
-print(f"Monitor created: {monitor['monitor_id']}")
+print(f"Monitor created: {monitor.monitor_id}")
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  "https://catchall.newscatcherapi.com/catchAll/monitors/create",
-  {
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+// Create a monitor
+const monitor = await client.monitors.createMonitor({
+  referenceJobId: "295b95d8-6041-4f4b-b132-9f009fc6af70",
+  schedule: "every day at 12 PM UTC",
+  webhook: {
+    url: "https://your-endpoint.com/catchall",
     method: "POST",
-    headers: {
-      "x-api-key": "YOUR_API_KEY",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      reference_job_id: "295b95d8-6041-4f4b-b132-9f009fc6af70",
-      schedule: "every day at 12 PM UTC",
-      webhook: {
-        url: "https://your-endpoint.com/catchall",
-        method: "POST",
-      },
-    }),
-  }
+  },
+});
+
+console.log(`Monitor created: ${monitor.monitorId}`);
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+import com.newscatcher.catchall.types.WebhookDto;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+// Create a monitor
+var monitor = client.monitors().createMonitor(
+    CreateMonitorRequestDto.builder()
+        .referenceJobId("295b95d8-6041-4f4b-b132-9f009fc6af70")
+        .schedule("every day at 12 PM UTC")
+        .webhook(WebhookDto.builder()
+            .url("https://your-endpoint.com/catchall")
+            .method("POST")
+            .build())
+        .build()
 );
 
-const monitor = await response.json();
-console.log(`Monitor created: ${monitor.monitor_id}`);
+System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
 ```
 
 </CodeGroup>
@@ -133,33 +149,49 @@ curl "https://catchall.newscatcherapi.com/catchAll/monitors" \
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.get(
-    "https://catchall.newscatcherapi.com/catchAll/monitors",
-    headers={"x-api-key": "YOUR_API_KEY"}
-)
+client = CatchAllApi(api_key="YOUR_API_KEY")
 
-monitors = response.json()
-print(f"Total monitors: {monitors['total_monitors']}")
-for monitor in monitors['monitors']:
-    print(f"{monitor['monitor_id']}: {monitor['reference_job_query']}")
-    print(f"  Enabled: {monitor['enabled']}, Schedule: {monitor['schedule']}")
+# List all monitors
+monitors = client.monitors.list_monitors()
+
+print(f"Total monitors: {monitors.total_monitors}")
+for monitor in monitors.monitors:
+    print(f"{monitor.monitor_id}: {monitor.reference_job_query}")
+    print(f"  Enabled: {monitor.enabled}, Schedule: {monitor.schedule}")
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  "https://catchall.newscatcherapi.com/catchAll/monitors",
-  {
-    headers: { "x-api-key": "YOUR_API_KEY" },
-  }
-);
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-const monitors = await response.json();
-console.log(`Total monitors: ${monitors.total_monitors}`);
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+// List all monitors
+const monitors = await client.monitors.listMonitors();
+
+console.log(`Total monitors: ${monitors.totalMonitors}`);
 monitors.monitors.forEach((monitor) => {
-  console.log(`${monitor.monitor_id}: ${monitor.reference_job_query}`);
+  console.log(`${monitor.monitorId}: ${monitor.referenceJobQuery}`);
   console.log(`  Enabled: ${monitor.enabled}, Schedule: ${monitor.schedule}`);
+});
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.types.ListMonitorsResponseDto;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+// List all monitors
+ListMonitorsResponseDto monitors = client.monitors().listMonitors();
+
+System.out.println("Total monitors: " + monitors.getTotalMonitors());
+monitors.getMonitors().forEach(monitor -> {
+    System.out.println(monitor.getMonitorId() + ": " + monitor.getReferenceJobQuery());
+    System.out.println("  Enabled: " + monitor.getEnabled() + ", Schedule: " + monitor.getSchedule());
 });
 ```
 
@@ -214,35 +246,55 @@ curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.get(
-    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs",
-    headers={"x-api-key": "YOUR_API_KEY"}
-)
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
-data = response.json()
-print(f"Total jobs: {data['total_jobs']}")
-for job in data['jobs']:
-    print(f"Job {job['job_id']}")
-    print(f"  Started: {job['start_date']}")
-    print(f"  Ended: {job['end_date']}")
+# List monitor jobs
+jobs = client.monitors.list_monitor_jobs(monitor_id)
+
+print(f"Total jobs: {jobs.total_jobs}")
+for job in jobs.jobs:
+    print(f"Job {job.job_id}")
+    print(f"  Started: {job.start_date}")
+    print(f"  Ended: {job.end_date}")
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/jobs`,
-  {
-    headers: { "x-api-key": "YOUR_API_KEY" },
-  }
-);
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-const data = await response.json();
-console.log(`Total jobs: ${data.total_jobs}`);
-data.jobs.forEach((job) => {
-  console.log(`Job ${job.job_id}`);
-  console.log(`  Started: ${job.start_date}`);
-  console.log(`  Ended: ${job.end_date}`);
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// List monitor jobs
+const jobs = await client.monitors.listMonitorJobs(monitorId);
+
+console.log(`Total jobs: ${jobs.totalJobs}`);
+jobs.jobs.forEach((job) => {
+  console.log(`Job ${job.jobId}`);
+  console.log(`  Started: ${job.startDate}`);
+  console.log(`  Ended: ${job.endDate}`);
+});
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// List monitor jobs
+var jobs = client.monitors().listMonitorJobs(monitorId);
+
+System.out.println("Total jobs: " + jobs.getTotalJobs());
+jobs.getJobs().forEach(job -> {
+    System.out.println("Job " + job.getJobId());
+    System.out.println("  Started: " + job.getStartDate());
+    System.out.println("  Ended: " + job.getEndDate());
 });
 ```
 
@@ -287,41 +339,65 @@ curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}" \
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.get(
-    f"https://catchall.newscatcherapi.com/catchAll/monitors/pull/{monitor_id}",
-    headers={"x-api-key": "YOUR_API_KEY"}
-)
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
-results = response.json()
-print(f"Monitor: {results['monitor_id']}")
-print(f"Schedule: {results['cron_expression']} ({results['timezone']})")
-print(f"Total records: {results['records']}")
-print(f"Date range: {results['date_range']}")
+# Get aggregated results
+results = client.monitors.pull_monitor_results(monitor_id)
 
-for record in results['all_records']:
-    print(f"\n{record['record_title']}")
-    print(f"  Citations: {len(record['citations'])}")
+print(f"Monitor: {results.monitor_id}")
+print(f"Schedule: {results.cron_expression} ({results.timezone})")
+print(f"Total records: {results.records}")
+print(f"Date range: {results.run_info}")
+
+for record in results.all_records:
+    print(f"\n{record.record_title}")
+    print(f"  Citations: {len(record.citations)}")
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  `https://catchall.newscatcherapi.com/catchAll/monitors/pull/${monitorId}`,
-  {
-    headers: { "x-api-key": "YOUR_API_KEY" },
-  }
-);
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-const results = await response.json();
-console.log(`Monitor: ${results.monitor_id}`);
-console.log(`Schedule: ${results.cron_expression} (${results.timezone})`);
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Get aggregated results
+const results = await client.monitors.pullMonitorResults(monitorId);
+
+console.log(`Monitor: ${results.monitorId}`);
+console.log(`Schedule: ${results.cronExpression} (${results.timezone})`);
 console.log(`Total records: ${results.records}`);
-console.log(`Date range:`, results.date_range);
+console.log(`Run info:`, results.runInfo);
 
-results.all_records.forEach((record) => {
-  console.log(`\n${record.record_title}`);
+results.allRecords.forEach((record) => {
+  console.log(`\n${record.recordTitle}`);
   console.log(`  Citations: ${record.citations.length}`);
+});
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.types.PullMonitorResponseDto;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Get aggregated results
+PullMonitorResponseDto results = client.monitors().pullMonitorResults(monitorId);
+
+System.out.println("Monitor: " + results.getMonitorId());
+System.out.println("Schedule: " + results.getCronExpression() + " (" + results.getTimezone() + ")");
+System.out.println("Total records: " + results.getRecords());
+System.out.println("Run info: " + results.getRunInfo());
+
+results.getAllRecords().forEach(record -> {
+    System.out.println("\n" + record.getRecordTitle());
+    System.out.println("  Citations: " + record.getCitations().size());
 });
 ```
 
@@ -397,27 +473,39 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.post(
-    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/enable",
-    headers={"x-api-key": "YOUR_API_KEY"}
-)
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
-print(response.json())
+# Enable monitor
+response = client.monitors.enable_monitor(monitor_id)
+print(response)
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/enable`,
-  {
-    method: "POST",
-    headers: { "x-api-key": "YOUR_API_KEY" },
-  }
-);
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-const result = await response.json();
-console.log(result);
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Enable monitor
+const response = await client.monitors.enableMonitor(monitorId);
+console.log(response);
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Enable monitor
+var response = client.monitors().enableMonitor(monitorId);
+System.out.println(response);
 ```
 
 </CodeGroup>
@@ -444,27 +532,39 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}
 ```
 
 ```python Python
-import requests
+from newscatcher_catchall import CatchAllApi
 
-response = requests.post(
-    f"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/disable",
-    headers={"x-api-key": "YOUR_API_KEY"}
-)
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
-print(response.json())
+# Disable monitor
+response = client.monitors.disable_monitor(monitor_id)
+print(response)
 ```
 
 ```typescript TypeScript
-const response = await fetch(
-  `https://catchall.newscatcherapi.com/catchAll/monitors/${monitorId}/disable`,
-  {
-    method: "POST",
-    headers: { "x-api-key": "YOUR_API_KEY" },
-  }
-);
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-const result = await response.json();
-console.log(result);
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Disable monitor
+const response = await client.monitors.disableMonitor(monitorId);
+console.log(response);
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Disable monitor
+var response = client.monitors().disableMonitor(monitorId);
+System.out.println(response);
 ```
 
 </CodeGroup>
