@@ -1,0 +1,191 @@
+---
+title: n8n Integration
+sidebarTitle: n8n
+description: Automate CatchAll jobs with n8n visual workflows
+---
+
+Use the CatchAll community node to integrate structured web research directly
+into your n8n automation workflows.
+
+## Before you start
+
+- n8n instance (cloud or self-hosted)
+- CatchAll API key (obtain from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com))
+
+## Install community node
+
+<Steps>
+  <Step title="Open community nodes settings">
+    Navigate to **Settings → Community Nodes** in your n8n instance.
+  </Step>
+
+<Step title="Install the CatchAll node">
+  Enter the package name: ``` n8n-nodes-newscatcher-catchall-pernode ``` Click
+  **Install** and wait for the installation to complete.
+</Step>
+
+  <Step title="Verify installation">
+    Create a new workflow and search for "Newscatcher" in the node panel. The CatchAll node should appear in your available nodes.
+  </Step>
+</Steps>
+
+## Configure credentials
+
+<Steps>
+  <Step title="Add CatchAll credentials">
+    In any workflow, add the **Newscatcher CatchAll** node. Click the **Credential to connect with** dropdown and select **Create New Credentials**.
+  </Step>
+
+  <Step title="Enter your API key">
+    Paste your CatchAll API key into the credential field and click **Save**.
+  </Step>
+</Steps>
+
+<Note>
+  Credentials are stored securely in your n8n instance and reused across
+  workflows.
+</Note>
+
+## Create your first workflow
+
+This example submits a CatchAll job, polls for completion, and retrieves
+results:
+
+<Steps>
+  <Step title="Submit a job">
+    Add a **Newscatcher CatchAll** node with these settings:
+    
+    - **Operation**: Submit Job
+    - **Query**: `Tech company earnings this quarter`
+    - **Context**: `Focus on revenue and profit margins`
+    - **Schema**: `Company [NAME] earned [REVENUE] in [QUARTER]`
+    
+    The node outputs the `job_id` for the next step.
+  </Step>
+
+<Step title="Wait for job completion">
+  Add a **Wait** node set to 10 minutes. CatchAll jobs typically complete in
+  10-15 minutes.
+</Step>
+
+  <Step title="Check job status">
+    Add another **Newscatcher CatchAll** node:
+    
+    - **Operation**: Job Status
+    - **Job ID**: `{{ $json.job_id }}` (from Submit Job node)
+    
+    Connect this to a **Loop** that polls every 60 seconds until the status shows `completed` in the `steps` array.
+  </Step>
+
+  <Step title="Pull results">
+    Add a final **Newscatcher CatchAll** node:
+    
+    - **Operation**: Pull Job Results
+    - **Job ID**: `{{ $json.job_id }}`
+    
+    This returns structured records with the `enrichment` object containing extracted data.
+  </Step>
+</Steps>
+
+<Warning>
+  Field names in the `enrichment` object vary between jobs. See [Dynamic
+  schemas](/v3/catch-all/overview/dynamic-schemas) for handling variable
+  response structures.
+</Warning>
+
+## Available operations
+
+The CatchAll node supports these operations:
+
+### Job operations
+
+| Operation        | Description                   | Use Case                      |
+| ---------------- | ----------------------------- | ----------------------------- |
+| Submit Job       | Create a new CatchAll job     | Start structured web research |
+| Job Status       | Check processing progress     | Poll until completion         |
+| Pull Job Results | Retrieve structured records   | Get final data with citations |
+| List User Jobs   | Get all jobs for your API key | View job history              |
+
+### Monitor operations
+
+| Operation            | Description              | Use Case                   |
+| -------------------- | ------------------------ | -------------------------- |
+| Create Monitor       | Schedule recurring jobs  | Automate periodic research |
+| List Monitors        | View all active monitors | Manage scheduled jobs      |
+| List Monitor Jobs    | Get execution history    | Track monitor runs         |
+| Pull Monitor Results | Get aggregated records   | Retrieve all monitor data  |
+| Enable Monitor       | Resume a paused monitor  | Restart automation         |
+| Disable Monitor      | Pause a running monitor  | Stop scheduled execution   |
+
+## Common workflows
+
+### Research automation
+
+Automatically research companies and export to your CRM:
+
+1. **Trigger**: Schedule (daily at 9 AM)
+2. **CatchAll**: Submit job with company query
+3. **Wait**: 10 minutes
+4. **CatchAll**: Pull results
+5. **Transform**: Map fields to CRM format
+6. **CRM Node**: Create/update records
+
+### Scheduled monitoring
+
+Set up recurring research with webhook notifications:
+
+1. **CatchAll**: Create monitor with webhook URL
+2. **Webhook Trigger**: Listen for completion
+3. **CatchAll**: Pull monitor results when triggered
+4. **Process**: Transform and route data
+5. **Notification**: Send summary to Slack/email
+
+### Multi-source enrichment
+
+Combine CatchAll with other data sources:
+
+1. **Spreadsheet**: Load list of companies
+2. **Loop**: For each company
+3. **CatchAll**: Submit research job
+4. **Wait**: For completion
+5. **CatchAll**: Pull results
+6. **Merge**: Combine with existing data
+7. **Spreadsheet**: Write enriched data
+
+## Troubleshooting
+
+### Node not found after installation
+
+**Solution**: Restart your n8n instance. For self-hosted installations, restart
+the Docker container or service.
+
+### API key not recognized
+
+**Symptom**: 403 Forbidden error
+
+**Solution**: Verify your API key is active in the
+[platform dashboard](https://platform.newscatcherapi.com). Create new
+credentials if needed.
+
+### Job takes too long
+
+**Symptom**: Job doesn't complete after 20 minutes
+
+**Solution**: Check job status using the **Job Status** operation. If stuck in a
+processing stage, contact support with the `job_id`.
+
+### Empty enrichment object
+
+**Symptom**: Results return but `enrichment` contains no fields
+
+**Solution**: The query may be too broad or no matching content was found. Try
+refining your query with more specific context.
+
+## See also
+
+- [Quickstart Guide](/v3/catch-all/overview/quickstart)
+- [Monitors Overview](/v3/catch-all/overview/monitors)
+- [Dynamic Schemas](/v3/catch-all/overview/dynamic-schemas)
+- [n8n Documentation](https://docs.n8n.io)
+- [n8n Community Nodes](https://docs.n8n.io/integrations/community-nodes/)
