@@ -272,6 +272,7 @@
               {
                 "group": "How to",
                 "pages": [
+                  "v3/catch-all/how-to/write-effective-queries",
                   "v3/catch-all/how-to/configure-monitors",
                   "v3/catch-all/how-to/troubleshoot-monitors"
                 ]
@@ -314,6 +315,14 @@
                   "v3/catch-all/libraries/python",
                   "v3/catch-all/libraries/typescript",
                   "v3/catch-all/libraries/java"
+                ]
+              },
+              {
+                "group": "Integrations",
+                "pages": [
+                  "v3/catch-all/integrations/n8n",
+                  "v3/catch-all/integrations/make",
+                  "v3/catch-all/integrations/langchain"
                 ]
               }
             ]
