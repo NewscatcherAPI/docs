@@ -1,0 +1,189 @@
+---
+title: Make.com Integration
+sidebarTitle: Make.com
+description: Connect CatchAll to Make.com scenarios for automated web research
+---
+
+Use the CatchAll custom app to integrate structured web research directly into
+your Make.com automation scenarios.
+
+## Before you start
+
+- Make.com account
+- CatchAll API key (obtain from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com))
+- Access to the CatchAll custom app in Make.com
+
+## Configure connection
+
+<Steps>
+  <Step title="Add CatchAll to your scenario">
+    Create a new scenario and search for "Newscatcher CatchAll" in the module search. Add any CatchAll module to your scenario.
+  </Step>
+
+<Step title="Create connection">
+  Click **Create a connection** when prompted. Enter a connection name (e.g.,
+  "CatchAll Production").
+</Step>
+
+<Step title="Enter API key">
+  Paste your CatchAll API key into the **API Key** field and click **Save**.
+</Step>
+
+  <Step title="Verify connection">
+    The connection is now available for all CatchAll modules in your scenarios.
+  </Step>
+</Steps>
+
+## Create your first scenario
+
+This example submits a CatchAll job, polls for completion, and processes
+results:
+
+<Steps>
+  <Step title="Add Submit Job module">
+    Add the **Submit Job** module with these settings:
+    
+    - **Query**: `Tech company earnings this quarter`
+    - **Context**: `Focus on revenue and profit margins`
+    - **Schema**: `Company [NAME] earned [REVENUE] in [QUARTER]`
+    
+    The module outputs the `job_id` for subsequent modules.
+  </Step>
+
+<Step title="Add Repeater for polling">
+  Add a **Repeater** module set to repeat 15 times with 60-second intervals
+  between iterations.
+</Step>
+
+<Step title="Check job status">
+  Inside the Repeater, add the **Check Status** module: - **Job ID**: Map the
+  `job_id` from the Submit Job module This checks if the job has reached
+  `completed` status in the `steps` array.
+</Step>
+
+<Step title="Add Break condition">
+  Configure the Repeater to break when any step in the `steps` array has
+  `status` equal to `completed` and `completed` is `true`.
+</Step>
+
+  <Step title="Pull results">
+    After the Repeater, add the **Pull Job Data** module:
+    
+    - **Job ID**: Map the `job_id` from Submit Job
+    - **Page**: 1
+    - **Page Size**: 100
+    
+    This returns structured records with source citations.
+  </Step>
+</Steps>
+
+<Warning>
+  Field names in the `enrichment` object vary between jobs. See [Dynamic
+  schemas](/v3/catch-all/overview/dynamic-schemas) for handling variable
+  response structures.
+</Warning>
+
+## Available modules
+
+### Job modules
+
+| Module        | Description                 | Use Case                      |
+| ------------- | --------------------------- | ----------------------------- |
+| Submit Job    | Create a new CatchAll job   | Start structured web research |
+| Check Status  | Check processing progress   | Poll until job completes      |
+| Pull Job Data | Retrieve structured records | Get final data with citations |
+
+### Monitor modules
+
+| Module              | Description                    | Use Case                   |
+| ------------------- | ------------------------------ | -------------------------- |
+| Create Monitor      | Schedule recurring jobs        | Automate periodic research |
+| Pull Monitor Output | Get aggregated monitor records | Retrieve all monitor data  |
+| Disable Monitor     | Pause a running monitor        | Stop scheduled execution   |
+
+## Common scenarios
+
+### Automated company research
+
+Research companies on a schedule and export to your CRM:
+
+1. **Schedule Trigger**: Daily at 9 AM
+2. **Submit Job**: Company earnings query
+3. **Repeater**: Poll job status every 60 seconds
+4. **Check Status**: Until completed
+5. **Pull Job Data**: Get structured results
+6. **Transform**: Map to CRM fields
+7. **CRM Module**: Create or update records
+
+### Webhook-triggered research
+
+Start research jobs from external applications:
+
+1. **Webhook Trigger**: Receive company name
+2. **Submit Job**: Build query with webhook data
+3. **Repeater**: Poll for completion
+4. **Pull Job Data**: Get results
+5. **HTTP Module**: Send results back to webhook caller
+
+### Monitor with notifications
+
+Set up recurring research with email alerts:
+
+1. **Create Monitor**: Configure with schedule
+2. **Wait**: Until first execution completes
+3. **Pull Monitor Output**: Get aggregated results
+4. **Filter**: For new records only
+5. **Email Module**: Send summary
+
+## Pagination
+
+When retrieving large result sets, use pagination in the Pull Job Data module:
+
+```
+Page 1: Records 1-100
+Page 2: Records 101-200
+Page 3: Records 201-300
+```
+
+Set the **Page** and **Page Size** fields to control which records are returned.
+The maximum page size is 1000.
+
+## Troubleshooting
+
+### Connection fails
+
+**Symptom**: "Invalid API key" or 403 error
+
+**Solution**: Verify your API key is active in the
+[platform dashboard](https://platform.newscatcherapi.com). Delete and recreate
+the connection with a valid key.
+
+### Job never completes
+
+**Symptom**: Repeater exhausts all iterations without completion
+
+**Solution**: Increase the Repeater count to 20 iterations or extend the
+interval to 90 seconds. Jobs typically complete in 10-15 minutes.
+
+### Module returns no data
+
+**Symptom**: Pull Job Data returns empty array
+
+**Solution**: Verify the job status shows `completed` before pulling results.
+Check the `valid_records` count in the status response.
+
+### Monitor creation fails
+
+**Symptom**: Error creating monitor
+
+**Solution**: Ensure the reference job has completed successfully before
+creating a monitor. The `job_id` must reference a completed job.
+
+## See also
+
+- [Quickstart Guide](/v3/catch-all/overview/quickstart)
+- [Monitors Overview](/v3/catch-all/overview/monitors)
+- [Dynamic Schemas](/v3/catch-all/overview/dynamic-schemas)
+- [Make.com Documentation](https://www.make.com/en/help)
+- [Make.com Academy](https://www.make.com/en/academy)
