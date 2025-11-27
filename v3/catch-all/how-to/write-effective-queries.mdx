@@ -1,0 +1,272 @@
+---
+title: Write effective queries
+sidebarTitle: Write queries
+description: Construct queries that produce high-quality structured data.
+---
+
+Well-constructed queries determine the quality of your CatchAll results. This
+guide shows you how to write queries that return focused and relevant results.
+
+## Quick checklist
+
+Before submitting a query, verify it:
+
+- [Target events that appear in news](#target-events-in-news)
+- [Define clear event type](#define-clear-event-type)
+- [Include 2-4 constraints](#balance-specificity) (not 8+)
+- [Focus on recent events](#focus-on-recent-events) (within 30 days)
+- [Use single entity or entity category](#use-single-entity)
+
+<Tip>
+  Start here if you're unsure about your query. Each point is explained in
+  detail below.
+</Tip>
+
+## Target events in news
+
+CatchAll searches for events in news articles, not in general knowledge
+databases. Your queries should describe events that appear in the news.
+
+<CodeGroup>
+
+```text ✅ Good queries
+AI company acquisitions announced this month
+FDA drug approvals for cancer treatments
+Venture capital funding rounds for fintech startups
+```
+
+```text ❌ Poor queries
+Product features of iPhone 15
+(This is product information, not a news event)
+
+Historical GDP data by country
+(This is a data lookup, not reportable events)
+
+How does photosynthesis work
+(This is educational content, not news)
+```
+
+</CodeGroup>
+
+<Tip>
+  Ask yourself: "Would a journalist write a news article about this?" If not,
+  rephrase as a specific event.
+</Tip>
+
+## Define clear event type
+
+Target specific, recognizable event types with clear structure:
+
+| Event Category | Examples                                                      |
+| -------------- | ------------------------------------------------------------- |
+| Business       | Acquisitions, mergers, IPOs, funding rounds, bankruptcies     |
+| Corporate      | Layoffs, executive appointments, restructuring, earnings      |
+| Regulatory     | FDA approvals, product recalls, legal rulings, policy changes |
+| Technology     | Product launches, patent filings, security breaches           |
+| Market         | Stock listings, delisting, major price movements              |
+
+<CodeGroup>
+
+```text ✅ Good queries
+FDA drug approvals for rare diseases
+(Specific agency + event type + category)
+
+Tech company IPOs valued over $1B
+(Industry + event type + threshold)
+
+Executive departures at Fortune 500 companies
+(Event type + company category)
+```
+
+```text ❌ Poor queries
+Tech industry trends
+(This is analysis/commentary, not a specific event)
+
+AI developments
+(Too vague - what kind of development?)
+
+Tesla news
+(Not event-focused - what happened?)
+```
+
+</CodeGroup>
+
+## Balance specificity
+
+Too broad generates noise. Too specific creates filters that are too restrictive
+and return few results. Include 2-4 constraints such as event type, industry,
+threshold, or geography.
+
+<CodeGroup>
+
+```text ✅ Optimal
+AI company acquisitions over $50M
+(Event type + industry + threshold = focused)
+
+Series B funding rounds for healthcare startups
+(Stage + industry = clear target)
+
+FDA drug approvals for oncology treatments
+(Agency + event + medical field = specific)
+```
+
+```text ❌ Too broad
+Company news
+(Could match millions of articles about anything)
+
+Technology announcements
+(Too vague - what type of announcement?)
+```
+
+```text ❌ Too specific
+Series C funding rounds for AI cybersecurity companies in San Francisco
+over $100M announced on Tuesdays
+(7 constraints - too many will match nothing)
+```
+
+</CodeGroup>
+
+<Tip>
+  Use the `context` parameter for preferences and extraction guidance. This
+  keeps your `query` focused on the core event.
+</Tip>
+
+## Focus on recent events
+
+CatchAll searches articles published within a configurable date window. The
+default is 5 days, with a maximum of 30 days.
+
+<Note>
+  **Important:** The date range refers to article publication date, not when the
+  event occurred. Historical events work only if recent articles provide
+  retrospectives or anniversary coverage.
+</Note>
+
+<CodeGroup>
+
+```text ✅ Good queries
+Tech IPOs announced this week
+Recent cybersecurity incidents at healthcare companies
+AI model releases in the past month
+```
+
+```text ❌ Poor queries
+Apple acquisitions in 2020
+(Unless recent articles discuss these, they won't appear)
+
+COVID-19 impact on retail in 2021
+(Too far in the past, no recent coverage)
+
+Facebook's Cambridge Analytica scandal
+(Historical event without recent news coverage)
+```
+
+</CodeGroup>
+
+### Time-based queries for monitors
+
+<Note>
+  **Version 0.4.10 update:** Time-based filters are automatically adapted for
+  monitor executions.
+</Note>
+
+For single jobs, time constraints help focus on specific timeframes:
+
+```text ✅ Good queries
+Tech IPOs announced this week
+(Focuses on very recent announcements)
+
+AI acquisitions in the last 3 days
+(Narrow time window for breaking news)
+
+Yesterday's cybersecurity incidents
+(For daily monitoring of security events)
+```
+
+For monitors, the system automatically adapts time-based filters for recurring
+execution. However, open-ended queries produce more predictable results:
+
+<CodeGroup>
+
+```text ✅ Works (adapted automatically)
+Tech IPOs announced this week
+(System adjusts "this week" for each run)
+
+Recent data breaches at financial institutions
+(System interprets "recent" based on schedule)
+
+Latest AI model releases
+(System adapts "latest" for each execution)
+```
+
+```text ✅ Preferred (clearer intent)
+Tech company IPOs
+(Open-ended - finds all IPOs in each time window)
+
+Data breaches at financial institutions
+(Clear event type without time reference)
+
+AI model releases from major labs
+(Specific enough without relative time terms)
+```
+
+</CodeGroup>
+
+See [Configure monitors](/v3/catch-all/how-to/configure-monitors) for
+monitor-specific guidance.
+
+## Use single entity
+
+Queries focused on one primary entity (company, location, technology, industry)
+produce better results than queries spanning multiple unrelated entities.
+
+**Related entities** share a category or context (all tech companies, all in the
+same geography, all in the same sector).
+
+**Unrelated entities** span different categories (mixing companies +
+geographies + product types). The system may require ALL unrelated entities to
+appear in the same article, which means you'll miss relevant results about
+individual entities.
+
+<CodeGroup>
+
+```text ✅ Single entity (recommended)
+Microsoft acquisitions in AI sector
+(One company, one industry - clear focus)
+
+Venture funding in San Francisco
+(One location - all relevant companies)
+
+Cybersecurity breaches at healthcare companies
+(One industry - specific event type)
+```
+
+```text ✅ Multiple related entities (acceptable)
+FAANG company acquisitions
+(Related: all tech giants in same category)
+
+Funding rounds in New York, San Francisco, or Boston
+(Related: all major US tech hubs)
+
+Data breaches at banks or insurance companies
+(Related: all financial services sector)
+```
+
+```text ❌ Multiple unrelated entities (avoid)
+Apple and Microsoft acquisitions
+(May require BOTH companies in same article - misses individual deals)
+
+Layoffs at tech companies in Europe and funding rounds in Asia
+(Different event types + different regions = confused search)
+
+Product launches by Samsung, recalls by Ford, acquisitions by Pfizer
+(Three companies + three event types = too scattered)
+```
+
+</CodeGroup>
+
+## See also
+
+- [Quickstart guide](/v3/catch-all/overview/quickstart)
+- [Configure monitors](/v3/catch-all/how-to/configure-monitors)
+- [Dynamic schemas](/v3/catch-all/overview/dynamic-schemas)
