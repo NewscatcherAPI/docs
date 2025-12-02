@@ -45,7 +45,7 @@ Before you begin, make sure you have:
   <Tab title="Self-hosted">
     <Steps>
       <Step title="Navigate to Community nodes">
-        In your self-hosted n8n instance, go to **Settings → Community nodes**.
+        In your self-hosted n8n instance, go to **Settings > Community nodes**.
       </Step>
 
       <Step title="Install package">
@@ -85,9 +85,9 @@ The CatchAll node supports three operations:
 
 | Operation  | Description                    | Endpoint                      |
 | ---------- | ------------------------------ | ----------------------------- |
-| `Submit` | Create a new CatchAll job      | POST /catchAll/submit         |
-| `Status` | Check job processing progress  | GET /catchAll/status/{job_id} |
-| `Pull`   | Retrieve completed job results | GET /catchAll/pull/{job_id}   |
+| `Submit` | Create a new CatchAll job        | `/catchAll/submit `           |
+| `Status` | Check job processing progress    | `/catchAll/status/{job_id}`   |
+| `Pull`   | Retrieve completed job results   | `/catchAll/pull/{job_id}`     |
 
 <Warning>
   Monitor operations and other advanced features are not available in the
@@ -137,8 +137,8 @@ results.
     **Set to:** `is true`
     
     This checks if either:
-    - Step 6 (status: "completed") is done → job succeeded
-    - Step 7 (status: "failed") is done → job failed
+    - Step 6 (status: "completed") is done > job succeeded
+    - Step 7 (status: "failed") is done > job failed
   </Step>
 
 <Step title="Add Wait node (False branch)">
