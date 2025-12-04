@@ -15,7 +15,7 @@ Before you begin, make sure you have:
 - CatchAll API key (obtain from
   [platform.newscatcherapi.com](https://platform.newscatcherapi.com))
 
-## Install the app
+## Install app
 
 The CatchAll app is available by invitation. Use the link below to install it in
 your Make.com organization.
@@ -25,13 +25,14 @@ your Make.com organization.
     Open the [CatchAll app invitation link](https://eu1.make.com/app/invite/39a1ccee5332419f4260db8eddb4739b) in your browser.
   </Step>
 
-<Step title="Install app">
-  On the installation page, click **Install** to add CatchAll to your Make.com
-  organization.
-</Step>
+  <Step title="Install app">
+    On the installation page, click **Install** to add CatchAll to your Make.com
+    organization.
+  </Step>
 
   <Step title="Verify installation">
-    The app is now available in your scenario editor. When you search for modules, CatchAll appears with an "Invited" badge.
+    The app is now available in your scenario editor. When you search for modules, 
+    NewsCatcher-CatchAll appears with an `Invited` badge.
   </Step>
 </Steps>
 
@@ -44,205 +45,360 @@ Set up your API key to authenticate CatchAll modules.
     Click **+** in any scenario, search NewsCatcher CatchAll, and select a module.
   </Step>
 
-<Step title="Create connection (first time only)">
-  When you add your first CatchAll module, a connection dialog appears
-  automatically: 
-  
-  1. Click **Create a connection**.
-  2. Enter a connection name.
-  3. Paste your CatchAll API key into the **API Key** field.
-  4. Click **Save**.
-  
-</Step>
+  <Step title="Create connection (first time only)">
+    When you add your first CatchAll module, a connection dialog appears
+    automatically:
+
+    1. Click **Create a connection**
+    2. Enter a connection name
+    3. Paste your CatchAll API key into the **API Key** field
+    4. Click **Save**
+  </Step>
 
   <Step title="Reuse connection">
-    The connection is now available for all CatchAll modules in your scenarios. Select it from the **Connection** dropdown in each module.
+    The connection is now available for all CatchAll modules in your scenarios. 
+    Select it from the **Connection** dropdown in each module.
   </Step>
 </Steps>
 
 ## Available modules
 
-CatchAll modules are organized into Actions and Searches.
+CatchAll modules are organized into Actions and Searches. Actions perform 
+operations, while Searches retrieve data.
 
 ### Actions
 
 | Module            | Description               | Endpoint                             |
 | ----------------- | ------------------------- | ------------------------------------ |
-| `submit-query`    | Create a new CatchAll job | `/catchAll/submit`                |
-| `create-monitor`  | Schedule recurring jobs   | `/catchAll/monitors/create  `     |
-| `enable-monitor`  | Resume a paused monitor   | `/catchAll/monitors/{id}/enable`  |
-| `disable-monitor` | Pause a running monitor   | `/catchAll/monitors/{id}/disable` |
+| `submit-query`    | Create a new CatchAll job | `/catchAll/submit`                   |
+| `create-monitor`  | Schedule recurring jobs   | `/catchAll/monitors/create`          |
+| `create-monitor-with-webhook` | Schedule recurring jobs with webhook | `/catchAll/monitors/create` |
+| `enable-monitor`  | Resume a paused monitor   | `/catchAll/monitors/{id}/enable`     |
+| `disable-monitor` | Pause a running monitor   | `/catchAll/monitors/{id}/disable`    |
+
+<Note>
+  The `create-monitor-with-webhook` module supports webhook URL and HTTP method. 
+  For advanced webhook configuration (custom headers, query parameters, or basic 
+  auth), use the API directly.
+</Note>
 
 ### Searches
 
 | Module                 | Description                    | Endpoint                         |
 | ---------------------- | ------------------------------ | -------------------------------- |
-| `search-job-id`        | Check job processing status    | `/catchAll/status/{job_id}`    |
-| `pull-data`            | Retrieve completed job results | `/catchAll/pull/{job_id}`      |
-| `get-monitor-schedule` | List monitor execution history | `/catchAll/monitors/{id}/jobs` |
-| `pull-monitor-results` | Get aggregated monitor records | `/catchAll/monitors/pull/{id}` |
+| `search-job-id`        | Check job processing status    | `/catchAll/status/{job_id}`      |
+| `pull-data`            | Retrieve completed job results | `/catchAll/pull/{job_id}`        |
+| `get-monitor-schedule` | List monitor execution history | `/catchAll/monitors/{id}/jobs`   |
+| `pull-monitor-results` | Get aggregated monitor records | `/catchAll/monitors/pull/{id}`   |
 
-<Note>
-  Actions perform operations, while Searches retrieve data. Choose the
-  appropriate category when adding modules to your scenario.
-</Note>
-
-## Create your first scenario
+## Jobs workflow
 
 Build a scenario that submits a CatchAll job, waits for completion, and sends
 results via email.
 
-![Complete Make.com workflow from trigger to email notification](/images/integrations/make-job-workflow-complete.png)
+![Make.com scenario flow diagram showing modules connected in sequence: Sleep module connects to NewsCatcher CatchAll submit-query, which feeds into a Repeater loop containing Sleep, search-job-id, Iterator, and Router. The Router splits into two paths - one for job completion (leading to pull-data and Gmail) and one for job failure (leading to Gmail error notification).](/images/integrations/make-job-demo-workflow.png)
 
 <Note>
-  Want to skip manual setup? Import the [public scenario template](#) 
-  directly into your Make.com account.
+  Want to skip manual setup? Import the [Jobs demo scenario](https://us2.make.com/public/shared-scenario/tK4D5Fdo6Bi/demo-jobs) directly into your Make.com account.
 </Note>
 
 ### Add modules
 
 <Steps>
-  <Step title="Add trigger">
-    Add **Tools > Basic trigger** to start the scenario manually.
+  <Step title="Add Sleep module">
+    Add **Tools > Sleep**:
+
+    - **Delay**: `1`
+
+    The Sleep module starts the scenario execution. The 1-second delay ensures 
+    all modules initialize properly before submitting the job.
   </Step>
 
-<Step title="Submit job">
-  Add **NewsCatcher CatchAll > submit-query**: 
-  
-  - **Connection**: Select your CatchAll connection. 
-  - **Query**: Enter a natural language question. 
-  - **Context** (optional): Add focus instructions.
-  - **Schema** (optional): Specify output format template.
-</Step>
+  <Step title="Submit job">
+    Add **NewsCatcher CatchAll > submit-query**:
 
-<Step title="Initial wait">
-  Add **Tools > Sleep**: 
-  
-  - **Delay**: `60` Wait 60 seconds before checking status for the first time.
-</Step>
+    - **Connection**: Select your CatchAll connection
+    - **Query**: Enter a natural language question
+    - **Context** (optional): Add focus instructions
+    - **Schema** (optional): Specify output format template
+  </Step>
 
-<Step title="Add polling loop">
-  Add **Flow Control > Repeater**: 
-  
-  - **Initial value**: `1` 
-  - **Repeats**: `20`
-</Step>
+  <Step title="Add polling loop">
+    Add **Flow Control > Repeater**:
 
-<Step title="Check status">
-  Add **NewsCatcher CatchAll > search-job-id**:
-  
-  - **Connection**: Select your CatchAll connection 
-  - **Job ID**: Map `job_id` from the **submit-query** module.
-</Step>
+    - **Initial value**: `1`
+    - **Repeats**: `10`
+
+    The Repeater creates a loop that checks job status up to 10 times (5 minutes 
+    maximum with 30-second intervals).
+  </Step>
+
+  <Step title="Wait before check">
+    Add **Tools > Sleep**:
+
+    - **Delay**: `30`
+
+    Wait 30 seconds between status checks.
+  </Step>
+
+  <Step title="Check status">
+    Add **NewsCatcher CatchAll > search-job-id**:
+
+    - **Connection**: Select your CatchAll connection
+    - **Job ID**: Drag `job_id` from the **submit-query** module
+  </Step>
+
+  <Step title="Add Iterator">
+    Add **Flow Control > Iterator**:
+
+    - **Array**: Drag `steps` from the **search-job-id** module
+
+    The Iterator splits the steps array into individual step objects, making 
+    Router conditions simpler.
+  </Step>
 
   <Step title="Add Router">
     Add **Flow Control > Router** to handle different job states.
   </Step>
 </Steps>
 
+<Tip>
+  **Customize timing**: The Repeater iterations and Sleep duration can be 
+  adjusted based on your needs. Increase iterations for longer-running jobs or 
+  decrease them to stay within scenario execution limits.
+</Tip>
+
 ### Configure routes
 
-The Router evaluates job status and directs the flow accordingly.
+The Router evaluates job status and directs execution to one of two routes.
 
 <Steps>
   <Step title="Route 1: Job complete">
     Configure the first route:
-    
-    1. Click the route path to open filter settings.
+
+    1. Click the route path to open filter settings
     2. **Label**: `Complete`
-    3. **Set as fallback**: No
-    4. **Condition**:
-       - Click **Set up a filter**.
-       - From the mapping panel, expand **search-job-id** module output.
-       - Navigate into `steps` array > index `[5]` > drag `completed` field to condition
-       - **Operator**: Select **Boolean operators: Equal to**
-       - **Value**: `true`
+    3. **Set as fallback**: `No`
+    4. **Condition** (Add two conditions with AND):
+       - First condition: Drag `status` from **Iterator** output
+         - **Operator**: `Text operators: Equal to`
+         - **Value**: `completed`
+       - Click **Add AND rule**
+       - Second condition: Drag `completed` from **Iterator** output
+         - **Operator**: `Boolean operators: Equal to`
+         - **Value**: `true`
     5. Click **Save**
   </Step>
 
-<Step title="Route 2: Job failed">
-  Add a second route: 
-  
-  1. Click **+** on the Router to add another route. 
-  2. **Label**: `Failed` 
-  3. **Set as fallback**: No 
-  4. **Condition**: - From `steps` array > index `[6]` > drag `completed` field 
-     - **Operator**: **Boolean operators: Equal to** 
-     - **Value**: `true` 
-  5. Click **Save**
-</Step>
+  <Step title="Route 2: Job failed">
+    Configure the second route:
 
-  <Step title="Route 3: Still processing">
-    Add a third route:
-    
-    1. Click **+** on the Router to add another route.
-    2. **Label**: `Processing`
-    3. **Set as fallback**: Yes
-    4. No condition needed - this catches all other cases.
+    1. Click the route path to open filter settings
+    2. **Label**: `Failed`
+    3. **Set as fallback**: `No`
+    4. **Condition** (Add two conditions with AND):
+       - First condition: Drag `status` from **Iterator** output
+         - **Operator**: `Text operators: Equal to`
+         - **Value**: `failed`
+       - Click **Add AND rule**
+       - Second condition: Drag `completed` from **Iterator** output
+         - **Operator**: `Boolean operators: Equal to`
+         - **Value**: `true`
+    5. Click **Save**
   </Step>
 </Steps>
+
+<Note>
+  If neither route condition is met, the Repeater continues to the next 
+  iteration automatically.
+</Note>
 
 ### Add route actions
 
 <Steps>
   <Step title="Complete route actions">
     On the **Complete** route path:
-    
-    1. Add **Flow Control > Break** (stops the Repeater).
-    2. Add **NewsCatcher CatchAll > pull-data**:
-       - **Connection**: Select your connection.
-       - **Job ID**: Drag `job_id` from **submit-query** module.
-    3. Add **Email > Send an Email** and configure it to send results to your email address.
+
+    1. Add **Tools > Increment function**:
+       - **Reset a value**: `After one cycle`
+    2. Add a **filter** to the connection line after Increment:
+       - Drag the increment value (labeled `i`) from **Increment function** output
+       - **Operator**: `Text operators: Equal to`
+       - **Value**: `1`
+       
+       The filter ensures the email sends only once when the route first triggers.
+    3. Add **NewsCatcher CatchAll > pull-data**:
+       - **Connection**: Select your connection
+       - **Job ID**: Drag `job_id` from **submit-query** module
+    4. Add **Gmail > Send an Email** and configure it to send results to your email address
   </Step>
 
-<Step title="Failed route actions">
-  On the **Failed** route path: 
-  
-  1. Add **Flow Control > Break**.
-  2. Add **Email > Send an Email** to notify yourself of the failure.
-</Step>
+  <Step title="Failed route actions">
+    On the **Failed** route path:
 
-  <Step title="Processing route actions">
-    On the **Processing** route path:
-    
-    Add **Tools > Sleep**:
-    - **Delay**: `60`
-    
-    The Repeater automatically starts the next iteration after this sleep.
+    1. Add **Tools > Increment function**:
+       - **Reset a value**: `After one cycle`
+    2. Add a **filter** to the connection line after Increment:
+       - Drag the increment value (labeled `i`) from **Increment function** output
+       - **Operator**: `Text operators: Equal to`
+       - **Value**: `1`
+    3. Add **Gmail > Send an Email** to notify yourself of the failure
   </Step>
 </Steps>
 
-## Test the scenario
+## Test Jobs workflow
 
 <Steps>
   <Step title="Run scenario">
     Click **Run once** at the bottom of the editor.
   </Step>
 
-<Step title="Monitor execution">
-  Watch the scenario execute in real-time. The **Repeater** will poll job status
-  every 60 seconds until the job completes or fails.
-</Step>
+  <Step title="Monitor execution">
+    Watch the scenario execute. The Repeater checks job status every 30 seconds 
+    (up to 10 times, 5 minutes maximum) until the job completes or fails.
+  </Step>
 
   <Step title="Check email">
-    When complete, you'll receive an email with the job results.
+    When complete, you receive an email with the job results.
   </Step>
 </Steps>
 
+<Tip>
+  If jobs consistently take longer than 5 minutes to complete, increase the 
+  Repeater **Repeats** value to 15 or 20.
+</Tip>
+
+## Monitors workflow
+
+Build a scenario that creates a monitor from a completed job, verifies creation, 
+and retrieves the initial results.
+
+![Make.com scenario flow diagram showing modules connected in sequence: NewsCatcher CatchAll create-monitor module connects to a Repeater loop containing a Router. The Router splits into two paths - one for successful monitor creation (leading to Sleep, pull-monitor-results, and Gmail success notification) and one for creation failure (leading to Sleep and Gmail error notification).](/images/integrations/make-monitors-demo-workflow.png)
+
+<Note>
+  Want to skip manual setup? Import the [Monitors demo scenario](https://us2.make.com/public/shared-scenario/sUKDajtqdwB/demo-monitors) directly into your Make.com account.
+</Note>
+
+### Add modules
+
+<Steps>
+  <Step title="Create monitor">
+    Add **NewsCatcher CatchAll > create-monitor**:
+
+    - **Connection**: Select your CatchAll connection
+    - **Reference Job ID**: Enter the job ID from a completed job
+    - **Schedule**: Enter schedule in natural language
+  </Step>
+
+  <Step title="Add Repeater">
+    Add **Flow Control > Repeater**:
+
+    - **Initial value**: `1`
+    - **Repeats**: `3`
+
+    The Repeater retries status evaluation up to 3 times if monitor creation is 
+    delayed.
+  </Step>
+
+  <Step title="Add Router">
+    Add **Flow Control > Router** to handle creation success or failure.
+  </Step>
+</Steps>
+
+### Configure routes
+
+The Router evaluates monitor creation status and directs execution to one of two routes.
+
+<Steps>
+  <Step title="Route 1: Monitor created">
+    Configure the first route:
+
+    1. Click the route path to open filter settings
+    2. **Label**: `Success`
+    3. **Set as fallback**: `No`
+    4. **Condition**:
+       - Drag `status` from **create-monitor** output
+       - **Operator**: `Text operators: Equal to`
+       - **Value**: `Monitor Created Successfully`
+    5. Click **Save**
+  </Step>
+
+  <Step title="Route 2: Creation failed">
+    Configure the second route:
+
+    1. Click the route path to open filter settings
+    2. **Label**: `Failed`
+    3. **Set as fallback**: `No`
+    4. **Condition**:
+       - Drag `status` from **create-monitor** output
+       - **Operator**: `Text operators: Not equal to`
+       - **Value**: `Monitor Created Successfully`
+    5. Click **Save**
+  </Step>
+</Steps>
+
+### Add route actions
+
+<Steps>
+  <Step title="Success route actions">
+    On the **Success** route path:
+
+    1. Add **Tools > Sleep**:
+       - **Delay**: `1`
+    2. Add **NewsCatcher CatchAll > pull-monitor-results**:
+       - **Connection**: Select your connection
+       - **Monitor ID**: Drag `monitor_id` from **create-monitor** module
+    3. Add **Gmail > Send an Email** to send initial monitor results
+  </Step>
+
+  <Step title="Failed route actions">
+    On the **Failed** route path:
+
+    1. Add **Tools > Sleep**:
+       - **Delay**: `1`
+    2. Add **Gmail > Send an Email** to notify yourself of the creation failure
+  </Step>
+</Steps>
+
+## Test Monitors workflow
+
+<Steps>
+  <Step title="Prepare reference job">
+    You need a completed job ID to create a monitor. If you don't have one, run a 
+    Jobs workflow first to generate a job ID.
+  </Step>
+
+  <Step title="Run scenario">
+    Click **Run once** at the bottom of the editor.
+  </Step>
+
+  <Step title="Monitor execution">
+    The Router evaluates the creation status immediately.
+  </Step>
+
+  <Step title="Check email">
+    You receive an email confirming monitor creation success or failure.
+  </Step>
+</Steps>
+
+<Tip>
+  After creating a monitor, it runs automatically on your schedule. Use 
+  `pull-monitor-results` periodically to retrieve aggregated data from all 
+  executions.
+</Tip>
+
 ## Next steps
 
-After verifying your integration works, replace the Email module with your
+After verifying that your integrations work, replace the Gmail module with your
 destination system:
 
-- **Google Sheets** - Save records to spreadsheet.
-- **Airtable** - Store structured data.
-- **Webhook** - Send to another service.
-- **Slack/Discord** - Post notifications.
-
-For recurring research, see the Monitors section (coming soon).
+- **Google Sheets** to save records to spreadsheet.
+- **Airtable** to store structured data.
+- **Webhook** to send to another service.
+- **Slack/Discord** to post notifications.
 
 ## See also
 
-- [Quickstart Guide](/v3/catch-all/overview/quickstart)
-- [Dynamic Schemas](/v3/catch-all/overview/dynamic-schemas)
-- [Write Effective Queries](/v3/catch-all/how-to/write-effective-queries)
+- [Quickstart](/v3/catch-all/overview/quickstart)
+- [Monitors](/v3/catch-all/overview/monitors)
+- [Write effective queries](/v3/catch-all/how-to/write-effective-queries)
