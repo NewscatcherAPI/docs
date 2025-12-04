@@ -97,8 +97,10 @@ The CatchAll node supports three operations:
 
 ## Create your first workflow
 
-This workflow submits a CatchAll job, polls until completion, and retrieves
-results.
+This workflow submits a CatchAll job, polls until completion, retrieves
+results and send an email.
+
+![n8n workflow diagram showing nodes connected in sequence: Manual Trigger flows into CatchAll Submit Job, then to CatchAll Check Status, which feeds an IF node. The IF node’s false branch loops through a Wait node back to Check Status for polling, while the true branch continues to CatchAll Pull Results and finally to an Email Send node.](/images/integrations/n8n-job-demo-workflow.png)
 
 <Steps>
   <Step title="Add trigger">
@@ -157,6 +159,9 @@ results.
     - **Job ID**: `{{ $('Create a job').item.json.job_id }}`
     
     This retrieves the structured records with citations.
+  </Step>
+  <Step title="Send a message">
+    Add the **Gmail > Send a message** node and configure it to authenticate and send job results.
   </Step>
 </Steps>
 
