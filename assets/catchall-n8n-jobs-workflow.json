@@ -1,0 +1,242 @@
+{
+  "name": "CatchAll jobs demo workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "errorMessage": "Job failed"
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        416,
+        176
+      ],
+      "id": "44060d35-0c46-4e4b-898c-9c66cfbc422a",
+      "name": "Stop and Error"
+    },
+    {
+      "parameters": {
+        "apiKey": "ZvxQafSb8CbETKn9TEPZvw6atKsvHCow",
+        "query": "Find all FDA drug approvals for cancer treatments"
+      },
+      "type": "n8n-nodes-newscatcher-catchall-pernode.newscatcher",
+      "typeVersion": 1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "d0c51fbc-9a7b-4e84-9807-2325efe58671",
+      "name": "Create a job",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "apiKey": "ZvxQafSb8CbETKn9TEPZvw6atKsvHCow",
+        "operation": "status",
+        "jobId": "={{ $json.job_id }}"
+      },
+      "type": "n8n-nodes-newscatcher-catchall-pernode.newscatcher",
+      "typeVersion": 1,
+      "position": [
+        416,
+        -96
+      ],
+      "id": "2308f945-ea60-4b1b-bd36-168aea55ca29",
+      "name": "Get job status"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9cdb144e-77e9-4a3e-86a9-8e9a2b8140ef",
+              "leftValue": "={{ $json.steps[5].completed }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        592,
+        -96
+      ],
+      "id": "83a12fdd-e73e-42d9-8dd6-0c14df6efb13",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        -32
+      ],
+      "id": "fa04dde4-6e85-4fdf-8893-0e43f7680359",
+      "name": "Wait",
+      "webhookId": "373e1d48-4ab6-4eaf-88ab-22c3634bb12d"
+    },
+    {
+      "parameters": {
+        "apiKey": "ZvxQafSb8CbETKn9TEPZvw6atKsvHCow",
+        "operation": "pull",
+        "jobId": "={{ $('Get job status').item.json.job_id }}"
+      },
+      "type": "n8n-nodes-newscatcher-catchall-pernode.newscatcher",
+      "typeVersion": 1,
+      "position": [
+        768,
+        -160
+      ],
+      "id": "41d1db78-8be1-4566-b80e-83ef9214b096",
+      "name": "Pull job results"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        32,
+        0
+      ],
+      "id": "24320a83-eb55-4af4-8a56-7b8e7192792a",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        960,
+        -160
+      ],
+      "id": "0a6935f0-2c0f-45bf-a378-29f53abda461",
+      "name": "Send a message",
+      "webhookId": "647cd634-7a7a-4189-9395-1b0de7464ef9",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "XbDOkh1WENJdwCxg",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Create a job": {
+      "main": [
+        [
+          {
+            "node": "Get job status",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get job status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Pull job results",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get job status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull job results": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Create a job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e030a8b1-e231-48e4-9fdd-7877ecbb9449",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "71c72f3793c9ca4740dce2aa3853bb30e7b900d6d3cd2bb9dc40fb153f34824f"
+  },
+  "id": "DoQr6P9M8Z3SlhRf",
+  "tags": []
+}
