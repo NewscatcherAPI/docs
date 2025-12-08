@@ -31,9 +31,8 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 
 // Create a job
 const job = await client.jobs.createJob({
-  query: "Tech company earnings this quarter",
-  context: "Focus on revenue and profit margins",
-  schema: "Company [NAME] earned [REVENUE] in [QUARTER]",
+  query: "AI company acquisitions",
+  context: "Focus on deal size and acquiring company details"
 });
 console.log(`Job created: ${job.jobId}`);
 
@@ -106,8 +105,8 @@ The SDK exports all request and response types:
 import { CatchAllApi } from "newscatcher-catchall-sdk";
 
 const request: CatchAllApi.SubmitRequestDto = {
-  query: "Tech company earnings this quarter",
-  context: "Focus on revenue and profit margins",
+  query: "AI company acquisitions",
+  context: "Focus on deal size and acquiring company details"
 };
 ```
 
@@ -118,7 +117,7 @@ import { CatchAllApiError } from "newscatcher-catchall-sdk";
 
 try {
   await client.jobs.createJob({
-    query: "Tech company earnings this quarter",
+    query: "AI company acquisitions"
   });
 } catch (err) {
   if (err instanceof CatchAllApiError) {
@@ -161,7 +160,7 @@ Set custom timeouts at the request level:
 ```typescript
 const response = await client.jobs.createJob(
   {
-    query: "Tech company earnings this quarter",
+    query: "AI company acquisitions"
   },
   {
     timeoutInSeconds: 30,
@@ -176,7 +175,7 @@ Configure retry behavior for failed requests:
 ```typescript
 const response = await client.jobs.createJob(
   {
-    query: "Tech company earnings this quarter",
+    query: "AI company acquisitions"
   },
   {
     maxRetries: 3,
@@ -192,7 +191,7 @@ Cancel requests using an abort signal:
 const controller = new AbortController();
 const response = await client.jobs.createJob(
   {
-    query: "Tech company earnings this quarter",
+    query: "AI company acquisitions"
   },
   {
     abortSignal: controller.signal,

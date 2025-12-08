@@ -32,9 +32,8 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 
 # Create a job
 job = client.jobs.create_job(
-    query="Tech company earnings this quarter",
-    context="Focus on revenue and profit margins",
-    schema="Company [NAME] earned [REVENUE] in [QUARTER]",
+    query="AI company acquisitions",
+    context="Focus on deal size and acquiring company details",
 )
 print(f"Job created: {job.job_id}")
 
@@ -100,8 +99,8 @@ import asyncio
 
 async def main():
     job = await client.jobs.create_job(
-        query="Tech company earnings this quarter",
-        context="Focus on revenue and profit margins",
+        query="AI company acquisitions",
+        context="Focus on deal size and acquiring company details"
     )
 
     while True:
