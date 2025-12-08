@@ -357,8 +357,8 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Book a demo",
-      "href": "https://www.newscatcherapi.com/book-a-demo"
+      "label": "Platform",
+      "href": "https://platform.newscatcherapi.com/catchall"
     }
   },
   "footer": {
