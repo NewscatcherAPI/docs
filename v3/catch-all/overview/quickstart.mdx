@@ -20,7 +20,7 @@ Before you begin, make sure you meet these prerequisites:
 ## Steps
 
 <Steps>
-  <Step title="Set up your environment">
+  <Step title="Set up environment">
 
     Install the CatchAll client library for your programming language:
 
@@ -56,7 +56,7 @@ Before you begin, make sure you meet these prerequisites:
 
   </Step>
 
-  <Step title="Create a job">
+  <Step title="Create job">
 
     Submit a natural language query to create a new processing job:
 
@@ -66,17 +66,15 @@ Before you begin, make sure you meet these prerequisites:
       -H "x-api-key: YOUR_API_KEY_HERE" \
       -H "Content-Type: application/json" \
       -d '{
-        "query": "Tech company earnings this quarter",
-        "context": "Focus on revenue and profit margins",
-        "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"
+        "query": "AI company acquisitions",
+        "context": "Focus on deal size and acquiring company details"
       }'
     ```
 
     ```json JSON
     {
-      "query": "Tech company earnings this quarter",
-      "context": "Focus on revenue and profit margins",
-      "schema": "Company [NAME] earned [REVENUE] in [QUARTER]"
+      "query": "AI company acquisitions",
+      "context": "Focus on deal size and acquiring company details",
     }
     ```
 
@@ -88,9 +86,8 @@ Before you begin, make sure you meet these prerequisites:
 
     # Create a job
     job = client.jobs.create_job(
-        query="Tech company earnings this quarter",
-        context="Focus on revenue and profit margins",
-        schema="Company [NAME] earned [REVENUE] in [QUARTER]"
+        query="AI company acquisitions",
+        context="Focus on deal size and acquiring company details"
     )
 
     print(f"Job created: {job.job_id}")
@@ -104,9 +101,8 @@ Before you begin, make sure you meet these prerequisites:
 
     // Create a job
     const job = await client.jobs.createJob({
-      query: "Tech company earnings this quarter",
-      context: "Focus on revenue and profit margins",
-      schema: "Company [NAME] earned [REVENUE] in [QUARTER]"
+      query: "AI company acquisitions",
+      context: "Focus on deal size and acquiring company details"
     });
 
     console.log(`Job created: ${job.jobId}`);
@@ -124,9 +120,8 @@ Before you begin, make sure you meet these prerequisites:
     // Create a job
     var job = client.jobs().createJob(
         SubmitRequestDto.builder()
-            .query("Tech company earnings this quarter")
-            .context("Focus on revenue and profit margins")
-            .schema("Company [NAME] earned [REVENUE] in [QUARTER]")
+            .query("AI company acquisitions")
+            .context("Focus on deal size and acquiring company details")
             .build()
     );
 
@@ -398,48 +393,60 @@ Before you begin, make sure you meet these prerequisites:
 
   </Step>
 
-  <Step title="Review the response">
+  <Step title="Review response">
 
     The API returns structured records according to LLM-generated enrichment schema:
 
     <Expandable title="Example response">
 
-    ```json JSON {22-29}
+    ```json JSON {22-31}
     {
-      "job_id": "af7a26d6-cf0b-458c-a6ed-4b6318c74da3",
-      "query": "Tech company earnings this quarter",
-      "context": "Focus on revenue and profit margins",
+      "job_id": "89e48e60-7131-411b-b5cd-0d4c85e1927b",
+      "query": "AI company acquisitions",
+      "context": "Focus on deal size and acquiring company details",
       "validators": [
-        "is_current_quarter",
-        "contains_financial_data",
-        "is_about_tech_company_earnings"
+        "has_deal_details",
+        "involves_actual_acquisition",
+        "is_about_ai_company_acquisition"
       ],
       "status": "job_completed",
-      "duration": "12m",
-      "candidate_records": 59150,
-      "valid_records": 156,
+      "duration": "23m",
+      "candidate_records": 30686,
+      "valid_records": 230,
       "date_range": {
-        "start_date": "2025-11-05T13:06:10Z",
-        "end_date": "2025-11-05T14:06:10Z"
+        "start_date": "2025-12-03T19:00:40Z",
+        "end_date": "2025-12-08T19:00:40Z"
       },
       "all_records": [
         {
-          "record_id": "5262823697790152939",
-          "record_title": "Oracle Q1 2026 Earnings Exceed Expectations",
+          "record_id": "5685210581375815445",
+          "record_title": "Marvell to Acquire Celestial AI for $3.25 Billion",
           "enrichment": {
-            "company_name": "Oracle",
-            "quarter_identifier": "Q1 2026",
-            "revenue": "$14.9 billion",
-            "revenue_change": "up 12%",
-            "profit_margin": "42% non-GAAP operating margin",
-            "eps": "$1.47",
-            "schema_based_summary": "Company Oracle earned $14.9 billion in Q1 2026"
+            "confidence": "high",
+            "deal_date": "2025-12-02",
+            "acquiring_company": "Marvell Technology",
+            "deal_value": "$3.25 billion",
+            "strategic_rationale": "To strengthen Marvell's portfolio, gain access to Celestial AI's photonics technology, accelerate its roadmap in the interconnect space, strengthen Marvell's position as a leader in the fastest-growing opportunities in the AI data center infrastructure market, and develop a 'silicon photonics turnkey solution' for AI servers.",
+            "acquiring_company_details": "American semiconductor design company, a fabless semiconductor company that designs, develops, and sells integrated circuits (ICs), and supplies semiconductor chips and hardware products to the data center, telecommunications company (carrier) 5G infrastructure, corporate networking, and storage markets. Helps big-tech clients like Amazon, Google, Microsoft, and Meta Platforms design their own AI chips. Market capitalization was $78.59 billion.",
+            "ai_technology_focus": "photonics, silicon photonics, Photonic Fabric technology, optical interconnect, co-packaged optical (CPO) connections",
+            "acquisition_status": "announced, pending regulatory approval",
+            "acquired_company": "Celestial AI"
           },
           "citations": [
             {
-              "title": "Oracle Reports Strong Q1 2026 Results",
-              "link": "https://example.com/article",
-              "published_date": "2025-09-26 08:54:20"
+              "title": "'빛' 기술에 꽂힌 구글·AWS…AI 통신 속도 획기적으로 높인다",
+              "link": "https://n.news.naver.com/mnews/article/015/0005221540",
+              "published_date": "2025-12-08 15:52:17"
+            },
+            {
+              "title": "Miliardový obchod v AI čipech. Marvell jedná o koupi rychle rostoucího start-upu",
+              "link": "https://www.zive.cz/clanky/miliardovy-obchod-v-ai-cipech-marvell-jedna-o-koupi-rychle-rostouciho-start-upu/sc-3-a-238455/default.aspx",
+              "published_date": "2025-12-06 16:45:00"
+            },
+            {
+              "title": "Marvell to buy chip startup Celestial AI for $3.25 billion",
+              "link": "https://www.communicationstoday.co.in/marvell-to-buy-chip-startup-celestial-ai-for-3-25-billion",
+              "published_date": "2025-12-04 03:01:56"
             }
           ]
         }

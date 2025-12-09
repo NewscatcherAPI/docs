@@ -1,33 +1,55 @@
 ---
-title: Introduction to CatchAll API
+title: "Meet CatchAll: The most comprehensive web search API"
 sidebarTitle: Introduction
-description: Ask questions in plain English. Get structured data with citations.
+description: Find all results, not just top candidates
 ---
 
-CatchAll converts natural language queries into structured, machine-readable
-records extracted from web sources. Instead of manually searching and organizing
-information, you submit questions in plain English and receive validated records
-with source citations—ready for analysis, automation, or integration into your
-applications.
+CatchAll is a web search API that generates unique datasets that don't exist 
+anywhere else on the web. Built on NewsCatcher's proprietary real-world event 
+index, it delivers state-of-the-art recall—finding all relevant events, not just 
+top results.
 
 ## How it works
 
-CatchAll processes queries through a multi-stage pipeline:
+CatchAll processes queries through a multi-stage pipeline that analyzes over 
+50,000 web pages per job:
 
 <Steps>
   <Step title="Analyze">
-    Generates search queries, validators, and extractors from your input
+    Generates targeted search queries for NewsCatcher's proprietary news index 
+    and creates validation rules and extraction patterns based on your input.
   </Step>
-  <Step title="Fetch">Retrieves relevant content from web sources</Step>
-  <Step title="Cluster">Groups similar content into distinct events</Step>
-  <Step title="Enrich">Validates clusters and extracts structured data</Step>
-  <Step title="Complete">Delivers records with source citations</Step>
+  <Step title="Fetch">
+    Retrieves and processes 50,000+ articles from web sources to ensure 
+    comprehensive coverage.
+  </Step>
+  <Step title="Cluster">
+    Groups related articles into distinct real-world events using the Leiden 
+    algorithm for community detection.
+  </Step>
+  <Step title="Validate">
+    Applies generated validators to filter clusters, ensuring only relevant 
+    events that match your criteria proceed to extraction.
+  </Step>
+  <Step title="Extract">
+    Transforms validated events into structured JSON records with dynamic 
+    schemas tailored to your query.
+  </Step>
 </Steps>
 
 <Note>
   Processing typically takes 10-15 minutes per job. Poll the status endpoint
-  every 30-60 seconds to track progress.
+  every 30-60 seconds to track progress through each stage.
 </Note>
+
+<Tip>
+  Each job returns structured JSON records with dynamic schemas. Fields like 
+  `company_name`, `deal_value`, and `acquisition_date` are automatically 
+  generated based on your query.
+  
+  See the [Quickstart > Review response](/v3/catch-all/overview/quickstart#steps) 
+  for a complete response example.
+</Tip>
 
 ## Key characteristics
 
@@ -63,7 +85,7 @@ CatchAll processes queries through a multi-stage pipeline:
 
   <Accordion title="Asynchronous operation" icon="clock">
     Each query creates a job that processes asynchronously. 
-    Use the returned `job_id` to poll the job status from [`steps`](http://localhost:3000/v3/catch-all/endpoints/get-job-status#response-steps-status)
+    Use the returned `job_id` to poll the job status from [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps-status)
     and retrieve results when the job is completed.
   </Accordion>
 </AccordionGroup>
