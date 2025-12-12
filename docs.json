@@ -7,7 +7,7 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/logos/favicon_new.png",
+  "favicon": "/logos/favicon.ico",
   "contextual": {
     "options": [
       "copy",
@@ -334,8 +334,8 @@
     }
   },
   "logo": {
-    "light": "/logos/full_logo_s_black.png",
-    "dark": "/logos/full_logo_s_white.png"
+    "light": "/logos/full_black.png",
+    "dark": "/logos/full_white.png"
   },
   "navbar": {
     "primary": {
