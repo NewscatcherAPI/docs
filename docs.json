@@ -280,7 +280,8 @@
                       "v3/catch-all/endpoints/list-monitor-jobs",
                       "v3/catch-all/endpoints/get-monitor-results",
                       "v3/catch-all/endpoints/enable-monitor",
-                      "v3/catch-all/endpoints/disable-monitor"
+                      "v3/catch-all/endpoints/disable-monitor",
+                      "v3/catch-all/endpoints/webhook-payload"
                     ]
                   },
                   {

@@ -3745,6 +3745,12 @@ components:
           title: News Type
           description: The category of news provided by the source.
           type: string
+        robots_compliant:
+          title: Robots Compliant
+          description: |
+            Percentage of domain articles that comply with robots.txt scraping rules (0-100%).
+          type: string
+          example: "100%"
       example:
         nb_articles_for_7d: 153
         country: "US"
@@ -3752,7 +3758,7 @@ components:
         is_news_domain: true
         news_domain_type: "Original Content"
         news_type: "General News Outlets"
-        robots_compliant: true
+        robots_compliant: "100%"
 
     # Subscription related schema for the response object
     SubscriptionResponseDto:
@@ -4612,6 +4618,8 @@ components:
         - `is_news_domain`: Boolean indicating if the source is a news domain.
         - `news_domain_type`: Type of news domain (e.g., "Original Content").
         - `news_type`: Category of news (e.g., "General News Outlets").
+        - `robots_compliant`: Percentage of domain articles that comply with robots.txt scraping rules (0-100%).
+
       example: true
 
     SourceUrl:
