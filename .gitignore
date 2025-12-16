@@ -4,6 +4,8 @@ node_modules/
 
 # macOS
 .DS_Store
+images/.DS_Store
+logos/.DS_Store
 
 # Environment files
 .env

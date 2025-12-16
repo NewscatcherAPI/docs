@@ -7,7 +7,24 @@
     "light": "#07C983",
     "dark": "#15803D"
   },
-  "favicon": "/logos/favicon_new.png",
+  "favicon": "/logos/favicon.ico",
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      {
+        "title": "llms.txt",
+        "description": "Open llms.txt for this site",
+        "icon": "file",
+        "href": "https://www.newscatcherapi.com/docs/llms.txt"
+      },
+      "chatgpt",
+      "claude",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
+  },
   "navigation": {
     "versions": [
       {
@@ -223,40 +240,6 @@
             ]
           },
           {
-            "tab": "Events",
-            "groups": [
-              {
-                "group": "Overview",
-                "pages": [
-                  "v3/events/overview/introduction",
-                  "v3/events/overview/quickstart",
-                  "v3/events/overview/parameter-formats",
-                  "v3/events/overview/working-with-articles"
-                ]
-              },
-              {
-                "group": "Event types",
-                "pages": [
-                  "v3/events/event-types/data-breach",
-                  "v3/events/event-types/fundraising",
-                  "v3/events/event-types/layoff",
-                  "v3/events/event-types/supply-chain-disruption",
-                  "v3/events/event-types/tariffs"
-                ]
-              },
-              {
-                "group": "Endpoints",
-                "pages": [
-                  "v3/events/endpoints/event-fields-get",
-                  "v3/events/endpoints/search-events-post",
-                  "v3/events/endpoints/health-get",
-                  "v3/events/endpoints/subscription-get",
-                  "v3/events/endpoints/subscription-post"
-                ]
-              }
-            ]
-          },
-          {
             "tab": "CatchAll (Beta)",
             "groups": [
               {
@@ -351,8 +334,8 @@
     }
   },
   "logo": {
-    "light": "/logos/full_logo_s_black.png",
-    "dark": "/logos/full_logo_s_white.png"
+    "light": "/logos/full_black.png",
+    "dark": "/logos/full_white.png"
   },
   "navbar": {
     "primary": {

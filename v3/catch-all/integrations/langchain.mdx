@@ -431,7 +431,7 @@ Build an autonomous research agent with LangGraph:
 import os
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import SystemMessage
+from langchain.messages import SystemMessage
 from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
 
 # Initialize components
@@ -495,7 +495,7 @@ Build an interactive agent that remembers previous searches:
 import os
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import SystemMessage
+from langchain.messages import SystemMessage
 from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
 
 # Setup
@@ -537,7 +537,7 @@ print(response["messages"][-1].content)
 import os
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
-from langchain_core.messages import SystemMessage
+from langchain.messages import SystemMessage
 from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
 
 def run_interactive_agent(): """Run an interactive research agent with
@@ -594,13 +594,12 @@ conversation history."""
         print(f"Failed to initialize agent: {e}")
         raise
 
-if **name** == "**main**": run_interactive_agent()
-
+if __name__ == "__main__":
+    run_interactive_agent()
 ```
 
 **Example session:**
-```
-
+```bash
 You: Find venture capital funding rounds for biotech startups
 
 Agent: I'll search for biotech venture funding articles... [15 minutes later]
@@ -618,9 +617,8 @@ Agent: [Instantly] Based on the cached results, here are deals over $20M:
 
 You: What's the average funding amount?
 
-Agent: [Instantly] Analyzing the data... The average funding amount is $18.5M
+Agent: [Instantly] Analyzing the data... The average funding amount is $18.5M 
 across all 47 deals.
-
 ```
 
 </Expandable>

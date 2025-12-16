@@ -22,8 +22,8 @@ worldwide with three main public APIs:
 - **News API v3**: Search and retrieve news articles with metadata enrichment
   and NLP.
 - **Local News API**: Hyper local news with geographic detection and NLP.
-- **Events API**: Structured event data (data breaches, fundraising, layoffs,
-  supply chain disruptions, tariffs, etc.)
+- **CatchAll API**: AI web search that finds real-world events and extracts
+  structured data.
 
 NLP featues include summarisation, topic modeling, sentiment analysis, entity
 recognition, clustering, and deduplication.
@@ -35,9 +35,9 @@ recognition, clustering, and deduplication.
 ├── v2/                         # News API v2 (legacy - no longer supported)
 ├── v3/                         # Current API documentation
 │   ├── api-reference/          # News API v3 endpoints and SDKs
-│   ├── documentation/          # Guides, concepts, migration
+│   ├── documentation/          # News API v3 guides and concepts
 │   ├── local-news/             # Local News API documentation
-│   └── events/                 # Events API documentation
+│   └── catch-all/              # CatchAll API documentation
 ├── .github/workflows/          # Automation workflows
 └── ...                         # Maintenance scripts
 ```
