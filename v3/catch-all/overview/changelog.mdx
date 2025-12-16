@@ -11,6 +11,27 @@ rss: true
   updates during this phase.
 </Note>
 
+<Update label="0.5.1" description="2025-12-11">
+## API response enhancements and monitor configuration
+
+**Features:**
+
+- **Enrichments metadata**: Job pull endpoint returns `enrichments` array
+  listing all extracted field names.
+- **Human-readable schedules**: Monitor list includes `schedule_human_readable`
+  alongside cron expressions.
+- **Webhook visibility**: Monitor list exposes full webhook configuration
+  including URL, method, and headers.
+
+**Improvements:**
+
+- Pull endpoints return all citations without limits.
+- Monitors require minimum 24-hour intervals between executions.
+- First webhook execution includes complete reference job results.
+- Improved validation error messages for invalid schedules.
+
+</Update>
+
 <Update label="0.4.10" description="2025-11-18">
 ## Status tracking and monitor improvements
 
