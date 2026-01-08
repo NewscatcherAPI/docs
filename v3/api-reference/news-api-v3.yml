@@ -1,8 +1,8 @@
 openapi: 3.0.2
 info:
-  title: NewsCatcher News API v3
+  title: NewsCatcher News API
   description: |
-    The NewsCatcher News API v3 provides streamlined access to vast global news content tailored specifically for developers and data scientists. This version introduces significant enhancements, including advanced Natural Language Processing (NLP) capabilities, which enable more sophisticated searches and content analysis. It's designed to integrate seamlessly into various applications, from data analytics platforms to AI-driven news aggregation services.
+    The NewsCatcher News API provides streamlined access to vast global news content tailored specifically for developers and data scientists. This version introduces significant enhancements, including advanced Natural Language Processing (NLP) capabilities, which enable more sophisticated searches and content analysis. It's designed to integrate seamlessly into various applications, from data analytics platforms to AI-driven news aggregation services.
 
     ## Key Features
 
@@ -23,7 +23,7 @@ externalDocs:
 
 servers:
   - url: https://v3-api.newscatcherapi.com
-    description: News API v3 production server
+    description: News API production server
 
 security:
   - ApiKeyAuth: []
@@ -1970,7 +1970,7 @@ components:
       schema:
         type: boolean
       description: |
-        If true, returns only articles/sources that comply with the publisher's robots.txt rules. If false, returns only articles/sources that do not comply with robots.txt rules. If omitted, returns all articles/sources regardless of compliance status.
+        If true, returns only articles that comply with the publisher's robots.txt rules. If false, returns only articles that do not comply with robots.txt rules. If omitted, returns all articles regardless of compliance status.
       example: true
 
   requestBodies:
@@ -4716,7 +4716,7 @@ components:
     RobotsCompliant:
       type: boolean
       description: |
-        If true, returns only articles/sources that comply with the publisher's robots.txt rules. If false, returns only articles/sources that do not comply with robots.txt rules. If omitted, returns all articles/sources regardless of compliance status.
+        If true, returns only articles that comply with the publisher's robots.txt rules. If false, returns only articles that do not comply with robots.txt rules. If omitted, returns all articles regardless of compliance status.
       example: true
 
   securitySchemes:
