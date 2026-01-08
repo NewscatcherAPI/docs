@@ -1,11 +1,11 @@
 ---
-title: NLP features in News API v3
+title: NLP features in News API
 sidebarTitle: NLP features
-description: Familiarize yourself with the NLP features available in News API v3
+description: Familiarize yourself with the NLP features available in News API
 ---
 
 This guide explains the Natural Language Processing (NLP) features available in
-News API v3, how to use them, and their practical applications. By leveraging
+News API, how to use them, and their practical applications. By leveraging
 these NLP capabilities, you can extract meaningful insights from news data,
 enhancing your analysis, research, and application development.
 
@@ -17,7 +17,7 @@ and places mentioned in the text. As a result, we supply each processed article
 with additional NLP information that you can use when making requests via News
 API v3.
 
-The NLP layer in News API v3 consists of the following components:
+The NLP layer in News API consists of the following components:
 
 | Component      | Description                                                                                         | Plan Requirement  |
 | -------------- | --------------------------------------------------------------------------------------------------- | ----------------- |
@@ -28,7 +28,7 @@ The NLP layer in News API v3 consists of the following components:
 | Translations   | English translations of non-English content (one-way only): title, content, summary, named entities | v3_nlp            |
 | IPTC Tags      | Standardized news category tags                                                                     | v3_nlp_iptc_tags  |
 | IAB Tags       | Content categories for digital advertising                                                          | v3_nlp_iptc_tags  |
-| Custom Tags    | Organization-specific classification system                                                         | All v3 NLP plans  |
+| Custom Tags    | Organization-specific classification system                                                         | All NLP plans     |
 | Embeddings     | 1024-dimensional vector representation for semantic similarity                                      | v3_nlp_embeddings |
 
 To learn more about plan features and requirements, see
@@ -69,29 +69,25 @@ data:
 
 #### NLP coverage by language
 
-The table below shows which NLP features are available for different language
-categories:
+All articles receive NLP processing through one of two methods:
 
-| Feature                          | English & Arabic | Other Languages | Coverage                                                                      |
-| -------------------------------- | ---------------- | --------------- | ----------------------------------------------------------------------------- |
-| Theme classification             | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
-| Summary                          | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
-| Sentiment analysis               | ✓                | ✗               | 100% of English/Arabic articles                                               |
-| Named entity recognition         | ✓                | ✓               | 100% of English/Arabic articles and all non-English articles via translations |
-| Content tags                     | ✓                | ✓ (limited)     | 10% of non-English/Arabic articles                                            |
-| Vector embeddings                | ✓                | ✓               | Nearly 100% of all articles                                                   |
-| Clustering                       | ✓                | ✓               | All articles                                                                  |
-| Deduplication                    | ✓                | ✓               | All articles                                                                  |
-| Translations to English          | ✗                | ✓               | All non-English articles                                                      |
-| Search with English translations | ✗                | ✓               | All non-English articles                                                      |
+| Feature                          | Native (Original Content)          | Translation-Based (All Languages)     | Notes                                                |
+| -------------------------------- | ---------------------------------- | ------------------------------------- | ---------------------------------------------------- |
+| Theme classification             | English & Arabic (100%)            | All languages via translation         | Use `nlp.theme` for both                             |
+| Summary                          | English & Arabic (100%)            | All languages via translation         | Native: `nlp.summary`, Translation: `nlp.summary_translated` |
+| Sentiment analysis               | English & Arabic (100%)            | All languages via translation         | Use `nlp.sentiment` for both                         |
+| Named entity recognition         | English & Arabic (100%)            | All languages via translation (100%)  | Native: `nlp.ner_*`, Translation: `nlp.translation_ner_*` |
+| Content tags (IPTC/IAB)          | English & Arabic (100%)            | All languages via translation         | Use `nlp.iptc_tags_*` and `nlp.iab_tags_*` for both |
+| Vector embeddings                | All languages (nearly 100%)        | N/A                                   | Use `nlp.new_embeddings`                             |
+| Clustering                       | All languages                      | N/A                                   | Available for all content                            |
+| Deduplication                    | All languages                      | N/A                                   | Available for all content                            |
+
+<Note>
+  **How it works**: Non-English/Arabic articles are automatically translated to English, then NLP processing is performed on the translation. Results are available in `translation_*` fields (e.g., `nlp.translation_ner_PER`, `nlp.summary_translated`). To learn how to access and search translation-based NLP data, see [Search in translations](/v3/documentation/how-to/search-in-translations).
+</Note>
 
 For a complete list of supported languages, see
-[language codes in News API v3](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
-
-<Warning>
-  When working with non-English/Arabic content, using `has_nlp=true`
-  substantially reduces the result set.
-</Warning>
+[language codes in News API](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
 
 ### Code example
 
@@ -239,7 +235,7 @@ efficient filtering and organization of news content.
 
 ### Available themes
 
-News API v3 supports the following themes:
+News API supports the following themes:
 
 - `Business`
 - `Economics`
@@ -317,7 +313,7 @@ You can use summaries in your searches and clustering:
 
 ## Sentiment analysis
 
-Sentiment analysis determines the emotional tone of an article. News API v3
+Sentiment analysis determines the emotional tone of an article. News API
 provides sentiment scores for both the title and content, ranging from -1
 (negative) to 1 (positive).
 
@@ -346,7 +342,7 @@ sentiment (scores between 0.2 and 1.0).
 
 ## Named Entity Recognition (NER)
 
-NER identifies and categorizes named entities within text content. News API v3
+NER identifies and categorizes named entities within text content. News API
 recognizes four types of entities:
 
 - `PER_entity_name`: Person names
@@ -537,7 +533,7 @@ enabling various advanced applications:
 
 ## Use cases
 
-NLP features in News API v3 enable various applications across industries:
+NLP features in News API enable various applications across industries:
 
 | Application              | Description                                                 | Example use case                                                                           |
 | ------------------------ | ----------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
@@ -552,7 +548,7 @@ NLP features in News API v3 enable various applications across industries:
 
 ## Best practices
 
-To maximize the effectiveness of NLP features in News API v3:
+To maximize the effectiveness of NLP features in News API:
 
 - Start with broader queries and gradually refine using NLP parameters.
 - Combine multiple NLP parameters for precise results.

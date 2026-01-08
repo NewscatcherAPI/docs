@@ -1,12 +1,12 @@
 ---
 title: How to check sources coverage
 sidebarTitle: Check sources coverage
-description: Learn how to verify the news sources covered by News API v3
+description: Learn how to verify the news sources covered by News API
 ---
 
 ## Overview
 
-Understanding the sources covered by News API v3 is crucial for ensuring the
+Understanding the sources covered by News API is crucial for ensuring the
 comprehensiveness and reliability of your news data analysis. This guide will
 walk you through the process of checking source coverage using the `/source`
 endpoint, including how to handle large numbers of sources efficiently.
@@ -15,7 +15,7 @@ endpoint, including how to handle large numbers of sources efficiently.
 
 Before you begin, ensure you have:
 
-- An active API key for NewsCatcher News API v3
+- An active API key for NewsCatcher News API
 - Basic knowledge of making API requests
 - Python or another tool for making HTTP requests (e.g., cURL, Postman, or a
   programming language with HTTP capabilities)
@@ -153,7 +153,7 @@ criteria.
 
 When dealing with a large number of sources, you may have them stored in a file
 (e.g., CSV or JSON). Here's an approach using asynchronous requests to check
-which sources are covered by News API v3 and identify those that are not. This
+which sources are covered by News API and identify those that are not. This
 implementation uses `aiohttp` and `asyncio` libraries for concurrent requests,
 providing better performance and scalability.
 
@@ -345,10 +345,10 @@ To use this script:
 
 1. Save your list of source URLs in a CSV file named `source_urls.csv`.
 2. Run the script. It will create a file named `uncovered_sources.csv`
-   containing the URLs not covered by News API v3.
+   containing the URLs not covered by News API.
 
 You can then send the `uncovered_sources.csv` file to our support team. As News
-API v3 is a flexible, corporate-level solution, we can manually add the sources
+API is a flexible, corporate-level solution, we can manually add the sources
 you need for your application.
 
 <Note>
