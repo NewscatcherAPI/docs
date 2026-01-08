@@ -870,7 +870,7 @@ components:
       properties:
         id:
           type: string
-          description: Article identifier from News API v3
+          description: Article identifier from News API
           example: "8760624448e9815f9fb4abd114c75e76"
         title:
           type: string

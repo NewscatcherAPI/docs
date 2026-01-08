@@ -19,7 +19,7 @@ Documentation repository for the NewsCatcher API, built with
 NewsCatcher API provides access to news articles from over 90,000 sources
 worldwide with three main public APIs:
 
-- **News API v3**: Search and retrieve news articles with metadata enrichment
+- **News API**: Search and retrieve news articles with metadata enrichment
   and NLP.
 - **Local News API**: Hyper local news with geographic detection and NLP.
 - **CatchAll API**: AI web search that finds real-world events and extracts
@@ -34,8 +34,8 @@ recognition, clustering, and deduplication.
 ├── docs.json                   # Mintlify configuration
 ├── v2/                         # News API v2 (legacy - no longer supported)
 ├── v3/                         # Current API documentation
-│   ├── api-reference/          # News API v3 endpoints and SDKs
-│   ├── documentation/          # News API v3 guides and concepts
+│   ├── api-reference/          # News API endpoints and SDKs
+│   ├── documentation/          # News API guides and concepts
 │   ├── local-news/             # Local News API documentation
 │   └── catch-all/              # CatchAll API documentation
 ├── .github/workflows/          # Automation workflows
