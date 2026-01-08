@@ -177,18 +177,7 @@
                   "v3/api-reference/libraries/typescript",
                   "v3/api-reference/libraries/java",
                   "v3/api-reference/libraries/go",
-                  "v3/api-reference/libraries/csharp",
-                  "v3/api-reference/libraries/legacy",
-                  {
-                    "group": "Legacy SDKs",
-                    "pages": [
-                      "v3/api-reference/libraries/legacy/python",
-                      "v3/api-reference/libraries/legacy/typescript",
-                      "v3/api-reference/libraries/legacy/java",
-                      "v3/api-reference/libraries/legacy/go",
-                      "v3/api-reference/libraries/legacy/csharp"
-                    ]
-                  }
+                  "v3/api-reference/libraries/csharp"
                 ]
               }
             ]
