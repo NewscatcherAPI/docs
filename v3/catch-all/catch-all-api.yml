@@ -697,6 +697,13 @@ components:
           $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
+        limit:
+          type: integer
+          description: |
+            Maximum number of records to return. If not specified, defaults to your plan limit.
+
+            Use /catchAll/continue to extend the limit after job completion without reprocessing.
+          example: 10
 
     SubmitResponseBody:
       type: object
@@ -903,6 +910,13 @@ components:
           type: integer
           description: Number of validated records extracted.
           example: 156
+        progress_validated:
+          type: integer
+          description: |
+            Number of candidate records that have been validated during processing.
+
+            The system process records in batches. This field tracks how many candidates have been checked against validation criteria so far.
+          example: 50
         date_range:
           type: object
           properties:
