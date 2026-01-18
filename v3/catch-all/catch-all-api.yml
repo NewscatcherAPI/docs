@@ -1,51 +1,32 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.5.1
+  version: 0.6.1
   description: |
-    CatchAll transforms natural language questions into structured, validated records extracted from web sources.
-
-    ### Endpoints
-
-    **Jobs:**
-    - **POST /catchAll/submit** - Create a new job.
-    - **GET /catchAll/status/{job_id}** - Get job processing status.
-    - **GET /catchAll/pull/{job_id}** - Retrieve job results.
-    - **GET /catchAll/jobs/user** - List user jobs.
-
-    **Monitors:**
-    - **POST /catchAll/monitors/create** - Create monitor.
-    - **GET /catchAll/monitors** - List all monitors.
-    - **GET /catchAll/monitors/{monitor_id}/jobs** - List monitor jobs.
-    - **GET /catchAll/monitors/pull/{monitor_id}** - Get monitor results.
-    - **POST /catchAll/monitors/{monitor_id}/enable** - Enable monitor.
-    - **POST /catchAll/monitors/{monitor_id}/disable** - Disable monitor.
-
-    **Meta:**
-    - **GET /health** - API health check
-    - **GET /version** - Current API version
+    CatchAll is a web search API that generates unique datasets that don’t exist anywhere else on the web. Built on NewsCatcher’s proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
     ### Authentication
+
     All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Basic workflow
-    1. Submit a query with `/catchAll/submit`.
-    2. Poll `/catchAll/status/{job_id}` until status is `completed` (typically 10-15 minutes).
-    3. Retrieve results with `/catchAll/pull/{job_id}`.
+    ### Basic Workflow
+
+    1. Submit query via /catchAll/submit
+    2. Poll /catchAll/status/{job_id} until completed (10-15 minutes)
+    3. Retrieve results via /catchAll/pull/{job_id}
 
     ### Monitor workflow
-    1. Create a successful job.
-    2. Create a monitor with `/catchAll/monitors/create` using the job ID as a reference.
-    3. System automatically runs jobs on your schedule.
-    4. (Optional) Receive webhook notifications on completion.
-    5. Retrieve aggregated results with `/catchAll/monitors/pull/{monitor_id}`.
+
+    1. Create successful job via /catchAll/submit
+    2. Create monitor via /catchAll/monitors/create with schedule
+    3. Retrieve aggregated results via /catchAll/monitors/pull/{monitor_id}
 
     ### Important notes
 
     **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
 
   contact:
-    name: NewsCatcher AI
+    name: NewsCatcher
     url: https://newscatcherapi.com
     email: support@newscatcherapi.com
 
@@ -169,7 +150,7 @@ paths:
         **Schedule requirements:**
         - Minimum 24-hour interval between executions
         - Natural language format (e.g., "every day at 12 PM UTC", "every 48 hours")
-        
+
         **Validation:**
         - Schedules below minimum frequency return error with descriptive message.
         - Invalid job IDs return 400 Bad Request.
@@ -750,7 +731,7 @@ components:
               "quarter_identifier",
               "revenue",
               "revenue_change",
-              "profit_margin"
+              "profit_margin",
             ]
         status:
           type: string
@@ -972,7 +953,7 @@ components:
           type: string
           description: |
             Natural language schedule (e.g. 'every day at 12 AM EST').
-            
+
             **Minimum frequency:** Monitors must be scheduled at least 24 hours apart.
           example: "every day at 12 PM UTC"
         webhook:
@@ -1158,9 +1139,9 @@ components:
 
     WebhookPayload:
       type: object
-      description: |        
+      description: |
         **First execution:** The initial webhook after monitor creation includes all records from the reference job, providing immediate access to collected data.
-        
+
         **Subsequent executions:** Only new records (after deduplication) are included.
       properties:
         monitor_id:
