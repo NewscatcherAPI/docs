@@ -300,6 +300,7 @@
                     "group": "Monitors",
                     "pages": [
                       "v3/catch-all/endpoints/create-monitor",
+                      "v3/catch-all/endpoints/update-monitor",
                       "v3/catch-all/endpoints/list-monitors",
                       "v3/catch-all/endpoints/list-monitor-jobs",
                       "v3/catch-all/endpoints/get-monitor-results",

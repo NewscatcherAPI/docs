@@ -198,6 +198,55 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/monitors/{monitor_id}:
+    patch:
+      tags:
+        - Monitors
+      summary: Update monitor
+      description: |
+        Update webhook configuration for an existing monitor without recreating it.
+
+        **Supported updates:**
+        - Webhook URL
+        - HTTP method (POST/PUT)
+        - Headers and authentication
+        - Query parameters
+
+        **Note:** Schedule and reference job cannot be modified. To change these, create a new monitor.
+      operationId: updateMonitor
+      externalDocs:
+        description: Learn about monitor configuration
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/how-to/configure-monitors
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
+            example:
+              webhook:
+                url: "https://new-endpoint.com/webhook"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer new_token_xyz"
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateMonitorResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /catchAll/monitors/{monitor_id}/jobs:
     get:
       tags:
@@ -503,6 +552,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CreateMonitorResponseDTO"
+
+    UpdateMonitorResponse:
+      description: Monitor updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateMonitorResponseDTO"
+          example:
+            monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+            status: "Monitor updated Successfully"
 
     ListMonitorJobsResponse:
       description: List of monitor jobs
@@ -1098,6 +1157,31 @@ components:
           type: string
           description: Creation status or error message
           example: "Monitor Created Successfully"
+
+    UpdateMonitorRequestDTO:
+      type: object
+      properties:
+        webhook:
+          $ref: "#/components/schemas/WebhookDTO"
+          description: |
+            Updated webhook configuration.
+
+    UpdateMonitorResponseDTO:
+      type: object
+      required:
+        - monitor_id
+        - status
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          description: Monitor identifier.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        status:
+          type: string
+          description: Confirmation message.
+          default: "Monitor updated Successfully"
+          example: "Monitor updated Successfully"
 
     ReferenceJob:
       type: object
