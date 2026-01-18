@@ -86,6 +86,36 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/continue:
+    post:
+      tags:
+        - Jobs
+      summary: Continue job
+      description: |
+        Continue an existing job to process more records beyond the initial limit.
+      operationId: continueJob
+      externalDocs:
+        description: Learn about job continuation and limits
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContinueRequestDTO"
+            example:
+              job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+              new_limit: 100
+      responses:
+        "200":
+          $ref: "#/components/responses/ContinueResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /catchAll/status/{job_id}:
     get:
       tags:
@@ -407,6 +437,18 @@ components:
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
+    ContinueResponse:
+      description: Job continuation accepted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContinueResponseDTO"
+          example:
+            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            previous_limit: 10
+            new_limit: 100
+            status: "accepted"
+
     StatusResponse:
       description: Status retrieved successfully.
       content:
@@ -527,6 +569,17 @@ components:
                 type: string
                 example: "0.3.8"
 
+    BadRequestError:
+      description:
+        Bad request - job not found, not completed, or new limit invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            detail:
+              "New limit must be greater than the previous limit for this job."
+
     ForbiddenError:
       description: Invalid or missing API key
       content:
@@ -598,6 +651,50 @@ components:
             Unique identifier for the created job. Use this to check status and
             retrieve results.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+    ContinueRequestDTO:
+      type: object
+      required:
+        - job_id
+        - new_limit
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: |
+            Job identifier of the completed job to continue.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        new_limit:
+          type: integer
+          minimum: 1
+          description: |
+            New record limit for continued processing. Must be greater than the previous limit.
+          example: 100
+
+    ContinueResponseDTO:
+      type: object
+      required:
+        - job_id
+        - new_limit
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier for the continued job.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        previous_limit:
+          type: integer
+          description: Previous record limit before continuation.
+          example: 10
+        new_limit:
+          type: integer
+          description: New record limit after continuation.
+          example: 100
+        status:
+          type: string
+          description: Confirmation that the continuation request was accepted.
+          default: "accepted"
+          example: "accepted"
 
     JobStatus:
       type: string

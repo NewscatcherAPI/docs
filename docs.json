@@ -228,7 +228,7 @@
               }
             ]
           },
-                    {
+          {
             "tab": "Events",
             "groups": [
               {
@@ -290,6 +290,7 @@
                     "group": "Jobs",
                     "pages": [
                       "v3/catch-all/endpoints/create-job",
+                      "v3/catch-all/endpoints/continue-job",
                       "v3/catch-all/endpoints/list-user-jobs",
                       "v3/catch-all/endpoints/get-job-status",
                       "v3/catch-all/endpoints/get-job-results"
