@@ -904,7 +904,7 @@ components:
           example: 15m
         candidate_records:
           type: integer
-          description: Number of candidate records before validation.
+          description: Number of distinct event clusters identified before validation.
           example: 3200
         valid_records:
           type: integer
@@ -913,9 +913,9 @@ components:
         progress_validated:
           type: integer
           description: |
-            Number of candidate records that have been validated during processing.
+            Number of candidate clusters that have been validated during processing.
 
-            The system process records in batches. This field tracks how many candidates have been checked against validation criteria so far.
+            The system process data in batches. This field tracks how many candidates have been checked against validation criteria so far.
           example: 50
         date_range:
           type: object
