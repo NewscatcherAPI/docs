@@ -897,7 +897,7 @@ components:
           type: string
           description: |
             Job status.
-          example: "job_completed"
+          example: "completed"
         duration:
           type: string
           description: Total time taken to process the job.
