@@ -228,7 +228,7 @@
               }
             ]
           },
-                    {
+          {
             "tab": "Events",
             "groups": [
               {
@@ -290,6 +290,7 @@
                     "group": "Jobs",
                     "pages": [
                       "v3/catch-all/endpoints/create-job",
+                      "v3/catch-all/endpoints/continue-job",
                       "v3/catch-all/endpoints/list-user-jobs",
                       "v3/catch-all/endpoints/get-job-status",
                       "v3/catch-all/endpoints/get-job-results"
@@ -299,6 +300,7 @@
                     "group": "Monitors",
                     "pages": [
                       "v3/catch-all/endpoints/create-monitor",
+                      "v3/catch-all/endpoints/update-monitor",
                       "v3/catch-all/endpoints/list-monitors",
                       "v3/catch-all/endpoints/list-monitor-jobs",
                       "v3/catch-all/endpoints/get-monitor-results",

@@ -363,6 +363,91 @@ Log all webhook events for debugging:
 
 </Expandable>
 
+## Update monitor configuration
+
+Modify webhook settings for existing monitors without recreating them.
+
+### When to update
+
+Update monitor webhooks when you need to:
+- Change webhook endpoint URL
+- Modify authentication headers
+- Switch HTTP method (POST/PUT)
+- Update query parameters
+
+<Note>
+  **Schedule and reference job cannot be modified.** To change the query or schedule, 
+  create a new monitor.
+</Note>
+
+### Update procedure
+
+<Steps>
+  <Step title="Prepare new webhook config">
+    Define your updated webhook configuration with new URL, headers, or method.
+  </Step>
+
+  <Step title="Send update request">
+
+<Tabs>
+  <Tab title="Python">
+```python
+    from newscatcher_catchall import CatchAllApi
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+    monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+    # Update webhook
+    response = client.monitors.update_monitor(
+        monitor_id=monitor_id,
+        webhook={
+            "url": "https://new-endpoint.com/webhook",
+            "method": "POST",
+            "headers": {"Authorization": "Bearer NEW_TOKEN"}
+        }
+    )
+    print(f"Updated: {response.monitor_id}")
+```
+  </Tab>
+
+  <Tab title="TypeScript">
+```typescript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+    const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+    // Update webhook
+    const response = await client.monitors.updateMonitor(monitorId, {
+      webhook: {
+        url: "https://new-endpoint.com/webhook",
+        method: "POST",
+        headers: { Authorization: "Bearer NEW_TOKEN" }
+      }
+    });
+    console.log(`Updated: ${response.monitorId}`);
+```
+  </Tab>
+</Tabs>
+
+  </Step>
+
+  <Step title="Verify update">
+    List your monitors to confirm the webhook configuration was updated:
+```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors" \
+      -H "x-api-key: YOUR_API_KEY"
+```
+    
+    Check the `webhook` field in the response.
+  </Step>
+</Steps>
+
+<Tip>
+  Updates take effect immediately. The next scheduled execution uses the new webhook 
+  configuration.
+</Tip>
+
 ## Optimize performance
 
 ### Query specificity

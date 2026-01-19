@@ -87,6 +87,10 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     Each query creates a job that processes asynchronously. 
     Use the returned `job_id` to poll the job status from [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps-status)
     and retrieve results when the job is completed.
+
+    Partial results become available during the `enriching` stage as validation 
+    completes in batches. The `progress_validated` field tracks how many 
+    candidate clusters have been processed.
   </Accordion>
 </AccordionGroup>
 

@@ -11,6 +11,33 @@ rss: true
   updates during this phase.
 </Note>
 
+<Update label="0.6.1" description="2026-01-13">
+## Job continuation and early result access
+
+**Features:**
+
+- **Job continuation**: Submit jobs with the optional `limit` parameter for fast
+  testing. Review results and continue jobs with `/catchAll/continue` to process
+  more records without restarting.
+- **Early result access**: Pull results during the `enriching` stage without
+  waiting for job completion. A new `progress_validated` field shows validation
+  progress as results become available in batches.
+- **Monitor updates**: Update webhook configuration for existing monitors
+  without recreating them.
+
+**Endpoints:**
+
+- [`POST /catchAll/continue`](/v3/catch-all/endpoints/continue-job) — Continue
+  completed job with higher limit.
+- [`PATCH /catchAll/monitors/{monitor_id}`](/v3/catch-all/endpoints/update-monitor)
+  — Update monitor webhook configuration.
+
+**Improvements:**
+
+- Expanded search range provides broader coverage for improved recall.
+
+</Update>
+
 <Update label="0.5.1" description="2025-12-11">
 ## API response enhancements and monitor configuration
 

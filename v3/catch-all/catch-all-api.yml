@@ -1,51 +1,32 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API - Beta
-  version: 0.5.1
+  version: 0.6.1
   description: |
-    CatchAll transforms natural language questions into structured, validated records extracted from web sources.
-
-    ### Endpoints
-
-    **Jobs:**
-    - **POST /catchAll/submit** - Create a new job.
-    - **GET /catchAll/status/{job_id}** - Get job processing status.
-    - **GET /catchAll/pull/{job_id}** - Retrieve job results.
-    - **GET /catchAll/jobs/user** - List user jobs.
-
-    **Monitors:**
-    - **POST /catchAll/monitors/create** - Create monitor.
-    - **GET /catchAll/monitors** - List all monitors.
-    - **GET /catchAll/monitors/{monitor_id}/jobs** - List monitor jobs.
-    - **GET /catchAll/monitors/pull/{monitor_id}** - Get monitor results.
-    - **POST /catchAll/monitors/{monitor_id}/enable** - Enable monitor.
-    - **POST /catchAll/monitors/{monitor_id}/disable** - Disable monitor.
-
-    **Meta:**
-    - **GET /health** - API health check
-    - **GET /version** - Current API version
+    CatchAll is a web search API that generates unique datasets that don’t exist anywhere else on the web. Built on NewsCatcher’s proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
     ### Authentication
+
     All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Basic workflow
-    1. Submit a query with `/catchAll/submit`.
-    2. Poll `/catchAll/status/{job_id}` until status is `completed` (typically 10-15 minutes).
-    3. Retrieve results with `/catchAll/pull/{job_id}`.
+    ### Basic Workflow
+
+    1. Submit query via /catchAll/submit
+    2. Poll /catchAll/status/{job_id} until completed (10-15 minutes)
+    3. Retrieve results via /catchAll/pull/{job_id}
 
     ### Monitor workflow
-    1. Create a successful job.
-    2. Create a monitor with `/catchAll/monitors/create` using the job ID as a reference.
-    3. System automatically runs jobs on your schedule.
-    4. (Optional) Receive webhook notifications on completion.
-    5. Retrieve aggregated results with `/catchAll/monitors/pull/{monitor_id}`.
+
+    1. Create successful job via /catchAll/submit
+    2. Create monitor via /catchAll/monitors/create with schedule
+    3. Retrieve aggregated results via /catchAll/monitors/pull/{monitor_id}
 
     ### Important notes
 
     **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
 
   contact:
-    name: NewsCatcher AI
+    name: NewsCatcher
     url: https://newscatcherapi.com
     email: support@newscatcherapi.com
 
@@ -100,6 +81,36 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/continue:
+    post:
+      tags:
+        - Jobs
+      summary: Continue job
+      description: |
+        Continue an existing job to process more records beyond the initial limit.
+      operationId: continueJob
+      externalDocs:
+        description: Learn about job continuation and limits
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContinueRequestDTO"
+            example:
+              job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+              new_limit: 100
+      responses:
+        "200":
+          $ref: "#/components/responses/ContinueResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -169,7 +180,7 @@ paths:
         **Schedule requirements:**
         - Minimum 24-hour interval between executions
         - Natural language format (e.g., "every day at 12 PM UTC", "every 48 hours")
-        
+
         **Validation:**
         - Schedules below minimum frequency return error with descriptive message.
         - Invalid job IDs return 400 Bad Request.
@@ -184,6 +195,55 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}:
+    patch:
+      tags:
+        - Monitors
+      summary: Update monitor
+      description: |
+        Update webhook configuration for an existing monitor without recreating it.
+
+        **Supported updates:**
+        - Webhook URL
+        - HTTP method (POST/PUT)
+        - Headers and authentication
+        - Query parameters
+
+        **Note:** Schedule and reference job cannot be modified. To change these, create a new monitor.
+      operationId: updateMonitor
+      externalDocs:
+        description: Learn about monitor configuration
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/how-to/configure-monitors
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
+            example:
+              webhook:
+                url: "https://new-endpoint.com/webhook"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer new_token_xyz"
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateMonitorResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
 
@@ -426,6 +486,18 @@ components:
           example:
             job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
 
+    ContinueResponse:
+      description: Job continuation accepted
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ContinueResponseDTO"
+          example:
+            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            previous_limit: 10
+            new_limit: 100
+            status: "accepted"
+
     StatusResponse:
       description: Status retrieved successfully.
       content:
@@ -480,6 +552,16 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CreateMonitorResponseDTO"
+
+    UpdateMonitorResponse:
+      description: Monitor updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateMonitorResponseDTO"
+          example:
+            monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+            status: "Monitor updated Successfully"
 
     ListMonitorJobsResponse:
       description: List of monitor jobs
@@ -546,6 +628,17 @@ components:
                 type: string
                 example: "0.3.8"
 
+    BadRequestError:
+      description:
+        Bad request - job not found, not completed, or new limit invalid
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            detail:
+              "New limit must be greater than the previous limit for this job."
+
     ForbiddenError:
       description: Invalid or missing API key
       content:
@@ -604,6 +697,13 @@ components:
           $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
+        limit:
+          type: integer
+          description: |
+            Maximum number of records to return. If not specified, defaults to your plan limit.
+
+            Use /catchAll/continue to extend the limit after job completion without reprocessing.
+          example: 10
 
     SubmitResponseBody:
       type: object
@@ -617,6 +717,50 @@ components:
             Unique identifier for the created job. Use this to check status and
             retrieve results.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+
+    ContinueRequestDTO:
+      type: object
+      required:
+        - job_id
+        - new_limit
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: |
+            Job identifier of the completed job to continue.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        new_limit:
+          type: integer
+          minimum: 1
+          description: |
+            New record limit for continued processing. Must be greater than the previous limit.
+          example: 100
+
+    ContinueResponseDTO:
+      type: object
+      required:
+        - job_id
+        - new_limit
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          description: Job identifier for the continued job.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+        previous_limit:
+          type: integer
+          description: Previous record limit before continuation.
+          example: 10
+        new_limit:
+          type: integer
+          description: New record limit after continuation.
+          example: 100
+        status:
+          type: string
+          description: Confirmation that the continuation request was accepted.
+          default: "accepted"
+          example: "accepted"
 
     JobStatus:
       type: string
@@ -672,13 +816,10 @@ components:
           format: uuid
           description: Job identifier.
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-        # status:
-        #   $ref: "#/components/schemas/JobStatus"
         status:
-          type: string
-          description:
-            Internal job processing status. Use the `steps` array for reliable
-            status tracking.
+          allOf:
+            - $ref: "#/components/schemas/JobStatus"
+          description: Current job processing status.
         steps:
           type: array
           items:
@@ -750,25 +891,32 @@ components:
               "quarter_identifier",
               "revenue",
               "revenue_change",
-              "profit_margin"
+              "profit_margin",
             ]
         status:
           type: string
           description: |
             Job status.
-          example: "job_completed"
+          example: "completed"
         duration:
           type: string
           description: Total time taken to process the job.
           example: 15m
         candidate_records:
           type: integer
-          description: Number of candidate records before validation.
+          description: Number of distinct event clusters identified before validation.
           example: 3200
         valid_records:
           type: integer
           description: Number of validated records extracted.
           example: 156
+        progress_validated:
+          type: integer
+          description: |
+            Number of candidate clusters that have been validated during processing.
+
+            The system process data in batches. This field tracks how many candidates have been checked against validation criteria so far.
+          example: 50
         date_range:
           type: object
           properties:
@@ -972,7 +1120,7 @@ components:
           type: string
           description: |
             Natural language schedule (e.g. 'every day at 12 AM EST').
-            
+
             **Minimum frequency:** Monitors must be scheduled at least 24 hours apart.
           example: "every day at 12 PM UTC"
         webhook:
@@ -1023,6 +1171,31 @@ components:
           type: string
           description: Creation status or error message
           example: "Monitor Created Successfully"
+
+    UpdateMonitorRequestDTO:
+      type: object
+      properties:
+        webhook:
+          $ref: "#/components/schemas/WebhookDTO"
+          description: |
+            Updated webhook configuration.
+
+    UpdateMonitorResponseDTO:
+      type: object
+      required:
+        - monitor_id
+        - status
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          description: Monitor identifier.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        status:
+          type: string
+          description: Confirmation message.
+          default: "Monitor updated Successfully"
+          example: "Monitor updated Successfully"
 
     ReferenceJob:
       type: object
@@ -1158,9 +1331,9 @@ components:
 
     WebhookPayload:
       type: object
-      description: |        
+      description: |
         **First execution:** The initial webhook after monitor creation includes all records from the reference job, providing immediate access to collected data.
-        
+
         **Subsequent executions:** Only new records (after deduplication) are included.
       properties:
         monitor_id:

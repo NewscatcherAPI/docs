@@ -133,6 +133,12 @@ Before you begin, make sure you meet these prerequisites:
       Replace `YOUR_API_KEY_HERE` with your actual API key.
     </Note>
 
+    <Tip>
+      Add `limit=10` to process fewer records for faster testing. Continue 
+      processing more with [`/catchAll/continue`](/v3/catch-all/endpoints/continue-job) 
+      without restarting.
+    </Tip>
+
     You receive a response with a job ID:
 
     ```json
@@ -147,7 +153,7 @@ Before you begin, make sure you meet these prerequisites:
 
   <Step title="Check job status">
 
-    Wait 1-2 minutes, then check the processing status. Poll this endpoint every 30-60 seconds until the status is `job_completed`:
+    Wait 1-2 minutes, then check the processing status. Poll this endpoint every 30-60 seconds until the status is `completed`:
 
     <CodeGroup>
     ```bash curl
@@ -305,7 +311,10 @@ Before you begin, make sure you meet these prerequisites:
 
   <Step title="Retrieve results">
 
-    Once the status is `job_completed`, retrieve the structured records:
+    Results become available during the `enriching` stage. The `progress_validated` 
+    field shows how many candidate clusters have been validated. You can retrieve 
+    partial results as batches are completed, or wait until status is `completed` 
+    and retrieve all records:
 
     <CodeGroup>
     ```bash curl
@@ -409,10 +418,11 @@ Before you begin, make sure you meet these prerequisites:
         "involves_actual_acquisition",
         "is_about_ai_company_acquisition"
       ],
-      "status": "job_completed",
+      "status": "completed",
       "duration": "23m",
-      "candidate_records": 30686,
+      "candidate_records": 3068,
       "valid_records": 230,
+      "progress_validated": 3068
       "date_range": {
         "start_date": "2025-12-03T19:00:40Z",
         "end_date": "2025-12-08T19:00:40Z"

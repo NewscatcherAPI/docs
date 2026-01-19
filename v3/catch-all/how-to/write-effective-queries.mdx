@@ -19,15 +19,17 @@ Before submitting a query, review these recommendations:
 - [Keep queries focused](#keep-queries-focused) (single event type recommended)
 
 <Tip>
-  Start here if you're unsure about your query. Each point is explained in
-  detail below.
+ **Testing queries:** For quick testing, submit a job with the `limit` parameter 
+ to process fewer records (e.g., `limit: 10`). Once satisfied with the results, 
+ [continue the job](/v3/catch-all/endpoints/continue-job) or adjust the query 
+ and create a new job.
 </Tip>
 
 ### What CatchAll finds
 
 CatchAll, by design, focuses on identifying and extracting **real-world events**
 — things that actually happen and get reported. The system queries a
-continuously updated index of 2+ billion articles, featuring time-sensitive,
+continuously updated index of 2+ billion web pages, featuring time-sensitive,
 event-driven content.
 
 **CatchAll is for finding events:**
@@ -42,9 +44,9 @@ event-driven content.
 - Educational content, how-to guides, or reference material
 - Evergreen articles or encyclopedic content
 
-**The difference:**
+**CatchAll vs traditional web search:**
 
-- **Traditional search:** "Information about clinical trials" → Articles
+- **Traditional web search:** "Information about clinical trials" → Articles
   explaining what clinical trials are
 - **CatchAll:** "Phase 3 clinical trial results for oncology drugs" → Every
   specific trial result with efficacy data, statistical significance, and trial

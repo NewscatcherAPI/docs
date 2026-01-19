@@ -135,6 +135,94 @@ Response:
   authentication options, see the [Webhooks](#webhooks) section.
 </Note>
 
+### Update monitor webhook
+
+Modify webhook configuration for an existing monitor without recreating it:
+
+<CodeGroup>
+```bash cURL
+curl -X PATCH "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "webhook": {
+      "url": "https://new-endpoint.com/webhook",
+      "method": "POST",
+      "headers": {"Authorization": "Bearer NEW_TOKEN"}
+    }
+  }'
+```
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+# Update webhook configuration
+response = client.monitors.update_monitor(
+    monitor_id=monitor_id,
+    webhook={
+        "url": "https://new-endpoint.com/webhook",
+        "method": "POST",
+        "headers": {"Authorization": "Bearer NEW_TOKEN"}
+    }
+)
+print(response)
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Update webhook configuration
+const response = await client.monitors.updateMonitor(monitorId, {
+  webhook: {
+    url: "https://new-endpoint.com/webhook",
+    method: "POST",
+    headers: { Authorization: "Bearer NEW_TOKEN" }
+  }
+});
+console.log(response);
+```
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+// Update webhook configuration
+var response = client.monitors().updateMonitor(
+    monitorId,
+    UpdateMonitorRequestDto.builder()
+        .webhook(WebhookDto.builder()
+            .url("https://new-endpoint.com/webhook")
+            .method("POST")
+            .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
+            .build())
+        .build()
+);
+System.out.println(response);
+```
+
+</CodeGroup>
+
+Response:
+```json
+{
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "status": "Monitor updated Successfully"
+}
+```
+
+<Note>
+  **Schedule and reference job cannot be modified.** To change the query or schedule, 
+  create a new monitor.
+</Note>
+
 ## Retrieve results
 
 ### List all monitors
@@ -586,9 +674,10 @@ Response:
 
 ## Webhooks
 
-Receive HTTP POST notifications when monitor jobs complete. Add a `webhook`
-object when creating the monitor (shown in
-[Create a monitor](#create-a-monitor)).
+To get HTTP notifications for completed monitor jobs, add a `webhook` when 
+creating the monitor (see [Create a monitor](#create-a-monitor)). You can update 
+the webhook at any time using [update monitor webhook](#update-monitor-webhook) 
+without recreating the monitor.
 
 ### Webhook payload
 
