@@ -54,43 +54,71 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 ## Key characteristics
 
 <AccordionGroup>
+  <Accordion title="Event-centric index" icon="database">
+    CatchAll searches NewsCatcher's continuously updated index of 2+ billion web pages, 
+    optimized for finding real-world events (acquisitions, approvals, incidents) 
+    within a recent timeframe. The system excels at comprehensive event discovery, 
+    not static content retrieval.
+    
+    <Tip>
+      Learn how to construct effective event queries in 
+      [Write effective queries](/v3/catch-all/how-to/write-effective-queries).
+    </Tip>
+  </Accordion>
+
   <Accordion title="Dynamic schemas" icon="wand-magic-sparkles">
-    Each job generates a unique response schema. Field names and structure in the `enrichment` object vary between jobs—even with identical inputs.
+    Each job generates a unique response schema. Field names and structure in 
+    the `enrichment` object vary between jobs—even with identical inputs.
 
     **Guaranteed fields in every record:**
     - `record_id`
     - `record_title`
+    - `enrichment` object
     - `citations` array
 
     **Variable fields:**
-    - All other fields in `enrichment` (names, types, structure)
-    - Number of records returned
-    - Specific content extracted
+    - All fields inside `enrichment` (names, types, structure)
 
     <Tip>
-      See [Understanding dynamic schemas](/v3/catch-all/overview/dynamic-schemas) for integration patterns.
+      See [Understanding dynamic schemas](/v3/catch-all/overview/dynamic-schemas) 
+      for integration patterns.
     </Tip>
-
   </Accordion>
 
   <Accordion title="Non-deterministic processing" icon="shuffle">
-
     Identical queries can produce different results:
-    - LLMs may generate different keywords, validators, and extractors.
-    - Different content sources may be retrieved.
-    - Field names and structure vary between runs.
-    - Record counts differ.
-
+    - LLMs may generate different keywords, validators, and extractors
+    - Different content sources may be retrieved
+    - Field names and structure vary between runs
+    - Record counts differ
   </Accordion>
 
   <Accordion title="Asynchronous operation" icon="clock">
-    Each query creates a job that processes asynchronously. 
-    Use the returned `job_id` to poll the job status from [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps-status)
-    and retrieve results when the job is completed.
+    Each query creates a job that processes asynchronously. Use the returned 
+    `job_id` to poll the job status and retrieve results when completed. 
+    Processing typically takes 10-15 minutes.
+    
+    Track detailed progress through the [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps) 
+    array in the status endpoint response.
+  </Accordion>
 
-    Partial results become available during the `enriching` stage as validation 
-    completes in batches. The `progress_validated` field tracks how many 
-    candidate clusters have been processed.
+  <Accordion title="Batch processing" icon="layer-group">
+    Results become available progressively during the `enriching` stage as 
+    validation completes in batches. Check for `status: "enriching"` to retrieve 
+    partial results before job completion.
+    
+    The `progress_validated` field tracks how many candidate clusters have been 
+    processed. This allows you to access early results while the job continues 
+    processing remaining batches.
+  </Accordion>
+
+  <Accordion title="Job continuation" icon="rotate">
+    Start with fewer records using the `limit` parameter for quick testing, then 
+    [continue the job](/v3/catch-all/endpoints/continue-job) to process more 
+    records without re-submitting the query.
+    
+    Continue requests preserve all analysis, validation, and extraction logic 
+    from the original job.
   </Accordion>
 </AccordionGroup>
 
@@ -100,12 +128,13 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
 <Tabs>
   <Tab title="Jobs">
-    | Endpoint                    | Method | Description                     |
-    | --------------------------- | ------ | ------------------------------- |
-    | `/catchAll/submit`          | POST   | Create a new job                |
-    | `/catchAll/jobs/user`       | GET    | List all jobs for your API key  |
-    | `/catchAll/status/{job_id}` | GET    | Check job processing status     |
-    | `/catchAll/pull/{job_id}`   | GET    | Retrieve job results            |
+    | Endpoint                    |  Method  | Description                     |
+    | --------------------------- | -------- | ------------------------------- |
+    | `/catchAll/submit`          | `POST`   | Create a new job                |
+    | `/catchAll/continue`        | `POST`   | Continue job with higher limit  |
+    | `/catchAll/jobs/user`       | `GET `   | List all jobs for your API key  |
+    | `/catchAll/status/{job_id}` | `GET`    | Check job processing status     |
+    | `/catchAll/pull/{job_id}`   | `GET`    | Retrieve job results            |
   
     <Tip>
       Track detailed progress using the `steps` array in the status endpoint response. 
@@ -114,24 +143,23 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   
   </Tab>
 
-
-
   <Tab title="Monitors">
-    | Endpoint                                  | Method | Description                    |
-    | ----------------------------------------- | ------ | ------------------------------ |
-    | `/catchAll/monitors/create`               | POST   | Create scheduled monitor       |
-    | `/catchAll/monitors`                      | GET    | List all monitors              |
-    | `/catchAll/monitors/{monitor_id}/jobs`    | GET    | List jobs for a monitor        |
-    | `/catchAll/monitors/pull/{monitor_id}`    | GET    | Get aggregated monitor results |
-    | `/catchAll/monitors/{monitor_id}/enable`  | POST   | Enable a monitor               |
-    | `/catchAll/monitors/{monitor_id}/disable` | POST   | Disable a monitor              |
+    | Endpoint                                  |  Method  | Description                    |
+    | ----------------------------------------- | -------- | ------------------------------ |
+    | `/catchAll/monitors/create`               | `POST`   | Create scheduled monitor       |
+    | `/catchAll/monitors/{monitor_id}`         | `PATCH`  | Update monitor webhook         |
+    | `/catchAll/monitors`                      | `GET`    | List all monitors              |
+    | `/catchAll/monitors/{monitor_id}/jobs`    | `GET`    | List jobs for a monitor        |
+    | `/catchAll/monitors/pull/{monitor_id}`    | `GET `   | Get aggregated monitor results |
+    | `/catchAll/monitors/{monitor_id}/enable`  | `POST`   | Enable a monitor               |
+    | `/catchAll/monitors/{monitor_id}/disable` | `POST`   | Disable a monitor              |
   </Tab>
 
   <Tab title="Meta">
-    | Endpoint   | Method | Description              |
-    | ---------- | ------ | ------------------------ |
-    | `/health`  | GET    | Check API health status  |
-    | `/version` | GET    | Get API version info     |
+    | Endpoint   |  Method  | Description              |
+    | ---------- | -------- | ------------------------ |
+    | `/health`  | `GET`    | Check API health status  |
+    | `/version` | `GET`    | Get API version info     |
   </Tab>
 
 </Tabs>
