@@ -15,138 +15,79 @@ implementation, and performance optimization.
 
 ## Choose appropriate schedules
 
-Match schedule frequency to your data needs and budget. Each scheduled run
-creates a billable job.
+Match schedule frequency to your data needs and budget. Each scheduled run creates a billable job.
 
-### Recommended frequencies
-
-| Use Case            | Schedule             | Rationale                                        |
-| ------------------- | -------------------- | ------------------------------------------------ |
-| News monitoring     | Every 6-12 hours     | Balances freshness with cost                     |
-| Regulatory updates  | Daily                | Regulations rarely change more frequently        |
-| Market intelligence | Daily or twice daily | Financial data updates during business hours     |
-| Real-time alerts    | Hourly               | Minimum recommended for time-sensitive use cases |
+| Use Case            | Schedule             | Rationale                                   |
+| ------------------- | -------------------- | ------------------------------------------- |
+| News monitoring     | Daily                | Balances freshness with cost                |
+| Regulatory updates  | Daily or weekly      | Changes occur infrequently                  |
+| Market intelligence | Daily or weekly      | Adjust based on update cycles               |
 
 <Warning>
-  Avoid schedules more frequent than hourly unless necessary. High-frequency
-  monitors with broad queries may produce many duplicate-free runs (zero new
-  records), increasing costs without adding value.
+  **Minimum interval: 24 hours.** Schedules more frequent than daily are not supported.
 </Warning>
 
-### Schedule frequency vs. deduplication
-
-More frequent schedules may result in more executions with zero new records:
-
-- **Every hour**: Higher likelihood of finding new events in each run
-- **Every 15 minutes**: Most runs may return zero records after deduplication
-- **Every 5 minutes**: Very likely to have consecutive runs with no new results
-
-**Recommendation**: Start with hourly or less frequent schedules and adjust
-based on actual data velocity.
-
-## Test schedules before production
-
-Invalid schedules may be parsed as every-minute execution (`* * * * *`), leading
-to unexpected costs and rate limits.
-
-### Testing procedure
-
-<Steps>
-  <Step title="Create test monitor">
-    Create a monitor with a short interval: `"every 5 minutes"`
-  </Step>
-
-<Step title="Wait for executions">
-  Wait 10-15 minutes for 2-3 executions to complete.
-</Step>
-
-<Step title="Check execution times">
-
-```bash curl
-"https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
--H "x-api-key: YOUR_API_KEY"
-```
-
-</Step>
-
-<Step title="Verify cron expression">
-  Check the `cron_expression` field in results or webhook payload. For `"every 5
-  minutes"`, expect `*/5 * * * *`.
-</Step>
-
-  <Step title="Create production monitor">
-    If correct, disable the test monitor and create your production monitor with the desired schedule. If incorrect, try a different schedule format.
-  </Step>
-</Steps>
-
-<Expandable title="Valid schedule formats and cron expressions">
+### Schedule formats
 
 Define schedules in natural language with explicit timezone.
 
-**Time-based schedules** (recommended):
+<Tabs>
+  <Tab title="Daily schedules">
+    - `"every day at 12 PM UTC"`
+    - `"every day at 9 AM EST"`
+  </Tab>
 
-- `"every day at 12 PM UTC"`
-- `"every Monday at 9 AM EST"`
-- `"every Friday at 5 PM GMT"`
+  <Tab title="Weekly schedules">
+    - `"every Monday at 9 AM EST"`
+    - `"every Friday at 5 PM GMT"`
+  </Tab>
 
-**Interval-based schedules**:
+  <Tab title="Multi-day intervals">
+    - `"every 2 days at 3 PM UTC"`
+    - `"every 3 days at 9 AM EST"`
+    - `"every 7 days at 12 PM UTC"`
+  </Tab>
 
-- `"every 6 hours"`
-- `"every 12 hours"`
-- `"every hour"`
+  <Tab title="Invalid (sub-24h)">
+    - ❌ `"every hour"`
+    - ❌ `"every 6 hours"`
+    - ❌ `"every 12 hours"`
+  </Tab>
+</Tabs>
 
-**Invalid formats** (avoid):
+**Common cron patterns:**
 
-- ❌ `"daily at noon"`
-- ❌ `"twice per day"`
-- ❌ `"every weekday"`
-
-**Common cron patterns**:
-
-| Schedule                     | Cron Expression | Meaning                  |
+| Schedule                     | Cron Expression | Valid                    |
 | ---------------------------- | --------------- | ------------------------ |
-| `"every day at 12 PM UTC"`   | `0 12 * * *`    | Daily at noon UTC        |
-| `"every 6 hours"`            | `0 */6 * * *`   | Every 6 hours            |
-| `"every hour"`               | `0 * * * *`     | Top of every hour        |
-| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | Weekly on Monday at 9 AM |
-| `* * * * *`                  | Every minute    | **Parsing error**        |
+| `"every day at 12 PM UTC"`   | `0 12 * * *`    | ✅ Daily                 |
+| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | ✅ Weekly                |
+| `"every 6 hours"`            | `0 */6 * * *`   | ❌ Below 24h minimum     |
 
-</Expandable>
+### Testing procedure
 
-## Verify reference job quality
+Test your schedule format before production use.
 
-Before creating a monitor, ensure your reference job produces high-quality
-results.
+<Steps>
+  <Step title="Create test monitor">
+    Create a monitor with your desired schedule (e.g., `"every day at 3 PM UTC"`)
+  </Step>
 
-<Accordion title="Reference job quality checklist">
+  <Step title="Wait for execution">
+    Wait for the scheduled time to pass.
+  </Step>
 
-- **Record count**: 10-500 records (adjust for your use case)
-  - Too few (less than 10): Query may be too specific
-  - Too many (more than 500): Query may be too broad
-- **Review validators**: Check the `validators` array for time constraints
-  - Time-based validators are supported but may affect result consistency
-  - Examples: `event_in_last_hour`, `event_in_last_7_days`,
-    `announcement_within_date_range`
-  - Consider using open-ended queries for more predictable results
-- **Clean extraction**: Review the `enrichment` object structure
-  - All important fields extracted
-  - Field names are semantic and consistent
-  - Data is accurate
-- **Quality citations**: Verify sources are authoritative and relevant
-  - Sources are credible
-  - Publication dates are recent
-  - Citations support the extracted data
+  <Step title="Verify cron expression">
+    Check the `cron_expression` field:
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Step>
 
-</Accordion>
-
-<Note>
-**Time-based validators** like `event_in_last_hour` or `announcement_within_date_range` 
-are automatically adapted for recurring execution. However, overly specific time 
-constraints may limit result variety across monitor runs.
-
-**Best practice**: Use open-ended queries (e.g., "AI company acquisitions" instead 
-of "AI acquisitions announced this week") for consistent results across executions.
-</Note>
+  <Step title="Create production monitor">
+    If correct, create your production monitor. If incorrect, adjust the schedule format.
+  </Step>
+</Steps>
 
 ## Implement robust webhooks
 
@@ -243,6 +184,54 @@ Return 200 immediately and process asynchronously to avoid timeouts:
     ```
 
   </Tab>
+
+  <Tab title="Java">
+    ```java
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.http.ResponseEntity;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import java.util.Map;
+    import java.util.concurrent.CompletableFuture;
+
+    @RestController
+    @RequestMapping("/catchall")
+    public class WebhookController {
+        private static final Logger logger = LoggerFactory.getLogger(WebhookController.class);
+
+        @PostMapping("/webhook")
+        public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Map<String, Object> payload) {
+            try {
+                // Get payload
+                String monitorId = (String) payload.get("monitor_id");
+                logger.info("Received webhook: {}", monitorId);
+
+                // Return 200 immediately - process async
+                processWebhookAsync(payload);
+                return ResponseEntity.ok(Map.of("status", "received"));
+
+            } catch (Exception e) {
+                logger.error("Webhook error: ", e);
+                // Return 200 even on error to avoid retries
+                return ResponseEntity.ok(Map.of("status", "error"));
+            }
+        }
+
+        private void processWebhookAsync(Map<String, Object> payload) {
+            CompletableFuture.runAsync(() -> {
+                String monitorId = (String) payload.get("monitor_id");
+                Integer recordsCount = (Integer) payload.get("records_count");
+
+                if (recordsCount != null && recordsCount > 0) {
+                    // Your processing logic here
+                    saveRecords((List<?>) payload.get("records"));
+                }
+            });
+        }
+    }
+    ```
+
+  </Tab>
 </Tabs>
 
 <Tip>
@@ -307,6 +296,39 @@ Implement exponential backoff for webhook processing failures:
     }
     ```
   </Tab>
+
+  <Tab title="Java">
+    ```java
+    import java.util.Map;
+    import java.util.List;
+
+    public boolean processWebhookWithRetry(Map<String, Object> payload, int maxRetries) {
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                // Your processing logic
+                processRecords((List<?>) payload.get("records"));
+                return true;
+
+            } catch (Exception e) {
+                if (attempt < maxRetries - 1) {
+                    long waitTime = (long) Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return false;
+                    }
+                } else {
+                    // Log failure after all retries
+                    logWebhookFailure(payload, e.getMessage());
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+    ```
+  </Tab>
 </Tabs>
 
 </Expandable>
@@ -355,6 +377,34 @@ Log all webhook events for debugging:
         JSON.stringify(logEntry) + "\n",
         "utf8"
       );
+    }
+    ```
+
+  </Tab>
+
+  <Tab title="Java">
+    ```java
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import java.io.FileWriter;
+    import java.io.IOException;
+    import java.time.Instant;
+    import java.util.HashMap;
+    import java.util.Map;
+
+    public void logWebhook(Map<String, Object> payload, String status) {
+        Map<String, Object> logEntry = new HashMap<>();
+        logEntry.put("timestamp", Instant.now().toString());
+        logEntry.put("monitor_id", payload.get("monitor_id"));
+        logEntry.put("latest_job_id", payload.get("latest_job_id"));
+        logEntry.put("records_count", payload.get("records_count"));
+        logEntry.put("status", status);
+
+        try (FileWriter writer = new FileWriter("webhook_log.jsonl", true)) {
+            ObjectMapper mapper = new ObjectMapper();
+            writer.write(mapper.writeValueAsString(logEntry) + "\n");
+        } catch (IOException e) {
+            logger.error("Failed to write webhook log", e);
+        }
     }
     ```
 
@@ -418,14 +468,43 @@ Update monitor webhooks when you need to:
     const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
     // Update webhook
-    const response = await client.monitors.updateMonitor(monitorId, {
+    const response = await client.monitors.updateMonitor({
+      monitor_id: monitorId,
       webhook: {
         url: "https://new-endpoint.com/webhook",
         method: "POST",
         headers: { Authorization: "Bearer NEW_TOKEN" }
       }
     });
-    console.log(`Updated: ${response.monitorId}`);
+    console.log(`Updated: ${response.monitor_id}`);
+```
+  </Tab>
+
+  <Tab title="Java">
+```java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+    import com.newscatcher.catchall.types.WebhookDto;
+    import java.util.Map;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+    // Update webhook
+    var response = client.monitors().updateMonitor(
+        monitorId,
+        UpdateMonitorRequestDto.builder()
+            .webhook(WebhookDto.builder()
+                .url("https://new-endpoint.com/webhook")
+                .method("POST")
+                .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
+                .build())
+            .build()
+    );
+    System.out.println("Updated: " + response.getMonitorId().orElse("N/A"));
 ```
   </Tab>
 </Tabs>
@@ -447,60 +526,6 @@ Update monitor webhooks when you need to:
   Updates take effect immediately. The next scheduled execution uses the new webhook 
   configuration.
 </Tip>
-
-## Optimize performance
-
-### Query specificity
-
-Balance query specificity with result volume:
-
-**Too broad** (high volume, many duplicates):
-
-```json
-"query": "company news"
-```
-
-**Too specific** (low volume, may miss events):
-
-```json
-"query": "Series C funding rounds for AI companies in San Francisco over $50M"
-```
-
-**Optimal** (focused but flexible):
-
-```json
-"query": "AI company funding rounds",
-"context": "Focus on Series B and later, amounts over $10M"
-```
-
-### Context usage
-
-Use `context` to refine results without creating overly specific validators:
-
-```json
-{
-  "query": "Technology company acquisitions",
-  "context": "Include deal size if available, focus on public companies"
-}
-```
-
-This provides guidance to the LLM without generating restrictive validators.
-
-### Schema design
-
-Design schemas that extract core fields consistently:
-
-**Good schema** (flexible, semantic):
-
-```json
-"schema": "[ACQUIRER] acquired [TARGET] for [AMOUNT] on [DATE]"
-```
-
-**Problematic schema** (too specific):
-
-```json
-"schema": "[ACQUIRER] acquired [TARGET] in [CITY], [COUNTRY] for exactly [AMOUNT] USD on [SPECIFIC_DATE]"
-```
 
 ## See also
 

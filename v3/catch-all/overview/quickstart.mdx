@@ -90,7 +90,7 @@ Before you begin, make sure you meet these prerequisites:
         context="Focus on deal size and acquiring company details"
     )
 
-    print(f"Job created: {job.job_id}")
+    job_id = job.job_id
     ```
 
     ```typescript TypeScript
@@ -105,7 +105,7 @@ Before you begin, make sure you meet these prerequisites:
       context: "Focus on deal size and acquiring company details"
     });
 
-    console.log(`Job created: ${job.jobId}`);
+    const jobId = job.job_id;
     ```
 
     ```java Java
@@ -125,7 +125,7 @@ Before you begin, make sure you meet these prerequisites:
             .build()
     );
 
-    System.out.println("Job created: " + job.getJobId());
+    String jobId = job.getJobId();
     ```
     </CodeGroup>
 
@@ -172,17 +172,9 @@ Before you begin, make sure you meet these prerequisites:
     while True:
         status = client.jobs.get_job_status(job_id)
 
-        print(f"Current status: {status.status}")
-
-        # Check if job is completed by examining steps
-        completed_step = next((s for s in status.steps if s.status == 'completed' and s.completed), None)
-        failed_step = next((s for s in status.steps if s.status == 'failed' and s.completed), None)
-
-        if completed_step:
-            print("Job completed!")
+        if status.status == "completed":
             break
-        elif failed_step:
-            print("Job failed!")
+        elif status.status == "failed":
             break
 
         time.sleep(60)  # Wait 60 seconds before next check
@@ -196,19 +188,11 @@ Before you begin, make sure you meet these prerequisites:
 
     // Poll until job completes
     while (true) {
-      const status = await client.jobs.getJobStatus(jobId);
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
 
-      console.log(`Current status: ${status.status}`);
-
-      // Check if job is completed by examining steps
-      const completedStep = status.steps.find(s => s.status === 'completed' && s.completed);
-      const failedStep = status.steps.find(s => s.status === 'failed' && s.completed);
-
-      if (completedStep) {
-        console.log("Job completed!");
+      if (status.status === "completed") {
         break;
-      } else if (failedStep) {
-        console.log("Job failed!");
+      } else if (status.status === "failed") {
         break;
       }
 
@@ -230,21 +214,9 @@ Before you begin, make sure you meet these prerequisites:
     while (true) {
         StatusResponseDto status = client.jobs().getJobStatus(jobId);
 
-        System.out.println("Current status: " + status.getStatus());
-
-        // Check if job is completed by examining steps
-        var completedStep = status.getSteps().stream()
-            .filter(s -> "completed".equals(s.getStatus()) && s.getCompleted())
-            .findFirst();
-        var failedStep = status.getSteps().stream()
-            .filter(s -> "failed".equals(s.getStatus()) && s.getCompleted())
-            .findFirst();
-
-        if (completedStep.isPresent()) {
-            System.out.println("Job completed!");
+        if ("completed".equals(status.getStatus().orElse(null))) {
             break;
-        } else if (failedStep.isPresent()) {
-            System.out.println("Job failed!");
+        } else if ("failed".equals(status.getStatus().orElse(null))) {
             break;
         }
 
@@ -330,19 +302,6 @@ Before you begin, make sure you meet these prerequisites:
 
     # Retrieve results
     results = client.jobs.get_job_results(job_id)
-
-    print(f"Query: {results.query}")
-    print(f"Valid records: {results.valid_records}")
-    print(f"Candidate records: {results.candidate_records}")
-    print(f"Duration: {results.duration}")
-
-    # Display first record
-    if results.all_records:
-        record = results.all_records[0]
-        print(f"\nFirst record: {record.record_title}")
-        print("\nExtracted fields:")
-        for key, value in record.enrichment.items():
-            print(f"  {key}: {value}")
     ```
 
     ```typescript TypeScript
@@ -352,22 +311,7 @@ Before you begin, make sure you meet these prerequisites:
     const jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
 
     // Retrieve results
-    const results = await client.jobs.getJobResults(jobId);
-
-    console.log(`Query: ${results.query}`);
-    console.log(`Valid records: ${results.validRecords}`);
-    console.log(`Candidate records: ${results.candidateRecords}`);
-    console.log(`Duration: ${results.duration}`);
-
-    // Display first record
-    if (results.allRecords.length > 0) {
-      const record = results.allRecords[0];
-      console.log(`\nFirst record: ${record.recordTitle}`);
-      console.log("\nExtracted fields:");
-      Object.entries(record.enrichment).forEach(([key, value]) => {
-        console.log(`  ${key}: ${value}`);
-      });
-    }
+    const results = await client.jobs.getJobResults({ job_id: jobId });
     ```
 
     ```java Java
@@ -382,21 +326,6 @@ Before you begin, make sure you meet these prerequisites:
 
     // Retrieve results
     PullJobResponseDto results = client.jobs().getJobResults(jobId);
-
-    System.out.println("Query: " + results.getQuery());
-    System.out.println("Valid records: " + results.getValidRecords());
-    System.out.println("Candidate records: " + results.getCandidateRecords());
-    System.out.println("Duration: " + results.getDuration());
-
-    // Display first record
-    if (!results.getAllRecords().isEmpty()) {
-        var record = results.getAllRecords().get(0);
-        System.out.println("\nFirst record: " + record.getRecordTitle());
-        System.out.println("\nExtracted fields:");
-        record.getEnrichment().forEach((key, value) -> {
-            System.out.println("  " + key + ": " + value);
-        });
-    }
     ```
     </CodeGroup>
 
