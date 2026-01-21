@@ -14,139 +14,484 @@ applications with full type safety and modern async/await patterns.
 
 ## Installation
 
-```bash
-npm install newscatcher-catchall-sdk
-```
+<Tabs>
+  <Tab title="npm">
+    ```bash
+    npm install newscatcher-catchall-sdk
+    ```
+  </Tab>
+  
+  <Tab title="yarn">
+    ```bash
+    yarn add newscatcher-catchall-sdk
+    ```
+  </Tab>
+  
+  <Tab title="pnpm">
+    ```bash
+    pnpm add newscatcher-catchall-sdk
+    ```
+  </Tab>
+</Tabs>
 
-## Basic usage
+## Quickstart
 
-### Jobs
+Get started with CatchAll in three steps:
 
-Submit a query and retrieve structured results:
+<Steps>
+  <Step title="Initialize the client">
+    ```typescript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
 
-```typescript
-import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+    ```
+  </Step>
+  
+  <Step title="Create a job">
+    ```typescript
+    const job = await client.jobs.createJob({
+      query: "AI company acquisitions",
+      limit: 10,
+    });
+    const jobId = job.job_id;
+    ```
+  </Step>
+  
+  <Step title="Wait and retrieve results">
+    ```typescript
+    const POLL_INTERVAL_MS = 60000;
 
-const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+    // Poll for completion
+    while (true) {
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
+      if (status.status === "completed") {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
 
-// Create a job
-const job = await client.jobs.createJob({
-  query: "AI company acquisitions",
-  context: "Focus on deal size and acquiring company details"
-});
-console.log(`Job created: ${job.jobId}`);
-
-// Poll for completion
-while (true) {
-  const status = await client.jobs.getJobStatus(job.jobId);
-
-  const completed = status.steps.some(
-    (s) => s.status === "completed" && s.completed
-  );
-  if (completed) {
-    console.log("Job completed!");
-    break;
-  }
-
-  const currentStep = status.steps.find((s) => !s.completed);
-  if (currentStep) {
-    console.log(
-      `Processing: ${currentStep.status} (step ${currentStep.order}/7)`
-    );
-  }
-
-  await new Promise((resolve) => setTimeout(resolve, 60000));
-}
-
-// Retrieve results
-const results = await client.jobs.getJobResults(job.jobId);
-console.log(`Found ${results.validRecords} records`);
-
-for (const record of results.allRecords) {
-  console.log(record.recordTitle);
-}
-```
+    // Get results
+    const results = await client.jobs.getJobResults({ job_id: jobId });
+    console.log(`Found ${results.valid_records} valid records`);
+    ```
+  </Step>
+</Steps>
 
 <Note>
   Jobs process asynchronously and typically complete in 10-15 minutes. See the
   [Quickstart](/v3/catch-all/overview/quickstart) for a complete walkthrough.
 </Note>
 
-### Monitors
+## Working with jobs
 
-Automate recurring queries with scheduled execution:
+<Tabs>
+  <Tab title="Create and track">
+    Submit a query and track its progress:
 
+    ```typescript
+    const POLL_INTERVAL_MS = 60000;
+
+    // Create job
+    const job = await client.jobs.createJob({
+      query: "AI company acquisitions",
+      context: "Focus on deal size and acquiring company details",
+      limit: 10,
+    });
+    console.log(`Job created: ${job.job_id}`);
+
+    // Monitor progress
+    const jobId = job.job_id;
+    while (true) {
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
+
+      if (status.status === "completed") {
+        break;
+      }
+
+      const currentStep = status.steps.find((s) => !s.completed);
+      if (currentStep) {
+        console.log(`Step ${currentStep.order}/7: ${currentStep.status}`);
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
+
+    // Retrieve results
+    const results = await client.jobs.getJobResults({ job_id: jobId });
+    console.log(`\nFound ${results.valid_records} valid records`);
+    for (const record of results.all_records) {
+      console.log(`  ${record.record_title}`);
+    }
+    ```
+  </Tab>
+
+  <Tab title="Continue jobs">
+    Extend processing limits for completed jobs:
+
+    ```typescript
+    const POLL_INTERVAL_MS = 60000;
+
+    // Continue job to process more records
+    const continued = await client.jobs.continueJob({
+      job_id: jobId,
+      new_limit: 50,
+    });
+    console.log(
+      `Continued: ${continued.previous_limit} -> ${continued.new_limit} records`
+    );
+
+    // Wait for completion
+    while (true) {
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
+      if (status.status === "completed") {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
+
+    // Get final results
+    const finalResults = await client.jobs.getJobResults({ job_id: jobId });
+    console.log(`Total: ${finalResults.valid_records} valid records`);
+    ```
+
+    <Tip>
+      Use `limit` parameter when creating jobs to start with fewer records for quick testing.
+      Continue the job if you need more records after reviewing initial results.
+    </Tip>
+  </Tab>
+
+  <Tab title="Early results">
+    Retrieve partial results during the enriching stage:
+
+    ```typescript
+    const POLL_INTERVAL_MS = 60000;
+
+    while (true) {
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
+
+      if (status.status === "enriching" || status.status === "completed") {
+        const results = await client.jobs.getJobResults({ job_id: jobId });
+        
+        if (results.valid_records > 0) {
+          console.log(
+            `Progress: ${results.progress_validated}/${results.candidate_records} validated, ${results.valid_records} valid`
+          );
+        }
+
+        if (status.status === "completed") {
+          break;
+        }
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
+    ```
+  </Tab>
+
+  <Tab title="List jobs">
+    Retrieve all jobs created by your account:
+
+    ```typescript
+    const jobs = await client.jobs.getUserJobs();
+
+    for (const job of jobs) {
+      console.log(`Job ${job.job_id}: ${job.query} (${job.status})`);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Accordion title="Complete example with all features">
 ```typescript
-// Create a monitor from a completed job
-const monitor = await client.monitors.createMonitor({
-  referenceJobId: job.jobId,
-  schedule: "every day at 12 PM UTC",
-  webhook: {
-    url: "https://your-endpoint.com/webhook",
-    method: "POST",
-    headers: { Authorization: "Bearer YOUR_TOKEN" },
-  },
-});
-console.log(`Monitor created: ${monitor.monitorId}`);
+import { CatchAllApiClient, CatchAllApiError } from "newscatcher-catchall-sdk";
 
-// Get aggregated results
-const results = await client.monitors.pullMonitorResults(monitor.monitorId);
-console.log(`Collected ${results.records} records`);
+const POLL_INTERVAL_MS = 60000;
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+try {
+  // Create job
+  const job = await client.jobs.createJob({
+    query: "AI company acquisitions",
+    context: "Focus on deal size and acquiring company details",
+    limit: 10,
+  });
+  const jobId = job.job_id;
+  console.log(`Job created: ${jobId}`);
+
+  // Poll with early results access
+  while (true) {
+    const status = await client.jobs.getJobStatus({ job_id: jobId });
+
+    if (status.status === "enriching" || status.status === "completed") {
+      const results = await client.jobs.getJobResults({ job_id: jobId });
+      if (results.valid_records > 0) {
+        console.log(`Progress: ${results.valid_records} valid records`);
+      }
+
+      if (status.status === "completed") {
+        break;
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+  }
+
+  // Continue if needed
+  let results = await client.jobs.getJobResults({ job_id: jobId });
+  if (results.valid_records >= 10) {
+    await client.jobs.continueJob({
+      job_id: jobId,
+      new_limit: 50,
+    });
+
+    while (true) {
+      const status = await client.jobs.getJobStatus({ job_id: jobId });
+      if (status.status === "completed") {
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+    }
+
+    results = await client.jobs.getJobResults({ job_id: jobId });
+  }
+
+  // Display results
+  console.log(`\nFinal: ${results.valid_records} valid records`);
+  for (const record of results.all_records) {
+    console.log(`  ${record.record_title}`);
+  }
+} catch (err) {
+  if (err instanceof CatchAllApiError) {
+    console.error(`Status: ${err.statusCode}`);
+    console.error(`Error: ${err.message}`);
+  }
+}
 ```
+</Accordion>
 
-Learn more about monitors in the
-[Monitors documentation](/v3/catch-all/overview/monitors).
+## Working with monitors
+
+Automate recurring queries with scheduled execution.
+
+<Tabs>
+  <Tab title="Create monitor">
+    Create a monitor from a completed job:
+
+    ```typescript
+    const monitor = await client.monitors.createMonitor({
+      reference_job_id: jobId,
+      schedule: "every day at 12 PM UTC",
+      webhook: {
+        url: "https://your-endpoint.com/webhook",
+        method: "POST",
+        headers: { Authorization: "Bearer YOUR_TOKEN" },
+      },
+    });
+    console.log(`Monitor created: ${monitor.monitor_id}`);
+    ```
+
+    <Note>
+      Monitors require a minimum 24-hour interval between executions. Learn more in the
+      [Monitors documentation](/v3/catch-all/overview/monitors).
+    </Note>
+  </Tab>
+
+  <Tab title="Update monitor">
+    Update webhook configuration for an existing monitor:
+
+    ```typescript
+    const updated = await client.monitors.updateMonitor({
+      monitor_id: monitor.monitor_id,
+      webhook: {
+        url: "https://new-endpoint.com/webhook",
+        method: "POST",
+        headers: { Authorization: "Bearer NEW_TOKEN" },
+      },
+    });
+    console.log(`Monitor updated: ${updated.status}`);
+    ```
+  </Tab>
+
+  <Tab title="Pause/Resume">
+    Control monitor execution:
+
+    ```typescript
+    // Pause monitor
+    await client.monitors.disableMonitor({ monitor_id: monitor.monitor_id });
+    console.log("Monitor paused");
+
+    // Resume monitor
+    await client.monitors.enableMonitor({ monitor_id: monitor.monitor_id });
+    console.log("Monitor resumed");
+    ```
+  </Tab>
+
+  <Tab title="List monitors">
+    Retrieve all monitors for your account:
+
+    ```typescript
+    const monitors = await client.monitors.listMonitors();
+    
+    console.log(`Total monitors: ${monitors.total_monitors}`);
+    for (const m of monitors.monitors) {
+      const status = m.enabled ? "active" : "paused";
+      console.log(`${m.monitor_id}: ${status}`);
+    }
+    ```
+  </Tab>
+
+  <Tab title="Retrieve results">
+    Access aggregated results from all monitor executions:
+
+    ```typescript
+    // List execution history
+    const jobs = await client.monitors.listMonitorJobs({
+      monitor_id: monitor.monitor_id,
+      sort: "desc",
+    });
+    console.log(`Monitor executed ${jobs.total_jobs} jobs`);
+
+    // Get all collected records
+    const results = await client.monitors.pullMonitorResults({
+      monitor_id: monitor.monitor_id,
+    });
+    console.log(`Total records: ${results.records}`);
+
+    for (const record of results.all_records) {
+      console.log(`  ${record.record_title}`);
+      console.log(`  Added: ${record.added_on}`);
+    }
+    ```
+  </Tab>
+</Tabs>
+
+<Accordion title="Complete monitor example">
+```typescript
+import { CatchAllApiClient, CatchAllApiError } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+try {
+  // Create monitor from completed job
+  const jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+
+  const monitor = await client.monitors.createMonitor({
+    reference_job_id: jobId,
+    schedule: "every day at 12 PM UTC",
+    webhook: {
+      url: "https://your-endpoint.com/webhook",
+      method: "POST",
+      headers: { Authorization: "Bearer YOUR_TOKEN" },
+    },
+  });
+  const monitorId = monitor.monitor_id;
+  console.log(`Monitor created: ${monitorId}`);
+
+  // Update webhook
+  await client.monitors.updateMonitor({
+    monitor_id: monitorId,
+    webhook: {
+      url: "https://new-endpoint.com/webhook",
+      method: "POST",
+    },
+  });
+
+  // List all monitors
+  const allMonitors = await client.monitors.listMonitors();
+  for (const m of allMonitors.monitors) {
+    const status = m.enabled ? "active" : "paused";
+    console.log(`${m.monitor_id}: ${status}`);
+  }
+
+  // Control execution
+  await client.monitors.disableMonitor({ monitor_id: monitorId });
+  await client.monitors.enableMonitor({ monitor_id: monitorId });
+
+  // List execution history
+  const jobs = await client.monitors.listMonitorJobs({
+    monitor_id: monitorId,
+    sort: "desc",
+  });
+  console.log(`\nMonitor executed ${jobs.total_jobs} jobs`);
+  for (const job of jobs.jobs) {
+    console.log(`  Job ${job.job_id}: ${job.start_date} to ${job.end_date}`);
+  }
+
+  // Get aggregated results
+  const results = await client.monitors.pullMonitorResults({
+    monitor_id: monitorId,
+  });
+  console.log(`\nCollected ${results.records} total records`);
+  for (const record of results.all_records) {
+    console.log(`  ${record.record_title}`);
+  }
+} catch (err) {
+  if (err instanceof CatchAllApiError) {
+    console.error(`Status: ${err.statusCode}`);
+    console.error(`Error: ${err.message}`);
+  }
+}
+```
+</Accordion>
 
 ## Type safety
 
-The SDK exports all request and response types:
+The SDK exports all request and response types for full TypeScript support:
 
 ```typescript
 import { CatchAllApi } from "newscatcher-catchall-sdk";
 
 const request: CatchAllApi.SubmitRequestDto = {
   query: "AI company acquisitions",
-  context: "Focus on deal size and acquiring company details"
+  context: "Focus on deal size and acquiring company details",
+  limit: 10,
 };
+
+const job = await client.jobs.createJob(request);
 ```
 
 ## Error handling
+
+Handle API errors with structured exception handling:
 
 ```typescript
 import { CatchAllApiError } from "newscatcher-catchall-sdk";
 
 try {
   await client.jobs.createJob({
-    query: "AI company acquisitions"
+    query: "AI company acquisitions",
   });
 } catch (err) {
   if (err instanceof CatchAllApiError) {
     console.log(`Status: ${err.statusCode}`);
-    console.log(`Message: ${err.message}`);
-    console.log(`Body: ${JSON.stringify(err.body)}`);
+    console.log(`Error: ${err.message}`);
   }
 }
 ```
 
-## Advanced features
+## Advanced usage
 
 ### Pagination
 
-Retrieve large result sets with pagination:
+Retrieve large result sets page by page:
 
 ```typescript
 let page = 1;
 while (true) {
-  const results = await client.jobs.getJobResults(jobId, {
+  const results = await client.jobs.getJobResults({
+    job_id: jobId,
     page: page,
-    pageSize: 100,
+    page_size: 100,
   });
 
-  for (const record of results.allRecords) {
-    console.log(`  - ${record.recordTitle}`);
+  console.log(`Page ${results.page}/${results.total_pages}`);
+
+  for (const record of results.all_records) {
+    console.log(`  ${record.record_title}`);
   }
 
-  if (results.page >= results.totalPages) {
+  if (results.page >= results.total_pages) {
     break;
   }
   page++;
@@ -155,12 +500,12 @@ while (true) {
 
 ### Timeouts
 
-Set custom timeouts at the request level:
+Configure custom timeouts at the request level:
 
 ```typescript
 const response = await client.jobs.createJob(
   {
-    query: "AI company acquisitions"
+    query: "AI company acquisitions",
   },
   {
     timeoutInSeconds: 30,
@@ -170,12 +515,12 @@ const response = await client.jobs.createJob(
 
 ### Retries
 
-Configure retry behavior for failed requests:
+Configure automatic retry behavior for failed requests:
 
 ```typescript
 const response = await client.jobs.createJob(
   {
-    query: "AI company acquisitions"
+    query: "AI company acquisitions",
   },
   {
     maxRetries: 3,
@@ -189,14 +534,17 @@ Cancel requests using an abort signal:
 
 ```typescript
 const controller = new AbortController();
+
 const response = await client.jobs.createJob(
   {
-    query: "AI company acquisitions"
+    query: "AI company acquisitions",
   },
   {
     abortSignal: controller.signal,
   }
 );
+
+// Cancel the request
 controller.abort();
 ```
 
