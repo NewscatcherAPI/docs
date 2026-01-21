@@ -74,7 +74,7 @@ monitor = client.monitors.create_monitor(
     }
 )
 
-print(f"Monitor created: {monitor.monitor_id}")
+monitor_id = monitor.monitor_id
 ```
 
 ```typescript TypeScript
@@ -84,7 +84,7 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 
 // Create a monitor
 const monitor = await client.monitors.createMonitor({
-  referenceJobId: "295b95d8-6041-4f4b-b132-9f009fc6af70",
+  reference_job_id: "295b95d8-6041-4f4b-b132-9f009fc6af70",
   schedule: "every day at 12 PM UTC",
   webhook: {
     url: "https://your-endpoint.com/catchall",
@@ -92,7 +92,7 @@ const monitor = await client.monitors.createMonitor({
   },
 });
 
-console.log(`Monitor created: ${monitor.monitorId}`);
+const monitorId = monitor.monitor_id;
 ```
 
 ```java Java
@@ -116,7 +116,7 @@ var monitor = client.monitors().createMonitor(
         .build()
 );
 
-System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
+String monitorId = monitor.getMonitorId().orElse("N/A");
 ```
 
 </CodeGroup>
@@ -159,7 +159,7 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
 # Update webhook configuration
-response = client.monitors.update_monitor(
+client.monitors.update_monitor(
     monitor_id=monitor_id,
     webhook={
         "url": "https://new-endpoint.com/webhook",
@@ -167,7 +167,6 @@ response = client.monitors.update_monitor(
         "headers": {"Authorization": "Bearer NEW_TOKEN"}
     }
 )
-print(response)
 ```
 ```typescript TypeScript
 import { CatchAllApiClient } from "newscatcher-catchall-sdk";
@@ -176,17 +175,20 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Update webhook configuration
-const response = await client.monitors.updateMonitor(monitorId, {
+await client.monitors.updateMonitor({
+  monitor_id: monitorId,
   webhook: {
     url: "https://new-endpoint.com/webhook",
     method: "POST",
     headers: { Authorization: "Bearer NEW_TOKEN" }
   }
 });
-console.log(response);
 ```
 ```java Java
 import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+import com.newscatcher.catchall.types.WebhookDto;
+import java.util.Map;
 
 CatchAllApi client = CatchAllApi.builder()
     .apiKey("YOUR_API_KEY")
@@ -195,7 +197,7 @@ CatchAllApi client = CatchAllApi.builder()
 String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Update webhook configuration
-var response = client.monitors().updateMonitor(
+client.monitors().updateMonitor(
     monitorId,
     UpdateMonitorRequestDto.builder()
         .webhook(WebhookDto.builder()
@@ -205,12 +207,12 @@ var response = client.monitors().updateMonitor(
             .build())
         .build()
 );
-System.out.println(response);
 ```
 
 </CodeGroup>
 
 Response:
+
 ```json
 {
   "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
@@ -225,7 +227,7 @@ Response:
 
 ## Retrieve results
 
-### List all monitors
+### List monitors
 
 Get all monitors for your API key:
 
@@ -243,11 +245,6 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 
 # List all monitors
 monitors = client.monitors.list_monitors()
-
-print(f"Total monitors: {monitors.total_monitors}")
-for monitor in monitors.monitors:
-    print(f"{monitor.monitor_id}: {monitor.reference_job_query}")
-    print(f"  Enabled: {monitor.enabled}, Schedule: {monitor.schedule}")
 ```
 
 ```typescript TypeScript
@@ -257,12 +254,6 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 
 // List all monitors
 const monitors = await client.monitors.listMonitors();
-
-console.log(`Total monitors: ${monitors.totalMonitors}`);
-monitors.monitors.forEach((monitor) => {
-  console.log(`${monitor.monitorId}: ${monitor.referenceJobQuery}`);
-  console.log(`  Enabled: ${monitor.enabled}, Schedule: ${monitor.schedule}`);
-});
 ```
 
 ```java Java
@@ -275,17 +266,13 @@ CatchAllApi client = CatchAllApi.builder()
 
 // List all monitors
 ListMonitorsResponseDto monitors = client.monitors().listMonitors();
-
-System.out.println("Total monitors: " + monitors.getTotalMonitors());
-monitors.getMonitors().forEach(monitor -> {
-    System.out.println(monitor.getMonitorId() + ": " + monitor.getReferenceJobQuery());
-    System.out.println("  Enabled: " + monitor.getEnabled() + ", Schedule: " + monitor.getSchedule());
-});
 ```
 
 </CodeGroup>
 
-<Expandable title="Response structure">
+Response:
+
+<Expandable title="list monitors response">
 
 ```json
 {
@@ -341,12 +328,6 @@ monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
 # List monitor jobs
 jobs = client.monitors.list_monitor_jobs(monitor_id)
-
-print(f"Total jobs: {jobs.total_jobs}")
-for job in jobs.jobs:
-    print(f"Job {job.job_id}")
-    print(f"  Started: {job.start_date}")
-    print(f"  Ended: {job.end_date}")
 ```
 
 ```typescript TypeScript
@@ -356,13 +337,8 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // List monitor jobs
-const jobs = await client.monitors.listMonitorJobs(monitorId);
-
-console.log(`Total jobs: ${jobs.totalJobs}`);
-jobs.jobs.forEach((job) => {
-  console.log(`Job ${job.jobId}`);
-  console.log(`  Started: ${job.startDate}`);
-  console.log(`  Ended: ${job.endDate}`);
+const jobs = await client.monitors.listMonitorJobs({
+  monitor_id: monitorId
 });
 ```
 
@@ -377,18 +353,13 @@ String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // List monitor jobs
 var jobs = client.monitors().listMonitorJobs(monitorId);
-
-System.out.println("Total jobs: " + jobs.getTotalJobs());
-jobs.getJobs().forEach(job -> {
-    System.out.println("Job " + job.getJobId());
-    System.out.println("  Started: " + job.getStartDate());
-    System.out.println("  Ended: " + job.getEndDate());
-});
 ```
 
 </CodeGroup>
 
-<Expandable title="Response structure">
+Response:
+
+<Expandable title="list monitor jobs response">
 
 ```json
 {
@@ -434,15 +405,6 @@ monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
 # Get aggregated results
 results = client.monitors.pull_monitor_results(monitor_id)
-
-print(f"Monitor: {results.monitor_id}")
-print(f"Schedule: {results.cron_expression} ({results.timezone})")
-print(f"Total records: {results.records}")
-print(f"Date range: {results.run_info}")
-
-for record in results.all_records:
-    print(f"\n{record.record_title}")
-    print(f"  Citations: {len(record.citations)}")
 ```
 
 ```typescript TypeScript
@@ -452,16 +414,8 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Get aggregated results
-const results = await client.monitors.pullMonitorResults(monitorId);
-
-console.log(`Monitor: ${results.monitorId}`);
-console.log(`Schedule: ${results.cronExpression} (${results.timezone})`);
-console.log(`Total records: ${results.records}`);
-console.log(`Run info:`, results.runInfo);
-
-results.allRecords.forEach((record) => {
-  console.log(`\n${record.recordTitle}`);
-  console.log(`  Citations: ${record.citations.length}`);
+const results = await client.monitors.pullMonitorResults({
+  monitor_id: monitorId
 });
 ```
 
@@ -477,21 +431,13 @@ String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Get aggregated results
 PullMonitorResponseDto results = client.monitors().pullMonitorResults(monitorId);
-
-System.out.println("Monitor: " + results.getMonitorId());
-System.out.println("Schedule: " + results.getCronExpression() + " (" + results.getTimezone() + ")");
-System.out.println("Total records: " + results.getRecords());
-System.out.println("Run info: " + results.getRunInfo());
-
-results.getAllRecords().forEach(record -> {
-    System.out.println("\n" + record.getRecordTitle());
-    System.out.println("  Citations: " + record.getCitations().size());
-});
 ```
 
 </CodeGroup>
 
-<Expandable title="Response structure">
+Response:
+
+<Expandable title="pull monitor results response">
 
 ```json
 {
@@ -567,8 +513,7 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
 # Enable monitor
-response = client.monitors.enable_monitor(monitor_id)
-print(response)
+client.monitors.enable_monitor(monitor_id)
 ```
 
 ```typescript TypeScript
@@ -578,8 +523,7 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Enable monitor
-const response = await client.monitors.enableMonitor(monitorId);
-console.log(response);
+await client.monitors.enableMonitor({ monitor_id: monitorId });
 ```
 
 ```java Java
@@ -592,8 +536,7 @@ CatchAllApi client = CatchAllApi.builder()
 String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Enable monitor
-var response = client.monitors().enableMonitor(monitorId);
-System.out.println(response);
+client.monitors().enableMonitor(monitorId);
 ```
 
 </CodeGroup>
@@ -626,8 +569,7 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
 # Disable monitor
-response = client.monitors.disable_monitor(monitor_id)
-print(response)
+client.monitors.disable_monitor(monitor_id)
 ```
 
 ```typescript TypeScript
@@ -637,8 +579,7 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Disable monitor
-const response = await client.monitors.disableMonitor(monitorId);
-console.log(response);
+await client.monitors.disableMonitor({ monitor_id: monitorId });
 ```
 
 ```java Java
@@ -651,8 +592,7 @@ CatchAllApi client = CatchAllApi.builder()
 String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
 
 // Disable monitor
-var response = client.monitors().disableMonitor(monitorId);
-System.out.println(response);
+client.monitors().disableMonitor(monitorId);
 ```
 
 </CodeGroup>
@@ -681,7 +621,7 @@ without recreating the monitor.
 
 ### Webhook payload
 
-<Expandable title="Full payload structure">
+<Expandable title="full payload structure">
 
 When a monitor job completes, your endpoint receives:
 
@@ -742,7 +682,7 @@ When a monitor job completes, your endpoint receives:
 
 ### Authentication
 
-<Expandable title="Authentication examples">
+<Expandable title="authentication examples">
 
 **Bearer token:**
 
