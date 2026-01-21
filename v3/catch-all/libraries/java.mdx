@@ -13,120 +13,550 @@ Java SDK provides access to the CatchAll API from Java applications.
 
 ## Installation
 
-### Gradle
-
-```groovy
-dependencies {
-    implementation 'com.newscatcherapi:newscatcher-catchall-sdk:0.1.0'
-}
-```
-
-### Maven
-
-```xml
-<dependency>
-    <groupId>com.newscatcherapi</groupId>
-    <artifactId>newscatcher-catchall-sdk</artifactId>
-    <version>0.1.0</version>
-</dependency>
-```
-
-## Basic usage
-
-### Jobs
-
-Submit a query and retrieve structured results:
-
-```java
-import com.newscatcher.catchall.CatchAllApi;
-import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
-import com.newscatcher.catchall.types.StatusResponseDto;
-import com.newscatcher.catchall.types.PullJobResponseDto;
-
-public class JobsExample {
-    public static void main(String[] args) throws InterruptedException {
-        CatchAllApi client = CatchAllApi.builder()
-            .apiKey("YOUR_API_KEY")
-            .build();
-
-        // Create a job
-        var job = client.jobs().createJob(
-            SubmitRequestDto.builder()
-                .query("AI company acquisitions")
-                .context("Focus on deal size and acquiring company details")
-                .build()
-        );
-        System.out.println("Job created: " + job.getJobId());
-
-        // Poll for completion
-        String jobId = job.getJobId();
-        while (true) {
-            StatusResponseDto status = client.jobs().getJobStatus(jobId);
-
-            if ("job_completed".equals(status.getStatus())) {
-                System.out.println("Job completed!");
-                break;
-            }
-
-            Thread.sleep(60000); // Wait 60 seconds
-        }
-
-        // Retrieve results
-        PullJobResponseDto results = client.jobs().getJobResults(jobId);
-        System.out.println(String.format(
-            "Found %d valid records",
-            results.getValidRecords()
-        ));
-
-        results.getAllRecords().forEach(record ->
-            System.out.println(record.getRecordTitle())
-        );
+<Tabs>
+  <Tab title="Gradle">
+    ```groovy
+    dependencies {
+        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:0.3.1'
     }
-}
-```
+    ```
+  </Tab>
+  
+  <Tab title="Maven">
+    ```xml
+    <dependency>
+        <groupId>com.newscatcherapi</groupId>
+        <artifactId>newscatcher-catchall-sdk</artifactId>
+        <version>0.3.1</version>
+    </dependency>
+    ```
+  </Tab>
+</Tabs>
+
+## Quickstart
+
+Get started with CatchAll in three steps:
+
+<Steps>
+  <Step title="Initialize the client">
+    ```java
+    import com.newscatcher.catchall.CatchAllApi;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+    ```
+  </Step>
+  
+  <Step title="Create a job">
+    ```java
+    import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+
+    var job = client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("AI company acquisitions")
+            .limit(10)
+            .build()
+    );
+    String jobId = job.getJobId();
+    ```
+  </Step>
+  
+  <Step title="Wait and retrieve results">
+    ```java
+    import com.newscatcher.catchall.types.StatusResponseDto;
+    import com.newscatcher.catchall.types.JobStatus;
+
+    final int POLL_INTERVAL_MS = 60000;
+
+    // Poll for completion
+    while (true) {
+        StatusResponseDto status = client.jobs().getJobStatus(jobId);
+        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+            break;
+        }
+        Thread.sleep(POLL_INTERVAL_MS);
+    }
+
+    // Get results
+    var results = client.jobs().getJobResults(jobId);
+    System.out.println("Found " + results.getValidRecords().orElse(0) + " valid records");
+    ```
+  </Step>
+</Steps>
 
 <Note>
   Jobs process asynchronously and typically complete in 10-15 minutes. See the
   [Quickstart](/v3/catch-all/overview/quickstart) for a complete walkthrough.
 </Note>
 
-### Monitors
+## Working with jobs
 
-Automate recurring queries with scheduled execution:
+<Tabs>
+  <Tab title="Create and track">
+    Submit a query and track its progress:
 
+    ```java
+    import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+    import com.newscatcher.catchall.types.StatusResponseDto;
+    import com.newscatcher.catchall.types.JobStatus;
+
+    final int POLL_INTERVAL_MS = 60000;
+
+    // Create job
+    var job = client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("AI company acquisitions")
+            .context("Focus on deal size and acquiring company details")
+            .limit(10)
+            .build()
+    );
+    System.out.println("Job created: " + job.getJobId());
+
+    // Monitor progress
+    String jobId = job.getJobId();
+    while (true) {
+        StatusResponseDto status = client.jobs().getJobStatus(jobId);
+
+        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+            break;
+        }
+
+        status.getSteps().stream()
+            .filter(step -> !step.getCompleted().orElse(false))
+            .findFirst()
+            .ifPresent(step -> System.out.println(String.format(
+                "Step %d/7: %s",
+                step.getOrder(),
+                step.getStatus()
+            )));
+
+        Thread.sleep(POLL_INTERVAL_MS);
+    }
+
+    // Retrieve results
+    var results = client.jobs().getJobResults(jobId);
+    System.out.println("\nFound " + results.getValidRecords().orElse(0) + " valid records");
+    results.getAllRecords().ifPresent(records ->
+        records.forEach(record -> System.out.println("  " + record.getRecordTitle()))
+    );
+    ```
+  </Tab>
+
+  <Tab title="Continue jobs">
+    Extend processing limits for completed jobs:
+
+    ```java
+    import com.newscatcher.catchall.resources.jobs.requests.ContinueRequestDto;
+    import com.newscatcher.catchall.types.ContinueResponseDto;
+
+    final int POLL_INTERVAL_MS = 60000;
+
+    // Continue job to process more records
+    ContinueResponseDto continued = client.jobs().continueJob(
+        ContinueRequestDto.builder()
+            .jobId(jobId)
+            .newLimit(50)
+            .build()
+    );
+    System.out.println(String.format(
+        "Continued: %s -> %s records",
+        continued.getPreviousLimit(),
+        continued.getNewLimit()
+    ));
+
+    // Wait for completion
+    while (true) {
+        StatusResponseDto status = client.jobs().getJobStatus(jobId);
+        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+            break;
+        }
+        Thread.sleep(POLL_INTERVAL_MS);
+    }
+
+    // Get final results
+    var finalResults = client.jobs().getJobResults(jobId);
+    System.out.println("Total: " + finalResults.getValidRecords().orElse(0) + " valid records");
+    ```
+
+    <Tip>
+      Use `limit` parameter when creating jobs to start with fewer records for quick testing.
+      Continue the job if you need more records after reviewing initial results.
+    </Tip>
+  </Tab>
+
+  <Tab title="Early results">
+    Retrieve partial results during the enriching stage:
+
+    ```java
+    import com.newscatcher.catchall.types.PullJobResponseDto;
+
+    final int POLL_INTERVAL_MS = 60000;
+
+    while (true) {
+        StatusResponseDto status = client.jobs().getJobStatus(jobId);
+
+        if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
+            JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+            
+            PullJobResponseDto results = client.jobs().getJobResults(jobId);
+            
+            if (results.getValidRecords().orElse(0) > 0) {
+                System.out.println(String.format(
+                    "Progress: %d/%d validated, %d valid",
+                    results.getProgressValidated().orElse(0),
+                    results.getCandidateRecords().orElse(0),
+                    results.getValidRecords().orElse(0)
+                ));
+            }
+
+            if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                break;
+            }
+        }
+
+        Thread.sleep(POLL_INTERVAL_MS);
+    }
+    ```
+  </Tab>
+
+  <Tab title="List jobs">
+    Retrieve all jobs created by your account:
+
+    ```java
+    import com.newscatcher.catchall.types.ListUserJobsResponseDto;
+    import java.util.List;
+
+    List<ListUserJobsResponseDto> jobs = client.jobs().getUserJobs();
+
+    jobs.forEach(job -> {
+        System.out.println(String.format(
+            "Job %s: %s (%s)",
+            job.getJobId(),
+            job.getQuery(),
+            job.getStatus()
+        ));
+    });
+    ```
+  </Tab>
+</Tabs>
+
+<Accordion title="Complete example with all features">
 ```java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+import com.newscatcher.catchall.resources.jobs.requests.ContinueRequestDto;
+import com.newscatcher.catchall.types.StatusResponseDto;
+import com.newscatcher.catchall.types.PullJobResponseDto;
+import com.newscatcher.catchall.types.JobStatus;
+import com.newscatcher.catchall.core.NewscatcherApiApiException;
+
+public class CompleteExample {
+    public static void main(String[] args) {
+        final int POLL_INTERVAL_MS = 60000;
+
+        CatchAllApi client = CatchAllApi.builder()
+            .apiKey("YOUR_API_KEY")
+            .timeout(30)
+            .maxRetries(3)
+            .build();
+
+        try {
+            // Create job
+            var job = client.jobs().createJob(
+                SubmitRequestDto.builder()
+                    .query("AI company acquisitions")
+                    .context("Focus on deal size and acquiring company details")
+                    .limit(10)
+                    .build()
+            );
+            String jobId = job.getJobId();
+            System.out.println("Job created: " + jobId);
+
+            // Poll with early results access
+            while (true) {
+                StatusResponseDto status = client.jobs().getJobStatus(jobId);
+
+                if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
+                    JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                    
+                    PullJobResponseDto results = client.jobs().getJobResults(jobId);
+                    if (results.getValidRecords().orElse(0) > 0) {
+                        System.out.println(String.format(
+                            "Progress: %d valid records",
+                            results.getValidRecords().orElse(0)
+                        ));
+                    }
+
+                    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                        break;
+                    }
+                }
+
+                Thread.sleep(POLL_INTERVAL_MS);
+            }
+
+            // Continue if needed
+            PullJobResponseDto results = client.jobs().getJobResults(jobId);
+            if (results.getValidRecords().orElse(0) >= 10) {
+                client.jobs().continueJob(
+                    ContinueRequestDto.builder()
+                        .jobId(jobId)
+                        .newLimit(50)
+                        .build()
+                );
+
+                while (true) {
+                    StatusResponseDto status = client.jobs().getJobStatus(jobId);
+                    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                        break;
+                    }
+                    Thread.sleep(POLL_INTERVAL_MS);
+                }
+
+                results = client.jobs().getJobResults(jobId);
+            }
+
+            // Display results
+            System.out.println("\nFinal: " + results.getValidRecords().orElse(0) + " valid records");
+            results.getAllRecords().ifPresent(records ->
+                records.forEach(record -> System.out.println("  " + record.getRecordTitle()))
+            );
+
+        } catch (NewscatcherApiApiException e) {
+            System.err.println("Status: " + e.statusCode());
+            System.err.println("Error: " + e.body());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Operation interrupted");
+        }
+    }
+}
+```
+</Accordion>
+
+## Working with monitors
+
+Automate recurring queries with scheduled execution.
+
+<Tabs>
+  <Tab title="Create monitor">
+    Create a monitor from a completed job:
+
+    ```java
+    import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+    import com.newscatcher.catchall.types.CreateMonitorResponseDto;
+    import com.newscatcher.catchall.types.WebhookDto;
+    import com.newscatcher.catchall.types.WebhookDtoMethod;
+    import java.util.Map;
+
+    CreateMonitorResponseDto monitor = client.monitors().createMonitor(
+        CreateMonitorRequestDto.builder()
+            .referenceJobId(jobId)
+            .schedule("every day at 12 PM UTC")
+            .webhook(WebhookDto.builder()
+                .url("https://your-endpoint.com/webhook")
+                .method(WebhookDtoMethod.POST)
+                .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
+                .build())
+            .build()
+    );
+    System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
+    ```
+
+    <Note>
+      Monitors require a minimum 24-hour interval between executions. Learn more in the
+      [Monitors documentation](/v3/catch-all/overview/monitors).
+    </Note>
+  </Tab>
+
+  <Tab title="Update monitor">
+    Update webhook configuration for an existing monitor:
+
+    ```java
+    import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+    import com.newscatcher.catchall.types.UpdateMonitorResponseDto;
+
+    String monitorId = monitor.getMonitorId().orElseThrow();
+
+    UpdateMonitorResponseDto updated = client.monitors().updateMonitor(
+        monitorId,
+        UpdateMonitorRequestDto.builder()
+            .webhook(WebhookDto.builder()
+                .url("https://new-endpoint.com/webhook")
+                .method(WebhookDtoMethod.POST)
+                .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
+                .build())
+            .build()
+    );
+    System.out.println("Monitor updated: " + updated.getStatus());
+    ```
+  </Tab>
+
+  <Tab title="Pause/Resume">
+    Control monitor execution:
+
+    ```java
+    String monitorId = monitor.getMonitorId().orElseThrow();
+
+    // Pause monitor
+    client.monitors().disableMonitor(monitorId);
+    System.out.println("Monitor paused");
+
+    // Resume monitor
+    client.monitors().enableMonitor(monitorId);
+    System.out.println("Monitor resumed");
+    ```
+  </Tab>
+
+  <Tab title="List monitors">
+    Retrieve all monitors for your account:
+
+    ```java
+    import com.newscatcher.catchall.types.ListMonitorsResponseDto;
+
+    ListMonitorsResponseDto monitors = client.monitors().listMonitors();
+    
+    System.out.println("Total monitors: " + monitors.getTotalMonitors());
+    monitors.getMonitors().forEach(m -> {
+        String status = m.getEnabled() ? "active" : "paused";
+        System.out.println(String.format("%s: %s", m.getMonitorId(), status));
+    });
+    ```
+  </Tab>
+
+  <Tab title="Retrieve results">
+    Access aggregated results from all monitor executions:
+
+    ```java
+    import com.newscatcher.catchall.resources.monitors.requests.ListMonitorJobsRequest;
+    import com.newscatcher.catchall.resources.monitors.types.ListMonitorJobsResponse;
+    import com.newscatcher.catchall.types.PullMonitorResponseDto;
+
+    String monitorId = monitor.getMonitorId().orElseThrow();
+
+    // List execution history
+    ListMonitorJobsResponse jobs = client.monitors().listMonitorJobs(
+        monitorId,
+        ListMonitorJobsRequest.builder()
+            .sort("desc")
+            .build()
+    );
+    System.out.println("Monitor executed " + jobs.getTotalJobs() + " jobs");
+
+    // Get all collected records
+    PullMonitorResponseDto results = client.monitors().pullMonitorResults(monitorId);
+    System.out.println("Total records: " + results.getRecords().orElse(0));
+
+    results.getAllRecords().ifPresent(records ->
+        records.forEach(record -> {
+            System.out.println("  " + record.getRecordTitle());
+            System.out.println("  Added: " + record.getAddedOn());
+        })
+    );
+    ```
+  </Tab>
+</Tabs>
+
+<Accordion title="Complete monitor example">
+```java
+import com.newscatcher.catchall.CatchAllApi;
 import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+import com.newscatcher.catchall.resources.monitors.requests.ListMonitorJobsRequest;
+import com.newscatcher.catchall.resources.monitors.types.ListMonitorJobsResponse;
+import com.newscatcher.catchall.types.CreateMonitorResponseDto;
+import com.newscatcher.catchall.types.UpdateMonitorResponseDto;
+import com.newscatcher.catchall.types.ListMonitorsResponseDto;
+import com.newscatcher.catchall.types.PullMonitorResponseDto;
 import com.newscatcher.catchall.types.WebhookDto;
+import com.newscatcher.catchall.types.WebhookDtoMethod;
+import com.newscatcher.catchall.core.NewscatcherApiApiException;
 import java.util.Map;
 
-// Create a monitor from a completed job
-var monitor = client.monitors().createMonitor(
-    CreateMonitorRequestDto.builder()
-        .referenceJobId(jobId)
-        .schedule("every day at 12 PM UTC")
-        .webhook(WebhookDto.builder()
-            .url("https://your-endpoint.com/webhook")
-            .method("POST")
-            .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
-            .build())
-        .build()
-);
-System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
+public class MonitorExample {
+    public static void main(String[] args) {
+        CatchAllApi client = CatchAllApi.builder()
+            .apiKey("YOUR_API_KEY")
+            .build();
 
-// Get aggregated results
-monitor.getMonitorId().ifPresent(monitorId -> {
-    var results = client.monitors().pullMonitorResults(monitorId);
-    System.out.println("Collected " + results.getRecords() + " records");
-});
+        try {
+            // Create monitor from completed job
+            String jobId = "af7a26d6-cf0b-458c-a6ed-4b6318c74da3";
+
+            CreateMonitorResponseDto monitor = client.monitors().createMonitor(
+                CreateMonitorRequestDto.builder()
+                    .referenceJobId(jobId)
+                    .schedule("every day at 12 PM UTC")
+                    .webhook(WebhookDto.builder()
+                        .url("https://your-endpoint.com/webhook")
+                        .method(WebhookDtoMethod.POST)
+                        .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
+                        .build())
+                    .build()
+            );
+            String monitorId = monitor.getMonitorId().orElseThrow();
+            System.out.println("Monitor created: " + monitorId);
+
+            // Update webhook
+            client.monitors().updateMonitor(
+                monitorId,
+                UpdateMonitorRequestDto.builder()
+                    .webhook(WebhookDto.builder()
+                        .url("https://new-endpoint.com/webhook")
+                        .method(WebhookDtoMethod.POST)
+                        .build())
+                    .build()
+            );
+
+            // List all monitors
+            ListMonitorsResponseDto allMonitors = client.monitors().listMonitors();
+            allMonitors.getMonitors().forEach(m -> {
+                String status = m.getEnabled() ? "active" : "paused";
+                System.out.println(String.format("%s: %s", m.getMonitorId(), status));
+            });
+
+            // Control execution
+            client.monitors().disableMonitor(monitorId);
+            client.monitors().enableMonitor(monitorId);
+
+            // List execution history
+            ListMonitorJobsResponse jobs = client.monitors().listMonitorJobs(
+                monitorId,
+                ListMonitorJobsRequest.builder().sort("desc").build()
+            );
+            System.out.println("\nMonitor executed " + jobs.getTotalJobs() + " jobs");
+            jobs.getJobs().forEach(job -> {
+                System.out.println(String.format(
+                    "  Job %s: %s to %s",
+                    job.getJobId(),
+                    job.getStartDate(),
+                    job.getEndDate()
+                ));
+            });
+
+            // Get aggregated results
+            PullMonitorResponseDto results = client.monitors().pullMonitorResults(monitorId);
+            System.out.println("\nCollected " + results.getRecords().orElse(0) + " total records");
+            results.getAllRecords().ifPresent(records ->
+                records.forEach(record -> System.out.println("  " + record.getRecordTitle()))
+            );
+
+        } catch (NewscatcherApiApiException e) {
+            System.err.println("Status: " + e.statusCode());
+            System.err.println("Error: " + e.body());
+        }
+    }
+}
 ```
-
-Learn more about monitors in the
-[Monitors documentation](/v3/catch-all/overview/monitors).
+</Accordion>
 
 ## Error handling
 
+Handle API errors with structured exception handling:
+
 ```java
-import com.newscatcher.catchall.core.CatchAllApiApiException;
+import com.newscatcher.catchall.core.NewscatcherApiApiException;
 
 try {
     client.jobs().createJob(
@@ -134,17 +564,17 @@ try {
             .query("AI company acquisitions")
             .build()
     );
-} catch (CatchAllApiApiException e) {
-    System.out.println("Status: " + e.statusCode());
-    System.out.println("Error: " + e.body());
+} catch (NewscatcherApiApiException e) {
+    System.err.println("Status: " + e.statusCode());
+    System.err.println("Error: " + e.body());
 }
 ```
 
-## Advanced features
+## Advanced usage
 
 ### Pagination
 
-Retrieve large result sets with pagination:
+Retrieve large result sets page by page:
 
 ```java
 import com.newscatcher.catchall.resources.jobs.requests.GetJobResultsRequest;
@@ -159,11 +589,15 @@ while (true) {
             .build()
     );
 
-    results.getAllRecords().forEach(record -> {
-        System.out.println("  - " + record.getRecordTitle());
-    });
+    System.out.println("Page " + page + "/" + results.getTotalPages().orElse(1));
 
-    if (results.getPage() >= results.getTotalPages()) {
+    results.getAllRecords().ifPresent(records ->
+        records.forEach(record ->
+            System.out.println("  " + record.getRecordTitle())
+        )
+    );
+
+    if (results.getPage().orElse(0) >= results.getTotalPages().orElse(1)) {
         break;
     }
     page++;
@@ -172,49 +606,61 @@ while (true) {
 
 ### Timeouts
 
-Set custom timeouts at the client or request level:
+Configure custom timeouts at client or request level:
 
-```java
-import com.newscatcher.catchall.core.RequestOptions;
+<Tabs>
+  <Tab title="Client-level">
+    ```java
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .timeout(30)
+        .build();
+    ```
+  </Tab>
+  
+  <Tab title="Request-level">
+    ```java
+    import com.newscatcher.catchall.core.RequestOptions;
 
-// Client-level timeout
-CatchAllApi client = CatchAllApi.builder()
-    .apiKey("YOUR_API_KEY")
-    .timeout(30) // 30 seconds
-    .build();
-
-// Request-level timeout
-client.jobs().createJob(
-    SubmitRequestDto.builder()
-        .query("AI company acquisitions")
-        .build(),
-    RequestOptions.builder()
-        .timeout(10)
-        .build()
-);
-```
+    client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("AI company acquisitions")
+            .build(),
+        RequestOptions.builder()
+            .timeout(10)
+            .build()
+    );
+    ```
+  </Tab>
+</Tabs>
 
 ### Retries
 
-Configure retry behavior for failed requests:
+Configure automatic retry behavior for failed requests:
 
-```java
-// Client-level retries
-CatchAllApi client = CatchAllApi.builder()
-    .apiKey("YOUR_API_KEY")
-    .maxRetries(3)
-    .build();
-
-// Request-level retries
-client.jobs().createJob(
-    SubmitRequestDto.builder()
-        .query("AI company acquisitions")
-        .build(),
-    RequestOptions.builder()
+<Tabs>
+  <Tab title="Client-level">
+    ```java
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
         .maxRetries(3)
-        .build()
-);
-```
+        .build();
+    ```
+  </Tab>
+  
+  <Tab title="Request-level">
+    ```java
+    client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("AI company acquisitions")
+            .build(),
+        RequestOptions.builder()
+            .maxRetries(3)
+            .build()
+    );
+    ```
+  </Tab>
+</Tabs>
 
 ## Resources
 
