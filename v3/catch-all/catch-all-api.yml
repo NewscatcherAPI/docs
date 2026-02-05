@@ -732,6 +732,91 @@ components:
         When provided, the system generates a `schema_based_summary` field for each record following this template.
       example: "[ACQUIRER] acquired [TARGET] for [AMOUNT]"
 
+    StartDate:
+      type: string
+      format: date-time
+      description: |
+        Start of date range for article search (ISO 8601 format with UTC timezone).
+
+        Must be within plan's allowed lookback period. Default is 5 days before current date if not specified.
+      example: "2026-01-30T00:00:00Z"
+
+    EndDate:
+      type: string
+      format: date-time
+      description: |
+        End of date range for article search (ISO 8601 format with UTC timezone).
+
+        Must be within plan's allowed lookback period and after start_date. Default is current date if not specified.
+      example: "2026-02-05T00:00:00Z"
+
+    ValidatorSchema:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          description: Validator field name (snake_case recommended).
+          example: "is_acquisition_event"
+        description:
+          type: string
+          description: What this validator checks for in the article.
+          example: "true if article describes a merger or acquisition event"
+        type:
+          type: string
+          enum: ["boolean"]
+          default: "boolean"
+          description: Validator type (currently only boolean supported).
+      description: |
+        Schema for a single validator that filters article clusters.
+
+        Validators are applied during the enriching stage to determine which clusters are relevant.
+
+    EnrichmentType:
+      type: string
+      enum:
+        - text
+        - number
+        - date
+        - option
+        - url
+        - dict
+        - company
+      description: |
+        Canonical enrichment types supported by the system.
+
+        - `text`: Free-form text strings (names, descriptions, summaries)
+        - `number`: Numeric values (amounts, counts, percentages)
+        - `date`: ISO format dates (YYYY-MM-DD)
+        - `option`: Enum-like fixed values (status, category)
+        - `url`: Web URLs
+        - `dict`: Complex structured objects
+        - `company`: Structured company data (name, alternative_names, website_candidates, people, address)
+
+    EnrichmentSchema:
+      type: object
+      required:
+        - name
+        - description
+        - type
+      properties:
+        name:
+          type: string
+          description: Enrichment field name (snake_case recommended).
+          example: "acquiring_company"
+        description:
+          type: string
+          description: What information this field extracts.
+          example: "Extract the acquiring company name"
+        type:
+          $ref: "#/components/schemas/EnrichmentType"
+      description: |
+        Schema for a single enrichment field that extracts structured data.
+
+        Enrichments are applied during the enriching stage to extract information from validated clusters.
+
     SubmitRequestDTO:
       type: object
       required:
