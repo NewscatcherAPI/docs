@@ -523,6 +523,39 @@ components:
         Number of records per page.
 
   responses:
+    InitializeResponse:
+      description: Suggestions retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/InitializeResponseDTO"
+          example:
+            validators:
+              - name: "is_acquisition_event"
+                description:
+                  "true if article describes a merger or acquisition event"
+                type: "boolean"
+              - name: "involves_fintech"
+                description:
+                  "true if the companies involved are in the fintech sector"
+                type: "boolean"
+            enrichments:
+              - name: "acquiring_company"
+                description: "Extract the acquiring company name"
+                type: "company"
+              - name: "acquired_company"
+                description: "Extract the acquired company name"
+                type: "text"
+              - name: "deal_value"
+                description: "Extract the deal value if mentioned"
+                type: "number"
+              - name: "announcement_date"
+                description: "Extract the announcement date"
+                type: "date"
+            start_date: "2026-01-29T00:00:00Z"
+            end_date: "2026-02-05T00:00:00Z"
+            date_modification_message: []
+
     SubmitResponse:
       description: Job created successfully
       content:
@@ -577,7 +610,7 @@ components:
                 completed: false
 
     ListUserJobsResponse:
-      description: List of user jobs
+      description: User jobs retrieved successfully
       content:
         application/json:
           schema:
@@ -675,15 +708,27 @@ components:
                 example: "0.3.8"
 
     BadRequestError:
-      description:
-        Bad request - job not found, not completed, or new limit invalid
+      description: |
+        Bad request - invalid parameters or constraint violations.
+
+        Common causes: date ranges outside plan limits, invalid job state for continuation.
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-          example:
-            detail:
-              "New limit must be greater than the previous limit for this job."
+          examples:
+            date_validation:
+              summary: Date outside plan limit
+              value:
+                detail:
+                  "start_date must be >= 2025-02-05, your plan limited to
+                  lookback 365 days."
+            invalid_continuation:
+              summary: Invalid job continuation
+              value:
+                detail:
+                  "New limit must be greater than the previous limit for this
+                  job."
 
     ForbiddenError:
       description: Invalid or missing API key
