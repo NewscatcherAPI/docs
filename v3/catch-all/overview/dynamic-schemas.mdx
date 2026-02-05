@@ -4,19 +4,17 @@ sidebarTitle: Dynamic schemas
 description: Build integrations that handle variable field names and structures.
 ---
 
-CatchAll generates response schemas dynamically—field names change between jobs,
-even with identical inputs. This guide shows how to build integrations that
-handle this variability.
+By default, CatchAll generates response schemas dynamically—field names can change 
+between jobs, even with identical inputs. This guide shows how to build integrations 
+that handle this variability and how to define custom enrichments to ensure 
+consistent field names.
 
-<Warning>
-**Only 3 fields are guaranteed:**
-- `record_id`
-- `record_title`
-- `citations` array
+## Guaranteed vs variable fields
 
-All other fields in `enrichment` vary between jobs.
+Every response includes `record_id`, `record_title`, and `citations`.
 
-</Warning>
+Field names in `enrichment` are variable with automatic generation, or consistent 
+when you define custom enrichments.
 
 ## Why schemas vary
 
@@ -57,6 +55,171 @@ Submit the same query twice, get different field names:
 - Field names are chosen semantically to match content
 
 **This is expected behavior, not a bug.**
+
+## Get enrichment suggestions
+
+Use the initialize endpoint to see suggested enrichments for your query:
+
+<CodeGroup>
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+suggestions = client.jobs.initialize_job(
+    query="Executive departures at Fortune 500 technology companies",
+    context="Include executive name, position, company name, departure date"
+)
+
+print(suggestions.enrichments)
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const suggestions = await client.jobs.initialize({
+  query: "Executive departures at Fortune 500 technology companies",
+  context: "Include executive name, position, company name, departure date"
+});
+
+console.log(suggestions.enrichments);
+```
+
+</CodeGroup>
+
+Suggested enrichments:
+```json
+{
+  "enrichments": [
+    {
+      "name": "executive_name",
+      "description": "Extract the name of the departing executive",
+      "type": "text"
+    },
+    {
+      "name": "executive_position",
+      "description": "Extract the position or title of the departing executive",
+      "type": "text"
+    },
+    {
+      "name": "subject_company",
+      "description": "Extract the name of the company from which the executive is departing",
+      "type": "company"
+    },
+    {
+      "name": "departure_date",
+      "description": "Extract the date of the executive's departure",
+      "type": "date"
+    },
+    {
+      "name": "departure_reason",
+      "description": "Extract the stated reason for the executive's departure if available",
+      "type": "text"
+    }
+  ]
+}
+```
+
+These suggestions help you understand possible enrichments before submitting. 
+You can use them as-is, modify them, add more, or ignore them and let the system 
+generate fresh enrichments when you submit the job.
+
+## Define custom enrichments
+
+Submit enrichments in your request for consistent field names:
+
+<CodeGroup>
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+# Use suggested enrichments (modified: removed departure_reason, kept 4 fields)
+job = client.jobs.create_job(
+    query="Executive departures at Fortune 500 technology companies",
+    context="Include executive name, position, company name, departure date",
+    enrichments=[
+        {
+            "name": "executive_name",
+            "description": "Extract the name of the departing executive",
+            "type": "text"
+        },
+        {
+            "name": "executive_position",
+            "description": "Extract the position or title of the departing executive",
+            "type": "text"
+        },
+        {
+            "name": "subject_company",
+            "description": "Extract the name of the company from which the executive is departing",
+            "type": "company"
+        },
+        {
+            "name": "departure_date",
+            "description": "Extract the date of the executive's departure",
+            "type": "date"
+        }
+    ]
+)
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+// Use suggested enrichments (modified: removed departure_reason, kept 4 fields)
+const job = await client.jobs.createJob({
+  query: "Executive departures at Fortune 500 technology companies",
+  context: "Include executive name, position, company name, departure date",
+  enrichments: [
+    {
+      name: "executive_name",
+      description: "Extract the name of the departing executive",
+      type: "text"
+    },
+    {
+      name: "executive_position",
+      description: "Extract the position or title of the departing executive",
+      type: "text"
+    },
+    {
+      name: "subject_company",
+      description: "Extract the name of the company from which the executive is departing",
+      type: "company"
+    },
+    {
+      name: "departure_date",
+      description: "Extract the date of the executive's departure",
+      type: "date"
+    }
+  ]
+});
+```
+
+</CodeGroup>
+
+Every job returns the same field names:
+```json
+{
+  "record_id": "12345",
+  "record_title": "John Smith Departs Apple as CFO",
+  "enrichment": {
+    "executive_name": "John Smith",
+    "executive_position": "Chief Financial Officer",
+    "subject_company": {
+      "name": "Apple Inc.",
+      "alternative_names": ["Apple"],
+      "website_candidates": ["apple.com"],
+      "people": ["Tim Cook (CEO)"],
+      "address": "Cupertino, California, USA"
+    },
+    "departure_date": "2026-01-15"
+  }
+}
+```
+
+See [Create job endpoint](/v3/catch-all/endpoints/create-job) for all enrichment types.
 
 ## Integration strategies
 
@@ -481,25 +644,8 @@ testSchemaVariations();
 - Handles missing fields gracefully
 - Works with both empty and populated enrichment objects
 
-## Using schema parameter
-
-The `schema` parameter can influence field naming but doesn't guarantee specific
-names:
-
-```json
-{
-  "query": "Tech earnings",
-  "schema": "[COMPANY] earned [REVENUE] in [QUARTER]"
-}
-```
-
-**What you get:**
-
-- `schema_based_summary` field is added to enrichment
-- Field names may align with placeholders (`company`, `revenue`, `quarter`)
-- Specific field names are **not guaranteed**
-
 ## See also
 
-- [API reference](/v3/catch-all/endpoints/create-job)
+- [Initialize endpoint](/v3/catch-all/endpoints/initialize-job)
+- [Create job endpoint](/v3/catch-all/endpoints/create-job)
 - [Monitors](/v3/catch-all/overview/monitors)
