@@ -493,7 +493,7 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the `/catchAll/submit` endpoint.
+        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/create-job) endpoint.
       schema:
         type: string
         format: uuid
@@ -782,7 +782,7 @@ components:
       description: |
         Maximum number of records to return. If not specified, defaults to your plan limit.
 
-        Use [`Continue job`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
+        Use [`POST /catchAll/continue`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
       example: 10
 
     StartDate:
