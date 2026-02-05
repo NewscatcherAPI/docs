@@ -63,7 +63,7 @@ paths:
     post:
       tags:
         - Jobs
-      summary: Get suggestions
+      summary: Initialize job
       description: |
         Get suggested validators, enrichments, and date ranges for a query before submitting a job.
 
