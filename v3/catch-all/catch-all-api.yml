@@ -732,6 +732,14 @@ components:
         When provided, the system generates a `schema_based_summary` field for each record following this template.
       example: "[ACQUIRER] acquired [TARGET] for [AMOUNT]"
 
+    Limit:
+      type: integer
+      description: |
+        Maximum number of records to return. If not specified, defaults to your plan limit.
+
+        Use [`Continue job`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
+      example: 10
+
     StartDate:
       type: string
       format: date-time
@@ -817,6 +825,60 @@ components:
 
         Enrichments are applied during the enriching stage to extract information from validated clusters.
 
+    InitializeRequestDTO:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          $ref: "#/components/schemas/Query"
+        context:
+          $ref: "#/components/schemas/Context"
+      description:
+        Request to get validator, enrichment, and date range suggestions for a
+        query.
+
+    InitializeResponseDTO:
+      type: object
+      required:
+        - validators
+        - enrichments
+        - start_date
+        - end_date
+      properties:
+        validators:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidatorSchema"
+          description: Suggested validators for filtering relevant articles.
+          minItems: 0
+        enrichments:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnrichmentSchema"
+          description: Suggested enrichment fields for data extraction.
+          minItems: 0
+        start_date:
+          $ref: "#/components/schemas/StartDate"
+        end_date:
+          $ref: "#/components/schemas/EndDate"
+        date_modification_message:
+          type: array
+          items:
+            type: string
+          description: |
+            Messages explaining date adjustments due to plan limits.
+
+            Empty array if no modifications were needed. Contains human-readable messages when requested dates exceed plan's allowed lookback period.
+          default: []
+          example:
+            - "start_date must be >= 2025-01-23, your plan limited to lookback
+              365 days; we modified start_date to 2025-01-23."
+      description: |
+        Suggestions for validators, enrichments, and date ranges based on query analysis.
+
+        Date ranges are validated against plan limits and adjusted if necessary.
+
     SubmitRequestDTO:
       type: object
       required:
@@ -829,12 +891,27 @@ components:
         context:
           $ref: "#/components/schemas/Context"
         limit:
-          type: integer
+          $ref: "#/components/schemas/Limit"
+        start_date:
+          $ref: "#/components/schemas/StartDate"
+        end_date:
+          $ref: "#/components/schemas/EndDate"
+        validators:
+          type: array
+          items:
+            $ref: "#/components/schemas/ValidatorSchema"
           description: |
-            Maximum number of records to return. If not specified, defaults to your plan limit.
+            Custom validators for filtering article clusters.
 
-            Use [`Continue job`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
-          example: 10
+            If not provided, validators are generated automatically based on the query.
+        enrichments:
+          type: array
+          items:
+            $ref: "#/components/schemas/EnrichmentSchema"
+          description: |
+            Custom enrichment fields for data extraction.
+
+            If not provided, enrichments are generated automatically based on the query.
 
     SubmitResponseBody:
       type: object
@@ -961,6 +1038,37 @@ components:
     ListUserJobsResponseDto:
       type: object
       required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - jobs
+      properties:
+        total:
+          type: integer
+          description: Total number of jobs for this user.
+          example: 47
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of jobs per page.
+          example: 10
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 5
+        jobs:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserJob"
+          description: Array of user jobs on this page.
+
+    UserJob:
+      type: object
+      required:
         - job_id
         - query
         - created_at
@@ -970,14 +1078,16 @@ components:
           type: string
           format: uuid
           description: Job identifier.
+          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         query:
           type: string
-          description: The natural language query for this job.
+          description: Natural language query for this job.
+          example: "AI company acquisitions"
         created_at:
           type: string
           format: date-time
           description: Job creation timestamp in ISO 8601 format.
-          example: "2025-12-16T11:15:38.127536"
+          example: "2026-02-01T14:30:00Z"
         status:
           type: string
           description: Current processing status of the job.
