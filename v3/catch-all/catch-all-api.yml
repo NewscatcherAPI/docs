@@ -181,9 +181,17 @@ paths:
       summary: List user jobs
       description: Returns all jobs created by the authenticated user.
       operationId: getUserJobs
+      externalDocs:
+        description: Learn about job management
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/list-user-jobs
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
 
   /catchAll/pull/{job_id}:
     get:
