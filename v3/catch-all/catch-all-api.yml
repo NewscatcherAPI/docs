@@ -59,6 +59,35 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  /catchAll/initialize:
+    post:
+      tags:
+        - Jobs
+      summary: Get suggestions
+      description: |
+        Get suggested validators, enrichments, and date ranges for a query before submitting a job.
+
+        Returns LLM-generated suggestions based on query analysis and validates against plan limits.
+      operationId: initialize
+      externalDocs:
+        description: Learn about validator and enrichment suggestions
+        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/initialize
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InitializeRequestDTO"
+            example:
+              query: "AI company acquisitions in fintech last week"
+      responses:
+        "200":
+          $ref: "#/components/responses/InitializeResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /catchAll/submit:
     post:
       tags:
