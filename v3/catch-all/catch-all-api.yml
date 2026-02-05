@@ -1,9 +1,9 @@
 openapi: 3.1.0
 info:
-  title: NewsCatcher CatchAll API - Beta
-  version: 0.6.1
+  title: NewsCatcher CatchAll API
+  version: 1.0.0
   description: |
-    CatchAll is a web search API that generates unique datasets that don’t exist anywhere else on the web. Built on NewsCatcher’s proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
+    CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
     ### Authentication
 
@@ -11,9 +11,10 @@ info:
 
     ### Basic Workflow
 
-    1. Submit query via /catchAll/submit
-    2. Poll /catchAll/status/{job_id} until completed (10-15 minutes)
-    3. Retrieve results via /catchAll/pull/{job_id}
+    1. (Optional) Get suggestions via /catchAll/initialize
+    2. Submit query via /catchAll/submit with optional date ranges and custom validators/enrichments
+    3. Poll /catchAll/status/{job_id} until completed (10-15 minutes)
+    4. Retrieve results via /catchAll/pull/{job_id}
 
     ### Monitor workflow
 
@@ -904,7 +905,8 @@ components:
           example: 15m
         candidate_records:
           type: integer
-          description: Number of distinct event clusters identified before validation.
+          description:
+            Number of distinct event clusters identified before validation.
           example: 3200
         valid_records:
           type: integer
