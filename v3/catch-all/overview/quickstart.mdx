@@ -62,12 +62,15 @@ Before you begin, make sure you meet these prerequisites:
 
     <CodeGroup>
     ```bash curl
-    curl -X POST https://catchall.newscatcherapi.com/catchAll/submit \
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
       -H "x-api-key: YOUR_API_KEY_HERE" \
       -H "Content-Type: application/json" \
       -d '{
         "query": "AI company acquisitions",
-        "context": "Focus on deal size and acquiring company details"
+        "context": "Focus on deal size and acquiring company details",
+        "start_date": "2025-12-03T19:00:40Z",
+        "end_date": "2025-12-08T19:00:40Z",
+        "limit": 10
       }'
     ```
 
@@ -75,6 +78,9 @@ Before you begin, make sure you meet these prerequisites:
     {
       "query": "AI company acquisitions",
       "context": "Focus on deal size and acquiring company details",
+      "start_date": "2025-12-03T19:00:40Z",
+      "end_date": "2025-12-08T19:00:40Z",
+      "limit": 10
     }
     ```
 
@@ -87,7 +93,10 @@ Before you begin, make sure you meet these prerequisites:
     # Create a job
     job = client.jobs.create_job(
         query="AI company acquisitions",
-        context="Focus on deal size and acquiring company details"
+        context="Focus on deal size and acquiring company details",
+        start_date="2025-12-03T19:00:40Z",
+        end_date="2025-12-08T19:00:40Z",
+        limit=10
     )
 
     job_id = job.job_id
@@ -103,6 +112,9 @@ Before you begin, make sure you meet these prerequisites:
     const job = await client.jobs.createJob({
       query: "AI company acquisitions",
       context: "Focus on deal size and acquiring company details"
+      start_date: "2025-12-03T19:00:40Z",
+      end_date: "2025-12-08T19:00:40Z",
+      limit: 10
     });
 
     const jobId = job.job_id;
@@ -122,6 +134,9 @@ Before you begin, make sure you meet these prerequisites:
         SubmitRequestDto.builder()
             .query("AI company acquisitions")
             .context("Focus on deal size and acquiring company details")
+            .startDate("2025-12-03T19:00:40Z")
+            .endDate("2025-12-08T19:00:40Z")
+            .limit(10)
             .build()
     );
 
@@ -130,13 +145,15 @@ Before you begin, make sure you meet these prerequisites:
     </CodeGroup>
 
     <Note>
-      Replace `YOUR_API_KEY_HERE` with your actual API key.
+      Replace `YOUR_API_KEY_HERE` with your actual API key. Only `query` is 
+      required - all other parameters are optional. For details, see 
+      [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job).
     </Note>
 
     <Tip>
-      Add `limit=10` to process fewer records for faster testing. Continue 
-      processing more with [`/catchAll/continue`](/v3/catch-all/endpoints/continue-job) 
-      without restarting.
+      Use `limit=10` for faster testing, then continue processing more with 
+      [`POST /catchAll/continue`](/v3/catch-all/endpoints/continue-job) without 
+      restarting.
     </Tip>
 
     You receive a response with a job ID:
@@ -399,9 +416,10 @@ Before you begin, make sure you meet these prerequisites:
 </Steps>
 
 <Warning>
-  The field names in the `enrichment` object are LLM-generated and may vary even
-  for the same inputs. The example above shows one possible structure for
-  earnings queries.
+  Field names in the `enrichment` object are LLM-generated and vary between jobs, 
+  even with identical queries. The example shows one possible structure for 
+  acquisition queries. Use [`POST /catchAll/initialize`](/v3/catch-all/endpoints/initialize-job) 
+  to preview suggested fields, or define custom enrichments for consistent schemas.
 </Warning>
 
 ## What's next
