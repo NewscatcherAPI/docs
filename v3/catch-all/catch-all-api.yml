@@ -93,8 +93,11 @@ paths:
       tags:
         - Jobs
       summary: Create job
-      description:
+      description: |
         Submit a natural language query to create a new processing job.
+
+        Optionally specify context, date ranges, limit, custom validators, and enrichments. 
+        If dates exceed plan limits, returns 400 error.
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
@@ -108,9 +111,14 @@ paths:
             example:
               query: "AI company acquisitions"
               context: "Focus on deal size and acquiring company details"
+              start_date: "2026-01-30T00:00:00Z"
+              end_date: "2026-02-05T00:00:00Z"
+              limit: 10
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -732,7 +740,7 @@ components:
           description: |
             Maximum number of records to return. If not specified, defaults to your plan limit.
 
-            Use /catchAll/continue to extend the limit after job completion without reprocessing.
+            Use [`Continue job`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
           example: 10
 
     SubmitResponseBody:
