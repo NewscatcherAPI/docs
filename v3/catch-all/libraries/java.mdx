@@ -4,11 +4,6 @@ sidebarTitle: Java
 description: Java client library for CatchAll API
 ---
 
-<Note>
-  CatchAll API is currently in beta. Breaking changes may occur in minor version
-  updates. See the [Changelog](/v3/catch-all/overview/changelog) for updates.
-</Note>
-
 Java SDK provides access to the CatchAll API from Java applications.
 
 ## Installation
@@ -93,6 +88,87 @@ Get started with CatchAll in three steps:
 ## Working with jobs
 
 <Tabs>
+  <Tab title="Get suggestions">
+    Preview suggested validators, enrichments, and date ranges before creating a job:
+
+    ```java
+    import com.newscatcher.catchall.CatchAllApiClient;
+    import com.newscatcher.catchall.resources.jobs.requests.InitializeRequestDto;
+    import com.newscatcher.catchall.types.InitializeResponseDto;
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import com.fasterxml.jackson.databind.SerializationFeature;
+
+    CatchAllApiClient client = CatchAllApiClient.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    InitializeResponseDto suggestions = client.jobs().initialize(
+        InitializeRequestDto.builder()
+            .query("AI company acquisitions")
+            .context("Focus on deal size and acquiring company details")
+            .build()
+    );
+
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    System.out.println(mapper.writeValueAsString(suggestions));
+    ```
+    
+    <Expandable title="suggestions response">
+      ```json
+      {
+        "validators": [
+          {
+            "name": "is_acquisition_event",
+            "description": "true if article describes a completed or announced acquisition",
+            "type": "boolean"
+          },
+          {
+            "name": "involves_ai_company",
+            "description": "true if acquiring or acquired company is in AI sector",
+            "type": "boolean"
+          }
+        ],
+        "enrichments": [
+          {
+            "name": "acquirer_company",
+            "description": "Extract the acquiring company name",
+            "type": "company"
+          },
+          {
+            "name": "acquired_company",
+            "description": "Extract the acquired company name",
+            "type": "company"
+          },
+          {
+            "name": "deal_value",
+            "description": "Extract acquisition price if mentioned",
+            "type": "number"
+          },
+          {
+            "name": "announcement_date",
+            "description": "Extract date of announcement",
+            "type": "date"
+          },
+          {
+            "name": "acquirer_details",
+            "description": "Extract details about the acquiring company",
+            "type": "text"
+          }
+        ],
+        "start_date": "2026-02-01T14:12:57.292205+00:00",
+        "end_date": "2026-02-06T14:12:57.292205+00:00",
+        "date_modification_message": [
+          "No dates were provided; using a default window of 5 days (2026-02-01 to 2026-02-06)."
+        ]
+      }
+      ```
+    </Expandable>
+
+    <Tip>
+      To learn more, see the [Initialize endpoint](/v3/catch-all/endpoints/initialize-job).
+    </Tip>
+  </Tab>
   <Tab title="Create and track">
     Submit a query and track its progress:
 
@@ -103,12 +179,36 @@ Get started with CatchAll in three steps:
 
     final int POLL_INTERVAL_MS = 60000;
 
-    // Create job
-    var job = client.jobs().createJob(
+    // Create job with custom validators and enrichments
+    var job = client.jobs().createJob(    
         SubmitRequestDto.builder()
             .query("AI company acquisitions")
             .context("Focus on deal size and acquiring company details")
             .limit(10)
+            .validators(
+                ValidatorSchema.builder()
+                    .name("is_acquisition_event")
+                    .description("true if article describes a completed or announced acquisition")
+                    .type("boolean")
+                    .build()
+            )
+            .enrichments(
+                EnrichmentSchema.builder()
+                    .name("acquirer_company")
+                    .description("Extract the acquiring company name")
+                    .type(EnrichmentType.COMPANY)
+                    .build(),
+                EnrichmentSchema.builder()
+                    .name("acquired_company")
+                    .description("Extract the acquired company name")
+                    .type(EnrichmentType.COMPANY)
+                    .build(),
+                EnrichmentSchema.builder()
+                    .name("deal_value")
+                    .description("Extract acquisition price if mentioned")
+                    .type(EnrichmentType.NUMBER)
+                    .build()
+            )
             .build()
     );
     System.out.println("Job created: " + job.getJobId());
@@ -141,6 +241,11 @@ Get started with CatchAll in three steps:
         records.forEach(record -> System.out.println("  " + record.getRecordTitle()))
     );
     ```
+
+    <Note>
+      Validators and enrichments are optional. If not provided, the system 
+      generates them automatically based on your query.
+    </Note>
   </Tab>
 
   <Tab title="Continue jobs">
@@ -262,12 +367,24 @@ public class CompleteExample {
             .build();
 
         try {
-            // Create job
+            // Create job with custom enrichments
             var job = client.jobs().createJob(
                 SubmitRequestDto.builder()
                     .query("AI company acquisitions")
                     .context("Focus on deal size and acquiring company details")
                     .limit(10)
+                    .enrichments(
+                        EnrichmentSchema.builder()
+                            .name("acquirer_company")
+                            .description("Extract the acquiring company name")
+                            .type(EnrichmentType.COMPANY)
+                            .build(),
+                        EnrichmentSchema.builder()
+                            .name("deal_value")
+                            .description("Extract acquisition price if mentioned")
+                            .type(EnrichmentType.NUMBER)
+                            .build()
+                    )
                     .build()
             );
             String jobId = job.getJobId();
