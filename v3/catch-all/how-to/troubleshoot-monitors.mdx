@@ -13,7 +13,8 @@ This guide helps you diagnose and resolve common monitor issues.
 
 ## Cannot create monitor from old job
 
-**Symptom**: Error message states that the job is too old to create a monitor.
+**Symptom**: API returns "Monitor creation is only allowed for jobs with a run 
+window within the last 7 days."
 
 **Cause**: Reference job's `end_date` is more than 7 days in the past.
 
