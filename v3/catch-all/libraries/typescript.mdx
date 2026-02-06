@@ -4,11 +4,6 @@ sidebarTitle: TypeScript
 description: TypeScript client library for CatchAll API
 ---
 
-<Note>
-  CatchAll API is currently in beta. Breaking changes may occur in minor version
-  updates. See the [Changelog](/v3/catch-all/overview/changelog) for updates.
-</Note>
-
 TypeScript SDK provides access to the CatchAll API from TypeScript or JavaScript
 applications with full type safety and modern async/await patterns.
 
@@ -85,17 +80,112 @@ Get started with CatchAll in three steps:
 ## Working with jobs
 
 <Tabs>
+  <Tab title="Get suggestions">
+    Get suggested validators, enrichments, and date ranges before creating a job:
+
+    ```typescript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const suggestions = await client.jobs.initialize({
+      query: "AI company acquisitions",
+      context: "Focus on deal size and acquiring company details"
+    });
+
+    console.log(JSON.stringify(suggestions, null, 2));
+    ```
+
+    <Expandable title="suggestions response">
+      ```json
+      {
+        "validators": [
+          {
+            "name": "is_acquisition_event",
+            "description": "true if article describes a completed or announced acquisition",
+            "type": "boolean"
+          },
+          {
+            "name": "involves_ai_company",
+            "description": "true if acquiring or acquired company is in AI sector",
+            "type": "boolean"
+          }
+        ],
+        "enrichments": [
+          {
+            "name": "acquirer_company",
+            "description": "Extract the acquiring company name",
+            "type": "company"
+          },
+          {
+            "name": "acquired_company",
+            "description": "Extract the acquired company name",
+            "type": "company"
+          },
+          {
+            "name": "deal_value",
+            "description": "Extract acquisition price if mentioned",
+            "type": "number"
+          },
+          {
+            "name": "announcement_date",
+            "description": "Extract date of announcement",
+            "type": "date"
+          },
+          {
+            "name": "acquirer_details",
+            "description": "Extract details about the acquiring company",
+            "type": "text"
+          }
+        ],
+        "start_date": "2026-02-01T14:12:57.292205+00:00",
+        "end_date": "2026-02-06T14:12:57.292205+00:00",
+        "date_modification_message": [
+          "No dates were provided; using a default window of 5 days (2026-02-01 to 2026-02-06)."
+        ]
+      }
+      ```
+    </Expandable>
+
+    <Tip>
+      To learn more, see the [Initialize endpoint](/v3/catch-all/endpoints/initialize-job).
+    </Tip>  
+  </Tab>
   <Tab title="Create and track">
     Submit a query and track its progress:
 
     ```typescript
     const POLL_INTERVAL_MS = 60000;
 
-    // Create job
+    // Create job with custom validators and enrichments
     const job = await client.jobs.createJob({
       query: "AI company acquisitions",
       context: "Focus on deal size and acquiring company details",
       limit: 10,
+      validators: [
+        {
+          name: "is_acquisition_event",
+          description: "true if article describes a completed or announced acquisition",
+          type: "boolean"
+        }
+      ],
+      enrichments: [
+        {
+          name: "acquirer_company",
+          description: "Extract the acquiring company name",
+          type: "company"
+        },
+        {
+          name: "acquired_company",
+          description: "Extract the acquired company name",
+          type: "company"
+        },
+        {
+          name: "deal_value",
+          description: "Extract acquisition price if mentioned",
+          type: "number"
+        }
+      ]
     });
     console.log(`Job created: ${job.job_id}`);
 
@@ -123,6 +213,11 @@ Get started with CatchAll in three steps:
       console.log(`  ${record.record_title}`);
     }
     ```
+
+    <Note>
+      Validators and enrichments are optional. If not provided, the system 
+      generates them automatically based on your query.
+    </Note>
   </Tab>
 
   <Tab title="Continue jobs">
@@ -210,11 +305,23 @@ const POLL_INTERVAL_MS = 60000;
 const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 
 try {
-  // Create job
+  // Create job with custom enrichments
   const job = await client.jobs.createJob({
     query: "AI company acquisitions",
     context: "Focus on deal size and acquiring company details",
     limit: 10,
+    enrichments: [
+      {
+        name: "acquirer_company",
+        description: "Extract the acquiring company name",
+        type: "company"
+      },
+      {
+        name: "deal_value",
+        description: "Extract acquisition price if mentioned",
+        type: "number"
+      }
+    ]
   });
   const jobId = job.job_id;
   console.log(`Job created: ${jobId}`);

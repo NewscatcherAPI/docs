@@ -5,11 +5,46 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
-<Note>
-  CatchAll API is currently in beta (v0.x.x). The API may change as we refine
-  features and gather feedback. Breaking changes may occur in minor version
-  updates during this phase.
-</Note>
+<Update label="1.0.0" description="2026-02-05">
+## Stable release with enhanced control and structured company enrichments
+
+CatchAll API reaches v1.0.0 with improved query customization, date range
+controls, and structured company enrichments.
+
+**Features:**
+
+- **Initialize endpoint**: Get suggested validators, enrichments, and date
+  ranges before submitting jobs. Returns `date_modification_message` when
+  requested dates exceed plan limits.
+- **Date range controls**: Specify `start_date` and `end_date` in submit
+  requests. System validates against plan limits and returns 400 errors for
+  invalid ranges.
+- **Custom validators and enrichments**: Define custom validation criteria and
+  extraction fields directly in submit requests instead of relying on automatic
+  generation.
+- **Company enrichment type**: Extract structured company data including name,
+  alternative names, website candidates, people, and address using the new
+  `company` enrichment type.
+- **Paginated user jobs**: List user jobs endpoint now supports `page` and
+  `page_size` parameters for efficient retrieval of job history.
+
+**Endpoints:**
+
+- [`POST /catchAll/initialize`](/v3/catch-all/endpoints/initialize-job) — Get
+  validator, enrichment, and date range suggestions.
+- Enhanced [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job) — Now
+  accepts date ranges, validators, and enrichments.
+- Enhanced [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) —
+  Now supports pagination.
+
+**Improvements:**
+
+- Enhanced deduplication logic reduces duplicate records across job executions.
+- Status endpoint returns more accurate current processing stage.
+- User jobs endpoint returns results sorted by creation date (most recent
+  first).
+
+</Update>
 
 <Update label="0.6.1" description="2026-01-13">
 ## Job continuation and early result access

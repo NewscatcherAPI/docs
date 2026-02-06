@@ -66,7 +66,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     </Tip>
   </Accordion>
 
-  <Accordion title="Dynamic schemas" icon="wand-magic-sparkles">
+  <Accordion title="Dynamic schemas" icon="flask">
     Each job generates a unique response schema. Field names and structure in 
     the `enrichment` object vary between jobs—even with identical inputs.
 
@@ -82,6 +82,50 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     <Tip>
       See [Understanding dynamic schemas](/v3/catch-all/overview/dynamic-schemas) 
       for integration patterns.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Customizable extraction" icon="wand-magic-sparkles">
+    Control what data gets extracted by providing custom validators and enrichments, 
+    or let the system generate them automatically based on your query.
+
+    **Custom validators** filter which events are relevant:
+    ```json
+    {
+      "name": "is_acquisition",
+      "description": "true if article describes an acquisition",
+      "type": "boolean"
+    }
+    ```
+
+    **Custom enrichments** define what data to extract:
+    ```json
+    {
+      "name": "acquiring_company",
+      "description": "Extract the acquiring company name",
+      "type": "company"
+    }
+    ```
+
+    The `company` enrichment type extracts structured data including name, 
+    alternative names, website candidates, people, and address.
+    
+    <Tip>
+      Use the [`POST /catchAll/initialize`](/v3/catch-all/endpoints/initialize-job) endpoint to get suggested validators and 
+      enrichments before submitting your job.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Date range controls" icon="calendar">
+    Specify custom date ranges for article search, or let the system determine 
+    the optimal time window based on your query (default: 5 days).
+
+    Date ranges are validated against your plan's allowed lookback period. 
+    If your requested dates exceed plan limits, the API returns a 400 error 
+    with specific guidance.
+    <Tip>
+      Use the [`POST /catchAll/initialize`](/v3/catch-all/endpoints/initialize-job) 
+      endpoint to preview date adjustments before submitting.
     </Tip>
   </Accordion>
 
@@ -113,8 +157,8 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   </Accordion>
 
   <Accordion title="Job continuation" icon="rotate">
-    Start with fewer records using the `limit` parameter for quick testing, then 
-    [continue the job](/v3/catch-all/endpoints/continue-job) to process more 
+    Start with fewer records using the `limit` parameter for quick testing, then use
+    [`POST /catchAll/continue`](/v3/catch-all/endpoints/continue-job) to process more 
     records without re-submitting the query.
     
     Continue requests preserve all analysis, validation, and extraction logic 
@@ -130,6 +174,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   <Tab title="Jobs">
     | Endpoint                    |  Method  | Description                     |
     | --------------------------- | -------- | ------------------------------- |
+    | `/catchAll/initialize`      | `POST`   | Get validator, enrichment, and date suggestions |
     | `/catchAll/submit`          | `POST`   | Create a new job                |
     | `/catchAll/continue`        | `POST`   | Continue job with higher limit  |
     | `/catchAll/jobs/user`       | `GET `   | List all jobs for your API key  |

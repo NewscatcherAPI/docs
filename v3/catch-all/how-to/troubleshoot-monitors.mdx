@@ -11,6 +11,31 @@ This guide helps you diagnose and resolve common monitor issues.
   monitors](/v3/catch-all/how-to/configure-monitors).
 </Tip>
 
+## Cannot create monitor from old job
+
+**Symptom**: API returns "Monitor creation is only allowed for jobs with a run 
+window within the last 7 days."
+
+**Cause**: Reference job's `end_date` is more than 7 days in the past.
+
+**Solution**: 
+
+Check your job's end date:
+```bash
+curl "https://catchall.newscatcherapi.com/catchAll/pull/{job_id}" \
+  -H "x-api-key: YOUR_API_KEY" | jq '.date_range.end_date'
+```
+
+If older than 7 days, create a new job with `end_date` within the last 7 days 
+and use that as your reference.
+
+<Note>
+  Monitors require `end_date` within 7 days to avoid data gaps. The job's 
+  `start_date` can be any valid range - only `end_date` must be recent.
+</Note>
+
+---
+
 ## Monitor returns zero records
 
 **Symptom**: Webhook shows `"records_count": 0` on every execution after the first.
