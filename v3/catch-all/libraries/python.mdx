@@ -4,11 +4,6 @@ sidebarTitle: Python
 description: Python client library for CatchAll API
 ---
 
-<Note>
-  CatchAll API is currently in beta. Breaking changes may occur in minor version
-  updates. See the [Changelog](/v3/catch-all/overview/changelog) for updates.
-</Note>
-
 Python SDK provides access to the CatchAll API from Python applications with
 support for both synchronous and asynchronous operations.
 
@@ -85,6 +80,81 @@ Get started with CatchAll in three steps:
 ## Working with jobs
 
 <Tabs>
+
+<Tab title="Get suggestions">
+    Get suggested validators, enrichments, and date ranges before creating a job:
+
+    ```python
+    import json
+    from newscatcher_catchall import CatchAllApi
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+
+    suggestions = client.jobs.initialize(
+        query="AI company acquisitions",
+        context="Focus on deal size and acquiring company details"
+    )
+
+    print(json.dumps(suggestions.model_dump(), indent=2, default=str))
+    ```
+
+    <Expandable title="suggestions response">
+      ```json
+      {
+        "validators": [
+          {
+            "name": "is_acquisition_event",
+            "description": "true if article describes a completed or announced acquisition",
+            "type": "boolean"
+          },
+          {
+            "name": "involves_ai_company",
+            "description": "true if acquiring or acquired company is in AI sector",
+            "type": "boolean"
+          }
+        ],
+        "enrichments": [
+          {
+            "name": "acquirer_company",
+            "description": "Extract the acquiring company name",
+            "type": "company"
+          },
+          {
+            "name": "acquired_company",
+            "description": "Extract the acquired company name",
+            "type": "company"
+          },
+          {
+            "name": "deal_value",
+            "description": "Extract acquisition price if mentioned",
+            "type": "number"
+          },
+          {
+            "name": "announcement_date",
+            "description": "Extract date of announcement",
+            "type": "date"
+          },
+          {
+            "name": "acquirer_details",
+            "description": "Extract details about the acquiring company",
+            "type": "text"
+          }
+        ],
+        "start_date": "2026-02-01T14:12:57.292205+00:00",
+        "end_date": "2026-02-06T14:12:57.292205+00:00",
+        "date_modification_message": [
+          "No dates were provided; using a default window of 5 days (2026-02-01 to 2026-02-06)."
+        ]
+      }
+      ```
+    </Expandable>
+
+    <Tip>
+      To learn more, see the [Initialize endpoint](/v3/catch-all/endpoints/initialize-job).
+    </Tip>  
+
+  </Tab>
+
   <Tab title="Create and track">
     Submit a query and track its progress:
 
@@ -93,11 +163,35 @@ Get started with CatchAll in three steps:
 
     POLL_INTERVAL_SECONDS = 60
 
-    # Create job
+    # Create job with custom validators and enrichments
     job = client.jobs.create_job(
         query="AI company acquisitions",
         context="Focus on deal size and acquiring company details",
         limit=10,
+        validators=[
+            {
+                "name": "is_acquisition_event",
+                "description": "true if article describes a completed or announced acquisition",
+                "type": "boolean"
+            }
+        ],
+        enrichments=[
+            {
+                "name": "acquirer_company",
+                "description": "Extract the acquiring company name",
+                "type": "company"
+            },
+            {
+                "name": "acquired_company",
+                "description": "Extract the acquired company name",
+                "type": "company"
+            },
+            {
+                "name": "deal_value",
+                "description": "Extract acquisition price if mentioned",
+                "type": "number"
+            }
+        ]
     )
     print(f"Job created: {job.job_id}")
 
@@ -121,6 +215,11 @@ Get started with CatchAll in three steps:
     for record in results.all_records:
         print(f"  {record.record_title}")
     ```
+    
+    <Note>
+      Validators and enrichments are optional. If not provided, the system 
+      generates them automatically based on your query.
+    </Note>
   </Tab>
 
   <Tab title="Continue jobs">
@@ -200,11 +299,23 @@ POLL_INTERVAL_SECONDS = 60
 client = CatchAllApi(api_key="YOUR_API_KEY")
 
 try:
-    # Create job
+    # Create job with custom enrichments
     job = client.jobs.create_job(
         query="AI company acquisitions",
         context="Focus on deal size and acquiring company details",
         limit=10,
+        enrichments=[
+            {
+                "name": "acquirer_company",
+                "description": "Extract the acquiring company name",
+                "type": "company"
+            },
+            {
+                "name": "deal_value",
+                "description": "Extract acquisition price if mentioned",
+                "type": "number"
+            }
+        ]
     )
     job_id = job.job_id
     print(f"Job created: {job_id}")
