@@ -119,7 +119,7 @@ python scripts/export_redirects.py redirect-map.json --format mintlify
 python scripts/export_redirects.py redirect-map.json --format all
 ```
 
-**Output:** Creates files in `exported-redirects/` directory.
+**Output:** Creates files in `exported-redirects/` directory (at project root, excluded from git).
 
 ---
 
@@ -279,9 +279,14 @@ docs/
 │       ├── overview/
 │       └── endpoints/
 │
-└── backup-YYYYMMDD-HHMMSS/  # Safety backup (local)
+└── backup-YYYYMMDD-HHMMSS/  # Safety backup (not committed)
     ├── docs.json
     └── v3/
+
+└── exported-redirects/      # Generated redirect files (not committed)
+    ├── mintlify-redirects.json
+    ├── cloudflare-rules.txt
+    └── ... (other platform formats)
 ```
 
 ### Modified Files

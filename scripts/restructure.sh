@@ -1,12 +1,27 @@
 #!/bin/bash
 # Documentation Restructure Script
-# Run this script from the docs repository root
+# Run this script from the docs repository root OR from the scripts directory
 
 set -e  # Exit on error
+
+# =====================================
+# Path handling for scripts directory
+# =====================================
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+# If docs.json exists in current directory, we're already in project root
+if [ -f "docs.json" ]; then
+    PROJECT_ROOT="$(pwd)"
+fi
+
+# Change to project root
+cd "$PROJECT_ROOT" || exit 1
 
 echo "====================================="
 echo "Documentation Restructure Script"
 echo "====================================="
+echo "Working directory: $PROJECT_ROOT"
 echo ""
 
 # Safety check
