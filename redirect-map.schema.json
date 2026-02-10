@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://newscatcherapi.com/schemas/redirect-map.schema.json",
+  "title": "Documentation Redirect Mapping",
+  "description": "Schema for documentation portal URL redirect mappings",
+  "type": "object",
+  "required": ["version", "redirects"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "JSON Schema reference"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the redirect mapping"
+    },
+    "generated": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this mapping was generated (YYYY-MM-DD)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of this redirect mapping"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about the redirect mapping",
+      "properties": {
+        "project": {
+          "type": "string"
+        },
+        "change": {
+          "type": "string"
+        },
+        "total_redirects": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "redirects": {
+      "type": "array",
+      "description": "List of redirect rules",
+      "items": {
+        "type": "object",
+        "required": ["source", "destination", "type", "status_code"],
+        "properties": {
+          "source": {
+            "type": "string",
+            "pattern": "^/",
+            "description": "Source path (must start with /)"
+          },
+          "destination": {
+            "type": "string",
+            "pattern": "^/",
+            "description": "Destination path (must start with /)"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["permanent", "temporary"],
+            "description": "Redirect type"
+          },
+          "status_code": {
+            "type": "integer",
+            "enum": [301, 302, 307, 308],
+            "description": "HTTP status code for redirect"
+          },
+          "preserve_query": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to preserve query parameters"
+          },
+          "preserve_fragment": {
+            "type": "boolean",
+            "default": true,
+            "description": "Whether to preserve URL fragments (anchors)"
+          }
+        },
+        "additionalProperties": false
+      },
+      "minItems": 1
+    },
+    "wildcard_rules": {
+      "type": "array",
+      "description": "Wildcard patterns for catch-all redirects",
+      "items": {
+        "type": "object",
+        "required": ["pattern", "destination_pattern", "priority"],
+        "properties": {
+          "pattern": {
+            "type": "string",
+            "description": "Source URL pattern with wildcards"
+          },
+          "destination_pattern": {
+            "type": "string",
+            "description": "Destination URL pattern with wildcards"
+          },
+          "description": {
+            "type": "string",
+            "description": "Human-readable description of this rule"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000,
+            "description": "Priority (higher = checked first)"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
