@@ -115,6 +115,9 @@ if [ -d "v3/catch-all/integrations" ]; then
     rm -rf v3/catch-all/integrations
 fi
 
+# OpenAPI specification
+mv v3/catch-all/catch-all-api.yml web-search-api/api-reference/ 2>/dev/null || true
+
 echo "✓ Web Search API files moved"
 echo ""
 
@@ -172,6 +175,9 @@ if [ -d "v3/api-reference/libraries" ]; then
     rm -rf v3/api-reference/libraries
 fi
 
+# OpenAPI specification
+mv v3/api-reference/news-api-v3.yml news-api/api-reference/ 2>/dev/null || true
+
 echo "✓ News API files moved"
 echo ""
 
@@ -195,6 +201,9 @@ if [ -d "v3/local-news/endpoints" ]; then
     cp -r v3/local-news/endpoints/* local-news-api/api-reference/endpoints/ 2>/dev/null || true
     rm -rf v3/local-news/endpoints
 fi
+
+# OpenAPI specification
+mv v3/local-news/local-news-api.yml local-news-api/api-reference/ 2>/dev/null || true
 
 echo "✓ Local News API files moved"
 echo ""
