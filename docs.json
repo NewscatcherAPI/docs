@@ -26,261 +26,52 @@
     ]
   },
   "navigation": {
-    "versions": [
+    "tabs": [
       {
-        "version": "v3",
-        "tabs": [
+        "tab": "Home",
+        "groups": [
           {
-            "tab": "Documentation",
-            "groups": [
-              {
-                "group": "Get started",
-                "pages": [
-                  "v3/documentation/get-started/overview",
-                  "v3/documentation/get-started/quickstart",
-                  "v3/documentation/get-started/libraries",
-                  "v3/documentation/get-started/news-api-v3-subscription-plans"
-                ]
-              },
-              {
-                "group": "Guides and concepts",
-                "pages": [
-                  "v3/documentation/guides-and-concepts/advanced-querying",
-                  "v3/documentation/guides-and-concepts/clustering-news-articles",
-                  "v3/documentation/guides-and-concepts/articles-deduplication",
-                  "v3/documentation/guides-and-concepts/nlp-features",
-                  "v3/documentation/guides-and-concepts/custom-tags",
-                  "v3/documentation/guides-and-concepts/entity-disambiguation",
-                  "v3/documentation/guides-and-concepts/breaking-news",
-                  "v3/documentation/guides-and-concepts/robots-txt-compliance",
-                  "v3/documentation/guides-and-concepts/working-with-historical-data"
-                ]
-              },
-              {
-                "group": "How to",
-                "pages": [
-                  "v3/documentation/how-to/use-boolean-operators",
-                  "v3/documentation/how-to/search-with-near",
-                  "v3/documentation/how-to/search-by-entity",
-                  "v3/documentation/how-to/search-by-url",
-                  "v3/documentation/how-to/search-in-translations",
-                  "v3/documentation/how-to/paginate-large-datasets",
-                  "v3/documentation/how-to/retrieve-more-than-10k-articles",
-                  "v3/documentation/how-to/check-sources-coverage",
-                  "v3/documentation/how-to/validate-queries-python-sdk"
-                ]
-              },
-              {
-                "group": "Troubleshooting",
-                "pages": [
-                  "v3/documentation/troubleshooting/error-handling",
-                  "v3/documentation/troubleshooting/request-tracing-correlation-ids",
-                  "v3/documentation/troubleshooting/report-bugs",
-                  "v3/documentation/troubleshooting/request-features"
-                ]
-              },
-              {
-                "group": "Migration",
-                "pages": [
-                  "v3/documentation/migration/api-changes-v2-vs-v3",
-                  "v3/documentation/migration/migration-guide"
-                ]
-              }
+            "group": "Welcome",
+            "pages": ["home/index"]
+          }
+        ]
+      },
+      {
+        "tab": "Web Search API",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "web-search-api/get-started/introduction",
+              "web-search-api/get-started/quickstart",
+              "web-search-api/get-started/changelog"
             ]
           },
           {
-            "tab": "API Reference",
-            "groups": [
-              {
-                "group": "Overview",
-                "pages": [
-                  "v3/api-reference/overview/introduction",
-                  "v3/api-reference/overview/authentication",
-                  "v3/api-reference/overview/rate-limits",
-                  "v3/api-reference/overview/errors",
-                  "v3/api-reference/overview/http-headers",
-                  "v3/api-reference/overview/enumerated-parameters"
-                ]
-              },
-              {
-                "group": "Endpoints",
-                "pages": [
-                  {
-                    "group": "Search",
-                    "pages": [
-                      "v3/api-reference/endpoints/search/search-articles-get",
-                      "v3/api-reference/endpoints/search/search-articles-post"
-                    ]
-                  },
-                  {
-                    "group": "Latest headlines",
-                    "pages": [
-                      "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
-                      "v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post"
-                    ]
-                  },
-                  {
-                    "group": "Breaking news",
-                    "pages": [
-                      "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
-                      "v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-post"
-                    ]
-                  },
-                  {
-                    "group": "Authors",
-                    "pages": [
-                      "v3/api-reference/endpoints/authors/search-articles-by-author-get",
-                      "v3/api-reference/endpoints/authors/search-articles-by-author-post"
-                    ]
-                  },
-                  {
-                    "group": "Search by link",
-                    "pages": [
-                      "v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get",
-                      "v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post"
-                    ]
-                  },
-                  {
-                    "group": "Search similar",
-                    "pages": [
-                      "v3/api-reference/endpoints/search-similar/search-similar-articles-get",
-                      "v3/api-reference/endpoints/search-similar/search-similar-articles-post"
-                    ]
-                  },
-                  {
-                    "group": "Sources",
-                    "pages": [
-                      "v3/api-reference/endpoints/sources/retrieve-sources-get",
-                      "v3/api-reference/endpoints/sources/retrieve-sources-post"
-                    ]
-                  },
-                  {
-                    "group": "Aggregation count",
-                    "pages": [
-                      "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
-                      "v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post"
-                    ]
-                  },
-                  {
-                    "group": "Subscription",
-                    "pages": [
-                      "v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get",
-                      "v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post"
-                    ]
-                  }
-                ]
-              },
-              {
-                "group": "Libraries",
-                "pages": [
-                  "v3/api-reference/libraries/python",
-                  "v3/api-reference/libraries/typescript",
-                  "v3/api-reference/libraries/java",
-                  "v3/api-reference/libraries/go",
-                  "v3/api-reference/libraries/csharp"
-                ]
-              }
+            "group": "Guides and concepts",
+            "pages": [
+              "web-search-api/guides-and-concepts/monitors",
+              "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
           },
           {
-            "tab": "Local News",
-            "groups": [
-              {
-                "group": "Overview",
-                "pages": [
-                  "v3/local-news/overview/introduction",
-                  "v3/local-news/overview/quickstart",
-                  "v3/local-news/overview/location-detection-methods",
-                  "v3/local-news/overview/geonames-filtering",
-                  "v3/local-news/overview/local-news-api-subscription-plans"
-                ]
-              },
-              {
-                "group": "Endpoints",
-                "pages": [
-                  {
-                    "group": "Search",
-                    "pages": [
-                      "v3/local-news/endpoints/search/search-articles-post",
-                      "v3/local-news/endpoints/search/search-advanced-post"
-                    ]
-                  },
-                  {
-                    "group": "Latest headlines",
-                    "pages": [
-                      "v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post",
-                      "v3/local-news/endpoints/latest-headlines/latest-headlines-advanced-post"
-                    ]
-                  },
-                  {
-                    "group": "Sources",
-                    "pages": [
-                      "v3/local-news/endpoints/sources/retrieve-sources-post"
-                    ]
-                  },
-                  {
-                    "group": "Search by",
-                    "pages": [
-                      "v3/local-news/endpoints/search-by/search-articles-by-identifiers-post"
-                    ]
-                  }
-                ]
-              }
+            "group": "How to",
+            "pages": [
+              "web-search-api/how-to/write-effective-queries",
+              "web-search-api/how-to/configure-monitors",
+              "web-search-api/how-to/troubleshoot-monitors"
             ]
           },
           {
-            "tab": "Events",
-            "groups": [
+            "group": "API Reference",
+            "pages": [
               {
                 "group": "Overview",
                 "pages": [
-                  "v3/events/overview/introduction",
-                  "v3/events/overview/quickstart",
-                  "v3/events/overview/parameter-formats",
-                  "v3/events/overview/working-with-articles"
-                ]
-              },
-              {
-                "group": "Event types",
-                "pages": [
-                  "v3/events/event-types/data-breach",
-                  "v3/events/event-types/fundraising",
-                  "v3/events/event-types/layoff",
-                  "v3/events/event-types/supply-chain-disruption",
-                  "v3/events/event-types/tariffs"
-                ]
-              },
-              {
-                "group": "Endpoints",
-                "pages": [
-                  "v3/events/endpoints/event-fields-get",
-                  "v3/events/endpoints/search-events-post",
-                  "v3/events/endpoints/health-get",
-                  "v3/events/endpoints/subscription-get",
-                  "v3/events/endpoints/subscription-post"
-                ]
-              }
-            ]
-          },
-          {
-            "tab": "CatchAll",
-            "groups": [
-              {
-                "group": "Overview",
-                "pages": [
-                  "v3/catch-all/overview/introduction",
-                  "v3/catch-all/overview/quickstart",
-                  "v3/catch-all/overview/monitors",
-                  "v3/catch-all/overview/dynamic-schemas",
-                  "v3/catch-all/overview/changelog"
-                ]
-              },
-              {
-                "group": "How to",
-                "pages": [
-                  "v3/catch-all/how-to/write-effective-queries",
-                  "v3/catch-all/how-to/configure-monitors",
-                  "v3/catch-all/how-to/troubleshoot-monitors"
+                  "web-search-api/api-reference/overview/introduction",
+                  "web-search-api/api-reference/overview/authentication",
+                  "web-search-api/api-reference/overview/rate-limits",
+                  "web-search-api/api-reference/overview/errors"
                 ]
               },
               {
@@ -289,50 +80,267 @@
                   {
                     "group": "Jobs",
                     "pages": [
-                      "v3/catch-all/endpoints/initialize-job",
-                      "v3/catch-all/endpoints/create-job",
-                      "v3/catch-all/endpoints/continue-job",
-                      "v3/catch-all/endpoints/list-user-jobs",
-                      "v3/catch-all/endpoints/get-job-status",
-                      "v3/catch-all/endpoints/get-job-results"
+                      "web-search-api/api-reference/endpoints/jobs/initialize-job",
+                      "web-search-api/api-reference/endpoints/jobs/create-job",
+                      "web-search-api/api-reference/endpoints/jobs/continue-job",
+                      "web-search-api/api-reference/endpoints/jobs/list-user-jobs",
+                      "web-search-api/api-reference/endpoints/jobs/get-job-status",
+                      "web-search-api/api-reference/endpoints/jobs/get-job-results"
                     ]
                   },
                   {
                     "group": "Monitors",
                     "pages": [
-                      "v3/catch-all/endpoints/create-monitor",
-                      "v3/catch-all/endpoints/update-monitor",
-                      "v3/catch-all/endpoints/list-monitors",
-                      "v3/catch-all/endpoints/list-monitor-jobs",
-                      "v3/catch-all/endpoints/get-monitor-results",
-                      "v3/catch-all/endpoints/enable-monitor",
-                      "v3/catch-all/endpoints/disable-monitor",
-                      "v3/catch-all/endpoints/webhook-payload"
+                      "web-search-api/api-reference/endpoints/monitors/create-monitor",
+                      "web-search-api/api-reference/endpoints/monitors/update-monitor",
+                      "web-search-api/api-reference/endpoints/monitors/list-monitors",
+                      "web-search-api/api-reference/endpoints/monitors/list-monitor-jobs",
+                      "web-search-api/api-reference/endpoints/monitors/get-monitor-results",
+                      "web-search-api/api-reference/endpoints/monitors/enable-monitor",
+                      "web-search-api/api-reference/endpoints/monitors/disable-monitor",
+                      "web-search-api/api-reference/endpoints/monitors/webhook-payload"
                     ]
                   },
                   {
                     "group": "Meta",
                     "pages": [
-                      "v3/catch-all/endpoints/health",
-                      "v3/catch-all/endpoints/version"
+                      "web-search-api/api-reference/endpoints/meta/health",
+                      "web-search-api/api-reference/endpoints/meta/version"
                     ]
                   }
                 ]
-              },
+              }
+            ]
+          },
+          {
+            "group": "Libraries",
+            "pages": [
+              "web-search-api/libraries/python",
+              "web-search-api/libraries/typescript",
+              "web-search-api/libraries/java"
+            ]
+          },
+          {
+            "group": "Integrations",
+            "pages": [
+              "web-search-api/integrations/n8n",
+              "web-search-api/integrations/make",
+              "web-search-api/integrations/langchain"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "News API",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "news-api/get-started/overview",
+              "news-api/get-started/quickstart",
+              "news-api/get-started/libraries",
+              "news-api/get-started/subscription-plans"
+            ]
+          },
+          {
+            "group": "Guides and concepts",
+            "pages": [
+              "news-api/guides-and-concepts/advanced-querying",
+              "news-api/guides-and-concepts/clustering-news-articles",
+              "news-api/guides-and-concepts/articles-deduplication",
+              "news-api/guides-and-concepts/nlp-features",
+              "news-api/guides-and-concepts/custom-tags",
+              "news-api/guides-and-concepts/entity-disambiguation",
+              "news-api/guides-and-concepts/breaking-news",
+              "news-api/guides-and-concepts/robots-txt-compliance",
+              "news-api/guides-and-concepts/working-with-historical-data"
+            ]
+          },
+          {
+            "group": "How to",
+            "pages": [
+              "news-api/how-to/use-boolean-operators",
+              "news-api/how-to/search-with-near",
+              "news-api/how-to/search-by-entity",
+              "news-api/how-to/search-by-url",
+              "news-api/how-to/search-in-translations",
+              "news-api/how-to/paginate-large-datasets",
+              "news-api/how-to/retrieve-more-than-10k-articles",
+              "news-api/how-to/check-sources-coverage",
+              "news-api/how-to/validate-queries-python-sdk"
+            ]
+          },
+          {
+            "group": "Troubleshooting",
+            "pages": [
+              "news-api/troubleshooting/error-handling",
+              "news-api/troubleshooting/request-tracing-correlation-ids",
+              "news-api/troubleshooting/report-bugs",
+              "news-api/troubleshooting/request-features"
+            ]
+          },
+          {
+            "group": "Migration",
+            "pages": [
+              "news-api/migration/api-changes-v2-vs-v3",
+              "news-api/migration/migration-guide"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
               {
-                "group": "Libraries",
+                "group": "Overview",
                 "pages": [
-                  "v3/catch-all/libraries/python",
-                  "v3/catch-all/libraries/typescript",
-                  "v3/catch-all/libraries/java"
+                  "news-api/api-reference/overview/introduction",
+                  "news-api/api-reference/overview/authentication",
+                  "news-api/api-reference/overview/rate-limits",
+                  "news-api/api-reference/overview/errors",
+                  "news-api/api-reference/overview/http-headers",
+                  "news-api/api-reference/overview/enumerated-parameters"
                 ]
               },
               {
-                "group": "Integrations",
+                "group": "Endpoints",
                 "pages": [
-                  "v3/catch-all/integrations/n8n",
-                  "v3/catch-all/integrations/make",
-                  "v3/catch-all/integrations/langchain"
+                  {
+                    "group": "Search",
+                    "pages": [
+                      "news-api/api-reference/endpoints/search/search-articles-get",
+                      "news-api/api-reference/endpoints/search/search-articles-post"
+                    ]
+                  },
+                  {
+                    "group": "Latest headlines",
+                    "pages": [
+                      "news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
+                      "news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post"
+                    ]
+                  },
+                  {
+                    "group": "Breaking news",
+                    "pages": [
+                      "news-api/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
+                      "news-api/api-reference/endpoints/breaking-news/retrieve-breaking-news-post"
+                    ]
+                  },
+                  {
+                    "group": "Authors",
+                    "pages": [
+                      "news-api/api-reference/endpoints/authors/search-articles-by-author-get",
+                      "news-api/api-reference/endpoints/authors/search-articles-by-author-post"
+                    ]
+                  },
+                  {
+                    "group": "Search by link",
+                    "pages": [
+                      "news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get",
+                      "news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post"
+                    ]
+                  },
+                  {
+                    "group": "Search similar",
+                    "pages": [
+                      "news-api/api-reference/endpoints/search-similar/search-similar-articles-get",
+                      "news-api/api-reference/endpoints/search-similar/search-similar-articles-post"
+                    ]
+                  },
+                  {
+                    "group": "Sources",
+                    "pages": [
+                      "news-api/api-reference/endpoints/sources/retrieve-sources-get",
+                      "news-api/api-reference/endpoints/sources/retrieve-sources-post"
+                    ]
+                  },
+                  {
+                    "group": "Aggregation count",
+                    "pages": [
+                      "news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
+                      "news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post"
+                    ]
+                  },
+                  {
+                    "group": "Subscription",
+                    "pages": [
+                      "news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get",
+                      "news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "group": "Libraries",
+            "pages": [
+              "news-api/libraries/python",
+              "news-api/libraries/typescript",
+              "news-api/libraries/java",
+              "news-api/libraries/go",
+              "news-api/libraries/csharp"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Local News API",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": [
+              "local-news-api/get-started/introduction",
+              "local-news-api/get-started/quickstart",
+              "local-news-api/get-started/subscription-plans"
+            ]
+          },
+          {
+            "group": "Guides and concepts",
+            "pages": [
+              "local-news-api/guides-and-concepts/location-detection-methods",
+              "local-news-api/guides-and-concepts/geonames-filtering"
+            ]
+          },
+          {
+            "group": "API Reference",
+            "pages": [
+              {
+                "group": "Overview",
+                "pages": [
+                  "local-news-api/api-reference/overview/introduction",
+                  "local-news-api/api-reference/overview/authentication",
+                  "local-news-api/api-reference/overview/rate-limits",
+                  "local-news-api/api-reference/overview/errors"
+                ]
+              },
+              {
+                "group": "Endpoints",
+                "pages": [
+                  {
+                    "group": "Search",
+                    "pages": [
+                      "local-news-api/api-reference/endpoints/search/search-articles-post",
+                      "local-news-api/api-reference/endpoints/search/search-advanced-post"
+                    ]
+                  },
+                  {
+                    "group": "Latest headlines",
+                    "pages": [
+                      "local-news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post",
+                      "local-news-api/api-reference/endpoints/latest-headlines/latest-headlines-advanced-post"
+                    ]
+                  },
+                  {
+                    "group": "Sources",
+                    "pages": [
+                      "local-news-api/api-reference/endpoints/sources/retrieve-sources-post"
+                    ]
+                  },
+                  {
+                    "group": "Search by identifiers",
+                    "pages": [
+                      "local-news-api/api-reference/endpoints/search-by/search-articles-by-identifiers-post"
+                    ]
+                  }
                 ]
               }
             ]
@@ -367,7 +375,7 @@
   "navbar": {
     "primary": {
       "type": "button",
-      "label": "Platform",
+      "label": "Web Search Platform",
       "href": "https://platform.newscatcherapi.com/catchall"
     }
   },
