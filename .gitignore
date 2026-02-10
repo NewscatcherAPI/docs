@@ -31,3 +31,6 @@ __pycache__/
 
 # Backup folders to .gitignore
 backup-*
+
+# Exported redirect files (generated, not committed)
+exported-redirects/
