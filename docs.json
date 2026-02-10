@@ -180,13 +180,6 @@
             ]
           },
           {
-            "group": "Migration",
-            "pages": [
-              "news-api/migration/api-changes-v2-vs-v3",
-              "news-api/migration/migration-guide"
-            ]
-          },
-          {
             "group": "API Reference",
             "pages": [
               {
