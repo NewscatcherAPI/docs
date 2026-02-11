@@ -77,7 +77,7 @@ articles = client.get_all_articles(
 ```
 
 To learn more about the custom methods allowing to bypass the API limits, see
-[How to retrieve more than 10,000 articles](/v3/documentation/how-to/retrieve-more-than-10k-articles).
+[How to retrieve more than 10,000 articles](/news-api/how-to/retrieve-more-than-10k-articles).
 
 ## Query validation
 
@@ -98,7 +98,7 @@ and will raise a `ValueError` for invalid queries. You can disable validation by
 setting `validate_query=False`.
 
 To learn more about query validation rules and bulk validation techniques, see
-[Validate queries with Python SDK](/v3/documentation/how-to/validate-queries-python-sdk).
+[Validate queries with Python SDK](/news-api/how-to/validate-queries-python-sdk).
 
 ## Error handling
 
@@ -111,12 +111,6 @@ except ApiError as e:
     print(e.status_code)
     print(e.body)
 ```
-
-<Note>
-  If you use our legacy Python SDK (Konfig-based), see our [Legacy
-  SDKs](/v3/api-reference/libraries/legacy) documentation. We recommend
-  migrating to this newer SDK for improved features and ongoing support.
-</Note>
 
 ## Resources
 

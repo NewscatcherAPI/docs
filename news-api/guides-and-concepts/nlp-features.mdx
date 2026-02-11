@@ -32,7 +32,7 @@ The NLP layer in News API consists of the following components:
 | Embeddings     | 1024-dimensional vector representation for semantic similarity                                      | v3_nlp_embeddings |
 
 To learn more about plan features and requirements, see
-[Subscription plans](/v3/documentation/get-started/news-api-v3-subscription-plans).
+[Subscription plans](/news-api/get-started/subscription-plans).
 
 ### Including NLP data in API responses
 
@@ -83,11 +83,11 @@ All articles receive NLP processing through one of two methods:
 | Deduplication                    | All languages                      | N/A                                   | Available for all content                            |
 
 <Note>
-  **How it works**: Non-English/Arabic articles are automatically translated to English, then NLP processing is performed on the translation. Results are available in `translation_*` fields (e.g., `nlp.translation_ner_PER`, `nlp.summary_translated`). To learn how to access and search translation-based NLP data, see [Search in translations](/v3/documentation/how-to/search-in-translations).
+  **How it works**: Non-English/Arabic articles are automatically translated to English, then NLP processing is performed on the translation. Results are available in `translation_*` fields (e.g., `nlp.translation_ner_PER`, `nlp.summary_translated`). To learn how to access and search translation-based NLP data, see [Search in translations](/news-api/how-to/search-in-translations).
 </Note>
 
 For a complete list of supported languages, see
-[language codes in News API](/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+[language codes in News API](/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
 
 ### Code example
 
@@ -309,7 +309,7 @@ You can use summaries in your searches and clustering:
 
   This approach can lead to more concise and focused clusters. For more
   information on clustering, see
-  [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles).
+  [Clustering news articles](/news-api/guides-and-concepts/clustering-news-articles).
 
 ## Sentiment analysis
 
@@ -362,7 +362,7 @@ These parameters support boolean operators (`AND`, `OR`, `NOT`), proximity
 search with `NEAR`, and count-based filtering.
 
 To learn more about NER, see
-[How to search by entity](/v3/documentation/how-to/search-by-entity).
+[How to search by entity](/news-api/how-to/search-by-entity).
 
 ## Translation features
 
@@ -400,7 +400,7 @@ responses:
   translations
 
 For detailed translation search capabilities, see
-[Search in translations](/v3/documentation/how-to/search-in-translations).
+[Search in translations](/news-api/how-to/search-in-translations).
 
 ## Tagging
 
@@ -494,7 +494,7 @@ Example:
 ```
 
 For implementation details and examples, see
-[Custom tags](/v3/documentation/guides-and-concepts/custom-tags).
+[Custom tags](/news-api/guides-and-concepts/custom-tags).
 
 ## Embeddings
 
@@ -561,7 +561,7 @@ To maximize the effectiveness of NLP features in News API:
 
 ## Related resources
 
-- [How to search by entity](/v3/documentation/how-to/search-by-entity)
-- [Search in translations](/v3/documentation/how-to/search-in-translations)
-- [Clustering news articles](/v3/documentation/guides-and-concepts/clustering-news-articles)
-- [Articles deduplication](/v3/documentation/guides-and-concepts/articles-deduplication)
+- [How to search by entity](/news-api/how-to/search-by-entity)
+- [Search in translations](/news-api/how-to/search-in-translations)
+- [Clustering news articles](/news-api/guides-and-concepts/clustering-news-articles)
+- [Articles deduplication](/news-api/guides-and-concepts/articles-deduplication)

@@ -31,8 +31,8 @@ info:
   version: 1.2.0
 
 externalDocs:
-  description: Find out more about NewsCatcher
-  url: https://www.newscatcherapi.com/docs/v3/local-news
+  description: Find out more about Local News API
+  url: https://www.newscatcherapi.com/docs/local-news-api/get-started/introduction
 
 servers:
   - url: https://local-news.newscatcherapi.com
@@ -618,7 +618,7 @@ components:
       description: |
         Filters articles by geographic locations using structured GeoNames data. All location criteria within an object must be met (internal `AND`). Multiple objects are combined using the `geonames_operator` parameter.
 
-        For detailed information, see [GeoNames filtering](/v3/local-news/overview/geonames-filtering).
+        For detailed information, see [GeoNames filtering](/local-news-api/guides-and-concepts/geonames-filtering).
       example:
         - name: "New York City"
           country: "US"
@@ -664,7 +664,7 @@ components:
           description: |
             Two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) country code.
 
-            To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+            To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
           example: "US"
         admin1:
           allOf:
@@ -838,7 +838,7 @@ components:
         - `proximity_mention`: Identifies cities and states mentioned within 15 words of each other.
         - `ai_extracted`: Identifies locations through AI-based content analysis. Requires AI Extraction plan.
 
-        For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
+        For detailed information, see [Location detection methods](/local-news-api/guides-and-concepts/location-detection-methods).
       example: ["dedicated_source", "proximity_mention", "ai_extracted"]
 
     Lang:
@@ -850,7 +850,7 @@ components:
       description: |
         The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     Sources:
@@ -906,7 +906,7 @@ components:
       description: |
         If true, groups similar articles into clusters and returns clustered results. If false, returns individual articles without clustering.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       example: true
 
     Theme:
@@ -918,7 +918,7 @@ components:
       description: |
         Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
@@ -931,7 +931,7 @@ components:
         - To specify multiple organizations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"Apple Inc" OR Microsoft'
 
     PerEntityName:
@@ -942,7 +942,7 @@ components:
         - To specify multiple names, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"Elon Musk" OR "Jeff Bezos"'
 
     LocEntityName:
@@ -953,7 +953,7 @@ components:
         - To specify multiple locations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"San Francisco" OR "New York City"'
 
     MiscEntityName:
@@ -964,7 +964,7 @@ components:
         - To specify multiple entities, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: 'AWS OR "Microsoft Azure"'
 
     TitleSentimentMin:
@@ -980,7 +980,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
     TitleSentimentMax:
@@ -996,7 +996,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
 
     ContentSentimentMin:
@@ -1012,7 +1012,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
     ContentSentimentMax:
@@ -1028,7 +1028,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
 
     WordCountMin:
@@ -1065,7 +1065,7 @@ components:
 
         **Note:** The API automatically inserts `AND` operators between standalone terms, so strings like `"machine learning"` become `"machine AND learning"`. To avoid syntax errors (especially in queries with `OR` operators), use literal escape `"\"machine learning\""`.
 
-        For detailed syntax rules, see [Advanced querying](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/advanced-querying).
+        For detailed syntax rules, see [Advanced querying](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/advanced-querying).
       example: '"supply chain" AND Amazon NOT China'
 
     From:
@@ -1165,7 +1165,7 @@ components:
       description: |
         The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     ## Search By params: `SearchByRequestDto` inherits `BaseModel` + has three new params:
@@ -1453,7 +1453,7 @@ components:
             - description: |
                 Methods used to detect locations in articles.
 
-                For detailed information, see [Location detection methods](/v3/local-news/overview/location-detection-methods).
+                For detailed information, see [Location detection methods](/local-news-api/guides-and-concepts/location-detection-methods).
 
     GeoNamesResponseEntity:
       type: object

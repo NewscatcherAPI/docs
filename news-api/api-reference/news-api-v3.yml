@@ -34,53 +34,53 @@ tags:
     externalDocs:
       description:
         Search for articles by keyword, language, country, source, and more.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search/search-articles-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search/search-articles-get
   - name: LatestHeadlines
     description: Operations to retrieve latest headlines.
     externalDocs:
       description:
         Retrieve the latest headlines since a specified date, with filtering
         options.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get
   - name: Breaking News
     description: Operations to retrieve breaking news articles.
     externalDocs:
       description: Retrieve breaking news articles.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/breaking-news/breaking-news-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/breaking-news/breaking-news-get
   - name: Authors
     description: Operations to search by author.
     externalDocs:
       description: Search for articles by author.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/authors/search-articles-by-author-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/authors/search-articles-by-author-get
   - name: SearchLink
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get
   - name: SearchSimilar
     description: Operations to find similar articles.
     externalDocs:
       description: Find articles similar to a given query.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/search-similar/search-similar-articles-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search-similar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
       description:
         Retrieve the list of available sources, filtered by language and
         country.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/sources/retrieve-sources-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/sources/retrieve-sources-get
   - name: Aggregation
     description: Operations to aggregate news counts.
     externalDocs:
       description:
         Aggregate news counts based on specified criteria such as keyword,
         language, country, source, and more.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get
   - name: Subscription
     description: Operations to get subscription info.
     externalDocs:
       description: Retrieve information about your subscription plan.
-      url: https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get
 
 paths:
   /api/search:
@@ -888,7 +888,7 @@ components:
 
         Example: `"en, es"`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       name: lang
       in: query
       required: false
@@ -908,7 +908,7 @@ components:
 
         Example: `"fr, de"`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       name: not_lang
       in: query
       required: false
@@ -942,7 +942,7 @@ components:
 
         Example: `"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
@@ -962,7 +962,7 @@ components:
 
         Example:`"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       name: not_countries
       in: query
       required: false
@@ -1144,7 +1144,7 @@ components:
       description: |
         The page number to scroll through the results. Use for pagination, as a single API response can return up to 1,000 articles. 
 
-        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/v3/documentation/how-to/paginate-large-datasets).
+        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets).
       name: page
       in: query
       required: false
@@ -1259,7 +1259,7 @@ components:
 
         Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       name: all_links
       in: query
       required: false
@@ -1279,7 +1279,7 @@ components:
 
         Example: `"who.int, nih.gov"`
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       name: all_domain_links
       in: query
       required: false
@@ -1347,7 +1347,7 @@ components:
       description: |
         Determines whether to group similar articles into clusters. If true, the API returns clustered results.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
@@ -1365,7 +1365,7 @@ components:
         - `title`: Uses only the article title.
         - `summary`: Uses the article summary.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_variable
       in: query
       required: false
@@ -1384,7 +1384,7 @@ components:
         - `0.6`: Balances cluster size and article similarity (default).
         - `0.9`: Creates smaller, tightly related clusters.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_threshold
       in: query
       required: false
@@ -1419,7 +1419,7 @@ components:
 
         **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
 
@@ -1438,7 +1438,7 @@ components:
 
         **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: not_theme
       in: query
       required: false
@@ -1454,7 +1454,7 @@ components:
 
         **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: ORG_entity_name
       in: query
       required: false
@@ -1479,7 +1479,7 @@ components:
 
         **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: PER_entity_name
       in: query
       required: false
@@ -1504,7 +1504,7 @@ components:
 
         **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: LOC_entity_name
       in: query
       required: false
@@ -1529,7 +1529,7 @@ components:
 
         **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: MISC_entity_name
       in: query
       required: false
@@ -1557,7 +1557,7 @@ components:
 
         **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: title_sentiment_min
       in: query
       required: false
@@ -1579,7 +1579,7 @@ components:
 
         **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: title_sentiment_max
       in: query
       required: false
@@ -1601,7 +1601,7 @@ components:
 
         **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: content_sentiment_min
       in: query
       required: false
@@ -1623,7 +1623,7 @@ components:
 
         **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: content_sentiment_max
       in: query
       required: false
@@ -1706,7 +1706,7 @@ components:
 
         Example: `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
 
-        To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/custom-tags).
+        To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags).
       name: custom_tags
       in: query
       required: false
@@ -1718,7 +1718,7 @@ components:
       description: |
         If true, excludes duplicate and highly similar articles from the search results. If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Articles deduplication](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/articles-deduplication).
+        To learn more, see [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
       in: query
       required: false
@@ -1941,7 +1941,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#news-type-news-type).
       name: news_type
       in: query
       required: false
@@ -3841,7 +3841,7 @@ components:
 
         **Note:** The API automatically inserts `AND` operators between standalone terms, so strings like `"machine learning"` become `"machine AND learning"`. To avoid syntax errors (especially in queries with `OR` operators), use literal escape `"\"machine learning\""`.
 
-        For detailed syntax rules, see [Advanced querying](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/advanced-querying).
+        For detailed syntax rules, see [Advanced querying](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/advanced-querying).
       example: '"supply chain" AND Amazon NOT China'
 
     Lang:
@@ -3857,7 +3857,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     NotLang:
@@ -3873,7 +3873,7 @@ components:
         - `"fr,de"`
         - `["fr", "de"]`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
       example: ["fr", "de"]
 
     SearchIn:
@@ -3908,7 +3908,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     NotCountries:
@@ -3924,7 +3924,7 @@ components:
         - `"UK,FR"`
         - `["UK", "FR"]`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
       example: ["UK", "FR"]
 
     Sources:
@@ -4060,7 +4060,7 @@ components:
       description: |
         The page number to scroll through the results. Use for pagination, as a single API response can return up to 1,000 articles. 
 
-        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/v3/documentation/how-to/paginate-large-datasets).
+        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets).
       example: 2
 
     From:
@@ -4143,7 +4143,7 @@ components:
         - `"https://aiindex.stanford.edu/report/, https://www.stateof.ai/"`
         - `["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]`
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       example:
         string-input:
           summary: Comma-separated string
@@ -4166,7 +4166,7 @@ components:
         - `"who.int, nih.gov"`
         - `["who.int", "nih.gov"]`
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       example:
         string-input:
           summary: Comma-separated string
@@ -4216,7 +4216,7 @@ components:
       description: |
         Determines whether to group similar articles into clusters. If true, the API returns clustered results.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       example: true
 
     ClusteringVariable:
@@ -4232,7 +4232,7 @@ components:
         - `title`: Uses only the article title.
         - `summary`: Uses the article summary.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       example: content
 
     ClusteringThreshold:
@@ -4250,7 +4250,7 @@ components:
         - `0.6`: Balances cluster size and article similarity (default).
         - `0.9`: Creates smaller, tightly related clusters.
 
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/clustering-news-articles).
+        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       example: 0.6
 
     IncludeNlpData:
@@ -4259,7 +4259,7 @@ components:
       description: |
         If true, includes an NLP object for each article in the response. This object provides results of NLP analysis, including article theme, summary, sentiment, tags, and named entity recognition if available.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: true
 
     HasNlp:
@@ -4268,7 +4268,7 @@ components:
       description: |
         If true, filters results to include only articles that have NLP data.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: true
 
     Theme:
@@ -4286,7 +4286,7 @@ components:
 
         **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
       example: ["Business", "Finance"]
@@ -4306,7 +4306,7 @@ components:
 
         **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: ["Crime"]
 
     OrgEntityName:
@@ -4317,7 +4317,7 @@ components:
         - To specify multiple organizations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"Apple Inc" OR Microsoft'
 
     PerEntityName:
@@ -4328,7 +4328,7 @@ components:
         - To specify multiple names, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"Elon Musk" OR "Jeff Bezos"'
     LocEntityName:
       type: string
@@ -4338,7 +4338,7 @@ components:
         - To specify multiple locations, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: '"San Francisco" OR "New York City"'
 
     MiscEntityName:
@@ -4349,7 +4349,7 @@ components:
         - To specify multiple entities, use `AND`, `OR`, `NOT` operators, and `\"` escape literals for exact matches. 
         - To search in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
 
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-entity).
+        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       example: 'AWS OR "Microsoft Azure"'
 
     TitleSentimentMin:
@@ -4367,7 +4367,7 @@ components:
 
         **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
     TitleSentimentMax:
@@ -4385,7 +4385,7 @@ components:
 
         **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
 
     ContentSentimentMin:
@@ -4403,7 +4403,7 @@ components:
 
         **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
     ContentSentimentMax:
@@ -4421,7 +4421,7 @@ components:
 
         **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/nlp-features).
+        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
 
     IptcTags:
@@ -4511,7 +4511,7 @@ components:
         - `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
         - `"custom_tags.industry": ["Manufacturing", "Supply Chain", "Logistics"]`
 
-        To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/custom-tags).
+        To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags).
       example: ["Tag1", "Tag2", "Tag3"]
 
     ExcludeDuplicates:
@@ -4519,7 +4519,7 @@ components:
       description: |
         If true, excludes duplicate and highly similar articles from the search results. If false, returns all relevant articles, including duplicates. 
 
-        To learn more, see [Articles deduplication](https://www.newscatcherapi.com/docs/v3/documentation/guides-and-concepts/articles-deduplication).
+        To learn more, see [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication).
       example: true
 
     When:
@@ -4680,7 +4680,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/v3/api-reference/overview/enumerated-parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#news-type-news-type).
 
       example: ["General News Outlets", "Tech News and Updates"]
 

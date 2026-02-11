@@ -33,7 +33,7 @@ info:
 
 externalDocs:
   description: Find out more about NewsCatcher CatchAll API
-  url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
+  url: https://www.newscatcherapi.com/docs/web-search-api/get-started/introduction
 
 servers:
   - url: https://catchall.newscatcherapi.com
@@ -44,14 +44,14 @@ tags:
     description: Operations to create, monitor, and retrieve job results.
     externalDocs:
       description: Learn about job lifecycle and status tracking
-      url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/introduction
+      url: https://www.newscatcherapi.com/docs/web-search-api/get-started/quickstart
   - name: Monitors
     description: Operations to create, operate and retrieve monitor results.
     externalDocs:
       description:
         Automate recurring queries with scheduled jobs and webhook
         notifications.
-      url: https://www.newscatcherapi.com/docs/v3/catch-all/overview/monitors
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors
   - name: Meta
     description: Operations to check API health and version.
 
@@ -71,7 +71,7 @@ paths:
       operationId: initialize
       externalDocs:
         description: Learn about validator and enrichment suggestions
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/initialize
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/initialize-job
       requestBody:
         required: true
         content:
@@ -101,7 +101,7 @@ paths:
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/create-job
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/create-job
       requestBody:
         required: true
         content:
@@ -134,7 +134,7 @@ paths:
       operationId: continueJob
       externalDocs:
         description: Learn about job continuation and limits
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/continue-job
       requestBody:
         required: true
         content:
@@ -163,7 +163,7 @@ paths:
       operationId: getJobStatus
       externalDocs:
         description: Understanding job statuses and polling
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-status
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/get-job-status
       parameters:
         - $ref: "#/components/parameters/JobId"
       responses:
@@ -183,7 +183,7 @@ paths:
       operationId: getUserJobs
       externalDocs:
         description: Learn about job management
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/list-user-jobs
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/list-user-jobs
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
@@ -202,7 +202,7 @@ paths:
       operationId: getJobResults
       externalDocs:
         description: Working with job results and dynamic schemas
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/get-job-results
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/get-job-results
       parameters:
         - $ref: "#/components/parameters/JobId"
         - $ref: "#/components/parameters/Page"
@@ -266,7 +266,7 @@ paths:
       operationId: updateMonitor
       externalDocs:
         description: Learn about monitor configuration
-        url: https://www.newscatcherapi.com/docs/v3/catch-all/how-to/configure-monitors
+        url: https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors
       parameters:
         - name: monitor_id
           in: path
@@ -497,7 +497,7 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/create-job) endpoint.
+        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/create-job) endpoint.
       schema:
         type: string
         format: uuid
@@ -786,7 +786,7 @@ components:
       description: |
         Maximum number of records to return. If not specified, defaults to your plan limit.
 
-        Use [`POST /catchAll/continue`](https://www.newscatcherapi.com/docs/v3/catch-all/endpoints/continue-job) to extend the limit after job completion without reprocessing.
+        Use [`POST /catchAll/continue`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/continue-job) to extend the limit after job completion without reprocessing.
       example: 10
 
     StartDate:
@@ -1259,7 +1259,7 @@ components:
           description: |
             Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/dynamic-schemas) for integration guidance.
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
           additionalProperties: {}
           example:
             record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
@@ -1363,7 +1363,7 @@ components:
           description: |
             Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/v3/catch-all/overview/dynamic-schemas) for integration guidance.
+            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
           additionalProperties: {}
           example:
             record_title: "Oracle Q1 2026 Earnings Exceed Expectations"

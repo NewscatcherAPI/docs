@@ -30,11 +30,11 @@ controls, and structured company enrichments.
 
 **Endpoints:**
 
-- [`POST /catchAll/initialize`](/v3/catch-all/endpoints/initialize-job) — Get
+- [`POST /catchAll/initialize`](/web-search-api/api-reference/endpoints/jobs/initialize-job) — Get
   validator, enrichment, and date range suggestions.
-- Enhanced [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job) — Now
+- Enhanced [`POST /catchAll/submit`](/web-search-api/api-reference/endpoints/jobs/create-job) — Now
   accepts date ranges, validators, and enrichments.
-- Enhanced [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) —
+- Enhanced [`GET /catchAll/jobs/user`](/web-search-api/api-reference/endpoints/jobs/list-user-jobs) —
   Now supports pagination.
 
 **Improvements:**
@@ -62,9 +62,9 @@ controls, and structured company enrichments.
 
 **Endpoints:**
 
-- [`POST /catchAll/continue`](/v3/catch-all/endpoints/continue-job) — Continue
+- [`POST /catchAll/continue`](/web-search-api/api-reference/endpoints/jobs/continue-job) — Continue
   completed job with higher limit.
-- [`PATCH /catchAll/monitors/{monitor_id}`](/v3/catch-all/endpoints/update-monitor)
+- [`PATCH /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/endpoints/monitors/update-monitor)
   — Update monitor webhook configuration.
 
 **Improvements:**
@@ -103,7 +103,7 @@ functionality for time-constrained queries.
 **Features:**
 
 - **Progress tracking**: Status endpoint now returns detailed
-  [`steps`](/v3/catch-all/endpoints/get-job-status#response-steps) array showing
+  [`steps`](/web-search-api/api-reference/endpoints/jobs/get-job-status#response-steps) array showing
   completion state for each processing stage.
 - **Monitor timestamps**: Monitor records include `added_on` and `updated_on`
   fields to track when each data record was first collected and last updated
@@ -114,10 +114,10 @@ functionality for time-constrained queries.
 
 **Improvements:**
 
-- [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) now
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/endpoints/jobs/list-user-jobs) now
   returns only user-created jobs, excluding repeated monitor jobs.
 - Monitor responses use
-  [`run_info`](/v3/catch-all/endpoints/get-monitor-results#response-run-info)
+  [`run_info`](/web-search-api/api-reference/endpoints/monitors/get-monitor-results#response-run-info)
   structure with `first_run` and `last_run` timestamps instead of `date_range`
   for clearer execution metadata.
 - Improved error handling in monitor creation endpoint with specific validation
@@ -142,11 +142,11 @@ streamline automated data collection workflows.
 
 **Endpoints:**
 
-- [`GET /catchAll/monitors`](/v3/catch-all/endpoints/list-monitors) — List all
+- [`GET /catchAll/monitors`](/web-search-api/api-reference/endpoints/monitors/list-monitors) — List all
   monitors for your API key.
-- [`POST /catchAll/monitors/{monitor_id}/enable`](/v3/catch-all/endpoints/enable-monitor)
+- [`POST /catchAll/monitors/{monitor_id}/enable`](/web-search-api/api-reference/endpoints/monitors/enable-monitor)
   — Enable a disabled monitor.
-- [`POST /catchAll/monitors/{monitor_id}/disable`](/v3/catch-all/endpoints/disable-monitor)
+- [`POST /catchAll/monitors/{monitor_id}/disable`](/web-search-api/api-reference/endpoints/monitors/disable-monitor)
   — Disable an active monitor.
 
 **Improvements:**
@@ -166,9 +166,9 @@ and improved data quality.
 
 **Endpoints:**
 
-- [`GET /catchAll/jobs/user`](/v3/catch-all/endpoints/list-user-jobs) — List all
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/endpoints/jobs/list-user-jobs) — List all
   jobs created with your API key.
-- [`GET /catchAll/monitors/pull/{monitor_id}`](/v3/catch-all/endpoints/get-monitor-results)
+- [`GET /catchAll/monitors/pull/{monitor_id}`](/web-search-api/api-reference/endpoints/monitors/get-monitor-results)
   — Retrieve aggregated results from all monitor jobs.
 
 **Improvements:**
@@ -186,7 +186,7 @@ and improved data quality.
 <Update label="0.3.0" description="2025-10-23">
 ## Monitors feature
 
-Introduced [monitors for automated queries](/v3/catch-all/overview/monitors) —
+Introduced [monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
 schedule recurring data collection with natural language and webhook
 notifications.
 
@@ -201,9 +201,9 @@ notifications.
 
 **Endpoints:**
 
-- [`POST /catchAll/monitors/create`](/v3/catch-all/endpoints/create-monitor) —
+- [`POST /catchAll/monitors/create`](/web-search-api/api-reference/endpoints/monitors/create-monitor) —
   Create scheduled monitor.
-- [`GET /catchAll/monitors/{monitor_id}/jobs`](/v3/catch-all/endpoints/list-monitor-jobs)
+- [`GET /catchAll/monitors/{monitor_id}/jobs`](/web-search-api/api-reference/endpoints/monitors/list-monitor-jobs)
   — List monitor jobs.
 
 **Improvements:**
@@ -223,7 +223,7 @@ data extracted from web sources.
 
 - **Natural language processing**: Submit queries in plain English and receive
   structured data with source citations.
-- **[Dynamic schemas](/v3/catch-all/overview/dynamic-schemas)**: Response
+- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**: Response
   structures adapt to your query, generating relevant fields automatically.
 - **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
   validation, and extraction phases.
@@ -232,13 +232,13 @@ data extracted from web sources.
 
 **Endpoints:**
 
-- [`POST /catchAll/submit`](/v3/catch-all/endpoints/create-job) — Create jobs
+- [`POST /catchAll/submit`](/web-search-api/api-reference/endpoints/jobs/create-job) — Create jobs
   with natural language queries.
-- [`GET /catchAll/status/{job_id}`](/v3/catch-all/endpoints/get-job-status) —
+- [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/endpoints/jobs/get-job-status) —
   Check processing status.
-- [`GET /catchAll/pull/{job_id}`](/v3/catch-all/endpoints/get-job-results) —
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/endpoints/jobs/get-job-results) —
   Retrieve structured results with citations.
 
-→ [Get started with the quickstart guide](/v3/catch-all/overview/quickstart)
+→ [Get started with the quickstart guide](/web-search-api/get-started/quickstart)
 
 </Update>

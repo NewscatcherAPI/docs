@@ -11,7 +11,7 @@ prepare for migration.
 <Note>
   This guide only covers the changes for v2/v3 shared endpoints. To learn about
   other v3 endpoints, their parameters, and response fields, see the [API
-  Reference](/v3/api-reference/endpoints/authors/search-articles-by-author-get).
+  Reference](/news-api/api-reference/endpoints/authors/search-articles-by-author-get).
 </Note>
 
 ## Base API changes
@@ -67,7 +67,7 @@ prepare for migration.
 <Warning>
   The `topic` parameter is removed from the `/sources` endpoint. Instead, you
   have new filtering capabilities. To learn more, see [Retrieve
-  sources](/v3/api-reference/endpoints/sources/retrieve-sources-get).
+  sources](/news-api/api-reference/endpoints/sources/retrieve-sources-get).
 </Warning>
 
 ### Query parameter (`q`)
@@ -105,7 +105,7 @@ prepare for migration.
 
 Parameters are grouped by their availability in different subscription plans.
 For detailed plan information, see
-[Subscription plans](/v3/documentation/get-started/news-api-v3-subscription-plans).
+[Subscription plans](/news-api/get-started/subscription-plans).
 
 ### Core features
 
@@ -202,7 +202,7 @@ Requires the `v3_nlp_iptc_tags` subscription plan.
   Custom tags are available in all the NLP plans as a custom solution that
   provides tailored content classification using your organization's taxonomy.
   For implementation details and examples, see [Custom
-  tags](/v3/documentation/guides-and-concepts/custom-tags).
+  tags](/news-api/guides-and-concepts/custom-tags).
 </Note>
 ## Response changes v2 vs v3
 
@@ -397,7 +397,7 @@ Additional info object fields:
 
 All v3 SDKs provide complete support for both core and advanced features. For
 implementation details, see the
-[Libraries](/v3/documentation/get-started/libraries) documentation.
+[Libraries](/news-api/get-started/libraries) documentation.
 
 ## Timeline and support
 
@@ -423,21 +423,21 @@ implementation details, see the
 
 ## Next steps
 
-1. Review the [Migration guide](/v3/documentation/migration/migration-guide) for
+1. Review the [Migration guide](/news-api/migration/migration-guide) for
    implementation details.
 2. Explore plan features and requirements in
-   [Subscription plans](v3/documentation/get-started/news-api-v3-subscription-plans).
+   [Subscription plans](/news-api/get-started/subscription-plans).
 3. Check the version-specific API Reference for detailed parameter and response
    field documentation:
-   - [v3 API Reference](/v3/api-reference)
+   - [v3 API Reference](/news-api/api-reference/endpoints/search/search-articles-post)
    - [v2 API Reference](/v2/api-reference)
 4. Test v3 endpoints alongside your v2 implementation.
 5. For advanced features:
    - Learn about
-     [NLP features](/v3/documentation/guides-and-concepts/nlp-features)
-   - Explore [Custom tags](/v3/documentation/guides-and-concepts/custom-tags)
+     [NLP features](/news-api/guides-and-concepts/nlp-features)
+   - Explore [Custom tags](/news-api/guides-and-concepts/custom-tags)
    - Understand
-     [Clustering](/v3/documentation/guides-and-concepts/clustering-news-articles)
+     [Clustering](/news-api/guides-and-concepts/clustering-news-articles)
      capabilities
 
 For implementation support or custom solutions, contact our support team.
