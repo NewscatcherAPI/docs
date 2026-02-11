@@ -19,11 +19,11 @@ Documentation repository for the NewsCatcher API, built with
 NewsCatcher API provides access to news articles from over 90,000 sources
 worldwide with three main public APIs:
 
+- **Web Search API**: AI web search that finds real-world events and extracts
+  structured data.
 - **News API**: Search and retrieve news articles with metadata enrichment
   and NLP.
 - **Local News API**: Hyper local news with geographic detection and NLP.
-- **CatchAll API**: AI web search that finds real-world events and extracts
-  structured data.
 
 NLP featues include summarisation, topic modeling, sentiment analysis, entity
 recognition, clustering, and deduplication.
@@ -31,15 +31,32 @@ recognition, clustering, and deduplication.
 ## Repository Structure
 
 ```txt
+## Repository Structure
+```txt
 ├── docs.json                   # Mintlify configuration
-├── v2/                         # News API v2 (legacy - no longer supported)
-├── v3/                         # Current API documentation
-│   ├── api-reference/          # News API endpoints and SDKs
-│   ├── documentation/          # News API guides and concepts
-│   ├── local-news/             # Local News API documentation
-│   └── catch-all/              # CatchAll API documentation
-├── .github/workflows/          # Automation workflows
-└── ...                         # Maintenance scripts
+├── home/                       # Documentation landing page
+├── web-search-api/             # Web Search API (formerly CatchAll)
+│   ├── get-started/
+│   ├── guides-and-concepts/
+│   ├── how-to/
+│   ├── api-reference/
+│   ├── libraries/
+│   └── integrations/
+├── news-api/                   # News API
+│   ├── get-started/
+│   ├── guides-and-concepts/
+│   ├── how-to/
+│   ├── troubleshooting/
+│   ├── api-reference/
+│   └── libraries/
+├── local-news-api/             # Local News API
+│   ├── get-started/
+│   ├── guides-and-concepts/
+│   └── api-reference/
+├── scripts/                    # Migration and maintenance scripts
+├── v3/                         # Legacy structure (Events API only)
+├── v2/                         # Legacy v2 docs (deprecated)
+└── .github/workflows/          # CI/CD automation
 ```
 
 ## Getting Started
