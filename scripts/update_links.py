@@ -91,6 +91,42 @@ def update_markdown_links(content: str, mappings: Dict[str, str]) -> Tuple[str, 
         return match.group(0)
 
     updated = re.sub(pattern, replace_link, content)
+
+    # Also handle MDX component href attributes: href="/path"
+    def replace_href(match):
+        nonlocal replacements
+        quote = match.group(1)  # " or '
+        url = match.group(2)
+
+        # Remove anchor and query string for matching
+        base_url = url.split("#")[0].split("?")[0]
+        anchor = "#" + url.split("#")[1] if "#" in url else ""
+        query = (
+            "?" + url.split("?")[1]
+            if "?" in url and "#" not in url.split("?")[1]
+            else ""
+        )
+
+        # Try to find mapping
+        if base_url in mappings:
+            new_url = mappings[base_url] + anchor + query
+            replacements += 1
+            return f"href={quote}{new_url}{quote}"
+
+        # Try with /docs prefix if not found
+        docs_url = f"/docs{base_url}"
+        if docs_url in mappings:
+            new_url = mappings[docs_url] + anchor + query
+            replacements += 1
+            return f"href={quote}{new_url}{quote}"
+
+        # No mapping found, keep original
+        return match.group(0)
+
+    # Pattern for MDX href attributes: href="/path" or href='/path'
+    href_pattern = r'href=(["\'])(/[^"\']+)\1'
+    updated = re.sub(href_pattern, replace_href, updated)
+
     return updated, replacements
 
 
@@ -99,29 +135,35 @@ def update_yaml_refs(content: str, mappings: Dict[str, str]) -> Tuple[str, int]:
     Update YAML references in OpenAPI specs.
 
     Common patterns:
-    - externalDocs: url: "..."
-    - description: "See [link](/path)"
-    - servers: url: "..."
+    - externalDocs: url: "..." or url: ...
+    - description: "See [link](/path)" or description: |
+        [link](https://full-url)
+    - servers: url: "..." (but DON'T change API endpoints like v3-api.newscatcherapi.com)
 
     Returns (updated_content, number_of_replacements)
     """
     replacements = 0
 
-    # Pattern 1: YAML url fields: url: "http://..." or url: 'http://...'
+    # Pattern 1: YAML url fields (with or without quotes)
+    # Matches: url: "https://..." or url: https://... or url: '/path'
     def replace_yaml_url(match):
         nonlocal replacements
-        prefix = match.group(1)  # "url: " or similar
-        quote = match.group(2)  # " or '
+        prefix = match.group(1)  # "url: " with any whitespace
+        quote = match.group(2) if match.group(2) else ""  # ", ', or empty
         url = match.group(3)  # the actual URL
 
+        # DON'T change API server URLs (v3-api.newscatcherapi.com, etc.)
+        if "v3-api.newscatcherapi.com" in url or "-api.newscatcherapi.com" in url:
+            return match.group(0)
+
         # Only process docs URLs
-        if "/docs/" not in url:
+        if "/docs/" not in url and not url.startswith("/v3/"):
             return match.group(0)
 
         # Extract path from full URL
         if "newscatcherapi.com/docs/" in url:
-            path = "/docs/" + url.split("/docs/", 1)[1]
-        elif url.startswith("/docs/"):
+            path = "/" + url.split("/docs/", 1)[1]
+        elif url.startswith("/v3/"):
             path = url
         elif url.startswith("/"):
             path = url
@@ -137,22 +179,67 @@ def update_yaml_refs(content: str, mappings: Dict[str, str]) -> Tuple[str, int]:
             if "newscatcherapi.com" in url:
                 # Reconstruct full URL
                 base_url = url.split("/docs/")[0]
-                new_url = f"{base_url}{new_path}{anchor}"
+                new_url = f"{base_url}/docs{new_path}{anchor}"
             else:
                 new_url = new_path + anchor
 
             replacements += 1
-            return f"{prefix}{quote}{new_url}{quote}"
+            if quote:
+                return f"{prefix}{quote}{new_url}{quote}"
+            else:
+                return f"{prefix}{new_url}"
 
         return match.group(0)
 
-    # Match: url: "..." or url: '...'
-    pattern1 = r'(url:\s*)(["\'])([^"\']+)\2'
+    # Match url: with optional quotes and any URL
+    # Captures: (1) "url:" with whitespace, (2) quote or None, (3) URL
+    pattern1 = r'(url:\s*)(["\']?)([^\s"\']+)\2'
     updated = re.sub(pattern1, replace_yaml_url, content)
 
-    # Pattern 2: Markdown links within YAML strings
-    updated, md_reps = update_markdown_links(updated, mappings)
-    replacements += md_reps
+    # Pattern 2: Markdown links within YAML strings (multiline descriptions)
+    # These are in description fields like:
+    # description: |
+    #   See [link](https://www.newscatcherapi.com/docs/v3/...)
+    def replace_md_in_yaml(match):
+        nonlocal replacements
+        text = match.group(1)
+        url = match.group(2)
+
+        # Only process docs URLs
+        if "/docs/" not in url and not url.startswith("/v3/"):
+            return match.group(0)
+
+        # Extract path from full URL
+        if "newscatcherapi.com/docs/" in url:
+            path = "/" + url.split("/docs/", 1)[1]
+        elif url.startswith("/v3/"):
+            path = url
+        elif url.startswith("/"):
+            path = url
+        else:
+            return match.group(0)
+
+        # Remove trailing slash and anchors for matching
+        base_path = path.rstrip("/").split("#")[0].split("?")[0]
+        anchor = "#" + path.split("#")[1] if "#" in path else ""
+
+        if base_path in mappings:
+            new_path = mappings[base_path]
+            if "newscatcherapi.com" in url:
+                # Reconstruct full URL
+                base_url = url.split("/docs/")[0]
+                new_url = f"{base_url}/docs{new_path}{anchor}"
+            else:
+                new_url = new_path + anchor
+
+            replacements += 1
+            return f"[{text}]({new_url})"
+
+        return match.group(0)
+
+    # Pattern for markdown links with full or relative URLs
+    md_pattern = r"\[([^\]]+)\]\((https://[^\)]+|/[^\)]+)\)"
+    updated = re.sub(md_pattern, replace_md_in_yaml, updated)
 
     return updated, replacements
 
