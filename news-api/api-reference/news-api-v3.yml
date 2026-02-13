@@ -1790,9 +1790,10 @@ components:
       description: |
         Filters articles by content completeness.
 
-        If false, returns only articles with full content available. If true, returns all articles, including those with only partial content publicly available (e.g., headlines and summaries from paywalled sources).
-
-        **Note**: NewsCatcher only indexes content that is legally accessible and in compliance with the publisher's rules. Articles behind paywalls are included only when publishers make partial content publicly available (such as headlines, summaries, or preview paragraphs). No content is scraped from behind paywalls or in violation of publisher access restrictions.
+        If false, returns only articles for which full-text content is publicly available.
+        If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
+        
+        **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       name: is_paid_content
       in: query
       required: false
@@ -3117,7 +3118,7 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: True if only partial content is available for this article; false if full content is accessible.
+          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
           type: boolean
         parent_url:
           title: Parent URL
@@ -3606,7 +3607,7 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: True if only partial content is available for this article; false if full content is accessible.
+          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
         parent_url:
           title: Parent URL
           description: The categorical URL of the article.
@@ -4637,9 +4638,10 @@ components:
       description: |
         Filters articles by content completeness.
 
-        If false, returns only articles with full content available. If true, returns all articles, including those with only partial content publicly available (e.g., headlines and summaries from paywalled sources).
-
-        **Note**: NewsCatcher only indexes content that is legally accessible and in compliance with the publisher's rules. Articles behind paywalls are included only when publishers make partial content publicly available (such as headlines, summaries, or preview paragraphs). No content is scraped from behind paywalls or in violation of publisher access restrictions.
+        If false, returns only articles for which full-text content is publicly available.
+        If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
+        
+        **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       example: false
 
     Links:
