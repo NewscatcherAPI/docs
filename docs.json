@@ -3,9 +3,9 @@
   "theme": "mint",
   "name": "newscatcher",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#183FD9",
+    "light": "#4A90E2",
+    "dark": "#04006B"
   },
   "favicon": "/logos/favicon.ico",
   "contextual": {
@@ -29,12 +29,7 @@
     "tabs": [
       {
         "tab": "Home",
-        "groups": [
-          {
-            "group": "Welcome",
-            "pages": ["home/index"]
-          }
-        ]
+        "pages": ["home/index"]
       },
       {
         "tab": "Web Search API",
