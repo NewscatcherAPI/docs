@@ -119,6 +119,7 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AllLinksText"
         - $ref: "#/components/parameters/AdditionalDomainInfo"
         - $ref: "#/components/parameters/IsNewsDomain"
         - $ref: "#/components/parameters/NewsDomainType"
@@ -222,6 +223,7 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AllLinksText"
         - $ref: "#/components/parameters/WordCountMin"
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
@@ -403,6 +405,7 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AllLinksText"
         - $ref: "#/components/parameters/WordCountMin"
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
@@ -594,6 +597,7 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AllLinksText"
         - $ref: "#/components/parameters/WordCountMin"
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
@@ -760,6 +764,7 @@ paths:
         - $ref: "#/components/parameters/ParentUrl"
         - $ref: "#/components/parameters/AllLinks"
         - $ref: "#/components/parameters/AllDomainLinks"
+        - $ref: "#/components/parameters/AllLinksText"
         - $ref: "#/components/parameters/WordCountMin"
         - $ref: "#/components/parameters/WordCountMax"
         - $ref: "#/components/parameters/Page"
@@ -1292,6 +1297,28 @@ components:
         multiple-domain-urls:
           summary: Multiple domain URLs
           value: "who.int,nih.gov"
+
+    AllLinksText:
+      description: |
+        The text content of links mentioned in the article. Searches for links where the anchor text contains the specified terms. For multiple terms, use a comma-separated string.
+
+        Example: `"Nvidia, Tesla"`
+
+        **Note**: When this parameter is used, the response includes the `all_links_data` field with detailed link information.
+
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+      name: all_links_text
+      in: query
+      required: false
+      schema:
+        type: string
+      examples:
+        single-text:
+          summary: Single link text
+          value: "Nvidia"
+        multiple-texts:
+          summary: Multiple link texts
+          value: "Nvidia,Tesla"
 
     AuthorName:
       description: |
@@ -2040,6 +2067,8 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              all_links_text:
+                $ref: "#/components/schemas/AllLinksText"
               word_count_min:
                 $ref: "#/components/schemas/WordCountMin"
               word_count_max:
@@ -2140,6 +2169,8 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              all_links_text:
+                $ref: "#/components/schemas/AllLinksText"
               word_count_min:
                 $ref: "#/components/schemas/WordCountMin"
               word_count_max:
@@ -2227,6 +2258,8 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              all_links_text:
+                $ref: "#/components/schemas/AllLinksText"
               word_count_min:
                 $ref: "#/components/schemas/WordCountMin"
               word_count_max:
@@ -2404,6 +2437,8 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              all_links_text:
+                $ref: "#/components/schemas/AllLinksText"
               additional_domain_info:
                 $ref: "#/components/schemas/AdditionalDomainInfo"
               is_news_domain:
@@ -2582,6 +2617,8 @@ components:
                 $ref: "#/components/schemas/AllLinks"
               all_domain_links:
                 $ref: "#/components/schemas/AllDomainLinks"
+              all_links_text:
+                $ref: "#/components/schemas/AllLinksText"
               word_count_min:
                 $ref: "#/components/schemas/WordCountMin"
               word_count_max:
@@ -2973,6 +3010,31 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
+    AllLinksDataItem:
+      title: Link Data Item
+      description: Detailed information about a link found in an article.
+      required:
+        - domain_url
+        - link
+        - text
+      type: object
+      properties:
+        domain_url:
+          title: Domain URL
+          description: The domain of the linked URL.
+          type: string
+          example: "amazon.de"
+        link:
+          title: Link
+          description: The complete URL of the link.
+          type: string
+          example: "https://www.amazon.de/s?k=Künstliche+Intelligenz"
+        text:
+          title: Text
+          description: The anchor text of the link.
+          type: string
+          example: "KI Brillen"
+
     ArticleEntity:
       title: Article Object
       description:
@@ -3127,6 +3189,14 @@ components:
               items:
                 type: string
             - type: string
+          default: []
+        all_links_data:
+          title: All Links Data
+          description: |
+            Detailed information about all links mentioned in the article, including link URL, domain, and anchor text. Only present when the `all_links_text` parameter is used in the request.
+          type: array
+          items:
+            $ref: "#/components/schemas/AllLinksDataItem"
           default: []
         nlp:
           $ref: "#/components/schemas/NlpDataEntity"
@@ -4178,6 +4248,24 @@ components:
         array-input:
           summary: Array of strings
           value: ["who.int", "nih.gov"]
+
+    AllLinksText:
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+      description: |
+        The text content of links mentioned in the article. Searches for links where the anchor text contains the specified terms. For multiple terms, use a comma-separated string or an array of strings.
+
+        Examples:
+        - `"Nvidia, Tesla"`
+        - `["Nvidia", "Tesla"]`
+
+        **Note**: When this parameter is used, the response includes the `all_links_data` field with detailed link information.
+
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+      example: ["Nvidia", "Tesla"]
 
     AuthorName:
       type: string
