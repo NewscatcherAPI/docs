@@ -4544,11 +4544,7 @@ components:
     IsPaidContent:
       type: boolean
       description: |
-        Filters articles by content completeness.
-
-        If false, returns only articles with full content available. If true, returns all articles, including those with only partial content publicly available (e.g., headlines and summaries from paywalled sources).
-
-        **Note**: NewsCatcher only indexes content that is legally accessible and in compliance with the publisher's rules. Articles behind paywalls are included only when publishers make partial content publicly available (such as headlines, summaries, or preview paragraphs). No content is scraped from behind paywalls or in violation of publisher access restrictions.
+        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
       example: false
 
     Links:
