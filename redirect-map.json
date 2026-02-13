@@ -460,18 +460,6 @@
       "status_code": 301
     },
     {
-      "source": "/v3/api-reference/endpoints/search-similar/search-similar-articles-get",
-      "destination": "/news-api/api-reference/endpoints/search-similar/search-similar-articles-get",
-      "type": "permanent",
-      "status_code": 301
-    },
-    {
-      "source": "/v3/api-reference/endpoints/search-similar/search-similar-articles-post",
-      "destination": "/news-api/api-reference/endpoints/search-similar/search-similar-articles-post",
-      "type": "permanent",
-      "status_code": 301
-    },
-    {
       "source": "/v3/api-reference/endpoints/sources/retrieve-sources-get",
       "destination": "/news-api/api-reference/endpoints/sources/retrieve-sources-get",
       "type": "permanent",

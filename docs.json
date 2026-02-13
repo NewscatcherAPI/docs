@@ -232,13 +232,6 @@
                     ]
                   },
                   {
-                    "group": "Search similar",
-                    "pages": [
-                      "news-api/api-reference/endpoints/search-similar/search-similar-articles-get",
-                      "news-api/api-reference/endpoints/search-similar/search-similar-articles-post"
-                    ]
-                  },
-                  {
                     "group": "Sources",
                     "pages": [
                       "news-api/api-reference/endpoints/sources/retrieve-sources-get",
