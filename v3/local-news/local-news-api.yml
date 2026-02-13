@@ -1048,7 +1048,12 @@ components:
     IsPaidContent:
       type: boolean
       description: |
-        If false, returns only articles that have publicly available complete content. Some publishers partially block content, so this setting ensures that only full articles are retrieved.
+        Filters articles by content completeness.
+
+        If false, returns only articles for which full-text content is publicly available.
+        If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
+        
+        **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       example: false
 
     ## Search: SearchRequestDto schema-specific parameters (in addition to BaseRequestDto)
@@ -1393,13 +1398,13 @@ components:
           $ref: "#/components/schemas/NlpDataEntity"
         paid_content:
           type: boolean
-          description: Indicates if the article is paid content.
-        title_translated_en: #  New in v1.2.0
+          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+        title_translated_en:
           type: string
           description: |
             English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
           nullable: true
-        content_translated_en: #  New in v1.2.0
+        content_translated_en:
           type: string
           description: |
             English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
