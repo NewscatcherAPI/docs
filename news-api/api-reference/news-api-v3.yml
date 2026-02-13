@@ -3117,7 +3117,7 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates if the article is paid content.
+          description: True if only partial content is available for this article; false if full content is accessible.
           type: boolean
         parent_url:
           title: Parent URL
@@ -3606,8 +3606,7 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates if the article is paid content.
-          type: boolean
+          description: True if only partial content is available for this article; false if full content is accessible.
         parent_url:
           title: Parent URL
           description: The categorical URL of the article.
