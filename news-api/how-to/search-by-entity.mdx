@@ -1,0 +1,271 @@
+---
+title: How to search articles by entity
+sidebarTitle: Search by entity
+description:
+  Find articles mentioning specific people, organizations, locations, or other
+  named entities
+---
+
+## Overview
+
+Named Entity Recognition (NER) in News API lets you find articles mentioning
+specific people, organizations, locations, or other named entities. This
+provides more precise results than keyword searches and works across all
+languages using English entity names.
+
+## Before you start
+
+Before you begin, ensure you have:
+
+- An active API key for NewsCatcher News API
+- NLP functionality enabled in your subscription plan
+- Basic knowledge of making API requests
+
+## Steps
+
+<Steps>
+    <Step title="Understand entity types">
+
+    News API recognizes four entity types:
+
+    - `PER_entity_name`: Person names (e.g., "Tim Cook", "Elon Musk")
+    - `ORG_entity_name`: Organization names (e.g., "Apple", "Tesla", "European Union")
+    - `LOC_entity_name`: Location names (e.g., "California", "Brussels")
+    - `MISC_entity_name`: Other entities (products, events, nationalities, etc.)
+
+    All entity parameters support boolean operators (`AND`, `OR`, `NOT`), proximity search with `NEAR`, and count-based filtering.
+
+    </Step>
+
+    <Step title="Set up entity search">
+
+    Create a search request that combines keywords with entity recognition:
+
+    <CodeGroup>
+
+    ```json JSON
+    {
+      "q": "\"artificial intelligence\"",
+      "ORG_entity_name": "OpenAI OR Microsoft",
+      "include_nlp_data": true,
+      "lang": "en"
+    }
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    URL = "https://v3-api.newscatcherapi.com/api/search"
+    HEADERS = {"x-api-token": API_KEY}
+
+    PAYLOAD = {
+        "q": "\"artificial intelligence\"",
+        "ORG_entity_name": "OpenAI OR Microsoft",
+        "include_nlp_data": True,
+        "lang": "en"
+    }
+
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    print(json.dumps(response.json(), indent=2))
+    ```
+
+    ```bash cURL
+    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+      -H "Content-Type: application/json" \
+      -H "x-api-token: YOUR_API_KEY" \
+      -d '{
+        "q": "\"artificial intelligence\"",
+        "ORG_entity_name": "OpenAI OR Microsoft",
+        "include_nlp_data": true,
+        "lang": "en"
+      }'
+    ```
+
+    </CodeGroup>
+
+    This searches for AI articles that mention OpenAI or Microsoft as organizations.
+
+    </Step>
+
+    <Step title="Analyze results">
+
+    The response includes entity information in the `nlp` object. Here's a focused example:
+
+    ```json
+    {
+      "status": "ok",
+      "total_hits": 325,
+      "articles": [
+        {
+          "title": "OpenAI Backs California Bill for AI Content Labeling",
+          "language": "en",
+          "nlp": {
+            "ner_PER": [],
+            "ner_ORG": [
+              {
+                "entity_name": "OpenAI",
+                "count": 8
+              },
+              {
+                "entity_name": "Microsoft",
+                "count": 2
+              }
+            ],
+            "ner_LOC": [
+              {
+                "entity_name": "California",
+                "count": 2
+              }
+            ],
+            "ner_MISC": [
+              {
+                "entity_name": "AB 3211",
+                "count": 7
+              }
+            ]
+          }
+        }
+      ]
+    }
+    ```
+
+    The `ner_*` fields show entities found in the original content with their mention counts.
+
+    </Step>
+
+    <Step title="Search across all languages">
+
+    To search named entities in translations, use the translation options for the `search_in` parameter.
+
+    <CodeGroup>
+
+    ```json JSON
+    {
+      "q": "\"monetary policy\"",
+      "ORG_entity_name": "\"European Central Bank\" OR \"Federal Reserve\"",
+      "search_in": "title_content,title_content_translated",
+      "countries": ["DE", "FR", "IT", "ES"],
+      "include_nlp_data": true,
+      "include_translation_fields": true
+    }
+    ```
+
+    ```python Python
+    import requests
+    import json
+
+    API_KEY = "YOUR_API_KEY_HERE"
+    URL = "https://v3-api.newscatcherapi.com/api/search"
+    HEADERS = {"x-api-token": API_KEY}
+
+    PAYLOAD = {
+        "q": "\"monetary policy\"",
+        "ORG_entity_name": "\"European Central Bank\" OR \"Federal Reserve\"",
+        "search_in": "title_content,title_content_translated",
+        "countries": ["DE", "FR", "IT", "ES"],
+        "include_nlp_data": True,
+        "include_translation_fields": True
+    }
+
+    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
+    print(json.dumps(response.json(), indent=2))
+    ```
+
+    ```bash cURL
+    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+      -H "Content-Type: application/json" \
+      -H "x-api-token: YOUR_API_KEY" \
+      -d '{
+        "q": "\"monetary policy\"",
+        "ORG_entity_name": "\"European Central Bank\" OR \"Federal Reserve\"",
+        "search_in": "title_content,title_content_translated",
+        "countries": ["DE", "FR", "IT", "ES"],
+        "include_nlp_data": true,
+        "include_translation_fields": true
+      }'
+    ```
+
+    </CodeGroup>
+
+    This finds articles mentioning the European Central Bank in German ("Europäische Zentralbank"), French ("Banque centrale européenne"), etc., using English entity names.
+
+    The response includes both original and translation entity fields:
+
+    ```json
+    {
+      "articles": [
+        {
+          "title": "EZB senkt Leitzins auf 3,25 Prozent",
+          "title_translated_en": "ECB cuts key interest rate to 3.25 percent",
+          "language": "de",
+          "nlp": {
+            "ner_ORG": null,
+            "translation_ner_ORG": [
+              {
+                "entity_name": "European Central Bank",
+                "count": 3
+              }
+            ]
+          }
+        }
+      ]
+    }
+    ```
+
+    </Step>
+
+    <Step title="Advanced combinations">
+
+    Combine multiple entity types and advanced operators for complex searches:
+
+    ```json
+    {
+      "q": "\"trade policy\" OR tariffs",
+      "ORG_entity_name": "\"World Trade Organization\" OR \"European Commission\"",
+      "PER_entity_name": "\"Ursula von der Leyen\"",
+      "LOC_entity_name": "\"Brussels\" OR \"Geneva\"",
+      "search_in": "title_content,title_content_translated",
+      "include_nlp_data": true,
+      "include_translation_fields": true
+    }
+    ```
+
+    Use COUNT functionality for frequency-based filtering:
+
+    ```json
+    {
+      "q": "\"tech industry\"",
+      "ORG_entity_name": "COUNT(\"Apple\", 2, \"gt\") OR COUNT(\"Microsoft\", 2, \"gt\")",
+      "include_nlp_data": true
+    }
+    ```
+
+    Combine with proximity search:
+
+    ```json
+    {
+      "q": "NEAR(\"artificial intelligence\", \"regulation\", 10)",
+      "ORG_entity_name": "OpenAI OR Google",
+      "search_in": "title_content,title_content_translated",
+      "include_nlp_data": true
+    }
+    ```
+
+    </Step>
+
+</Steps>
+
+<Tip>
+  For comprehensive global coverage, always include both `title_content` and
+  `title_content_translated` in your `search_in` parameter when searching
+  entities across languages.
+</Tip>
+
+## See also
+
+- [Search in translations](/news-api/how-to/search-in-translations)
+- [How to use boolean operators](/news-api/how-to/use-boolean-operators)
+- [How to perform proximity search with NEAR](/news-api/how-to/search-with-near)
+- [NLP features](/news-api/guides-and-concepts/nlp-features)

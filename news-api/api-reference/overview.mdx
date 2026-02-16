@@ -1,0 +1,328 @@
+---
+title: News API overview
+sidebarTitle: Overview
+description:
+  Technical reference for News API endpoints, authentication, and data
+  structures.
+---
+
+# Introduction
+
+News API provides a flexible way to access a comprehensive database of news
+articles from around the world. With v3, you get more control over your queries
+and richer data in your responses. Whether you're building news apps, training
+language models, or analyzing media trends, News API helps you work efficiently
+with large-scale news data.
+
+## Key features
+
+- Advanced querying with boolean operators and proximity search
+- NLP-enriched content
+- Articles clustering and deduplication
+- Multi-language support
+- High volume data retrieval (up to 1000 articles per request)
+
+## Base URL
+
+All API requests must be sent to the following base URL:
+
+```bash
+https://v3-api.newscatcherapi.com/api
+```
+
+## Endpoints
+
+NewsCatcher News API provides the following key endpoints:
+
+1. `/search`: Find relevant articles using keywords, publish date, language,
+   country, and more.
+2. `/latest_headlines`: Retrieve news articles for a specific period, filtered
+   by country, language, topic, or sources.
+3. `/breaking_news`: Retrieves breaking news articles and sorts them based on
+   specified criteria.
+4. `/authors`: Locate articles written by specific authors or journalists.
+5. `/search_by_link`: Find articles that mention specific URLs or domains.
+6. `/sources`: Check available media outlets with the source language, country,
+   name, and URL.
+7. `/aggregation_count`: Get aggregated article counts based on language,
+   country, source, publish date, and more.
+8. `/subscription`: Access details about your API subscription, including plan
+   limits and usage statistics.
+
+All endpoints support `GET` and `POST` methods for flexible integration into
+your applications.
+
+## Request format
+
+Please include your API key in the `x-api-token` header for each request. To
+ensure security, all API requests must be in HTTPS format.
+
+### Example request
+
+<CodeGroup>
+
+```curl cURL
+curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence" \
+  -H "x-api-token: YOUR_API_KEY_HERE"
+```
+
+```python Python
+import requests
+import json
+
+API_KEY = "YOUR_API_KEY_HERE"
+URL = "https://v3-api.newscatcherapi.com/api/search"
+HEADERS = {"x-api-token": API_KEY}
+
+PAYLOAD = {
+    "q": "artificial intelligence"
+}
+
+try:
+    response = requests.get(URL, headers=HEADERS, params=PAYLOAD)
+    response.raise_for_status()
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Failed to fetch articles: {e}")
+```
+
+</CodeGroup>
+
+## Response format
+
+All API responses are in JSON format and typically include the following fields:
+
+<ResponseField name="status" type="string">
+  The status of the request.
+</ResponseField>
+
+<ResponseField name="total_hits" type="integer">
+  The total number of articles matching the query.
+</ResponseField>
+
+<ResponseField name="page" type="integer">
+  The current page number.
+</ResponseField>
+
+<ResponseField name="total_pages" type="integer">
+  The total number of available pages.
+</ResponseField>
+
+<ResponseField name="page_size" type="integer">
+  The number of articles per page.
+</ResponseField>
+
+<ResponseField name="articles" type="array">
+  An array of article objects (when applicable), each with article content,
+  title, links, and other metadata. Depending on the subscription plan, it can
+  include an NLP layer with sentiments, topics, tags, named entities, and more.
+
+  <Expandable title="properties">
+    <ResponseField name="title" type="string">
+      The title of the article.
+    </ResponseField>
+
+    <ResponseField name="author" type="string">
+      The primary author of the article.
+    </ResponseField>
+
+    <ResponseField name="authors" type="array">
+      A list of authors or contributors associated with the article.
+    </ResponseField>
+
+    <ResponseField name="journalists" type="array">
+      A list of journalists who wrote the article, if applicable.
+    </ResponseField>
+
+    <ResponseField name="published_date" type="string">
+      The date and time when the article was published, in ISO 8601 format.
+    </ResponseField>
+
+    <ResponseField name="published_date_precision" type="string">
+      The precision of the published date (e.g., "full", "date").
+    </ResponseField>
+
+    <ResponseField name="updated_date" type="string">
+      The date and time when the article was last updated, in ISO 8601 format.
+    </ResponseField>
+
+    <ResponseField name="updated_date_precision" type="string">
+      The precision of the updated date (e.g., "full", "date").
+    </ResponseField>
+
+    <ResponseField name="link" type="string">
+      The direct URL link to the article.
+    </ResponseField>
+
+    <ResponseField name="domain_url" type="string">
+      The domain of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="full_domain_url" type="string">
+      The full domain URL of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="name_source" type="string">
+      The name of the source where the article is published.
+    </ResponseField>
+
+    <ResponseField name="is_headline" type="boolean">
+      Indicates if the article is a headline.
+    </ResponseField>
+
+    <ResponseField name="paid_content" type="boolean">
+      Indicates whether the source labels the article as paywalled or requiring 
+      a subscription for full access.
+    </ResponseField>
+
+    <ResponseField name="parent_url" type="string">
+      The parent URL of the article's domain.
+    </ResponseField>
+
+    <ResponseField name="country" type="string">
+      The country code of the article's source.
+    </ResponseField>
+
+    <ResponseField name="rights" type="string">
+      The rights information associated with the article.
+    </ResponseField>
+
+    <ResponseField name="rank" type="integer">
+      The SEO rank of the article's source.
+    </ResponseField>
+
+    <ResponseField name="media" type="string">
+      The URL of the media (e.g., image) associated with the article.
+    </ResponseField>
+
+    <ResponseField name="language" type="string">
+      The language code of the article.
+    </ResponseField>
+
+    <ResponseField name="description" type="string">
+      A brief description or summary of the article.
+    </ResponseField>
+
+    <ResponseField name="content" type="string">
+      The full content of the article.
+    </ResponseField>
+
+    <ResponseField name="word_count" type="integer">
+      The total number of words in the article.
+    </ResponseField>
+
+    <ResponseField name="is_opinion" type="boolean">
+      Indicates if the article is an opinion piece.
+    </ResponseField>
+
+    <ResponseField name="twitter_account" type="string">
+      The Twitter account associated with the article's source or author.
+    </ResponseField>
+
+    <ResponseField name="all_links" type="array">
+      A list of all hyperlinks found in the article content.
+    </ResponseField>
+
+    <ResponseField name="all_domain_links" type="array">
+      A list of all domains linked in the article content.
+    </ResponseField>
+
+    <ResponseField name="id" type="string">
+      A unique identifier for the article.
+    </ResponseField>
+
+    <ResponseField name="score" type="float">
+      A relevance score assigned to the article.
+    </ResponseField>
+
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="user_input" type="object">
+  An object reflecting the parameters and filters you used in your request,
+  which helps confirm how the API processed your input and debug any issues if
+  the results are not as expected.
+</ResponseField>
+
+### Example response
+
+```json JSON
+{
+  "status": "ok",
+  "total_hits": 10000,
+  "page": 1,
+  "total_pages": 100,
+  "page_size": 100,
+  "articles": [
+    {
+      "title": "Artificial Intelligence (AI) Consulting Market Size, Regional Status and Outlook 2024–2032",
+      "author": "Precision Reports",
+      "authors": ["Precision Reports", "Information Technology"],
+      "journalists": [],
+      "published_date": "2024-09-05 03:39:18",
+      "published_date_precision": "full",
+      "updated_date": "2024-09-05 03:39:26",
+      "updated_date_precision": "full",
+      "link": "https://medium.com/@precisionreports_jaguar01/artificial-intelligence-ai-consulting-market-size-regional-status-and-outlook-2024-2032-bfba1d710ec7",
+      "domain_url": "medium.com",
+      "full_domain_url": "medium.com",
+      "name_source": "Medium",
+      "is_headline": false,
+      "paid_content": false,
+      "parent_url": "https://medium.com",
+      "country": "US",
+      "rights": "medium.com",
+      "rank": 58,
+      "media": "https://miro.medium.com/v2/resize:fit:1200/1*6qh18sq9x_XkoCBOTWZvOw.png",
+      "language": "en",
+      "description": "Artificial Intelligence (AI) Consulting Market size was valued at USD 7065.95 Million in 2023 and is expected to reach USD 57862.17 Million",
+      "content": "Artificial intelligence consulting is where AI engineers and experts assist business organizations from various industries to adopt AI applications to achieve their goals.\nGlobal Artificial Intelligence (AI) Consulting Market size was valued at USD 7065.95 Million in 2023 and is expected to reach USD 57862.17 Million in 2032, growing at a CAGR of 26.32% from 2023 to 2032...",
+      "word_count": 1387,
+      "is_opinion": false,
+      "twitter_account": "@Medium",
+      "all_links": [
+        "https://www.precisionreports.co/purchase/25803898",
+        "https://www.precisionreports.co/enquiry/request-sample/25803898?utm_source=Medium_Jaguar",
+        "https://speechify.com/medium?source=post_page-----bfba1d710ec7--------------------------------"
+      ],
+      "all_domain_links": [
+        "precisionreports.co",
+        "statuspage.io",
+        "speechify.com"
+      ],
+      "id": "7d96f27e4f0b407b034a5b41d2890792",
+      "score": 19.85728
+    }
+    // ... other articles
+  ],
+  "user_input": {
+    "q": "artificial intelligence",
+    "search_in": ["title_content"],
+    "from_": "2024-08-29T00:00:00",
+    "to_": "2024-09-05T10:55:55.313383",
+    "page": 1,
+    "page_size": 100
+    // ... other inputs
+  }
+}
+```
+
+## Getting started
+
+To start using News API:
+
+1. [Contact our sales team](https://www.newscatcherapi.com/book-a-demo) to
+   discuss your enterprise needs and obtain an API key.
+2. Once you have your API key, check out our
+   [Quickstart guide](/news-api/get-started/quickstart) to make your first API
+   call.
+3. Explore our [Documentation](/news-api/get-started/introduction) to unlock the
+   full potential of the API and integrate it into your systems.
+
+For detailed information on request parameters and response formats, refer to
+the specific endpoint documentation in this API reference.
+
+Remember, News API is more than just a tool - it's your partner in navigating
+the complex world of news data. Whether you're building the next big thing in
+tech or seeking deep insights from global media, we're here to empower your
+journey.

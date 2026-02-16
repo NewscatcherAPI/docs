@@ -1,0 +1,204 @@
+---
+title: Custom tags
+description:
+  Filter and classify news articles using your organization's unique taxonomy.
+sidebarTitle: Custom tags
+---
+
+## Introduction
+
+Custom Tags in News API lets you filter and classify articles using your
+unique taxonomy. This feature adapts to your specific terminology, enabling you
+to track industry trends, monitor events, and analyze specialized topics,
+ensuring you focus on what matters most.
+
+## What is Custom Tags?
+
+Custom Tags is an advanced classification feature that applies your
+organization's unique taxonomy to news articles. It goes beyond simple keyword
+matching - it understands the context and meaning of articles and automatically
+categorizes them according to your specific classification system.
+
+Here's what Custom Tags can do for you:
+
+- Apply your organization's unique classification system to millions of news
+  articles.
+- Filter news content using your specific taxonomy.
+- Get articles automatically tagged according to your classification needs.
+- Access custom-tagged content through a simple API interface.
+
+## How does it work?
+
+Behind the scenes, Custom Tags uses a sophisticated machine learning pipeline to
+understand and classify news articles according to your taxonomy. Let's look at
+how we implement and maintain this system.
+
+<Steps>
+
+<Step title="Understanding taxonomy">
+
+We start with your taxonomy and tag definitions. Our engineering team works with
+you to learn about your domain specifics and collect extra context and examples.
+This research phase ensures our language models have the comprehensive
+understanding needed for accurate classification.
+
+</Step>
+
+<Step title="Initial model training">
+
+We use a large language model (LLM) to create the initial classification system
+based on your enriched taxonomy. This phase involves prompt engineering and
+fine-tuning the model on a diverse dataset of news articles to ensure it
+understands the nuances of your classification requirements and can accurately
+apply your taxonomy.
+
+</Step>
+
+<Step title="Production deployment">
+
+The solution is integrated into our NLP pipeline to classify all incoming news
+articles with your custom tags automatically. Your custom-built classification
+system is now ready and accessible via News API by your API key. All articles
+processed since implementation remain available, ensuring comprehensive
+historical coverage.
+
+</Step>
+
+<Step title="Continuous improvement">
+
+To maintain high accuracy, we continuously monitor the model's performance and
+collect feedback. Regular fine-tuning and retraining help the system stay
+current with evolving news trends and ensure consistent classification quality
+over time.
+
+</Step>
+
+</Steps>
+
+## API integration
+
+Custom Tags are integrated into the News API and available across the
+following endpoints:
+
+- `/search`
+- `/latest_headlines`
+- `/authors`
+- `/search_similar`
+
+<Note>
+  Each taxonomy is organization-specific and protected by your API key, ensuring
+  your custom classification system remains secure and private.
+</Note>
+
+### Request format
+
+To filter articles by your taxonomy tags, use the `custom_tags` parameter
+following this pattern:
+
+- `"custom_tags.taxonomy": "Tag1,Tag2,Tag3"`,
+
+where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tags.
+
+To specify multiple tags:
+
+- For `GET` requests, use a comma-separated string.
+- For `POST` requests, use a comma-separated string or an array of strings.
+
+Examples:
+
+```python
+import requests
+
+url = "https://v3-api.newscatcherapi.com/api/search"
+headers = {
+    "x-api-token": "YOUR_API_KEY"
+}
+
+# Using a comma-separated string
+payload_string = {
+    "q": "*",
+    "custom_tags.my_taxonomy": "Tag1,Tag2,Tag3"
+}
+
+# Using an array of strings
+payload_array = {
+    "q": "*",
+    "custom_tags.my_taxonomy": ["Tag1", "Tag2", "Tag3"]
+}
+
+response = requests.post(url, json=payload_array, headers=headers)
+```
+
+### Response format
+
+When you use Custom Tags, each article in the response includes a `custom_tags`
+field with your taxonomy's classifications:
+
+```json
+{
+  "status": "ok",
+  "total_hits": 1500,
+  "articles": [
+    {
+      "title": "Example Article Title",
+      "custom_tags": {
+        "my_taxonomy": ["Tag1", "Tag2"]
+      }
+    }
+  ]
+}
+```
+
+<Note>
+  The custom tags in the response are always returned as an array of strings,
+  regardless of the request format used.
+</Note>
+
+## Use cases
+
+Let's look at how different organizations might use Custom Tags:
+
+### Content classification
+
+```json
+{
+  "custom_tags.content_type": ["Analysis", "Research", "Interview"]
+}
+```
+
+This helps content teams organize articles by their format and depth.
+
+### Industry monitoring
+
+```json
+{
+  "custom_tags.industry": ["Manufacturing", "Supply Chain", "Logistics"]
+}
+```
+
+Perfect for tracking industry-specific news and developments.
+
+## Best practices
+
+1. **Taxonomy design**
+
+   - Keep tags clear and unambiguous.
+   - Use consistent naming conventions.
+   - Consider hierarchical relationships.
+
+2. **Query optimization**
+
+   - Combine custom tags with other search parameters.
+   - Use date ranges for temporal analysis.
+   - Consider using multiple tags for comprehensive coverage.
+
+3. **Integration tips**
+
+   - Start with broader queries.
+   - Use exact tag names (they're case-sensitive).
+   - Test different tag combinations.
+
+## See also
+
+- [NLP features](/news-api/guides-and-concepts/nlp-features)
+- [API Reference](/news-api/api-reference/search/search-articles-get)

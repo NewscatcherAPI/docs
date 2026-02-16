@@ -1,0 +1,251 @@
+---
+title: "Meet CatchAll: Our recall-first web search API"
+sidebarTitle: Introduction
+description: Find all results, not just top candidates
+---
+
+CatchAll is a web search API that generates unique datasets that don't exist 
+anywhere else on the web. Built on NewsCatcher's proprietary real-world event 
+index, it delivers state-of-the-art recall—finding all relevant events, not just 
+top results.
+
+## How it works
+
+CatchAll processes queries through a multi-stage pipeline that analyzes over 
+50,000 web pages per job:
+
+<Steps>
+  <Step title="Analyze">
+    Generates targeted search queries for NewsCatcher's proprietary news index 
+    and creates validation rules and extraction patterns based on your input.
+  </Step>
+  <Step title="Fetch">
+    Retrieves and processes 50,000+ articles from web sources to ensure 
+    comprehensive coverage.
+  </Step>
+  <Step title="Cluster">
+    Groups related articles into distinct real-world events using the Leiden 
+    algorithm for community detection.
+  </Step>
+  <Step title="Validate">
+    Applies generated validators to filter clusters, ensuring only relevant 
+    events that match your criteria proceed to extraction.
+  </Step>
+  <Step title="Extract">
+    Transforms validated events into structured JSON records with dynamic 
+    schemas tailored to your query.
+  </Step>
+</Steps>
+
+<Note>
+  Processing typically takes 10-15 minutes per job. Poll the status endpoint
+  every 30-60 seconds to track progress through each stage.
+</Note>
+
+<Tip>
+  Each job returns structured JSON records with dynamic schemas. Fields like 
+  `company_name`, `deal_value`, and `acquisition_date` are automatically 
+  generated based on your query.
+  
+  See the [Quickstart > Review response](/web-search-api/get-started/quickstart#steps) 
+  for a complete response example.
+</Tip>
+
+## Key characteristics
+
+<AccordionGroup>
+  <Accordion title="Event-centric index" icon="database">
+    CatchAll searches NewsCatcher's continuously updated index of 2+ billion web pages, 
+    optimized for finding real-world events (acquisitions, approvals, incidents) 
+    within a recent timeframe. The system excels at comprehensive event discovery, 
+    not static content retrieval.
+    
+    <Tip>
+      Learn how to construct effective event queries in 
+      [Write effective queries](/web-search-api/how-to/write-effective-queries).
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Dynamic schemas" icon="flask">
+    Each job generates a unique response schema. Field names and structure in 
+    the `enrichment` object vary between jobs—even with identical inputs.
+
+    **Guaranteed fields in every record:**
+    - `record_id`
+    - `record_title`
+    - `enrichment` object
+    - `citations` array
+
+    **Variable fields:**
+    - All fields inside `enrichment` (names, types, structure)
+
+    <Tip>
+      See [Understanding dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas) 
+      for integration patterns.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Customizable extraction" icon="wand-magic-sparkles">
+    Control what data gets extracted by providing custom validators and enrichments, 
+    or let the system generate them automatically based on your query.
+
+    **Custom validators** filter which events are relevant:
+    ```json
+    {
+      "name": "is_acquisition",
+      "description": "true if article describes an acquisition",
+      "type": "boolean"
+    }
+    ```
+
+    **Custom enrichments** define what data to extract:
+    ```json
+    {
+      "name": "acquiring_company",
+      "description": "Extract the acquiring company name",
+      "type": "company"
+    }
+    ```
+
+    The `company` enrichment type extracts structured data including name, 
+    alternative names, website candidates, people, and address.
+    
+    <Tip>
+      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) endpoint to get suggested validators and 
+      enrichments before submitting your job.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Date range controls" icon="calendar">
+    Specify custom date ranges for article search, or let the system determine 
+    the optimal time window based on your query (default: 5 days).
+
+    Date ranges are validated against your plan's allowed lookback period. 
+    If your requested dates exceed plan limits, the API returns a 400 error 
+    with specific guidance.
+    <Tip>
+      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) 
+      endpoint to preview date adjustments before submitting.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Non-deterministic processing" icon="shuffle">
+    Identical queries can produce different results:
+    - LLMs may generate different keywords, validators, and extractors
+    - Different content sources may be retrieved
+    - Field names and structure vary between runs
+    - Record counts differ
+  </Accordion>
+
+  <Accordion title="Asynchronous operation" icon="clock">
+    Each query creates a job that processes asynchronously. Use the returned 
+    `job_id` to poll the job status and retrieve results when completed. 
+    Processing typically takes 10-15 minutes.
+    
+    Track detailed progress through the [`steps`](/web-search-api/api-reference/jobs/get-job-status#response-steps) 
+    array in the status endpoint response.
+  </Accordion>
+
+  <Accordion title="Batch processing" icon="layer-group">
+    Results become available progressively during the `enriching` stage as 
+    validation completes in batches. Check for `status: "enriching"` to retrieve 
+    partial results before job completion.
+    
+    The `progress_validated` field tracks how many candidate clusters have been 
+    processed. This allows you to access early results while the job continues 
+    processing remaining batches.
+  </Accordion>
+
+  <Accordion title="Job continuation" icon="rotate">
+    Start with fewer records using the `limit` parameter for quick testing, then use
+    [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) to process more 
+    records without re-submitting the query.
+    
+    Continue requests preserve all analysis, validation, and extraction logic 
+    from the original job.
+  </Accordion>
+</AccordionGroup>
+
+## Endpoints
+
+**Base URL:** `https://catchall.newscatcherapi.com`
+
+<Tabs>
+  <Tab title="Jobs">
+    | Endpoint                    |  Method  | Description                     |
+    | --------------------------- | -------- | ------------------------------- |
+    | `/catchAll/initialize`      | `POST`   | Get validator, enrichment, and date suggestions |
+    | `/catchAll/submit`          | `POST`   | Create a new job                |
+    | `/catchAll/continue`        | `POST`   | Continue job with higher limit  |
+    | `/catchAll/jobs/user`       | `GET `   | List all jobs for your API key  |
+    | `/catchAll/status/{job_id}` | `GET`    | Check job processing status     |
+    | `/catchAll/pull/{job_id}`   | `GET`    | Retrieve job results            |
+  
+    <Tip>
+      Track detailed progress using the `steps` array in the status endpoint response. 
+      See [Job status > steps](/web-search-api/api-reference/jobs/get-job-status#response-steps) for details.
+    </Tip>
+  
+  </Tab>
+
+  <Tab title="Monitors">
+    | Endpoint                                  |  Method  | Description                    |
+    | ----------------------------------------- | -------- | ------------------------------ |
+    | `/catchAll/monitors/create`               | `POST`   | Create scheduled monitor       |
+    | `/catchAll/monitors/{monitor_id}`         | `PATCH`  | Update monitor webhook         |
+    | `/catchAll/monitors`                      | `GET`    | List all monitors              |
+    | `/catchAll/monitors/{monitor_id}/jobs`    | `GET`    | List jobs for a monitor        |
+    | `/catchAll/monitors/pull/{monitor_id}`    | `GET `   | Get aggregated monitor results |
+    | `/catchAll/monitors/{monitor_id}/enable`  | `POST`   | Enable a monitor               |
+    | `/catchAll/monitors/{monitor_id}/disable` | `POST`   | Disable a monitor              |
+  </Tab>
+
+  <Tab title="Meta">
+    | Endpoint   |  Method  | Description              |
+    | ---------- | -------- | ------------------------ |
+    | `/health`  | `GET`    | Check API health status  |
+    | `/version` | `GET`    | Get API version info     |
+  </Tab>
+
+</Tabs>
+
+## Use cases
+
+- **Market intelligence**: Company earnings, M&A activity, product launches
+- **Regulatory monitoring**: Policy changes, government actions, compliance
+  updates
+- **Business development**: Partnerships, funding rounds, market entries
+- **Competitive analysis**: Competitor activities and announcements
+- **Research automation**: Structured data extraction for analysis
+- **News aggregation**: Topic-specific news with structured output
+
+## What's next
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart"
+    icon="rocket"
+    href="/web-search-api/get-started/quickstart"
+  >
+    Make your first request and get results in minutes
+  </Card>
+  <Card title="Monitors" icon="clock" href="/web-search-api/guides-and-concepts/monitors">
+    Automate recurring queries with scheduled execution
+  </Card>
+  <Card
+    title="API Reference"
+    icon="book"
+    href="/web-search-api/api-reference/jobs/create-job"
+  >
+    Detailed endpoint documentation and parameters
+  </Card>
+  <Card
+    title="Dynamic Schemas"
+    icon="code"
+    href="/web-search-api/guides-and-concepts/dynamic-schemas"
+  >
+    Handle variable response structures in your integration
+  </Card>
+</CardGroup>
+
+<Note>For technical support, contact us at support@newscatcherapi.com.</Note>

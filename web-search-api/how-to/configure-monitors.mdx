@@ -1,0 +1,534 @@
+---
+title: Configure monitors
+sidebarTitle: Configure monitors
+description: Configure reliable, efficient monitors and optimize performance.
+---
+
+This guide covers best practices for monitor configuration, webhook
+implementation, and performance optimization.
+
+<Tip>
+  Encountering issues? See [Troubleshoot
+  monitors](/web-search-api/how-to/troubleshoot-monitors) for solutions to common
+  problems.
+</Tip>
+
+## Choose appropriate schedules
+
+Match schedule frequency to your data needs and budget. Each scheduled run creates a billable job.
+
+| Use Case            | Schedule             | Rationale                                   |
+| ------------------- | -------------------- | ------------------------------------------- |
+| News monitoring     | Daily                | Balances freshness with cost                |
+| Regulatory updates  | Daily or weekly      | Changes occur infrequently                  |
+| Market intelligence | Daily or weekly      | Adjust based on update cycles               |
+
+<Warning>
+  **Minimum interval: 24 hours.** Schedules more frequent than daily are not supported.
+</Warning>
+
+### Schedule formats
+
+Define schedules in natural language with explicit timezone.
+
+<Tabs>
+  <Tab title="Daily schedules">
+    - `"every day at 12 PM UTC"`
+    - `"every day at 9 AM EST"`
+  </Tab>
+
+  <Tab title="Weekly schedules">
+    - `"every Monday at 9 AM EST"`
+    - `"every Friday at 5 PM GMT"`
+  </Tab>
+
+  <Tab title="Multi-day intervals">
+    - `"every 2 days at 3 PM UTC"`
+    - `"every 3 days at 9 AM EST"`
+    - `"every 7 days at 12 PM UTC"`
+  </Tab>
+
+  <Tab title="Invalid (sub-24h)">
+    - ❌ `"every hour"`
+    - ❌ `"every 6 hours"`
+    - ❌ `"every 12 hours"`
+  </Tab>
+</Tabs>
+
+**Common cron patterns:**
+
+| Schedule                     | Cron Expression | Valid                    |
+| ---------------------------- | --------------- | ------------------------ |
+| `"every day at 12 PM UTC"`   | `0 12 * * *`    | ✅ Daily                 |
+| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | ✅ Weekly                |
+| `"every 6 hours"`            | `0 */6 * * *`   | ❌ Below 24h minimum     |
+
+### Testing procedure
+
+Test your schedule format before production use.
+
+<Steps>
+  <Step title="Create test monitor">
+    Create a monitor with your desired schedule (e.g., `"every day at 3 PM UTC"`)
+  </Step>
+
+  <Step title="Wait for execution">
+    Wait for the scheduled time to pass.
+  </Step>
+
+  <Step title="Verify cron expression">
+    Check the `cron_expression` field:
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/jobs" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Step>
+
+  <Step title="Create production monitor">
+    If correct, create your production monitor. If incorrect, adjust the schedule format.
+  </Step>
+</Steps>
+
+## Implement robust webhooks
+
+Configure webhook endpoints to handle notifications reliably.
+
+### Endpoint requirements
+
+Your webhook endpoint must:
+
+1. **Return 2xx status code** within 5 seconds.
+2. **Be publicly accessible** (not localhost or private network).
+3. **Use HTTPS** (not HTTP).
+4. **Handle POST requests** with JSON body.
+
+### Quick implementation
+
+Return 200 immediately and process asynchronously to avoid timeouts:
+
+<Tabs>
+  <Tab title="Python">
+
+    ```python
+    from flask import Flask, request, jsonify
+    import logging
+
+    app = Flask(__name__)
+    logging.basicConfig(level=logging.INFO)
+
+    @app.route('/catchall/webhook', methods=['POST'])
+    def handle_catchall_webhook():
+        try:
+            # Get payload
+            payload = request.json
+            logging.info(f"Received webhook: {payload['monitor_id']}")
+
+            # Return 200 immediately - process async
+            process_webhook_async(payload)
+            return jsonify({"status": "received"}), 200
+
+        except Exception as e:
+            logging.error(f"Webhook error: {e}")
+            # Return 200 even on error to avoid retries
+            return jsonify({"status": "error"}), 200
+
+    def process_webhook_async(payload):
+        """Queue for background processing"""
+        monitor_id = payload['monitor_id']
+        records_count = payload['records_count']
+
+        if records_count > 0:
+            # Your processing logic here
+            save_records(payload['records'])
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    import express from "express";
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/catchall/webhook", async (req, res) => {
+      try {
+        // Get payload
+        const payload = req.body;
+        console.log(`Received webhook: ${payload.monitor_id}`);
+
+        // Return 200 immediately
+        res.status(200).json({ status: "received" });
+
+        // Process asynchronously (don't await)
+        processWebhookAsync(payload);
+      } catch (error) {
+        console.error("Webhook error:", error);
+        // Return 200 even on error to avoid retries
+        res.status(200).json({ status: "error" });
+      }
+    });
+
+    async function processWebhookAsync(payload: any) {
+      const { monitor_id, records_count } = payload;
+
+      if (records_count > 0) {
+        // Your processing logic here
+        await saveRecords(payload.records);
+      }
+    }
+
+    app.listen(3000, () => {
+      console.log("Webhook server running on port 3000");
+    });
+    ```
+
+  </Tab>
+
+  <Tab title="Java">
+    ```java
+    import org.springframework.web.bind.annotation.*;
+    import org.springframework.http.ResponseEntity;
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import java.util.Map;
+    import java.util.concurrent.CompletableFuture;
+
+    @RestController
+    @RequestMapping("/catchall")
+    public class WebhookController {
+        private static final Logger logger = LoggerFactory.getLogger(WebhookController.class);
+
+        @PostMapping("/webhook")
+        public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Map<String, Object> payload) {
+            try {
+                // Get payload
+                String monitorId = (String) payload.get("monitor_id");
+                logger.info("Received webhook: {}", monitorId);
+
+                // Return 200 immediately - process async
+                processWebhookAsync(payload);
+                return ResponseEntity.ok(Map.of("status", "received"));
+
+            } catch (Exception e) {
+                logger.error("Webhook error: ", e);
+                // Return 200 even on error to avoid retries
+                return ResponseEntity.ok(Map.of("status", "error"));
+            }
+        }
+
+        private void processWebhookAsync(Map<String, Object> payload) {
+            CompletableFuture.runAsync(() -> {
+                String monitorId = (String) payload.get("monitor_id");
+                Integer recordsCount = (Integer) payload.get("records_count");
+
+                if (recordsCount != null && recordsCount > 0) {
+                    // Your processing logic here
+                    saveRecords((List<?>) payload.get("records"));
+                }
+            });
+        }
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+<Tip>
+  If webhooks aren't firing, see [Troubleshoot: Webhook not
+  firing](/web-search-api/how-to/troubleshoot-monitors#webhook-not-firing).
+</Tip>
+
+<Expandable title="Add retry logic with exponential backoff">
+
+Implement exponential backoff for webhook processing failures:
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import time
+
+    def process_webhook_with_retry(payload, max_retries=3):
+        """Process webhook with exponential backoff"""
+        for attempt in range(max_retries):
+            try:
+                # Your processing logic
+                process_records(payload['records'])
+                return True
+
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+                    time.sleep(wait_time)
+                    continue
+                else:
+                    # Log failure after all retries
+                    log_webhook_failure(payload, str(e))
+                    return False
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    async function processWebhookWithRetry(
+      payload: any,
+      maxRetries: number = 3
+    ): Promise<boolean> {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+          // Your processing logic
+          await processRecords(payload.records);
+          return true;
+        } catch (error) {
+          if (attempt < maxRetries - 1) {
+            const waitTime = Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+            await new Promise((resolve) => setTimeout(resolve, waitTime));
+            continue;
+          } else {
+            // Log failure after all retries
+            await logWebhookFailure(payload, error.message);
+            return false;
+          }
+        }
+      }
+      return false;
+    }
+    ```
+  </Tab>
+
+  <Tab title="Java">
+    ```java
+    import java.util.Map;
+    import java.util.List;
+
+    public boolean processWebhookWithRetry(Map<String, Object> payload, int maxRetries) {
+        for (int attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                // Your processing logic
+                processRecords((List<?>) payload.get("records"));
+                return true;
+
+            } catch (Exception e) {
+                if (attempt < maxRetries - 1) {
+                    long waitTime = (long) Math.pow(2, attempt) * 1000; // 1s, 2s, 4s
+                    try {
+                        Thread.sleep(waitTime);
+                    } catch (InterruptedException ie) {
+                        Thread.currentThread().interrupt();
+                        return false;
+                    }
+                } else {
+                    // Log failure after all retries
+                    logWebhookFailure(payload, e.getMessage());
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+    ```
+  </Tab>
+</Tabs>
+
+</Expandable>
+
+<Expandable title="Add webhook logging">
+
+Log all webhook events for debugging:
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    import json
+    from datetime import datetime
+
+    def log_webhook(payload, status):
+        """Log webhook receipt and processing status"""
+        log_entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "monitor_id": payload['monitor_id'],
+            "latest_job_id": payload['latest_job_id'],
+            "records_count": payload['records_count'],
+            "status": status
+        }
+
+        with open('webhook_log.jsonl', 'a') as f:
+            f.write(json.dumps(log_entry) + '\n')
+    ```
+
+  </Tab>
+
+  <Tab title="TypeScript">
+    ```typescript
+    import * as fs from "fs";
+
+    function logWebhook(payload: any, status: string): void {
+      const logEntry = {
+        timestamp: new Date().toISOString(),
+        monitor_id: payload.monitor_id,
+        latest_job_id: payload.latest_job_id,
+        records_count: payload.records_count,
+        status: status,
+      };
+
+      fs.appendFileSync(
+        "webhook_log.jsonl",
+        JSON.stringify(logEntry) + "\n",
+        "utf8"
+      );
+    }
+    ```
+
+  </Tab>
+
+  <Tab title="Java">
+    ```java
+    import com.fasterxml.jackson.databind.ObjectMapper;
+    import java.io.FileWriter;
+    import java.io.IOException;
+    import java.time.Instant;
+    import java.util.HashMap;
+    import java.util.Map;
+
+    public void logWebhook(Map<String, Object> payload, String status) {
+        Map<String, Object> logEntry = new HashMap<>();
+        logEntry.put("timestamp", Instant.now().toString());
+        logEntry.put("monitor_id", payload.get("monitor_id"));
+        logEntry.put("latest_job_id", payload.get("latest_job_id"));
+        logEntry.put("records_count", payload.get("records_count"));
+        logEntry.put("status", status);
+
+        try (FileWriter writer = new FileWriter("webhook_log.jsonl", true)) {
+            ObjectMapper mapper = new ObjectMapper();
+            writer.write(mapper.writeValueAsString(logEntry) + "\n");
+        } catch (IOException e) {
+            logger.error("Failed to write webhook log", e);
+        }
+    }
+    ```
+
+  </Tab>
+</Tabs>
+
+</Expandable>
+
+## Update monitor configuration
+
+Modify webhook settings for existing monitors without recreating them.
+
+### When to update
+
+Update monitor webhooks when you need to:
+- Change webhook endpoint URL
+- Modify authentication headers
+- Switch HTTP method (POST/PUT)
+- Update query parameters
+
+<Note>
+  **Schedule and reference job cannot be modified.** To change the query or schedule, 
+  create a new monitor.
+</Note>
+
+### Update procedure
+
+<Steps>
+  <Step title="Prepare new webhook config">
+    Define your updated webhook configuration with new URL, headers, or method.
+  </Step>
+
+  <Step title="Send update request">
+
+<Tabs>
+  <Tab title="Python">
+```python
+    from newscatcher_catchall import CatchAllApi
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+    monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+    # Update webhook
+    response = client.monitors.update_monitor(
+        monitor_id=monitor_id,
+        webhook={
+            "url": "https://new-endpoint.com/webhook",
+            "method": "POST",
+            "headers": {"Authorization": "Bearer NEW_TOKEN"}
+        }
+    )
+    print(f"Updated: {response.monitor_id}")
+```
+  </Tab>
+
+  <Tab title="TypeScript">
+```typescript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+    const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+    // Update webhook
+    const response = await client.monitors.updateMonitor({
+      monitor_id: monitorId,
+      webhook: {
+        url: "https://new-endpoint.com/webhook",
+        method: "POST",
+        headers: { Authorization: "Bearer NEW_TOKEN" }
+      }
+    });
+    console.log(`Updated: ${response.monitor_id}`);
+```
+  </Tab>
+
+  <Tab title="Java">
+```java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+    import com.newscatcher.catchall.types.WebhookDto;
+    import java.util.Map;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+    // Update webhook
+    var response = client.monitors().updateMonitor(
+        monitorId,
+        UpdateMonitorRequestDto.builder()
+            .webhook(WebhookDto.builder()
+                .url("https://new-endpoint.com/webhook")
+                .method("POST")
+                .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
+                .build())
+            .build()
+    );
+    System.out.println("Updated: " + response.getMonitorId().orElse("N/A"));
+```
+  </Tab>
+</Tabs>
+
+  </Step>
+
+  <Step title="Verify update">
+    List your monitors to confirm the webhook configuration was updated:
+```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors" \
+      -H "x-api-key: YOUR_API_KEY"
+```
+    
+    Check the `webhook` field in the response.
+  </Step>
+</Steps>
+
+<Tip>
+  Updates take effect immediately. The next scheduled execution uses the new webhook 
+  configuration.
+</Tip>
+
+## See also
+
+- [Monitors overview](/web-search-api/guides-and-concepts/monitors)
+- [Troubleshoot monitors](/web-search-api/how-to/troubleshoot-monitors)
+- [API reference](/web-search-api/api-reference/monitors/create-monitor)

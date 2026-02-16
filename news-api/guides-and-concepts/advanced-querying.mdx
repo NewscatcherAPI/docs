@@ -1,0 +1,147 @@
+---
+title: Advanced querying techniques
+sidebarTitle: Advanced querying
+description:
+  Master advanced querying techniques to enhance the precision and relevance of
+  your searches
+---
+
+## Overview
+
+Advanced querying techniques allow users to construct sophisticated search
+queries, enabling efficient retrieval of precise and relevant news content.
+These techniques are crucial for productive information extraction from the vast
+database of articles available through the API.
+
+## Key querying techniques
+
+In the context of the NewsCatcher News API, advanced querying techniques
+refer to using specific syntax and operators within the `q` parameter to create
+complex, highly targeted search queries. These techniques include exact
+matching, boolean operators, wildcards, and proximity-based searching.
+
+### Exact match ("double quotes")
+
+Use double quotes to search for an exact phrase or name.
+
+- Syntax: `"phrase or name"`
+- Example: `q="Tim Cook"`
+- Use case: Always use double quotes for company names, person names, and
+  specific phrases.
+
+Without quotes, the query is treated as individual terms combined with the `AND`
+operator. For example, `q=Tim Cook` is equivalent to `q=Tim AND Cook`.
+
+#### Escaping double quotes in JSON queries
+
+To use exact match syntax in JSON queries, you must escape double quotes by
+adding a backslash `\` before each double quote. This ensures the JSON is valid
+and the query is interpreted correctly.
+
+**Example:**
+
+    ```json
+    {
+      "q": "presidential election",
+      "PER_entity_name": "\"Kamala Harris\" AND \"Donald Trump\"",
+      "include_nlp_data": true
+    }
+    ```
+
+<Tip>
+  Always use backslashes `\` before double quotes within query strings to
+  maintain exact match syntax in JSON.
+</Tip>
+
+### Boolean operators
+
+#### `AND`
+
+- Ensures all specified terms are present in the text.
+- It's the default operator when multiple words are used without quotes.
+- Syntax: `term1 AND term2` or simply `term1 term2`
+- Example: `q=Microsoft AND Tesla` or `q=Microsoft Tesla`
+
+#### `OR`
+
+- Matches articles containing either of the specified terms.
+- Syntax: `term1 OR term2`
+- Example: `q=(Apple AND Cook) OR (Microsoft AND Gates)`
+
+#### `NOT`
+
+- Excludes articles containing the specified term.
+- Syntax: `term1 NOT term2`
+- Example: `q=Tesla NOT "Elon Musk"`
+
+### Wildcards (\* and ?)
+
+- `*`: Matches any string of any length.
+- `?`: Matches any single character.
+- Example: `q=Microsoft AND C?O` (matches CEO, CFO, CTO, etc.)
+
+### Proximity-based search (`NEAR`)
+
+The `NEAR` operator finds articles where specified terms appear close to each
+other.
+
+- Syntax: `NEAR("phrase_A", "phrase_B", distance, in_order)`
+- Example: `q=NEAR("browser", "Edge", 15)`
+- This finds articles where "browser" and "Edge" appear within 15 words of each
+  other.
+- If the `in_order` parameter (default: false) can ensure phrase_B appears after
+  phrase_A when set to true.
+
+Limitations:
+
+- Maximum 4 words per phrase
+- Maximum 3 phrases per NEAR operation
+- Maximum distance of 100 words
+
+## Best practices
+
+1. Start with broader searches and refine as needed.
+2. Use double quotes for companies, person names, and specific phrases.
+3. Use parentheses to group related terms in complex queries with boolean
+   operators.
+4. Utilize `NEAR` to find related terms within a specific context.
+5. URL-encode the `q` parameter in `GET` requests to prevent issues with special
+   characters.
+6. Check the `user_input` field in the JSON response to confirm the correct
+   interpretation of your keywords.
+7. Combine multiple techniques for more precise results.
+
+## Examples of complex queries
+
+- Market Research:
+
+```bash
+q="artificial intelligence" AND (healthcare OR "medical research") AND NEAR("market growth", "emerging trends", 20)
+```
+
+- Competitive Analysis:
+
+```bash
+q=("Apple" OR "Google") AND "smartphone market" AND NOT ("Samsung" OR "Huawei")
+```
+
+- Event Monitoring:
+
+```bash
+q=("climate change" OR "global warming") AND (conference* OR summit) AND NEAR("Paris agreement", implementation, 15)
+```
+
+## Comparison of techniques
+
+| Technique                     | Strengths                             | Limitations                   | Best For                  |
+| ----------------------------- | ------------------------------------- | ----------------------------- | ------------------------- |
+| Exact Match                   | Precise phrase matching               | May miss relevant variations  | Specific names or phrases |
+| Boolean Operators             | Versatile, combines multiple concepts | Can become complex            | Comprehensive searches    |
+| Wildcards                     | Broadens search to include variations | Can return irrelevant results | Exploring related terms   |
+| Proximity-Based Search (NEAR) | Finds related terms in context        | Limited to 100-word distance  | Concept relationships     |
+
+## Related resources
+
+- [How to use boolean operators](/news-api/how-to/use-boolean-operators)
+- [Proximity search with NEAR](/news-api/how-to/search-with-near)
+- [API Reference](/news-api/api-reference/overview)

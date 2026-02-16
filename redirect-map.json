@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema",
+  "version": "1.0.0",
+  "generated": "2025-02-10",
+  "description": "URL redirect mappings for documentation portal restructure",
+  "metadata": {
+    "project": "NewsCatcher API Documentation",
+    "change": "Remove the v3 prefix and introduce a new structure: Home | Web Search API | News API | Local News API. Flatten API reference docs and use a consistent pattern for other documentation types.",
+    "total_redirects": 98
+  },
+  "redirects": [
+    {
+      "source": "/docs/v3/catch-all/overview/introduction",
+      "destination": "/docs/web-search-api/get-started/introduction",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/overview/quickstart",
+      "destination": "/docs/web-search-api/get-started/quickstart",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/overview/monitors",
+      "destination": "/docs/web-search-api/guides-and-concepts/monitors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/overview/dynamic-schemas",
+      "destination": "/docs/web-search-api/guides-and-concepts/dynamic-schemas",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/overview/understanding-dynamic-schemas",
+      "destination": "/docs/web-search-api/guides-and-concepts/dynamic-schemas",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/overview/changelog",
+      "destination": "/docs/web-search-api/get-started/changelog",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/how-to/write-effective-queries",
+      "destination": "/docs/web-search-api/how-to/write-effective-queries",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/how-to/configure-monitors",
+      "destination": "/docs/web-search-api/how-to/configure-monitors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/how-to/troubleshoot-monitors",
+      "destination": "/docs/web-search-api/how-to/troubleshoot-monitors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/initialize-job",
+      "destination": "/docs/web-search-api/api-reference/jobs/initialize-job",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/create-job",
+      "destination": "/docs/web-search-api/api-reference/jobs/create-job",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/continue-job",
+      "destination": "/docs/web-search-api/api-reference/jobs/continue-job",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/list-user-jobs",
+      "destination": "/docs/web-search-api/api-reference/jobs/list-user-jobs",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/get-job-status",
+      "destination": "/docs/web-search-api/api-reference/jobs/get-job-status",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/get-job-results",
+      "destination": "/docs/web-search-api/api-reference/jobs/get-job-results",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/create-monitor",
+      "destination": "/docs/web-search-api/api-reference/monitors/create-monitor",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/update-monitor",
+      "destination": "/docs/web-search-api/api-reference/monitors/update-monitor",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/list-monitors",
+      "destination": "/docs/web-search-api/api-reference/monitors/list-monitors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/list-monitor-jobs",
+      "destination": "/docs/web-search-api/api-reference/monitors/list-monitor-jobs",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/get-monitor-results",
+      "destination": "/docs/web-search-api/api-reference/monitors/get-monitor-results",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/enable-monitor",
+      "destination": "/docs/web-search-api/api-reference/monitors/enable-monitor",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/disable-monitor",
+      "destination": "/docs/web-search-api/api-reference/monitors/disable-monitor",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/webhook-payload",
+      "destination": "/docs/web-search-api/api-reference/monitors/webhook-payload",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/health",
+      "destination": "/docs/web-search-api/api-reference/meta/health",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/endpoints/version",
+      "destination": "/docs/web-search-api/api-reference/meta/version",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/libraries/python",
+      "destination": "/docs/web-search-api/libraries/python",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/libraries/typescript",
+      "destination": "/docs/web-search-api/libraries/typescript",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/libraries/java",
+      "destination": "/docs/web-search-api/libraries/java",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/integrations/n8n",
+      "destination": "/docs/web-search-api/integrations/n8n",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/integrations/make",
+      "destination": "/docs/web-search-api/integrations/make",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/catch-all/integrations/langchain",
+      "destination": "/docs/web-search-api/integrations/langchain",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/get-started/overview",
+      "destination": "/docs/news-api/get-started/introduction",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/get-started/quickstart",
+      "destination": "/docs/news-api/get-started/quickstart",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/get-started/libraries",
+      "destination": "/docs/news-api/get-started/libraries",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/get-started/news-api-v3-subscription-plans",
+      "destination": "/docs/news-api/get-started/subscription-plans",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/advanced-querying",
+      "destination": "/docs/news-api/guides-and-concepts/advanced-querying",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/clustering-news-articles",
+      "destination": "/docs/news-api/guides-and-concepts/clustering-news-articles",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/articles-deduplication",
+      "destination": "/docs/news-api/guides-and-concepts/articles-deduplication",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/nlp-features",
+      "destination": "/docs/news-api/guides-and-concepts/nlp-features",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/custom-tags",
+      "destination": "/docs/news-api/guides-and-concepts/custom-tags",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/entity-disambiguation",
+      "destination": "/docs/news-api/guides-and-concepts/entity-disambiguation",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/breaking-news",
+      "destination": "/docs/news-api/guides-and-concepts/breaking-news",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/robots-txt-compliance",
+      "destination": "/docs/news-api/guides-and-concepts/robots-txt-compliance",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/guides-and-concepts/working-with-historical-data",
+      "destination": "/docs/news-api/guides-and-concepts/working-with-historical-data",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/use-boolean-operators",
+      "destination": "/docs/news-api/how-to/use-boolean-operators",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/search-with-near",
+      "destination": "/docs/news-api/how-to/search-with-near",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/search-by-entity",
+      "destination": "/docs/news-api/how-to/search-by-entity",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/search-by-url",
+      "destination": "/docs/news-api/how-to/search-by-url",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/work-with-translations",
+      "destination": "/docs/news-api/how-to/search-in-translations",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/paginate-large-datasets",
+      "destination": "/docs/news-api/how-to/paginate-large-datasets",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/retrieve-more-than-10k-articles",
+      "destination": "/docs/news-api/how-to/retrieve-more-than-10k-articles",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/check-sources-coverage",
+      "destination": "/docs/news-api/how-to/check-sources-coverage",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/validate-queries-python-sdk",
+      "destination": "/docs/news-api/how-to/validate-queries-python-sdk",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/troubleshooting/error-handling",
+      "destination": "/docs/news-api/troubleshooting/error-handling",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/troubleshooting/request-tracing-correlation-ids",
+      "destination": "/docs/news-api/troubleshooting/request-tracing-correlation-ids",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/troubleshooting/report-bugs",
+      "destination": "/docs/news-api/troubleshooting/report-bugs",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/introduction",
+      "destination": "/docs/news-api/api-reference/overview",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/authentication",
+      "destination": "/docs/news-api/api-reference/authentication",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/rate-limits",
+      "destination": "/docs/news-api/api-reference/rate-limits",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/errors",
+      "destination": "/docs/news-api/api-reference/errors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/http-headers",
+      "destination": "/docs/news-api/api-reference/http-headers",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/overview/enumerated-parameters",
+      "destination": "/docs/news-api/api-reference/enumerated-parameters",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/search/search-articles-get",
+      "destination": "/docs/news-api/api-reference/search/search-articles-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/search/search-articles-post",
+      "destination": "/docs/news-api/api-reference/search/search-articles-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
+      "destination": "/docs/news-api/api-reference/latest-headlines/retrieve-latest-headlines-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post",
+      "destination": "/docs/news-api/api-reference/latest-headlines/retrieve-latest-headlines-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
+      "destination": "/docs/news-api/api-reference/breaking-news/retrieve-breaking-news-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/breaking-news/retrieve-breaking-news-post",
+      "destination": "/docs/news-api/api-reference/breaking-news/retrieve-breaking-news-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/authors/search-articles-by-author-get",
+      "destination": "/docs/news-api/api-reference/authors/search-articles-by-author-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/authors/search-articles-by-author-post",
+      "destination": "/docs/news-api/api-reference/authors/search-articles-by-author-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get",
+      "destination": "/docs/news-api/api-reference/search-by-link/search-articles-by-links-or-ids-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post",
+      "destination": "/docs/news-api/api-reference/search-by-link/search-articles-by-links-or-ids-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/sources/retrieve-sources-get",
+      "destination": "/docs/news-api/api-reference/sources/retrieve-sources-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/sources/retrieve-sources-post",
+      "destination": "/docs/news-api/api-reference/sources/retrieve-sources-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
+      "destination": "/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post",
+      "destination": "/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get",
+      "destination": "/docs/news-api/api-reference/subscription/retrieve-subscription-plan-information-get",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post",
+      "destination": "/docs/news-api/api-reference/subscription/retrieve-subscription-plan-information-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/libraries/python",
+      "destination": "/docs/news-api/libraries/python",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/libraries/typescript",
+      "destination": "/docs/news-api/libraries/typescript",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/libraries/java",
+      "destination": "/docs/news-api/libraries/java",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/libraries/go",
+      "destination": "/docs/news-api/libraries/go",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/libraries/csharp",
+      "destination": "/docs/news-api/libraries/csharp",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/api-reference/endpoints",
+      "destination": "/docs/news-api/api-reference/overview",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation",
+      "destination": "/docs/news-api/get-started/introduction",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/documentation/how-to/search-in-translations",
+      "destination": "/docs/news-api/how-to/search-in-translations",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/overview/introduction",
+      "destination": "/docs/local-news-api/get-started/introduction",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/overview/quickstart",
+      "destination": "/docs/local-news-api/get-started/quickstart",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/overview/local-news-api-subscription-plans",
+      "destination": "/docs/local-news-api/get-started/subscription-plans",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/overview/location-detection-methods",
+      "destination": "/docs/local-news-api/guides-and-concepts/location-detection-methods",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/overview/geonames-filtering",
+      "destination": "/docs/local-news-api/guides-and-concepts/geonames-filtering",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/search/search-articles-post",
+      "destination": "/docs/local-news-api/api-reference/search/search-articles-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/search/search-advanced-post",
+      "destination": "/docs/local-news-api/api-reference/search/search-advanced-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/latest-headlines/retrieve-latest-headlines-post",
+      "destination": "/docs/local-news-api/api-reference/latest-headlines/retrieve-latest-headlines-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/latest-headlines/latest-headlines-advanced-post",
+      "destination": "/docs/local-news-api/api-reference/latest-headlines/latest-headlines-advanced-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/sources/retrieve-sources-post",
+      "destination": "/docs/local-news-api/api-reference/sources/retrieve-sources-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints/search-by/search-articles-by-identifiers-post",
+      "destination": "/docs/local-news-api/api-reference/search-by/search-articles-by-identifiers-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/v3/local-news/endpoints",
+      "destination": "/docs/local-news-api/api-reference/search/search-articles-post",
+      "type": "permanent",
+      "status_code": 301
+    }
+  ],
+  "wildcard_rules": [
+    {
+      "pattern": "/docs/v3/catch-all/*",
+      "destination_pattern": "/docs/web-search-api/*",
+      "description": "Catch-all rule for any missed Web Search API paths",
+      "priority": 100
+    },
+    {
+      "pattern": "/docs/v3/documentation/*",
+      "destination_pattern": "/docs/news-api/*",
+      "description": "Catch-all rule for any missed News API documentation paths",
+      "priority": 90
+    },
+    {
+      "pattern": "/docs/v3/api-reference/*",
+      "destination_pattern": "/docs/news-api/api-reference/*",
+      "description": "Catch-all rule for any missed News API reference paths",
+      "priority": 90
+    },
+    {
+      "pattern": "/docs/v3/local-news/*",
+      "destination_pattern": "/docs/local-news-api/*",
+      "description": "Catch-all rule for any missed Local News API paths",
+      "priority": 90
+    }
+  ]
+}

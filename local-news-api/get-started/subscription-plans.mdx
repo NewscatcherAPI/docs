@@ -1,0 +1,103 @@
+---
+title: Local News API subscription plans
+sidebarTitle: Subscription plans
+description:
+  Select a Local News API plan that matches your needs - from standard NLP
+  analysis to advanced AI-powered location features.
+---
+
+<Note>
+  Each plan includes specialized location detection methods, GeoNames filtering,
+  articles clustering, NLP analysis, and comprehensive metadata. Plans differ in
+  their specialized features and processing capabilities.
+</Note>
+
+## Available plans
+
+<Tabs>
+  <Tab title="Standard">
+    **Plan ID**: `v3_local_news_nlp`
+
+    Standard plan provides comprehensive NLP capabilities for content analysis and location-based monitoring:
+
+    <Check>Access complete article metadata and clustering</Check>
+    <Check>Categorize content across 15+ themes (Business, Tech, Politics, and more)</Check>
+    <Check>Detect named entities (PER, ORG, LOC, MISC)</Check>
+    <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
+    <Check>Get AI-generated article summaries</Check>
+    <Check>Use 5 location detection methods: `dedicated_source`, `local_section`, `regional_source`, `standard_format`, and `proximity_mention`</Check>
+    <Check>Access both standard and advanced endpoints with GeoNames filtering</Check>
+    <Check>Search across languages with English translation fields</Check>
+    <Check>Filter by publisher location with countries parameter</Check>
+
+  </Tab>
+  <Tab title="Embeddings">
+    **Plan ID**: `v3_local_news_nlp_embeddings`
+
+    Embeddings plan adds vector embeddings for advanced content analysis:
+
+    <Check>Access all Standard NLP features</Check>
+    <Check>Get 1024-dimensional vector embeddings through `nlp.new_embeddings`</Check>
+    <Check>Use the multilingual-e5-large model for embeddings generation</Check>
+    <Check>Enable semantic search in your applications</Check>
+    <Check>Build similarity-based news aggregations</Check>
+
+  </Tab>
+  <Tab title="AI Extraction">
+    **Plan ID**: `v3_local_news_ai_extraction_nlp`
+
+    AI Extraction plan adds AI-powered location features:
+
+    <Check>Access all Standard NLP features</Check>
+    <Check>Extract locations from article content using AI</Check>
+    <Check>Access all 6 location detection methods including `ai_extracted`</Check>
+    <Check>Filter content using the `detection_methods` parameter with the `ai_extracted` method</Check>
+    <Check>Access AI-extracted location data starting from September 24, 2024</Check>
+
+  </Tab>
+</Tabs>
+
+## Technical specifications
+
+| Feature                  | Standard | Embeddings | AI Extraction |
+| ------------------------ | -------- | ---------- | ------------- |
+| **Core Features**        |
+| Article Metadata         | ✓        | ✓          | ✓             |
+| Clustering               | ✓        | ✓          | ✓             |
+| **NLP Features**         |
+| Theme Analysis           | ✓        | ✓          | ✓             |
+| Entity Recognition       | ✓        | ✓          | ✓             |
+| Sentiment Analysis       | ✓        | ✓          | ✓             |
+| Vector Embeddings        | -        | ✓          | -             |
+| **Location Features**    |
+| Standard Endpoints       | ✓        | ✓          | ✓             |
+| Advanced Endpoints       | ✓        | ✓          | ✓             |
+| GeoNames Filtering       | ✓        | ✓          | ✓             |
+| AI Location Extraction   | -        | -          | ✓             |
+| Location Validation      | ✓        | ✓          | ✓             |
+| **Translation Features** |
+| Cross-language Search    | ✓        | ✓          | ✓             |
+| Translation Fields       | ✓        | ✓          | ✓             |
+| NLP on Translations      | ✓        | ✓          | ✓             |
+| **Publisher Filtering**  |
+| Countries Parameter      | ✓        | ✓          | ✓             |
+
+<Tip>
+  For detailed information on location detection methods available in each plan,
+  see [Location detection
+  methods](/local-news-api/guides-and-concepts/location-detection-methods).
+</Tip>
+
+## Support
+
+If you need help selecting a plan, contact our team:
+
+- For pricing and sales:
+  [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
+- For technical questions:
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
+
+<Tip>
+  [Book a demo](https://www.newscatcherapi.com/book-a-demo) and obtain your API
+  key.
+</Tip>

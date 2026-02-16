@@ -1,0 +1,244 @@
+---
+title: CatchAll API changelog
+sidebarTitle: Changelog
+description: Track updates, improvements, and fixes to the CatchAll API.
+rss: true
+---
+
+<Update label="1.0.0" description="2026-02-05">
+## Stable release with enhanced control and structured company enrichments
+
+CatchAll API reaches v1.0.0 with improved query customization, date range
+controls, and structured company enrichments.
+
+**Features:**
+
+- **Initialize endpoint**: Get suggested validators, enrichments, and date
+  ranges before submitting jobs. Returns `date_modification_message` when
+  requested dates exceed plan limits.
+- **Date range controls**: Specify `start_date` and `end_date` in submit
+  requests. System validates against plan limits and returns 400 errors for
+  invalid ranges.
+- **Custom validators and enrichments**: Define custom validation criteria and
+  extraction fields directly in submit requests instead of relying on automatic
+  generation.
+- **Company enrichment type**: Extract structured company data including name,
+  alternative names, website candidates, people, and address using the new
+  `company` enrichment type.
+- **Paginated user jobs**: List user jobs endpoint now supports `page` and
+  `page_size` parameters for efficient retrieval of job history.
+
+**Endpoints:**
+
+- [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) — Get
+  validator, enrichment, and date range suggestions.
+- Enhanced [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Now
+  accepts date ranges, validators, and enrichments.
+- Enhanced [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) —
+  Now supports pagination.
+
+**Improvements:**
+
+- Enhanced deduplication logic reduces duplicate records across job executions.
+- Status endpoint returns more accurate current processing stage.
+- User jobs endpoint returns results sorted by creation date (most recent
+  first).
+
+</Update>
+
+<Update label="0.6.1" description="2026-01-13">
+## Job continuation and early result access
+
+**Features:**
+
+- **Job continuation**: Submit jobs with the optional `limit` parameter for fast
+  testing. Review results and continue jobs with `/catchAll/continue` to process
+  more records without restarting.
+- **Early result access**: Pull results during the `enriching` stage without
+  waiting for job completion. A new `progress_validated` field shows validation
+  progress as results become available in batches.
+- **Monitor updates**: Update webhook configuration for existing monitors
+  without recreating them.
+
+**Endpoints:**
+
+- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) — Continue
+  completed job with higher limit.
+- [`PATCH /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/monitors/update-monitor)
+  — Update monitor webhook configuration.
+
+**Improvements:**
+
+- Expanded search range provides broader coverage for improved recall.
+
+</Update>
+
+<Update label="0.5.1" description="2025-12-11">
+## API response enhancements and monitor configuration
+
+**Features:**
+
+- **Enrichments metadata**: Job pull endpoint returns `enrichments` array
+  listing all extracted field names.
+- **Human-readable schedules**: Monitor list includes `schedule_human_readable`
+  alongside cron expressions.
+- **Webhook visibility**: Monitor list exposes full webhook configuration
+  including URL, method, and headers.
+
+**Improvements:**
+
+- Pull endpoints return all citations without limits.
+- Monitors require minimum 24-hour intervals between executions.
+- First webhook execution includes complete reference job results.
+- Improved validation error messages for invalid schedules.
+
+</Update>
+
+<Update label="0.4.10" description="2025-11-18">
+## Status tracking and monitor improvements
+
+Enhanced status tracking with processing steps and improved monitor
+functionality for time-constrained queries.
+
+**Features:**
+
+- **Progress tracking**: Status endpoint now returns detailed
+  [`steps`](/web-search-api/api-reference/jobs/get-job-status#response-steps) array showing
+  completion state for each processing stage.
+- **Monitor timestamps**: Monitor records include `added_on` and `updated_on`
+  fields to track when each data record was first collected and last updated
+  across job executions.
+- **Time-constrained jobs**: Monitors now work with reference jobs that include
+  time constraints. The system automatically adapts date-specific validators for
+  each execution.
+
+**Improvements:**
+
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) now
+  returns only user-created jobs, excluding repeated monitor jobs.
+- Monitor responses use
+  [`run_info`](/web-search-api/api-reference/monitors/get-monitor-results#response-run-info)
+  structure with `first_run` and `last_run` timestamps instead of `date_range`
+  for clearer execution metadata.
+- Improved error handling in monitor creation endpoint with specific validation
+  messages for invalid schedules and incomplete reference jobs.
+
+</Update>
+
+<Update label="0.4.5" description="2025-11-08">
+## Monitor webhooks and deduplication
+
+Introduced webhook notifications and intelligent deduplication for monitors to
+streamline automated data collection workflows.
+
+**Features:**
+
+- **Webhook notifications**: Receive real-time POST notifications when scheduled
+  monitor jobs complete, including monitor ID, latest job ID, and record counts.
+- **Intelligent deduplication**: Monitors automatically eliminate duplicate
+  records across job executions, sending only new results to webhooks.
+- **Monitor management**: Enable or disable monitors to control automated job
+  execution.
+
+**Endpoints:**
+
+- [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors) — List all
+  monitors for your API key.
+- [`POST /catchAll/monitors/{monitor_id}/enable`](/web-search-api/api-reference/monitors/enable-monitor)
+  — Enable a disabled monitor.
+- [`POST /catchAll/monitors/{monitor_id}/disable`](/web-search-api/api-reference/monitors/disable-monitor)
+  — Disable an active monitor.
+
+**Improvements:**
+
+- Reduced default date range from 14 days to 5 days for faster job processing.
+- Limited maximum date range to 30 days to maintain optimal performance.
+- Fixed special characters displaying incorrectly in article text.
+- Improved error handling when monitor jobs have incomplete data.
+
+</Update>
+
+<Update label="0.3.8" description="2025-11-02">
+## Pagination and reliability improvements
+
+Enhanced core functionality with pagination fixes, job tracking capabilities,
+and improved data quality.
+
+**Endpoints:**
+
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) — List all
+  jobs created with your API key.
+- [`GET /catchAll/monitors/pull/{monitor_id}`](/web-search-api/api-reference/monitors/get-monitor-results)
+  — Retrieve aggregated results from all monitor jobs.
+
+**Improvements:**
+
+- Fixed pagination returning all records instead of the requested page.
+- Enhanced pagination support for handling large result sets with `page` and
+  `page_size` parameters.
+- Fixed jobs failing to complete during data extraction.
+- Fixed special characters displaying incorrectly in article text.
+- Fixed timezone errors when scheduling monitor jobs.
+- Fixed monitors failing to execute all configured queries.
+
+</Update>
+
+<Update label="0.3.0" description="2025-10-23">
+## Monitors feature
+
+Introduced [monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
+schedule recurring data collection with natural language and webhook
+notifications.
+
+**Features:**
+
+- **Schedule automation**: Create monitors that run queries on schedules defined
+  in natural language (e.g., "every day at 12 PM UTC").
+- **Job tracking**: Track all jobs associated with a monitor.
+- **Execution history**: Retrieve job execution history and status for each
+  monitor.
+- **Webhook notifications**: Get notified when scheduled jobs complete.
+
+**Endpoints:**
+
+- [`POST /catchAll/monitors/create`](/web-search-api/api-reference/monitors/create-monitor) —
+  Create scheduled monitor.
+- [`GET /catchAll/monitors/{monitor_id}/jobs`](/web-search-api/api-reference/monitors/list-monitor-jobs)
+  — List monitor jobs.
+
+**Improvements:**
+
+- Added date range information to results showing the time period covered.
+- Fixed incorrect date filtering in search results.
+
+</Update>
+
+<Update label="0.1.0" description="2025-10-20">
+## Initial beta release
+
+CatchAll API transforms natural language questions into structured, validated
+data extracted from web sources.
+
+**Features:**
+
+- **Natural language processing**: Submit queries in plain English and receive
+  structured data with source citations.
+- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**: Response
+  structures adapt to your query, generating relevant fields automatically.
+- **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
+  validation, and extraction phases.
+- **Real-time status tracking**: Monitor job progress from submission to
+  completion.
+
+**Endpoints:**
+
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Create jobs
+  with natural language queries.
+- [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status) —
+  Check processing status.
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results) —
+  Retrieve structured results with citations.
+
+→ [Get started with the quickstart guide](/web-search-api/get-started/quickstart)
+
+</Update>

@@ -1,0 +1,118 @@
+---
+title: News API subscription plans
+sidebarTitle: Subscription plans
+description: Select a News API plan that matches your needs
+---
+
+<Note>
+  Each plan includes support for multiple languages, advanced querying
+  capabilities, and comprehensive metadata. Plans differ in their specialized
+  features and processing capabilities.
+</Note>
+
+## Available plans
+
+<Tabs>
+ <Tab title="NLP" icon="brain">
+   **Plan ID**: `v3_nlp`
+
+Core features plus natural language processing capabilities for original content
+and English translations.
+
+**Core features:**
+
+- Retrieve up to 1,000 articles per request
+- Filter by article type (headline, opinion, paid content)
+- URL and domain link filtering
+- Access predefined top sources by country
+- Filter by news domain type and source metadata
+- Filter by robots.txt compliance to ensure publisher permissions
+- Access historical data since 2019
+
+**NLP features:**
+
+- Categorize content across 17 themes (`Business`, `Tech`, `Politics`, and more)
+- Detect named entities (`PER`, `ORG`, `LOC`, `MISC`)
+- Analyze sentiment in titles and content on a `-1.0` to `1.0` scale
+- Get AI-generated article summaries
+- Enable article clustering with customizable thresholds
+- Use content deduplication
+- Access English translations of non-English content
+- **Full NLP processing on translations:** All NLP features (sentiment,
+  entities, summaries) work on English translations of foreign content
+
+ </Tab>
+ <Tab title="IPTC Tags" icon="tags">
+   **Plan ID**: `v3_nlp_iptc_tags`
+
+All NLP plan features plus standardized content categorization:
+
+- Use `IPTC` media topic tags for standardized news categorization
+- Access `IAB` content categories for digital advertising
+- Enable hierarchical topic structures
+- Implement industry-standard content taxonomy
+- Enhanced content targeting capabilities
+
+ </Tab>
+ <Tab title="Embeddings" icon="vector-square">
+   **Plan ID**: `v3_nlp_embeddings`
+
+All IPTC Tags plan features plus pre-calculated vector embeddings:
+
+- Access 1024-dimensional vector embeddings via `nlp.new_embeddings` field
+- Embeddings generated using `multilingual-e5-large` model
+- Use embedding data to build semantic search and similarity analysis
+- Create custom content clustering and recommendation systems
+
+ </Tab>
+</Tabs>
+
+<Warning>
+  To ensure uninterrupted service, implement appropriate rate limiting in your
+  application based on your plan's specifications.
+</Warning>
+
+## Custom solutions
+
+Beyond our standard plans, we offer specialized enterprise solutions:
+
+<Columns cols={2}>
+  <Card title="Events Intelligence" icon="calendar-check">
+    Track and analyze events across multiple sources with standardized
+    participant and location data
+  </Card>
+  <Card title="Entity Resolution" icon="users">
+    Resolve unique identifiers for similarly-named companies and individuals
+    with precise entity matching
+  </Card>
+  <Card title="Custom Tags" icon="tag">
+    Implement organization-specific taxonomy for content classification
+  </Card>
+  <Card title="Insights Engine" icon="lightbulb">
+    Identify market opportunities through tracking product releases and industry
+    trends
+  </Card>
+</Columns>
+
+## Next steps
+
+1. Review feature documentation:
+   - [NLP features](/news-api/guides-and-concepts/nlp-features)
+   - [Search in translations](/news-api/how-to/search-in-translations)
+   - [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data)
+2. Explore the [API Reference](/news-api/api-reference/search/search-articles-post)
+3. [Book a demo](https://www.newscatcherapi.com/book-a-demo).
+
+## Support
+
+Need help selecting a plan? Contact our team:
+
+- For pricing and sales:
+  [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
+- For technical questions:
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
+
+<Tip>
+  All plans include a free trial period. Contact our sales team to discuss your
+  specific needs and try out the features.
+</Tip>

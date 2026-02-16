@@ -1,0 +1,394 @@
+---
+title: HTTP headers
+sidebarTitle: HTTP headers
+description: Understanding request and response headers in the NewsCatcher APIs
+---
+
+This guide explains the HTTP headers used in the NewsCatcher APIs, including
+required request headers, useful response headers, and best practices for
+working with them.
+
+## Request headers
+
+These are the headers you should include when making requests:
+
+| Header         | Required | Description                                                     | Example                          |
+| -------------- | -------- | --------------------------------------------------------------- | -------------------------------- |
+| `x-api-token`  | Yes      | Your API key for authentication                                 | `x-api-token: abcd1234...`       |
+| `Content-Type` | Yes\*    | Content type of the request body (\*required for POST requests) | `Content-Type: application/json` |
+| `Accept`       | No       | Preferred response format                                       | `Accept: application/json`       |
+
+### Authentication header
+
+The `x-api-token` header is required for all API requests and contains your API
+key:
+
+```http
+POST /api/search HTTP/1.1
+Host: v3-api.newscatcherapi.com
+x-api-token: YOUR_API_KEY
+```
+
+<Warning>
+  Never share your API key publicly or commit it to source control. Consider
+  using environment variables or a secure secrets manager to store it.
+</Warning>
+
+### Content-Type header
+
+For POST requests, always set the `Content-Type` header to `application/json`:
+
+```http
+POST /api/search HTTP/1.1
+Host: v3-api.newscatcherapi.com
+x-api-token: YOUR_API_KEY
+Content-Type: application/json
+Accept: application/json
+
+{
+  "q": "bitcoin",
+  "from_": "30d"
+}
+```
+
+## Response headers
+
+These are the headers returned in API responses that provide useful information:
+
+| Header              | Description                                                  | Example                                                |
+| ------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
+| `Date`              | When the response was generated                              | `Date: Sat, 22 Mar 2025 13:49:07 GMT`                  |
+| `Content-Type`      | Format of the response body                                  | `Content-Type: application/json`                       |
+| `Transfer-Encoding` | How the response is encoded for transfer                     | `Transfer-Encoding: chunked`                           |
+| `Connection`        | Connection status between client and server                  | `Connection: keep-alive`                               |
+| `x-process-time`    | Time taken to process the request (in seconds)               | `x-process-time: 0.7334954738616943`                   |
+| `correlation-id`    | Unique identifier for tracing the request through our system | `correlation-id: a702576c-2007-4b23-9ba4-cad305c84275` |
+| `cf-cache-status`   | Cloudflare cache status                                      | `cf-cache-status: DYNAMIC`                             |
+| `Server`            | Server software handling the request                         | `Server: cloudflare`                                   |
+| `CF-RAY`            | Cloudflare ray ID for request tracing                        | `CF-RAY: 924626834b0fbfb4-WAW`                         |
+| `Content-Encoding`  | Compression method used for the response body                | `Content-Encoding: br`                                 |
+
+### Correlation ID header
+
+The `correlation-id` header contains a unique identifier for your request:
+
+```http
+correlation-id: a702576c-2007-4b23-9ba4-cad305c84275
+```
+
+<Info>
+  Always include this ID when contacting support about an issue with an API
+  request. It helps us quickly locate your specific request in our logs.
+</Info>
+
+### Process time header
+
+The `x-process-time` header shows how long it took our system to process your
+request (in seconds):
+
+```http
+x-process-time: 0.7334954738616943
+```
+
+This can be useful for performance monitoring and optimization. If you
+consistently see high process times, consider optimizing your queries or
+implementing caching strategies.
+
+## Code examples
+
+Here are the examples of how to work with headers in your requests for differnt
+programming languages:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY_HERE" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json" \
+  -d '{"q": "bitcoin", "from_": "30d"}' \
+  -i
+
+# The -i flag displays response headers in the output
+# Look for the correlation-id in the response headers
+```
+
+```python Python
+import requests
+import json
+
+url = "https://v3-api.newscatcherapi.com/api/search"
+headers = {
+    "x-api-token": "YOUR_API_KEY_HERE",
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+}
+payload = {
+    "q": "bitcoin",
+    "from_": "30d"
+}
+
+try:
+    response = requests.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+
+    # Access response headers
+    correlation_id = response.headers.get('correlation-id')
+    process_time = response.headers.get('x-process-time')
+
+    print(f"Correlation ID: {correlation_id}")
+    print(f"Process Time: {process_time}")
+    print(json.dumps(response.json(), indent=2))
+except requests.exceptions.RequestException as e:
+    print(f"Request failed: {e}")
+```
+
+```javascript Node.js
+const axios = require("axios");
+
+const url = "https://v3-api.newscatcherapi.com/api/search";
+const headers = {
+  "x-api-token": "YOUR_API_KEY_HERE",
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
+const payload = {
+  q: "bitcoin",
+  from_: "30d",
+};
+
+axios
+  .post(url, payload, { headers })
+  .then((response) => {
+    // Access response headers
+    const correlationId = response.headers["correlation-id"];
+    const processTime = response.headers["x-process-time"];
+
+    console.log(`Correlation ID: ${correlationId}`);
+    console.log(`Process Time: ${processTime}`);
+    console.log(JSON.stringify(response.data, null, 2));
+  })
+  .catch((error) => {
+    console.error(`Request failed: ${error.message}`);
+  });
+```
+
+```typescript TypeScript
+import axios, { AxiosResponse, AxiosError } from "axios";
+
+const url: string = "https://v3-api.newscatcherapi.com/api/search";
+const headers: Record<string, string> = {
+  "x-api-token": "YOUR_API_KEY_HERE",
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
+const payload = {
+  q: "bitcoin",
+  from_: "30d",
+};
+
+axios
+  .post(url, payload, { headers })
+  .then((response: AxiosResponse) => {
+    // Access response headers
+    const correlationId: string = response.headers["correlation-id"];
+    const processTime: string = response.headers["x-process-time"];
+
+    console.log(`Correlation ID: ${correlationId}`);
+    console.log(`Process Time: ${processTime}`);
+    console.log(JSON.stringify(response.data, null, 2));
+  })
+  .catch((error: AxiosError) => {
+    console.error(`Request failed: ${error.message}`);
+  });
+```
+
+```go Go
+package main
+
+import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+)
+
+func main() {
+	url := "https://v3-api.newscatcherapi.com/api/search"
+	apiKey := "YOUR_API_KEY_HERE"
+
+	// Create request payload
+	payload := map[string]string{
+		"q":      "bitcoin",
+		"from_":  "30d",
+	}
+
+	payloadBytes, err := json.Marshal(payload)
+	if err != nil {
+		log.Fatalf("Failed to marshal JSON: %v", err)
+	}
+
+	// Create request
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(payloadBytes))
+	if err != nil {
+		log.Fatalf("Failed to create request: %v", err)
+	}
+
+	// Add headers
+	req.Header.Set("x-api-token", apiKey)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
+
+	// Send request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Fatalf("Request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	// Access response headers
+	correlationID := resp.Header.Get("correlation-id")
+	processTime := resp.Header.Get("x-process-time")
+
+	fmt.Printf("Correlation ID: %s\n", correlationID)
+	fmt.Printf("Process Time: %s\n", processTime)
+
+	// Read and print response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalf("Failed to read response body: %v", err)
+	}
+
+	var prettyJSON bytes.Buffer
+	if err := json.Indent(&prettyJSON, body, "", "  "); err != nil {
+		log.Fatalf("Failed to format JSON: %v", err)
+	}
+
+	fmt.Println(prettyJSON.String())
+}
+```
+
+```php PHP
+<?php
+
+$url = "https://v3-api.newscatcherapi.com/api/search";
+$apiKey = "YOUR_API_KEY_HERE";
+
+$payload = json_encode([
+    "q" => "bitcoin",
+    "from_" => "30d"
+]);
+
+$ch = curl_init($url);
+
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+curl_setopt($ch, CURLOPT_HEADER, true); // Include headers in the response
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    "x-api-token: $apiKey",
+    "Content-Type: application/json",
+    "Accept: application/json"
+]);
+
+$response = curl_exec($ch);
+
+if ($response === false) {
+    echo "Request failed: " . curl_error($ch);
+} else {
+    // Split headers and body
+    $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+    $headerStr = substr($response, 0, $headerSize);
+    $body = substr($response, $headerSize);
+
+    // Parse headers
+    $headers = [];
+    $headerLines = explode("\n", $headerStr);
+    foreach ($headerLines as $line) {
+        $parts = explode(':', $line, 2);
+        if (isset($parts[1])) {
+            $headers[trim($parts[0])] = trim($parts[1]);
+        }
+    }
+
+    // Access specific headers
+    $correlationId = isset($headers['correlation-id']) ? $headers['correlation-id'] : 'Not found';
+    $processTime = isset($headers['x-process-time']) ? $headers['x-process-time'] : 'Not found';
+
+    echo "Correlation ID: $correlationId\n";
+    echo "Process Time: $processTime\n";
+    echo json_encode(json_decode($body), JSON_PRETTY_PRINT);
+}
+
+curl_close($ch);
+?>
+```
+
+```ruby Ruby
+require 'net/http'
+require 'uri'
+require 'json'
+
+url = URI.parse('https://v3-api.newscatcherapi.com/api/search')
+api_key = 'YOUR_API_KEY_HERE'
+
+payload = {
+  q: 'bitcoin',
+  from_: '30d'
+}
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = (url.scheme == 'https')
+
+request = Net::HTTP::Post.new(url.path)
+request['x-api-token'] = api_key
+request['Content-Type'] = 'application/json'
+request['Accept'] = 'application/json'
+request.body = payload.to_json
+
+begin
+  response = http.request(request)
+
+  # Access response headers
+  correlation_id = response['correlation-id']
+  process_time = response['x-process-time']
+
+  puts "Correlation ID: #{correlation_id}"
+  puts "Process Time: #{process_time}"
+  puts JSON.pretty_generate(JSON.parse(response.body))
+rescue StandardError => e
+  puts "Request failed: #{e.message}"
+end
+```
+
+</CodeGroup>
+
+## Best practices
+
+1. **Always use the correct authentication header**: Use `x-api-token` instead
+   of `x-api-key` for authentication.
+
+2. **Always log correlation IDs**: Store correlation IDs alongside your
+   application logs for easier troubleshooting.
+
+3. **Monitor process times**: Keep track of `x-process-time` values to identify
+   performance trends or issues.
+
+4. **Handle headers consistently**: Implement consistent header handling in your
+   error handling and logging code.
+
+5. **Be aware of case sensitivity**: While HTTP headers are case-insensitive in
+   the protocol, many libraries preserve the original casing when accessing
+   them.
+
+6. **Add proper Content-Type headers**: Always include the
+   `Content-Type: application/json` header for POST requests.
+
+## Related resources
+
+- [Request tracing with correlation IDs](/news-api/troubleshooting/request-tracing-correlation-ids)
+- [Error handling](/news-api/troubleshooting/error-handling)
+- [Authentication](/news-api/api-reference/authentication)

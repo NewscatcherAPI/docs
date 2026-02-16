@@ -1,0 +1,58 @@
+---
+title: C# SDK
+sidebarTitle: C#
+description: C# client library for News API
+---
+
+C# SDK provides access to the News API from C# applications.
+
+## Installation
+
+```bash
+# Using the .NET CLI
+dotnet add package NewscatcherApi
+
+# Using NuGet Package Manager Console
+Install-Package NewscatcherApi
+```
+
+## Basic usage
+
+```csharp
+using NewscatcherApi;
+
+var client = new NewscatcherApiClient("YOUR_API_KEY");
+await client.Search.PostAsync(
+    new SearchPostRequest
+    {
+        Q = "renewable energy",
+        PredefinedSources = new List<string>() { "top 50 US" },
+        Lang = new List<string>() { "en" },
+        From = new DateTime(2024, 01, 01, 00, 00, 00, 000),
+        To = new DateTime(2024, 06, 30, 00, 00, 00, 000),
+        AdditionalDomainInfo = true,
+        IsNewsDomain = true,
+    }
+);
+```
+
+## Error handling
+
+```csharp
+using NewscatcherApi;
+
+try {
+    var response = await client.Search.PostAsync(...);
+} catch (NewscatcherApiApiException e) {
+    Console.WriteLine(e.Body);
+    Console.WriteLine(e.StatusCode);
+}
+```
+
+For complete documentation, including retry configuration and timeouts, see the
+[GitHub repository](https://github.com/Newscatcher/newscatcher-csharp).
+
+## Resources
+
+- [GitHub repository](https://github.com/Newscatcher/newscatcher-csharp)
+- [NuGet package](https://nuget.org/packages/NewscatcherApi)
