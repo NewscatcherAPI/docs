@@ -34,53 +34,53 @@ tags:
     externalDocs:
       description:
         Search for articles by keyword, language, country, source, and more.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search/search-articles-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/search/search-articles-get
   - name: LatestHeadlines
     description: Operations to retrieve latest headlines.
     externalDocs:
       description:
         Retrieve the latest headlines since a specified date, with filtering
         options.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/latest-headlines/retrieve-latest-headlines-get
   - name: Breaking News
     description: Operations to retrieve breaking news articles.
     externalDocs:
       description: Retrieve breaking news articles.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/breaking-news/breaking-news-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/breaking-news/breaking-news-get
   - name: Authors
     description: Operations to search by author.
     externalDocs:
       description: Search for articles by author.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/authors/search-articles-by-author-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/authors/search-articles-by-author-get
   - name: SearchLink
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-by-link/search-articles-by-links-or-ids-get
   - name: SearchSimilar
     description: Operations to find similar articles.
     externalDocs:
       description: Find articles similar to a given query.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/search-similar/search-similar-articles-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-similar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
       description:
         Retrieve the list of available sources, filtered by language and
         country.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/sources/retrieve-sources-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/sources/retrieve-sources-get
   - name: Aggregation
     description: Operations to aggregate news counts.
     externalDocs:
       description:
         Aggregate news counts based on specified criteria such as keyword,
         language, country, source, and more.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get
   - name: Subscription
     description: Operations to get subscription info.
     externalDocs:
       description: Retrieve information about your subscription plan.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get
+      url: https://www.newscatcherapi.com/docs/news-api/api-reference/subscription/retrieve-subscription-plan-information-get
 
 paths:
   /api/search:
@@ -893,7 +893,7 @@ components:
 
         Example: `"en, es"`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       name: lang
       in: query
       required: false
@@ -913,7 +913,7 @@ components:
 
         Example: `"fr, de"`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       name: not_lang
       in: query
       required: false
@@ -947,7 +947,7 @@ components:
 
         Example: `"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
@@ -967,7 +967,7 @@ components:
 
         Example:`"US, CA"`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       name: not_countries
       in: query
       required: false
@@ -1972,7 +1972,7 @@ components:
 
         Example: `"General News Outlets,Tech News and Updates"`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#news-type-news-type).
       name: news_type
       in: query
       required: false
@@ -3930,7 +3930,7 @@ components:
         - `"en,es"`
         - `["en", "es"]`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       example: ["en", "es"]
 
     NotLang:
@@ -3946,7 +3946,7 @@ components:
         - `"fr,de"`
         - `["fr", "de"]`
 
-        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#language-lang-and-not-lang).
+        To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       example: ["fr", "de"]
 
     SearchIn:
@@ -3981,7 +3981,7 @@ components:
         - `"US,CA"`
         - `["US", "CA"]`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       example: ["US", "CA"]
 
     NotCountries:
@@ -3997,7 +3997,7 @@ components:
         - `"UK,FR"`
         - `["UK", "FR"]`
 
-        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#country-country-and-not-country).
+        To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       example: ["UK", "FR"]
 
     Sources:
@@ -4775,7 +4775,7 @@ components:
         - `"General News Outlets,Tech News and Updates"`
         - `["General News Outlets", "Tech News and Updates"]`
 
-        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/overview/enumerated-parameters#news-type-news-type).
+        For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#news-type-news-type).
 
       example: ["General News Outlets", "Tech News and Updates"]
 

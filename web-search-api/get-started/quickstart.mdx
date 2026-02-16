@@ -147,12 +147,12 @@ Before you begin, make sure you meet these prerequisites:
     <Note>
       Replace `YOUR_API_KEY_HERE` with your actual API key. Only `query` is 
       required - all other parameters are optional. For details, see 
-      [`POST /catchAll/submit`](/web-search-api/api-reference/endpoints/jobs/create-job).
+      [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job).
     </Note>
 
     <Tip>
       Use `limit=10` for faster testing, then continue processing more with 
-      [`POST /catchAll/continue`](/web-search-api/api-reference/endpoints/jobs/continue-job) without 
+      [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) without 
       restarting.
     </Tip>
 
@@ -418,7 +418,7 @@ Before you begin, make sure you meet these prerequisites:
 <Warning>
   Field names in the `enrichment` object are LLM-generated and vary between jobs, 
   even with identical queries. The example shows one possible structure for 
-  acquisition queries. Use [`POST /catchAll/initialize`](/web-search-api/api-reference/endpoints/jobs/initialize-job) 
+  acquisition queries. Use [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) 
   to preview suggested fields, or define custom enrichments for consistent schemas.
 </Warning>
 
@@ -430,7 +430,7 @@ Now that you've made your first calls to the CatchAll API:
    [Monitors](/web-search-api/guides-and-concepts/monitors).
 2. Read [Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)
    to understand variable response structures in your code.
-3. Explore the [API Reference](/web-search-api/api-reference/endpoints/jobs/create-job) for detailed
+3. Explore the [API Reference](/web-search-api/api-reference/jobs/create-job) for detailed
    endpoint documentation.
 
 <Note>Need help? Contact our support team at support@newscatcherapi.com</Note>

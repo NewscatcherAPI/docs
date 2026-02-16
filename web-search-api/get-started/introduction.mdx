@@ -111,7 +111,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     alternative names, website candidates, people, and address.
     
     <Tip>
-      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/endpoints/jobs/initialize-job) endpoint to get suggested validators and 
+      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) endpoint to get suggested validators and 
       enrichments before submitting your job.
     </Tip>
   </Accordion>
@@ -124,7 +124,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     If your requested dates exceed plan limits, the API returns a 400 error 
     with specific guidance.
     <Tip>
-      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/endpoints/jobs/initialize-job) 
+      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) 
       endpoint to preview date adjustments before submitting.
     </Tip>
   </Accordion>
@@ -142,7 +142,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     `job_id` to poll the job status and retrieve results when completed. 
     Processing typically takes 10-15 minutes.
     
-    Track detailed progress through the [`steps`](/web-search-api/api-reference/endpoints/jobs/get-job-status#response-steps) 
+    Track detailed progress through the [`steps`](/web-search-api/api-reference/jobs/get-job-status#response-steps) 
     array in the status endpoint response.
   </Accordion>
 
@@ -158,7 +158,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
   <Accordion title="Job continuation" icon="rotate">
     Start with fewer records using the `limit` parameter for quick testing, then use
-    [`POST /catchAll/continue`](/web-search-api/api-reference/endpoints/jobs/continue-job) to process more 
+    [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) to process more 
     records without re-submitting the query.
     
     Continue requests preserve all analysis, validation, and extraction logic 
@@ -183,7 +183,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   
     <Tip>
       Track detailed progress using the `steps` array in the status endpoint response. 
-      See [Job status > steps](/web-search-api/api-reference/endpoints/jobs/get-job-status#response-steps) for details.
+      See [Job status > steps](/web-search-api/api-reference/jobs/get-job-status#response-steps) for details.
     </Tip>
   
   </Tab>
@@ -235,7 +235,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   <Card
     title="API Reference"
     icon="book"
-    href="/web-search-api/api-reference/endpoints/jobs/create-job"
+    href="/web-search-api/api-reference/jobs/create-job"
   >
     Detailed endpoint documentation and parameters
   </Card>

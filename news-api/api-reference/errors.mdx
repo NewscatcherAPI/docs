@@ -19,7 +19,7 @@ might encounter while using the News API:
 | 408         | Request timeout       | The server did not receive a complete request message within the default timeout of 30 seconds.         | Check network connection, reduce request payload size if possible, narrow search query, implement retry logic.                        |
 | 422         | Validation error      | Server understands the request but cannot process it due to invalid input.                              | Ensure request data is correctly formatted and includes all required fields. Check date formats and parameter values.                 |
 | 429         | Too many requests     | Exceeded the allowed rate limit for API requests.                                                       | Implement request throttling and retry with exponential backoff. Consider upgrading your plan for higher limits.                      |
-| 499         | Unknown status code   | Client-side errors that do not fit standard HTTP status codes.                                          | Check for missing fields or incorrect parameters. Follow the [API Reference](/news-api/api-reference/endpoints/search/search-articles-get). |
+| 499         | Unknown status code   | Client-side errors that do not fit standard HTTP status codes.                                          | Check for missing fields or incorrect parameters. Follow the [API Reference](/news-api/api-reference/search/search-articles-get). |
 | 500         | Internal server error | Unexpected server-side issue. Could be due to a malformed payload or temporary server issues.           | Retry after a few minutes. Check the [status page](https://status.newscatcherapi.com) for known issues. Validate payload.             |
 
 ### Quick tips

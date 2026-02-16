@@ -71,7 +71,7 @@ paths:
       operationId: initialize
       externalDocs:
         description: Learn about validator and enrichment suggestions
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/initialize-job
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job
       requestBody:
         required: true
         content:
@@ -101,7 +101,7 @@ paths:
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/create-job
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job
       requestBody:
         required: true
         content:
@@ -134,7 +134,7 @@ paths:
       operationId: continueJob
       externalDocs:
         description: Learn about job continuation and limits
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/continue-job
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job
       requestBody:
         required: true
         content:
@@ -163,7 +163,7 @@ paths:
       operationId: getJobStatus
       externalDocs:
         description: Understanding job statuses and polling
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/get-job-status
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status
       parameters:
         - $ref: "#/components/parameters/JobId"
       responses:
@@ -183,7 +183,7 @@ paths:
       operationId: getUserJobs
       externalDocs:
         description: Learn about job management
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/list-user-jobs
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
@@ -202,7 +202,7 @@ paths:
       operationId: getJobResults
       externalDocs:
         description: Working with job results and dynamic schemas
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/get-job-results
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results
       parameters:
         - $ref: "#/components/parameters/JobId"
         - $ref: "#/components/parameters/Page"
@@ -497,7 +497,7 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/create-job) endpoint.
+        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job) endpoint.
       schema:
         type: string
         format: uuid
@@ -786,7 +786,7 @@ components:
       description: |
         Maximum number of records to return. If not specified, defaults to your plan limit.
 
-        Use [`POST /catchAll/continue`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/endpoints/jobs/continue-job) to extend the limit after job completion without reprocessing.
+        Use [`POST /catchAll/continue`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job) to extend the limit after job completion without reprocessing.
       example: 10
 
     StartDate:
