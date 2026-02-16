@@ -61,48 +61,34 @@
             "group": "API Reference",
             "pages": [
               {
-                "group": "Overview",
+                "group": "Jobs",
                 "pages": [
-                  "web-search-api/api-reference/overview/introduction",
-                  "web-search-api/api-reference/overview/authentication",
-                  "web-search-api/api-reference/overview/rate-limits",
-                  "web-search-api/api-reference/overview/errors"
+                  "web-search-api/api-reference/jobs/initialize-job",
+                  "web-search-api/api-reference/jobs/create-job",
+                  "web-search-api/api-reference/jobs/continue-job",
+                  "web-search-api/api-reference/jobs/list-user-jobs",
+                  "web-search-api/api-reference/jobs/get-job-status",
+                  "web-search-api/api-reference/jobs/get-job-results"
                 ]
               },
               {
-                "group": "Endpoints",
+                "group": "Monitors",
                 "pages": [
-                  {
-                    "group": "Jobs",
-                    "pages": [
-                      "web-search-api/api-reference/endpoints/jobs/initialize-job",
-                      "web-search-api/api-reference/endpoints/jobs/create-job",
-                      "web-search-api/api-reference/endpoints/jobs/continue-job",
-                      "web-search-api/api-reference/endpoints/jobs/list-user-jobs",
-                      "web-search-api/api-reference/endpoints/jobs/get-job-status",
-                      "web-search-api/api-reference/endpoints/jobs/get-job-results"
-                    ]
-                  },
-                  {
-                    "group": "Monitors",
-                    "pages": [
-                      "web-search-api/api-reference/endpoints/monitors/create-monitor",
-                      "web-search-api/api-reference/endpoints/monitors/update-monitor",
-                      "web-search-api/api-reference/endpoints/monitors/list-monitors",
-                      "web-search-api/api-reference/endpoints/monitors/list-monitor-jobs",
-                      "web-search-api/api-reference/endpoints/monitors/get-monitor-results",
-                      "web-search-api/api-reference/endpoints/monitors/enable-monitor",
-                      "web-search-api/api-reference/endpoints/monitors/disable-monitor",
-                      "web-search-api/api-reference/endpoints/monitors/webhook-payload"
-                    ]
-                  },
-                  {
-                    "group": "Meta",
-                    "pages": [
-                      "web-search-api/api-reference/endpoints/meta/health",
-                      "web-search-api/api-reference/endpoints/meta/version"
-                    ]
-                  }
+                  "web-search-api/api-reference/monitors/create-monitor",
+                  "web-search-api/api-reference/monitors/update-monitor",
+                  "web-search-api/api-reference/monitors/list-monitors",
+                  "web-search-api/api-reference/monitors/list-monitor-jobs",
+                  "web-search-api/api-reference/monitors/get-monitor-results",
+                  "web-search-api/api-reference/monitors/enable-monitor",
+                  "web-search-api/api-reference/monitors/disable-monitor",
+                  "web-search-api/api-reference/monitors/webhook-payload"
+                ]
+              },
+              {
+                "group": "Meta",
+                "pages": [
+                  "web-search-api/api-reference/meta/health",
+                  "web-search-api/api-reference/meta/version"
                 ]
               }
             ]
@@ -131,7 +117,7 @@
           {
             "group": "Get started",
             "pages": [
-              "news-api/get-started/overview",
+              "news-api/get-started/introduction",
               "news-api/get-started/quickstart",
               "news-api/get-started/libraries",
               "news-api/get-started/subscription-plans"
@@ -170,83 +156,72 @@
             "pages": [
               "news-api/troubleshooting/error-handling",
               "news-api/troubleshooting/request-tracing-correlation-ids",
-              "news-api/troubleshooting/report-bugs",
-              "news-api/troubleshooting/request-features"
+              "news-api/troubleshooting/report-bugs"
             ]
           },
           {
             "group": "API Reference",
             "pages": [
+              "news-api/api-reference/overview",
+              "news-api/api-reference/authentication",
+              "news-api/api-reference/rate-limits",
+              "news-api/api-reference/errors",
+              "news-api/api-reference/http-headers",
+              "news-api/api-reference/enumerated-parameters",
               {
-                "group": "Overview",
+                "group": "Search",
                 "pages": [
-                  "news-api/api-reference/overview/introduction",
-                  "news-api/api-reference/overview/authentication",
-                  "news-api/api-reference/overview/rate-limits",
-                  "news-api/api-reference/overview/errors",
-                  "news-api/api-reference/overview/http-headers",
-                  "news-api/api-reference/overview/enumerated-parameters"
+                  "news-api/api-reference/search/search-articles-get",
+                  "news-api/api-reference/search/search-articles-post"
                 ]
               },
               {
-                "group": "Endpoints",
+                "group": "Latest headlines",
                 "pages": [
-                  {
-                    "group": "Search",
-                    "pages": [
-                      "news-api/api-reference/endpoints/search/search-articles-get",
-                      "news-api/api-reference/endpoints/search/search-articles-post"
-                    ]
-                  },
-                  {
-                    "group": "Latest headlines",
-                    "pages": [
-                      "news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get",
-                      "news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post"
-                    ]
-                  },
-                  {
-                    "group": "Breaking news",
-                    "pages": [
-                      "news-api/api-reference/endpoints/breaking-news/retrieve-breaking-news-get",
-                      "news-api/api-reference/endpoints/breaking-news/retrieve-breaking-news-post"
-                    ]
-                  },
-                  {
-                    "group": "Authors",
-                    "pages": [
-                      "news-api/api-reference/endpoints/authors/search-articles-by-author-get",
-                      "news-api/api-reference/endpoints/authors/search-articles-by-author-post"
-                    ]
-                  },
-                  {
-                    "group": "Search by link",
-                    "pages": [
-                      "news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-get",
-                      "news-api/api-reference/endpoints/search-by-link/search-articles-by-links-or-ids-post"
-                    ]
-                  },
-                  {
-                    "group": "Sources",
-                    "pages": [
-                      "news-api/api-reference/endpoints/sources/retrieve-sources-get",
-                      "news-api/api-reference/endpoints/sources/retrieve-sources-post"
-                    ]
-                  },
-                  {
-                    "group": "Aggregation count",
-                    "pages": [
-                      "news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-get",
-                      "news-api/api-reference/endpoints/aggregation/get-aggregation-count-by-interval-post"
-                    ]
-                  },
-                  {
-                    "group": "Subscription",
-                    "pages": [
-                      "news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-get",
-                      "news-api/api-reference/endpoints/subscription/retrieve-subscription-plan-information-post"
-                    ]
-                  }
+                  "news-api/api-reference/latest-headlines/retrieve-latest-headlines-get",
+                  "news-api/api-reference/latest-headlines/retrieve-latest-headlines-post"
+                ]
+              },
+              {
+                "group": "Breaking news",
+                "pages": [
+                  "news-api/api-reference/breaking-news/retrieve-breaking-news-get",
+                  "news-api/api-reference/breaking-news/retrieve-breaking-news-post"
+                ]
+              },
+              {
+                "group": "Authors",
+                "pages": [
+                  "news-api/api-reference/authors/search-articles-by-author-get",
+                  "news-api/api-reference/authors/search-articles-by-author-post"
+                ]
+              },
+              {
+                "group": "Search by link",
+                "pages": [
+                  "news-api/api-reference/search-by-link/search-articles-by-links-or-ids-get",
+                  "news-api/api-reference/search-by-link/search-articles-by-links-or-ids-post"
+                ]
+              },
+              {
+                "group": "Sources",
+                "pages": [
+                  "news-api/api-reference/sources/retrieve-sources-get",
+                  "news-api/api-reference/sources/retrieve-sources-post"
+                ]
+              },
+              {
+                "group": "Aggregation count",
+                "pages": [
+                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-get",
+                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-post"
+                ]
+              },
+              {
+                "group": "Subscription",
+                "pages": [
+                  "news-api/api-reference/subscription/retrieve-subscription-plan-information-get",
+                  "news-api/api-reference/subscription/retrieve-subscription-plan-information-post"
                 ]
               }
             ]
@@ -285,43 +260,29 @@
             "group": "API Reference",
             "pages": [
               {
-                "group": "Overview",
+                "group": "Search",
                 "pages": [
-                  "local-news-api/api-reference/overview/introduction",
-                  "local-news-api/api-reference/overview/authentication",
-                  "local-news-api/api-reference/overview/rate-limits",
-                  "local-news-api/api-reference/overview/errors"
+                  "local-news-api/api-reference/search/search-articles-post",
+                  "local-news-api/api-reference/search/search-advanced-post"
                 ]
               },
               {
-                "group": "Endpoints",
+                "group": "Latest headlines",
                 "pages": [
-                  {
-                    "group": "Search",
-                    "pages": [
-                      "local-news-api/api-reference/endpoints/search/search-articles-post",
-                      "local-news-api/api-reference/endpoints/search/search-advanced-post"
-                    ]
-                  },
-                  {
-                    "group": "Latest headlines",
-                    "pages": [
-                      "local-news-api/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-post",
-                      "local-news-api/api-reference/endpoints/latest-headlines/latest-headlines-advanced-post"
-                    ]
-                  },
-                  {
-                    "group": "Sources",
-                    "pages": [
-                      "local-news-api/api-reference/endpoints/sources/retrieve-sources-post"
-                    ]
-                  },
-                  {
-                    "group": "Search by identifiers",
-                    "pages": [
-                      "local-news-api/api-reference/endpoints/search-by/search-articles-by-identifiers-post"
-                    ]
-                  }
+                  "local-news-api/api-reference/latest-headlines/retrieve-latest-headlines-post",
+                  "local-news-api/api-reference/latest-headlines/latest-headlines-advanced-post"
+                ]
+              },
+              {
+                "group": "Sources",
+                "pages": [
+                  "local-news-api/api-reference/sources/retrieve-sources-post"
+                ]
+              },
+              {
+                "group": "Search by identifiers",
+                "pages": [
+                  "local-news-api/api-reference/search-by/search-articles-by-identifiers-post"
                 ]
               }
             ]
