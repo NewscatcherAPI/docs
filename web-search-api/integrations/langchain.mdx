@@ -10,43 +10,37 @@ language.
 
 ## Before you start
 
-Before you begin, make sure you have:
-
-- Python 3.9 or later
-- LangChain installed (`pip install langchain-core`)
-- CatchAll API key (obtain from
-  [platform.newscatcherapi.com](https://platform.newscatcherapi.com))
-- Basic familiarity with LangChain concepts (agents, tools, LLMs)
+- Python 3.12 or later
+- CatchAll API key from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+- LLM provider credentials (OpenAI, Anthropic, etc.) for agent features
 
 ## Installation
 
 <Tabs>
   <Tab title="PyPI">
 ```bash
-    pip install langchain-catchall
+pip install langchain-catchall langchain-core
 ```
   </Tab>
 
   <Tab title="GitHub (development)">
 ```bash
-    git clone https://github.com/NewscatcherAPI/langchain-catchall.git
-    cd langchain-catchall
-    pip install -e .
+git clone https://github.com/NewscatcherAPI/langchain-catchall.git
+cd langchain-catchall
+pip install -e .
+pip install langchain-core
 ```
   </Tab>
 </Tabs>
 
 ## Quickstart
 
-Submit a search query and get structured results:
-
 ```python
 import os
 from langchain_catchall import CatchAllClient
 
 client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-
-# Search and wait for results (10-15 minutes)
 result = client.search("Semiconductor company earnings announcements")
 
 print(f"Found {result.valid_records} records")
@@ -55,613 +49,19 @@ for record in result.all_records[:3]:
 ```
 
 <Note>
-  Jobs typically complete in 10-15 minutes. The `search()` method handles
-  submission, polling, and retrieval automatically.
+  The `search()` method handles submission, polling, and retrieval
+  automatically. Jobs typically complete in 10-15 minutes.
 </Note>
 
 ## CatchAllClient
 
-`CatchAllClient` wraps the
-[CatchAll Python SDK](https://github.com/Newscatcher/newscatcher-catchall-python)
-with LangChain-friendly patterns. Use it for manual control in scripts, data
-pipelines, and async applications.
+`CatchAllClient` wraps the [CatchAll Python SDK](/web-search-api/libraries/python) 
+with LangChain-friendly patterns: automatic polling, high-level search method,
+and pagination handling.
 
-### Initialize client
+Available as both sync (`CatchAllClient`) and async (`AsyncCatchAllClient`).
 
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    import os
-    from langchain_catchall import CatchAllClient
-
-    client = CatchAllClient( api_key=os.environ["CATCHALL_API_KEY"],
-    poll_interval=30, # Check status every 30 seconds (recommended: 30-60s)
-    max_wait_time=2400, # Timeout after 40 minutes (typical jobs: 10-15 min) 
-    )
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    import os
-    from langchain_catchall import AsyncCatchAllClient
-
-    client = AsyncCatchAllClient(
-        api_key=os.environ["CATCHALL_API_KEY"],
-        poll_interval=30,      # Check status every 30 seconds
-        max_wait_time=2400,    # Timeout after 40 minutes
-    )
-    ```
-  </Tab>
-</Tabs>
-
-### Submit job
-
-Create a new search job:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    job_id = client.submit_job(
-        query="AI company acquisitions and mergers",
-        context="Focus on deal size and technology sector",
-        schema="[ACQUIRER] acquired [TARGET] for [AMOUNT]",
-    )
-    print(f"Job submitted: {job_id}")
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    job_id = await client.submit_job(
-        query="AI company acquisitions and mergers",
-        context="Focus on deal size and technology sector",
-        schema="[ACQUIRER] acquired [TARGET] for [AMOUNT]",
-    )
-    print(f"Job submitted: {job_id}")
-    ```
-  </Tab>
-</Tabs>
-
-### Wait for completion
-
-Block until job finishes:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    client.wait_for_completion(job_id)
-    print("Job completed!")
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    await client.wait_for_completion(job_id)
-    print("Job completed!")
-    ```
-  </Tab>
-</Tabs>
-
-Raises `TimeoutError` if job exceeds `max_wait_time`.
-
-### Retrieve results
-
-Get structured records:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    # Get first page
-    result = client.get_results(job_id, page=1, page_size=100)
-
-    # Get all pages
-    result = client.get_all_results(job_id)
-
-    for record in result.all_records:
-        print(f"Title: {record.record_title}")
-        print(f"Data: {record.enrichment}")
-        print(f"Sources: {len(record.citations)} articles")
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    # Get first page
-    result = await client.get_results(job_id, page=1, page_size=100)
-
-    # Get all pages
-    result = await client.get_all_results(job_id)
-
-    for record in result.all_records:
-        print(f"Title: {record.record_title}")
-        print(f"Data: {record.enrichment}")
-        print(f"Sources: {len(record.citations)} articles")
-    ```
-
-  </Tab>
-</Tabs>
-
-### Convenience search
-
-Combine submit, wait, and retrieve in one call:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    result = client.search(
-        query="Data breach incidents at financial institutions",
-        context="Include incident type and affected customer count",
-    )
-
-    print(f"Found {result.valid_records} records")
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    result = await client.search(
-        query="Data breach incidents at financial institutions",
-        context="Include incident type and affected customer count",
-    )
-
-    print(f"Found {result.valid_records} records")
-    ```
-
-  </Tab>
-</Tabs>
-
-Set `wait=False` to return immediately without waiting:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    result = client.search("FDA drug approvals for oncology treatments", wait=False)
-    print(f"Job ID: {result.job_id}")
-    # Retrieve later with client.get_all_results(result.job_id)
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    result = await client.search("FDA drug approvals for oncology treatments", wait=False)
-    print(f"Job ID: {result.job_id}")
-    # Retrieve later with await client.get_all_results(result.job_id)
-    ```
-  </Tab>
-</Tabs>
-
-### List jobs
-
-View all jobs for your API key:
-
-<Tabs>
-  <Tab title="Sync">
-    ```python
-    jobs = client.list_jobs()
-
-    for job in jobs:
-        print(f"{job.job_id}: {job.query}")
-    ```
-  </Tab>
-
-  <Tab title="Async">
-    ```python
-    jobs = await client.list_jobs()
-
-    for job in jobs:
-        print(f"{job.job_id}: {job.query}")
-    ```
-
-  </Tab>
-</Tabs>
-
-### Advanced patterns
-
-<Tabs>
-  <Tab title="Granular control">
-    Store job ID for later retrieval (useful for data pipelines):
-
-    ```python
-    import os
-    from langchain_catchall import CatchAllClient
-
-    client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-
-    # Submit and store job_id for later retrieval
-    job_id = client.submit_job("Technology company IPO filings")
-
-    # Store job_id (example using a dict - replace with your database)
-    job_cache = {}
-    job_cache["ipo_tracker"] = job_id
-
-    # Later: Check if completed and retrieve
-    status = client.get_status(job_id)
-    completed = any(s.status == 'completed' and s.completed for s in status.steps)
-
-    if completed:
-        result = client.get_all_results(job_id)
-        print(f"Retrieved {result.valid_records} records from cached job")
-    ```
-  </Tab>
-
-  <Tab title="Cost optimization">
-    Reuse job results without re-running search:
-
-    ```python
-    import os
-    from langchain_catchall import CatchAllClient, query_with_llm
-    from langchain_openai import ChatOpenAI
-
-    client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-    llm = ChatOpenAI(model="gpt-4o")
-
-    # Search once
-    result = client.search("Enterprise software company earnings reports")
-
-    # Query many times (no additional API cost)
-    answer1 = query_with_llm(result, "Which companies reported highest revenue?", llm)
-    answer2 = query_with_llm(result, "Compare year-over-year growth rates", llm)
-    answer3 = query_with_llm(result, "What are the key trends?", llm)
-    ```
-
-  </Tab>
-
-  <Tab title="With LLM analysis">
-    Combine search with LLM analysis:
-    
-```python
-import os
-from langchain_catchall import CatchAllClient, query_with_llm
-from langchain_openai import ChatOpenAI
-
-client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-llm = ChatOpenAI(model="gpt-4o")
-
-# Submit job
-job_id = client.submit_job("AI startup funding rounds over $10M")
-client.wait_for_completion(job_id)
-result = client.get_all_results(job_id)
-
-# Analyze with LLM
-answer = query_with_llm(
-    result=result,
-    question="Summarize top 5 deals by funding amount",
-    llm=llm,
-    max_records=100,  # Limit context size for faster analysis
-)
-
-print(answer)
-```
-
-  </Tab>
-</Tabs>
-
-<Expandable title="Complete example: Async web scraping pipeline">
-```python
-import asyncio
-import os
-from langchain_catchall import AsyncCatchAllClient
-
-async def process_multiple_queries():
-    """Submit multiple searches concurrently."""
-    client = AsyncCatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-
-    queries = [
-        "Technology company acquisitions and mergers",
-        "Healthcare and biotech company IPO filings",
-        "Retail company bankruptcy filings and restructuring",
-    ]
-
-    try:
-        # Submit all jobs concurrently
-        job_ids = await asyncio.gather(*[
-            client.submit_job(query) for query in queries
-        ])
-
-        print(f"Submitted {len(job_ids)} jobs")
-
-        # Wait for all completions
-        await asyncio.gather(*[
-            client.wait_for_completion(job_id) for job_id in job_ids
-        ])
-
-        # Retrieve all results
-        results = await asyncio.gather(*[
-            client.get_all_results(job_id) for job_id in job_ids
-        ])
-
-        # Process results
-        for query, result in zip(queries, results):
-            print(f"\n{query}: {result.valid_records} records")
-
-    except TimeoutError as e:
-        print(f"One or more jobs timed out: {e}")
-    except Exception as e:
-        print(f"Error processing queries: {e}")
-        raise
-
-if __name__ == "__main__":
-    asyncio.run(process_multiple_queries())
-```
-
-</Expandable>
-
-## CatchAllTools
-
-`CatchAllTools` provides ready-to-use tools for LangGraph agents with built-in
-caching. Search once, then analyze many times without additional API costs.
-
-### Initialize toolkit
-
-```python
-import os
-from langchain_openai import ChatOpenAI
-from langchain_catchall import CatchAllTools
-
-llm = ChatOpenAI(model="gpt-4o")
-
-toolkit = CatchAllTools(
-    api_key=os.environ["CATCHALL_API_KEY"],
-    llm=llm,
-    max_results=100,     # Balance between context size and completeness
-    verbose=True,        # Show progress bars and logs
-)
-
-tools = toolkit.get_tools()
-```
-
-### Available tools
-
-The toolkit provides two tools:
-
-- **`catchall_search_data`:** Initialize new search (10-15 min operation).
-- **`catchall_analyze_data`:** Query cached results (instant).
-
-<Note>
-  `CATCHALL_AGENT_PROMPT` teaches the agent when to search vs. analyze. This
-  prompt is critical for cost-effective operation.
-</Note>
-
-### Create agent
-
-Build an autonomous research agent with LangGraph:
-
-```python
-import os
-from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
-from langchain.messages import SystemMessage
-from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
-
-# Initialize components
-llm = ChatOpenAI(model="gpt-4o")
-toolkit = CatchAllTools(
-    api_key=os.environ["CATCHALL_API_KEY"],
-    llm=llm,
-    verbose=True
-)
-tools = toolkit.get_tools()
-
-# Create agent with prompt
-agent = create_react_agent(model=llm, tools=tools)
-messages = [SystemMessage(content=CATCHALL_AGENT_PROMPT)]
-
-# Run agent
-response = agent.invoke({
-    "messages": messages + [("user", "Find technology company acquisitions announced this week")]
-})
-
-print(response["messages"][-1].content)
-```
-
-<Expandable title="CATCHALL_AGENT_PROMPT content">
-```python
-CATCHALL_AGENT_PROMPT = """You are a News Research Assistant powered by CatchAll.
-
-Your workflow is strictly defined:
-
-1. SEARCH: Use `catchall_search_data` to get a broad initial dataset (e.g., 'Find all US office openings').
-   - WARNING: This tool takes 15 minutes. NEVER call it twice in a row.
-   - After searching, STOP and return what you found. WAIT for the user's next question.
-   - DO NOT automatically analyze or summarize unless explicitly asked.
-   
-2. ANALYZE: Use `catchall_analyze_data` ONLY when the user asks a follow-up question.
-   - FILTERING & SORTING: 'Show me only Florida deals', 'Sort by date', 'Find top 3'.
-   - AGGREGATION: 'Group by state', 'Count by industry'.
-   - QA: 'What are the main trends?', 'Summarize key findings'.
-   
-CRITICAL RULES:
-- After a search completes, report the number of results found and STOP. Wait for user input.
-- ONLY call analyze_data when the user explicitly asks a follow-up question.
-- If user says "Find X", just search and report results. If they say "Summarize Y" or "Show me Z", then analyze.
-- Never use `catchall_search_data` to filter. Always use `catchall_analyze_data` for filtering.
-- If the user asks for a subset of data (like 'only Florida deals'), assume it is ALREADY in your search results.
-- Only use `catchall_search_data` if the user explicitly asks for a 'new search' or a completely different topic.
-"""
-```
-
-This prompt teaches the agent to:
-- Search once for broad topics
-- Use cached data for filtering and analysis
-- Avoid expensive repeated searches
-
-</Expandable>
-
-### Conversational agent pattern
-
-Build an interactive agent that remembers previous searches:
-```python
-import os
-from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
-from langchain.messages import SystemMessage
-from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
-
-# Setup
-llm = ChatOpenAI(model="gpt-4o")
-toolkit = CatchAllTools(
-    api_key=os.environ["CATCHALL_API_KEY"],
-    llm=llm,
-    verbose=True
-)
-tools = toolkit.get_tools()
-
-agent = create_react_agent(model=llm, tools=tools)
-messages = [SystemMessage(content=CATCHALL_AGENT_PROMPT)]
-
-# Initial search
-messages.append(("user", "Find articles about corporate headquarters relocations and office openings in the US"))
-response = agent.invoke({"messages": messages})
-messages.append(("assistant", response["messages"][-1].content))
-
-# Follow-up 1: Filter cached data
-messages.append(("user", "Show only California locations"))
-response = agent.invoke({"messages": messages})
-messages.append(("assistant", response["messages"][-1].content))
-
-# Follow-up 2: Analyze cached data
-messages.append(("user", "What are the top 3 cities by number of openings?"))
-response = agent.invoke({"messages": messages})
-print(response["messages"][-1].content)
-```
-
-**Key pattern:**
-
-1. **First message:** Agent calls `catchall_search_data` (10-15 min)
-2. **Follow-up messages:** Agent calls `catchall_analyze_data` (instant)
-3. **New topic:** Agent calls `catchall_search_data` again
-
-<Expandable title="Complete example: Interactive research session">
-```python
-import os
-from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
-from langchain.messages import SystemMessage
-from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
-
-def run_interactive_agent(): """Run an interactive research agent with
-conversation history."""
-
-    try:
-        # Setup
-        api_key = os.environ.get("CATCHALL_API_KEY")
-        if not api_key:
-            raise ValueError("CATCHALL_API_KEY environment variable not set")
-
-        llm = ChatOpenAI(model="gpt-4o", temperature=0)
-        toolkit = CatchAllTools(api_key=api_key, llm=llm, verbose=True)
-        tools = toolkit.get_tools()
-
-        # Create agent
-        agent = create_react_agent(model=llm, tools=tools)
-        messages = [SystemMessage(content=CATCHALL_AGENT_PROMPT)]
-
-        print("Research Agent Ready!")
-        print("Type 'quit' to exit\n")
-
-        while True:
-            try:
-                # Get user input
-                user_input = input("You: ").strip()
-                if user_input.lower() == 'quit':
-                    break
-
-                if not user_input:
-                    continue
-
-                # Add user message
-                messages.append(("user", user_input))
-
-                # Get agent response
-                response = agent.invoke({"messages": messages})
-                assistant_message = response["messages"][-1].content
-
-                # Add assistant message to history
-                messages.append(("assistant", assistant_message))
-
-                # Display response
-                print(f"\nAgent: {assistant_message}\n")
-
-            except KeyboardInterrupt:
-                print("\nExiting...")
-                break
-            except Exception as e:
-                print(f"\nError: {e}")
-                print("Continuing...\n")
-
-    except Exception as e:
-        print(f"Failed to initialize agent: {e}")
-        raise
-
-if __name__ == "__main__":
-    run_interactive_agent()
-```
-
-**Example session:**
-```bash
-You: Find venture capital funding rounds for biotech startups
-
-Agent: I'll search for biotech venture funding articles... [15 minutes later]
-Found 47 records. Here are the top deals:
-
-1. BioTech Corp raised $25M Series B
-2. GeneTech raised $15M Series A ...
-
-You: Show only deals over $20M
-
-Agent: [Instantly] Based on the cached results, here are deals over $20M:
-
-1. BioTech Corp - $25M Series B
-2. MedTech Inc - $30M Series C ...
-
-You: What's the average funding amount?
-
-Agent: [Instantly] Analyzing the data... The average funding amount is $18.5M 
-across all 47 deals.
-```
-
-</Expandable>
-
-### Search once, analyze many
-
-The most powerful pattern: perform expensive search once, then run unlimited free analyses:
-```python
-import os
-from langchain_catchall import CatchAllClient, query_with_llm
-from langchain_openai import ChatOpenAI
-
-# Setup
-client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
-llm = ChatOpenAI(model="gpt-4o")
-
-# Search once (10-15 minutes, costs API credits)
-result = client.search("Cloud computing company quarterly earnings")
-
-# Analyze many times (instant, no additional cost)
-questions = [
-    "Which companies had highest revenue growth?",
-    "Compare profit margins across companies",
-    "What are key trends in the earnings reports?",
-    "List companies by market cap",
-    "Summarize cloud computing revenue",
-]
-
-for question in questions:
-    answer = query_with_llm(result, question, llm)
-    print(f"\nQ: {question}")
-    print(f"A: {answer}")
-```
-
-This pattern is ideal for:
-
-- Financial analysis (analyze same dataset from multiple angles)
-- Research reports (extract different insights from one search)
-- Exploratory data analysis (iterate on questions without re-fetching)
-
-## Error handling
-
-Handle timeouts and failures gracefully:
+### Basic usage
 
 ```python
 import os
@@ -669,38 +69,245 @@ from langchain_catchall import CatchAllClient
 
 client = CatchAllClient(
     api_key=os.environ["CATCHALL_API_KEY"],
-    max_wait_time=2400  # 40 minutes
+    poll_interval=30,      # Status check interval (default: 30s)
+    max_wait_time=2400,    # Timeout (default: 40 min)
+)
+
+# Submit and wait for results
+result = client.search("AI company acquisitions and mergers")
+
+# Control result limit
+result = client.search("Technology funding rounds", limit=50)
+
+# Submit without waiting
+result = client.search("FDA drug approvals", wait=False)
+job_id = result.job_id  # Retrieve later
+```
+
+### Jobs: Granular control
+
+For data pipelines or complex workflows:
+
+```python
+# Submit job
+job_id = client.submit_job("Technology company IPO filings")
+
+# Check status
+status = client.get_status(job_id)
+
+# Wait for completion
+client.wait_for_completion(job_id)
+
+# Retrieve results
+result = client.get_all_results(job_id)
+```
+
+### Monitors
+
+Automate recurring searches with scheduled execution. Monitor methods in `CatchAllClient` 
+mirror the [CatchAll Python SDK](/web-search-api/libraries/python) interface directly.
+
+```python
+import os
+from langchain_catchall import CatchAllClient
+
+client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
+
+# Create reference job
+result = client.search("Technology company acquisitions")
+
+# Create daily monitor
+monitor = client.create_monitor(
+    reference_job_id=result.job_id,
+    schedule="0 9 * * *",  # Daily at 9 AM UTC
+    webhook={
+        "url": "https://your-domain.com/webhook",
+        "headers": {"Authorization": "Bearer your-token"}
+    }
+)
+
+# Manage monitors
+monitors = client.list_monitors()
+client.enable_monitor(monitor_id)
+client.disable_monitor(monitor_id)
+
+# Retrieve results
+results = client.pull_monitor_results(monitor_id)
+jobs = client.list_monitor_jobs(monitor_id, sort="desc")
+```
+
+For detailed monitor configuration, scheduling syntax, and webhook setup, see
+the [Monitors guide](/web-search-api/guides-and-concepts/monitors).
+
+
+### Advanced: Cost optimization
+
+Search once, analyze many times without additional API cost:
+
+```python
+import os
+from langchain_catchall import CatchAllClient, query_with_llm
+from langchain_openai import ChatOpenAI
+
+client = CatchAllClient(api_key=os.environ["CATCHALL_API_KEY"])
+llm = ChatOpenAI(model="gpt-4o", api_key=os.environ["OPENAI_API_KEY"])
+
+# Search once (10-15 minutes, costs API credits)
+result = client.search("Enterprise software company earnings reports")
+
+# Analyze many times (instant, no additional cost)
+answer1 = query_with_llm(result, "Which companies reported highest revenue?", llm)
+answer2 = query_with_llm(result, "Compare year-over-year growth rates", llm)
+answer3 = query_with_llm(result, "What are the key trends?", llm)
+```
+
+## CatchAllTools
+
+Ready-to-use toolkit for LangGraph agents with built-in caching. The killer
+feature: search once, then analyze unlimited times for free (LLM costs only).
+
+<table>
+  <thead>
+    <tr>
+      <th style={{width: '35%', textAlign: 'left'}}>Tool</th>
+      <th style={{width: '20%', textAlign: 'left'}}>Duration</th>
+      <th style={{width: '20%', textAlign: 'left'}}>Cost</th>
+      <th style={{width: '25%', textAlign: 'left'}}>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>catchall_search_data</code></td>
+      <td>10-15 min</td>
+      <td>API credits</td>
+      <td>Initialize new search</td>
+    </tr>
+    <tr>
+      <td><code>catchall_analyze_data</code></td>
+      <td>Instant</td>
+      <td>LLM costs only</td>
+      <td>Query cached results</td>
+    </tr>
+  </tbody>
+</table>
+
+### Setup
+
+Install the OpenAI integration package if you haven't already:
+
+```bash
+pip install langchain-openai
+```
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain_catchall import CatchAllTools
+
+toolkit = CatchAllTools(
+    api_key=os.environ["CATCHALL_API_KEY"],
+    llm=ChatOpenAI(model="gpt-4o"),
+    limit=100,              # Default result limit
+    verbose=True,           # Show progress
+    initialize_query=True,  # Auto-suggest validators/enrichments
+)
+
+tools = toolkit.get_tools()
+```
+
+### Create agent
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+from langchain.messages import HumanMessage
+from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
+
+llm = ChatOpenAI(model="gpt-4o", api_key=os.environ["OPENAI_API_KEY"])
+toolkit = CatchAllTools(api_key=os.environ["CATCHALL_API_KEY"], llm=llm)
+
+agent = create_agent(
+    model=llm,
+    tools=toolkit.get_tools(),
+    system_prompt=CATCHALL_AGENT_PROMPT
+)
+
+messages = [HumanMessage(content="Find technology company acquisitions this week")]
+response = agent.invoke({"messages": messages})
+print(response["messages"][-1].content)
+```
+
+### Agent prompt
+
+The
+[`CATCHALL_AGENT_PROMPT`](https://github.com/NewscatcherAPI/langchain-catchall/blob/main/langchain_catchall/prompts.py)
+teaches the agent cost-effective operation by implementing a two-phase workflow:
+
+1. **Search phase**: Uses `catchall_search_data` to gather initial dataset, then
+   stop and wait for user input.
+2. **Analysis phase**: Uses `catchall_analyze_data` for all follow-up questions
+   (filtering, sorting, aggregation, Q&A).
+
+This design prevents expensive repeated searches and maximizes the value of
+cached results. The prompt also handles limit parameters when users request
+specific result counts (e.g., "top 50", "limit to 20").
+
+### Conversational pattern
+
+The power of caching: perform one expensive search, then ask unlimited follow-up 
+questions for free (LLM costs only).
+
+```python
+import os
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_agent
+from langchain.messages import HumanMessage
+from langchain_catchall import CatchAllTools, CATCHALL_AGENT_PROMPT
+
+llm = ChatOpenAI(model="gpt-4o", api_key=os.environ["OPENAI_API_KEY"])
+toolkit = CatchAllTools(api_key=os.environ["CATCHALL_API_KEY"], llm=llm)
+agent = create_agent(model=llm, tools=toolkit.get_tools(), system_prompt=CATCHALL_AGENT_PROMPT)
+
+# Initial search (10-15 min, uses API credits)
+messages = [HumanMessage(content="Find corporate headquarters relocations in the US")]
+response = agent.invoke({"messages": messages})
+messages = response["messages"]
+
+# Filter cached data (instant, LLM costs)
+messages.append(HumanMessage(content="Show only California locations"))
+response = agent.invoke({"messages": messages})
+messages = response["messages"]
+
+# Analyze cached data (instant, LLM costs)
+messages.append(HumanMessage(content="What are the top 3 cities?"))
+response = agent.invoke({"messages": messages})
+print(response["messages"][-1].content)
+```
+
+## Error handling
+
+```python
+import os
+from langchain_catchall import CatchAllClient
+
+client = CatchAllClient(
+    api_key=os.environ["CATCHALL_API_KEY"],
+    max_wait_time=2400
 )
 
 try:
-    result = client.search("Venture capital funding rounds across all industries")
+    result = client.search("Venture capital funding rounds")
     print(f"Success: {result.valid_records} records")
-
 except TimeoutError as e:
-    print(f"Search timed out after 30 minutes: {e}")
-    # Retry with narrower query
-    result = client.search("Series B funding rounds for fintech startups")
-
+    print(f"Search timed out: {e}")
+    # Retry with narrower query or higher limit
 except Exception as e:
-    print(f"Unexpected error: {e}")
+    print(f"Error: {e}")
     raise
 ```
 
-## Monitors
-
-Monitors automate recurring CatchAll searches with scheduled execution. The
-`langchain-catchall` package does not support Monitors.
-
-To use Monitors, install the underlying SDK:
-
-```bash
-pip install newscatcher-catchall-sdk
-```
-
-See the [Monitors documentation](/web-search-api/guides-and-concepts/monitors) for complete
-usage guide.
-
-## Next steps
+## Resources
 
 <CardGroup cols={2}>
   <Card
@@ -708,29 +315,27 @@ usage guide.
     icon="pencil"
     href="/web-search-api/how-to/write-effective-queries"
   >
-    Learn to construct queries that return focused results
-  </Card>
-  <Card title="Python SDK" icon="code" href="/web-search-api/libraries/python">
-    Full Python SDK documentation with all features
+    Construct queries that return focused results
   </Card>
   <Card
     title="API reference"
     icon="book"
     href="/web-search-api/api-reference/jobs/create-job"
   >
-    Complete API endpoint documentation
+    Complete API endpoints documentation
   </Card>
   <Card
-    title="Dynamic schemas"
-    icon="wand-magic-sparkles"
-    href="/web-search-api/guides-and-concepts/dynamic-schemas"
+    title="GitHub repository"
+    icon="github"
+    href="https://github.com/NewscatcherAPI/langchain-catchall"
   >
-    Understand variable response structures
+    Source code and examples
+  </Card>
+  <Card
+    title="PyPI package"
+    icon="python"
+    href="https://pypi.org/project/langchain-catchall/"
+  >
+    Package installation and releases
   </Card>
 </CardGroup>
-
-## See also
-
-- [GitHub repository](https://github.com/NewscatcherAPI/langchain-catchall)
-- [PyPI package](https://pypi.org/project/langchain-catchall/)
-- [LangChain documentation](https://python.langchain.com/docs/introduction/)
