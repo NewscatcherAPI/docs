@@ -46,6 +46,7 @@
             "group": "Guides and concepts",
             "pages": [
               "web-search-api/guides-and-concepts/monitors",
+              "web-search-api/guides-and-concepts/index-and-search-depth",
               "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
           },
