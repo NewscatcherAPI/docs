@@ -537,7 +537,7 @@ components:
             validators:
               - name: "is_acquisition_event"
                 description:
-                  "true if article describes a merger or acquisition event"
+                  "true if web page describes a merger or acquisition event"
                 type: "boolean"
               - name: "involves_fintech"
                 description:
@@ -793,7 +793,7 @@ components:
       type: string
       format: date-time
       description: |
-        Start of date range for article search (ISO 8601 format with UTC timezone).
+        Start date for web search (ISO 8601 format with UTC timezone).
 
         Must be within plan's allowed lookback period. Default is 5 days before current date if not specified.
       example: "2026-01-30T00:00:00Z"
@@ -802,7 +802,7 @@ components:
       type: string
       format: date-time
       description: |
-        End of date range for article search (ISO 8601 format with UTC timezone).
+        End date for web search (ISO 8601 format with UTC timezone).
 
         Must be within plan's allowed lookback period and after start_date. Default is current date if not specified.
       example: "2026-02-05T00:00:00Z"
@@ -819,15 +819,15 @@ components:
           example: "is_acquisition_event"
         description:
           type: string
-          description: What this validator checks for in the article.
-          example: "true if article describes a merger or acquisition event"
+          description: What this validator checks for in the web page.
+          example: "true if web page describes a merger or acquisition event"
         type:
           type: string
           enum: ["boolean"]
           default: "boolean"
           description: Validator type (currently only boolean supported).
       description: |
-        Schema for a single validator that filters article clusters.
+        Schema for a single validator that filters clusters of web pages.
 
         Validators are applied during the enriching stage to determine which clusters are relevant.
 
@@ -899,7 +899,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ValidatorSchema"
-          description: Suggested validators for filtering relevant articles.
+          description: Suggested validators for filtering relevant web pages.
           minItems: 0
         enrichments:
           type: array
@@ -950,7 +950,7 @@ components:
           items:
             $ref: "#/components/schemas/ValidatorSchema"
           description: |
-            Custom validators for filtering article clusters.
+            Custom validators for filtering web page clusters.
 
             If not provided, validators are generated automatically based on the query.
         enrichments:
@@ -1034,8 +1034,8 @@ components:
 
         - `submitted`: Job queued, waiting to start processing.
         - `analyzing`: Extracting keywords, generating search queries, and creating validators/extractors.
-        - `fetching`: Retrieving articles from web sources.
-        - `clustering`: Grouping similar articles into distinct events.
+        - `fetching`: Retrieving web pages.
+        - `clustering`: Grouping similar web pages into clusters.
         - `enriching`: Validating clusters and extracting structured data.
         - `completed`: Job finished successfully, results ready.
         - `failed`: Job processing failed.
@@ -1257,7 +1257,7 @@ components:
         enrichment:
           type: object
           description: |
-            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
+            Structured data extracted from web pages. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
           additionalProperties: {}
@@ -1272,7 +1272,7 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/Citation"
-          description: Source articles that were used to extract this record.
+          description: Source documents that were used to extract this record.
 
     Citation:
       type: object
@@ -1283,18 +1283,18 @@ components:
       properties:
         title:
           type: string
-          description: Article title
+          description: The title of the source document.
           example: "Oracle Reports Strong Q1 2026 Results"
         link:
           type: string
           format: uri
-          description: URL to the source article
-          example: "https://example.com/article"
+          description: URL to the source document.
+          example: "https://example.com/oracle-reports-q1-results"
         published_date:
           type: string
           format: date-time
           description:
-            Article publication date in ISO 8601 format with UTC timezone.
+            The publication date of the source document in ISO 8601 format (UTC timezone).
           example: "2025-09-26T08:54:20Z"
 
     MonitorCitation:
@@ -1309,22 +1309,22 @@ components:
       properties:
         id:
           type: string
-          description: Article identifier from News API
+          description: Unique identifier of the document in the search index.
           example: "8760624448e9815f9fb4abd114c75e76"
         title:
           type: string
-          description: Article title
+          description: The title of the source document.
           example: "Oracle Reports Strong Q1 2026 Results"
         link:
           type: string
           format: uri
-          description: URL to the source article
-          example: "https://example.com/article"
+          description: URL to the source document.
+          example: "https://example.com/oracle-reports-q1-results"
         published_date:
           type: string
           format: date-time
           description:
-            Article publication date in ISO 8601 format with UTC timezone.
+            The publication date of the source document in ISO 8601 format (UTC timezone).
           example: "2025-09-26T08:54:20Z"
         job_id:
           type: string
@@ -1361,7 +1361,7 @@ components:
         enrichment:
           type: object
           description: |
-            Structured data extracted from articles. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
+            Structured data extracted from web pages. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
           additionalProperties: {}
@@ -1377,7 +1377,7 @@ components:
           items:
             $ref: "#/components/schemas/MonitorCitation"
           description:
-            Source articles with monitor-specific metadata (job_id, added_on
+            Source documents with monitor-specific metadata (job_id, added_on
             timestamps).
         added_on:
           type: string

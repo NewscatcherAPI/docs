@@ -16,15 +16,14 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
 <Steps>
   <Step title="Analyze">
-    Generates targeted search queries for NewsCatcher's proprietary news index 
+    Generates targeted search queries for NewsCatcher's proprietary web index
     and creates validation rules and extraction patterns based on your input.
   </Step>
   <Step title="Fetch">
-    Retrieves and processes 50,000+ articles from web sources to ensure 
-    comprehensive coverage.
+    Retrieves and processes 50,000+ web pages to ensure comprehensive coverage.
   </Step>
   <Step title="Cluster">
-    Groups related articles into distinct real-world events using the Leiden 
+    Groups related web pages into distinct real-world events using the Leiden 
     algorithm for community detection.
   </Step>
   <Step title="Validate">
@@ -93,7 +92,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     ```json
     {
       "name": "is_acquisition",
-      "description": "true if article describes an acquisition",
+      "description": "true if web page describes an acquisition",
       "type": "boolean"
     }
     ```
@@ -117,7 +116,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   </Accordion>
 
   <Accordion title="Date range controls" icon="calendar">
-    Specify custom date ranges for article search, or let the system determine 
+    Specify custom date ranges for web search, or let the system determine 
     the optimal time window based on your query (default: 5 days).
 
     Date ranges are validated against your plan's allowed lookback period. 
@@ -217,7 +216,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 - **Business development**: Partnerships, funding rounds, market entries
 - **Competitive analysis**: Competitor activities and announcements
 - **Research automation**: Structured data extraction for analysis
-- **News aggregation**: Topic-specific news with structured output
+- **Event monitoring**: Topic-specific events with structured output
 
 ## What's next
 
