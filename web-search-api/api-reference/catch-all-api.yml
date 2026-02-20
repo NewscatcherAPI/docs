@@ -795,7 +795,9 @@ components:
       description: |
         Start date for web search (ISO 8601 format with UTC timezone).
 
-        Must be within plan's allowed lookback period. Default is 5 days before current date if not specified.
+        Defines the start of the search window by web page discovery date, not event date. Web pages discovered within this range may describe events from any time period.
+
+        Must be within plan's allowed search depth. Default is 5 days before current date if not specified.
       example: "2026-01-30T00:00:00Z"
 
     EndDate:
@@ -804,7 +806,9 @@ components:
       description: |
         End date for web search (ISO 8601 format with UTC timezone).
 
-        Must be within plan's allowed lookback period and after start_date. Default is current date if not specified.
+        Defines the end of the search window by web page discovery date, not event date. Web pages discovered within this range may describe events from any time period.
+
+        Must be within plan's allowed search depth and after start_date. Default is current date if not specified.
       example: "2026-02-05T00:00:00Z"
 
     ValidatorSchema:
@@ -1294,7 +1298,8 @@ components:
           type: string
           format: date-time
           description:
-            The publication date of the source document in ISO 8601 format (UTC timezone).
+            The publication date of the source document in ISO 8601 format (UTC
+            timezone).
           example: "2025-09-26T08:54:20Z"
 
     MonitorCitation:
@@ -1324,7 +1329,8 @@ components:
           type: string
           format: date-time
           description:
-            The publication date of the source document in ISO 8601 format (UTC timezone).
+            The publication date of the source document in ISO 8601 format (UTC
+            timezone).
           example: "2025-09-26T08:54:20Z"
         job_id:
           type: string
@@ -1406,9 +1412,9 @@ components:
         reference_job_id:
           type: string
           format: uuid
-          description: | 
+          description: |
             Job ID to use as template for scheduled runs.
-            
+
             Job's `end_date` must be within the last 7 days.
         schedule:
           type: string
