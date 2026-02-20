@@ -2,7 +2,8 @@
 title: Understanding web index and search depth
 sidebarTitle: Index and search depth
 description:
-  How CatchAll's web index works and what start_date and end_date control.
+  How CatchAll's web index works and what start_date and end_date actually
+  control.
 ---
 
 ## How web index works
@@ -34,16 +35,10 @@ A simple way to think about it:
 The `start_date` and `end_date` parameters define your search window. They
 control **which web pages** are searched, not **which events** are returned.
 
-<Note>
-  Setting `start_date` to 30 days ago searches all web pages discovered in the
-  last 30 days. Those pages can describe events from any point in time — not
-  only events from the last 30 days.
-</Note>
-
-| Parameter    | What it controls          |
-| ------------ | ------------------------- |
-| `start_date` | Start date for web search |
-| `end_date`   | End date for web search   |
+| Parameter    | What it controls                                        |
+| ------------ | ------------------------------------------------------- |
+| `start_date` | Earliest web page discovery date included in the search |
+| `end_date`   | Latest web page discovery date included in the search   |
 
 If you use the CatchAll UI, the Search Depth control ("Last N
 days/weeks/months") maps directly to these parameters.
