@@ -46,6 +46,7 @@
             "group": "Guides and concepts",
             "pages": [
               "web-search-api/guides-and-concepts/monitors",
+              "web-search-api/guides-and-concepts/index-and-search-depth",
               "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
           },
@@ -289,26 +290,7 @@
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Case studies",
-          "href": "https://www.newscatcherapi.com/case-studies",
-          "icon": "file"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://www.newscatcherapi.com/blog",
-          "icon": "newspaper"
-        },
-        {
-          "anchor": "FAQ",
-          "href": "https://www.newscatcherapi.com/#section-faq",
-          "icon": "question"
-        }
-      ]
-    }
+    ]
   },
   "logo": {
     "light": "/logos/full_black.png",

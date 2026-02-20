@@ -1,0 +1,83 @@
+---
+title: Understanding web index and search depth
+sidebarTitle: Index and search depth
+description:
+  How CatchAll's web index works and what start_date and end_date actually
+  control.
+---
+
+## How web index works
+
+CatchAll searches a continuously updated web index, where each web page is
+recorded by the date it was discovered — not by the date of the event it
+describes.
+
+This means a web page discovered today can describe an event from six months
+ago. When you run a search, CatchAll looks at all web pages discovered within
+your date window, regardless of the events they cover. This also means that even
+a narrow search window can surface events outside that window, because recent
+web pages often reference older events.
+
+## Search depth
+
+Search depth is how far back in the index your search goes — for example, the
+last month or the last year.
+
+A simple way to think about it:
+
+- **Search depth** is the haystack — the set of web pages CatchAll looks
+  through.
+- **Your query and validators** are the needle — what you are looking for inside
+  those pages.
+
+## What start_date and end_date control
+
+The `start_date` and `end_date` parameters define your search window. They
+control **which web pages** are searched, not **which events** are returned.
+
+| Parameter    | What it controls                                        |
+| ------------ | ------------------------------------------------------- |
+| `start_date` | Earliest web page discovery date included in the search |
+| `end_date`   | Latest web page discovery date included in the search   |
+
+If you use the CatchAll UI, the Search Depth control ("Last N
+days/weeks/months") maps directly to these parameters.
+
+To get more results for a specific event period, use a wider search window. This
+picks up both web pages published close to the time events happened and those
+published later that reference the same events.
+
+## Example
+
+You are looking for AI startup funding rounds from early 2025. You set up your
+query and validators to match that event.
+
+The same event can be covered by multiple web pages discovered at different
+times. With a search window of **last 30 days**:
+
+| Web page                                                   | Discovery date | Included in search? |
+| ---------------------------------------------------------- | -------------- | ------------------- |
+| Reports a January 2025 funding round, discovered last week | Last week      | ✅ Yes              |
+| Reports the same round, discovered in January 2025         | January 2025   | ❌ No               |
+
+Extending the window back to January 2025 includes both web pages, giving you
+more complete results.
+
+## Plan limits
+
+Your plan sets the maximum search depth available to you, which determines the
+earliest `start_date` you can request. If you request a date range beyond your
+plan's limit:
+
+- `POST /catchAll/initialize` adjusts the dates automatically and returns a
+  `date_modification_message` explaining what changed.
+- `POST /catchAll/submit` returns a `400` error with a specific message.
+
+Use the initialize endpoint to check your effective date range before submitting
+a job.
+
+## See also
+
+- [Write effective queries](/web-search-api/how-to/write-effective-queries)
+- [Initialize job](/web-search-api/api-reference/jobs/initialize-job)
+- [Create job](/web-search-api/api-reference/jobs/create-job)

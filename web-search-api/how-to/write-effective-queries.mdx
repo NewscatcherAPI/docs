@@ -11,18 +11,17 @@ guide shows you how to write queries that return focused, relevant events.
 
 Before submitting a query, review these recommendations:
 
-- [Describe real-world events](#describe-real-world-events) (not article
-  retrieval)
+- [Describe real-world events](#describe-real-world-events) (not article retrieval)
 - [Specify event type](#specify-event-type) (acquisitions, recalls, incidents)
 - [Add 2-4 details](#add-2-4-details) (industry, amount, location)
-- [Stay within 30 days](#stay-within-30-days) (default 5 days, max 30 days)
+- [Specify timeframe in your query](#specify-timeframe-in-your-query) (default 5 days, max depends on plan)
 - [Keep queries focused](#keep-queries-focused) (single event type recommended)
 
 <Tip>
- **Testing queries:** For quick testing, submit a job with the `limit` parameter 
- to process fewer records (e.g., `limit: 10`). Once satisfied with the results, 
- [continue the job](/web-search-api/api-reference/jobs/continue-job) or adjust the query 
- and create a new job.
+  **Testing queries:** For quick testing, submit a job with the `limit`
+  parameter to process fewer records (e.g., `limit: 10`). Once satisfied with
+  the results, [continue the job](/web-search-api/api-reference/jobs/continue-job) 
+  or adjust the query and create a new job.
 </Tip>
 
 ### What CatchAll finds
@@ -63,12 +62,13 @@ Data breaches at financial institutions over the last week
 Catch all news from CNBC since December 1
 (Requests articles, not events)
 
-Find articles about iPhone 15 features 
+Find articles about iPhone 15 features
 (Static product information, not events)
 
-Get historical GDP data by country 
+Get historical GDP data by country
 (Data lookup, not events)
 ```
+
 </CodeGroup>
 
 ## Specify event type
@@ -79,21 +79,21 @@ anywhere, it's not observable to the system.
 
 Target recognizable event types that get consistently reported:
 
-| Event Category | Examples |
-|---------------|----------|
-| Business | Acquisitions, mergers, IPOs, funding rounds, bankruptcies |
-| Corporate | Layoffs, executive appointments, restructuring, earnings reports |
-| Regulatory | FDA approvals, product recalls, legal rulings, policy changes |
-| Technology | Product launches, patent filings, security breaches |
-| Incidents | Data breaches, workplace accidents, service outages |
-| Financial | Credit downgrades, bond defaults, banking failures |
-| Infrastructure | Construction starts, facility openings, plant closures |
-| Legal | Lawsuit filings, settlements, consent decrees |
+| Event Category | Examples                                                         |
+| -------------- | ---------------------------------------------------------------- |
+| Business       | Acquisitions, mergers, IPOs, funding rounds, bankruptcies        |
+| Corporate      | Layoffs, executive appointments, restructuring, earnings reports |
+| Regulatory     | FDA approvals, product recalls, legal rulings, policy changes    |
+| Technology     | Product launches, patent filings, security breaches              |
+| Incidents      | Data breaches, workplace accidents, service outages              |
+| Financial      | Credit downgrades, bond defaults, banking failures               |
+| Infrastructure | Construction starts, facility openings, plant closures           |
+| Legal          | Lawsuit filings, settlements, consent decrees                    |
 
 <Note>
-  This list is not exhaustive. CatchAll can find any event type that gets reported
-  across authoritative web sources. If you can describe "what happened," CatchAll
-  can find it.
+  This list is not exhaustive. CatchAll can find any event type that gets
+  reported across authoritative web sources. If you can describe "what
+  happened," CatchAll can find it.
 </Note>
 
 <CodeGroup>
@@ -101,12 +101,11 @@ Target recognizable event types that get consistently reported:
 FDA drug approvals for rare diseases
 (Specific agency + event type + category)
 
-Tech company IPOs valued over $1B
-(Industry + event type + threshold)
+Tech company IPOs valued over $1B (Industry + event type + threshold)
 
-Executive departures at Fortune 500 companies
-(Event type + company category)
-```
+Executive departures at Fortune 500 companies (Event type + company category)
+
+````
 
 ```text ❌ Poor queries
 Tech industry trends
@@ -117,7 +116,8 @@ AI developments
 
 Tesla news
 ("News" requests content, no event type specified)
-```
+````
+
 </CodeGroup>
 
 ## Add 2-4 details
@@ -130,12 +130,11 @@ returns nothing. Add 2-4 details like industry, threshold, or geography.
 AI company acquisitions over $50M
 (Event type + industry + threshold)
 
-Series B funding rounds for healthcare startups
-(Stage + industry)
+Series B funding rounds for healthcare startups (Stage + industry)
 
-FDA drug approvals for oncology treatments
-(Agency + event type + medical field)
-```
+FDA drug approvals for oncology treatments (Agency + event type + medical field)
+
+````
 
 ```text ❌ Too few details
 Acquisitions
@@ -143,13 +142,14 @@ Acquisitions
 
 Technology announcements
 (What kind of announcement? Product launch? Partnership? Earnings?)
-```
+````
 
 ```text ❌ Too many details
 Series C funding rounds for AI cybersecurity companies
 in San Francisco over $100M announced on Tuesdays
 (7 details—very few results will match all constraints)
 ```
+
 </CodeGroup>
 
 <Tip>
@@ -157,11 +157,19 @@ in San Francisco over $100M announced on Tuesdays
   focused on the core event.
 </Tip>
 
-## Stay within 30 days
+## Specify timeframe in your query
 
-CatchAll searches for events within a date window. If you don't specify a
-timeframe in your query, the system uses a 5-day default. Maximum timeframe is
-30 days.
+To scope your results to a specific period, include a timeframe in your query.
+If you don't, the system uses a 5-day default. Your plan determines the maximum
+search depth available to you.
+
+You can also set the timeframe directly using `start_date` and `end_date` in
+the request.
+
+<Tip>
+  To learn how search depth and date ranges work, see
+  [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
+</Tip>
 
 <CodeGroup>
 ```text ✅ Good queries
@@ -169,16 +177,12 @@ Tech IPOs announced this week
 Recent cybersecurity incidents at healthcare companies
 AI model releases in the past month
 ```
-
 ```text ❌ Poor queries
-Apple product recalls in 2019
-(Historical events - outside 30-day window)
+AI funding rounds recently
+(Vague timeframe — use "last 7 days" or "this month" instead)
 
-Corporate bankruptcies in 2025
-(Entire year requested - exceeds 30-day maximum)
-
-Supply chain disruptions since January 2024
-(Multi-month range exceeds 30-day maximum)
+Corporate bankruptcies since 2020
+(Multi-year range — likely exceeds plan's search depth)
 ```
 </CodeGroup>
 
@@ -198,12 +202,13 @@ multiple entities or event types, consider splitting it into separate queries.
 Apple acquisitions in AI sector
 (Focused on one company's M&A activity)
 
-Data breaches at healthcare companies 
-(Focused on security incidents in one industry)
+Data breaches at healthcare companies (Focused on security incidents in one
+industry)
 
-Series B funding rounds for fintech startups 
-(Focused on one funding stage in one sector)
-```
+Series B funding rounds for fintech startups (Focused on one funding stage in
+one sector)
+
+````
 
 ```text ⚠️ Works, but consider splitting
 Acquisitions by Apple, Microsoft, and Google
@@ -213,7 +218,7 @@ Better approach:
 - Query 1: Apple acquisitions
 - Query 2: Microsoft acquisitions
 - Query 3: Google acquisitions
-```
+````
 
 ```text ❌ Difficult to work with
 Apple acquisitions and Microsoft layoffs
@@ -224,6 +229,7 @@ Acquisitions by Apple, layoffs at Meta, or IPOs from AI startups
 
 Better approach: Split into focused queries for each event type.
 ```
+
 </CodeGroup>
 
 ## See also
