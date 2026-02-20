@@ -2,17 +2,14 @@
 title: Understanding web index and search depth
 sidebarTitle: Index and search depth
 description:
-  How CatchAll's web index works and what start_date and end_date actually
-  control.
+  How CatchAll's web index works and what start_date and end_date control.
 ---
-
-CatchAll searches a continuously updated web index. This page explains how the
-index works and what the `start_date` and `end_date` parameters control.
 
 ## How web index works
 
-The web index is a timeline of web pages. CatchAll records each web page by the
-date it is discovered — not by the date of the event it describes.
+CatchAll searches a continuously updated web index, where each web page is
+recorded by the date it was discovered — not by the date of the event it
+describes.
 
 This means a web page discovered today can describe an event from six months
 ago. When you run a search, CatchAll looks at all web pages discovered within
