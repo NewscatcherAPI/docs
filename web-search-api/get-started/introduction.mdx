@@ -54,33 +54,16 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
 <AccordionGroup>
   <Accordion title="Event-centric index" icon="database">
-    CatchAll searches NewsCatcher's continuously updated index of 2+ billion web pages, 
-    optimized for finding real-world events (acquisitions, approvals, incidents) 
-    within a recent timeframe. The system excels at comprehensive event discovery, 
-    not static content retrieval.
-    
-    <Tip>
-      Learn how to construct effective event queries in 
-      [Write effective queries](/web-search-api/how-to/write-effective-queries).
-    </Tip>
-  </Accordion>
-
-  <Accordion title="Dynamic schemas" icon="flask">
-    Each job generates a unique response schema. Field names and structure in 
-    the `enrichment` object vary between jobs—even with identical inputs.
-
-    **Guaranteed fields in every record:**
-    - `record_id`
-    - `record_title`
-    - `enrichment` object
-    - `citations` array
-
-    **Variable fields:**
-    - All fields inside `enrichment` (names, types, structure)
+    CatchAll searches NewsCatcher’s continuously updated web index of 2+ billion 
+    web pages, optimized for finding real-world events (acquisitions, approvals, 
+    incidents). The index is time-series by nature — each web page is recorded by 
+    its discovery date, not the date of the event it describes. This means a web 
+    page discovered today may report on an event from months ago, yet CatchAll 
+    still evaluates it against your query.
 
     <Tip>
-      See [Understanding dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas) 
-      for integration patterns.
+      To learn how the index works and what search depth controls, see
+      [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
     </Tip>
   </Accordion>
 
@@ -115,16 +98,38 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     </Tip>
   </Accordion>
 
-  <Accordion title="Date range controls" icon="calendar">
-    Specify custom date ranges for web search, or let the system determine 
-    the optimal time window based on your query (default: 5 days).
+  <Accordion title="Dynamic schemas" icon="flask">
+    Each job generates a unique response schema. Field names and structure in 
+    the `enrichment` object vary between jobs—even with identical inputs.
 
-    Date ranges are validated against your plan's allowed lookback period. 
-    If your requested dates exceed plan limits, the API returns a 400 error 
-    with specific guidance.
+    **Guaranteed fields in every record:**
+    - `record_id`
+    - `record_title`
+    - `enrichment` object
+    - `citations` array
+
+    **Variable fields:**
+    - All fields inside `enrichment` (names, types, structure)
+
     <Tip>
-      Use the [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) 
-      endpoint to preview date adjustments before submitting.
+      See [Understanding dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas) 
+      for integration patterns.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Date range controls" icon="calendar">
+    The `start_date` and `end_date` parameters define your search window within
+    the web index. They control which web pages are searched, not which events
+    are returned. A web page within your date range may describe events from
+    outside that range.
+
+    Date ranges are validated against your plan's allowed search depth. 
+    To preview date adjustments before submitting, you can use 
+    [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job).
+      
+    <Tip>
+      To learn how search depth and date ranges work, see
+      [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
     </Tip>
   </Accordion>
 
@@ -208,15 +213,42 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
 </Tabs>
 
-## Use cases
+## Example queries
 
-- **Market intelligence**: Company earnings, M&A activity, product launches
-- **Regulatory monitoring**: Policy changes, government actions, compliance
-  updates
-- **Business development**: Partnerships, funding rounds, market entries
-- **Competitive analysis**: Competitor activities and announcements
-- **Research automation**: Structured data extraction for analysis
-- **Event monitoring**: Topic-specific events with structured output
+**Market intelligence**
+```text
+M&A activity in the AI sector over $100M in the last month
+Enterprise software company earnings reports this quarter
+Product launches by Fortune 500 technology companies this week
+```
+
+**Regulatory monitoring**
+```text
+FDA drug approvals for oncology treatments in the last 30 days
+Financial regulatory actions against banks in the EU this month
+Government policy changes affecting semiconductor exports this week
+```
+
+**Business development**
+```text
+Series B funding rounds for SaaS startups over $20M this month
+Strategic partnerships between automotive and technology companies this week
+Market entry announcements by US companies in Southeast Asia this month
+```
+
+**Competitive analysis**
+```text
+Executive appointments at major cloud infrastructure companies this month
+Product launches by Salesforce, HubSpot, and Zendesk this quarter
+Layoffs and restructuring announcements at fintech companies this week
+```
+
+**Research automation**
+```text
+Clinical trial results for diabetes treatments published this month
+Cybersecurity incidents at financial institutions in the last 30 days
+Bankruptcy filings by retail companies in the US this quarter
+```
 
 ## What's next
 
