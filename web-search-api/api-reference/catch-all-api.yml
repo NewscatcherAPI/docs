@@ -94,7 +94,7 @@ paths:
         - Jobs
       summary: Create job
       description: |
-        Submit a natural language query to create a new processing job.
+        Submit a plain text query to create a new processing job.
 
         Optionally specify context, date ranges, limit, custom validators, and enrichments. 
         If dates exceed plan limits, returns 400 error.
@@ -228,7 +228,7 @@ paths:
 
         **Schedule requirements:**
         - Minimum 24-hour interval between executions
-        - Natural language format (e.g., "every day at 12 PM UTC", "every 48 hours")
+        - Plain text format (e.g., "every day at 12 PM UTC", "every 48 hours")
 
         **Validation:**
         - Reference jobs older than 7 days return 400 Bad Request.
@@ -761,7 +761,7 @@ components:
     Query:
       type: string
       description: |
-        Natural language question describing what to find.
+        Plain text question describing what to find.
 
         The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
 
@@ -1134,7 +1134,7 @@ components:
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         query:
           type: string
-          description: Natural language query for this job.
+          description: Plain text query for this job.
           example: "AI company acquisitions"
         created_at:
           type: string
@@ -1158,7 +1158,7 @@ components:
           description: Job identifier.
         query:
           type: string
-          description: Original natural language query.
+          description: Original plain text query.
           example: Tech company earnings this quarter.
         context:
           type: string
@@ -1419,7 +1419,7 @@ components:
         schedule:
           type: string
           description: |
-            Natural language schedule (e.g. 'every day at 12 AM EST').
+            Monitor schedule in plain text format (e.g. 'every day at 12 AM EST').
 
             **Minimum frequency:** Monitors must be scheduled at least 24 hours apart.
           example: "every day at 12 PM UTC"
@@ -1502,7 +1502,7 @@ components:
       properties:
         query:
           type: string
-          description: Natural language query from the reference job.
+          description: Plain text query from the reference job.
           example: "AI company acquisitions"
         context:
           type: string
@@ -1524,7 +1524,7 @@ components:
         cron_expression:
           type: string
           description: |
-            Parsed cron expression from the natural language schedule.
+            The cron expression for a monitor schedule parsed from the text schedule you provide.
             Standard cron format (minute hour day month day-of-week).
           example: "0 12 * * *"
         timezone:
@@ -1602,7 +1602,7 @@ components:
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         reference_job_query:
           type: string
-          description: Natural language query from the reference job.
+          description: Plain text query from the reference job.
           example: "AI company acquisitions"
         enabled:
           type: boolean
@@ -1614,7 +1614,7 @@ components:
           example: "0 12 * * *"
         schedule_human_readable:
           type: string
-          description: Natural language description of the monitor schedule.
+          description: The monitor schedule in a plain text format.
           example: "Every 24 hours"
         timezone:
           type: string
