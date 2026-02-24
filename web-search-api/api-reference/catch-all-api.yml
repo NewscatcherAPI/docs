@@ -12,7 +12,7 @@ info:
     ### Basic Workflow
 
     1. (Optional) Get suggestions via /catchAll/initialize
-    2. Submit query via /catchAll/submit with optional date ranges and custom validators/enrichments
+    2. Submit a query via /catchAll/submit with optional date ranges and custom validators/enrichments
     3. Poll /catchAll/status/{job_id} until completed (10-15 minutes)
     4. Retrieve results via /catchAll/pull/{job_id}
 
@@ -94,7 +94,7 @@ paths:
         - Jobs
       summary: Create job
       description: |
-        Submit a plain text query to create a new processing job.
+        Submit a query to create a new processing job.
 
         Optionally specify context, date ranges, limit, custom validators, and enrichments. 
         If dates exceed plan limits, returns 400 error.
