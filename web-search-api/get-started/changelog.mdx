@@ -186,13 +186,12 @@ and improved data quality.
 ## Monitors feature
 
 Introduced [monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
-schedule recurring data collection with natural language and webhook
-notifications.
+schedule recurring data collection from a reference job.
 
 **Features:**
 
 - **Schedule automation**: Create monitors that run queries on schedules defined
-  in natural language (e.g., "every day at 12 PM UTC").
+  in plain text format (e.g., "every day at 12 PM UTC").
 - **Job tracking**: Track all jobs associated with a monitor.
 - **Execution history**: Retrieve job execution history and status for each
   monitor.
@@ -215,26 +214,24 @@ notifications.
 <Update label="0.1.0" description="2025-10-20">
 ## Initial beta release
 
-CatchAll API transforms natural language questions into structured, validated
-data extracted from web sources.
+CatchAll is a web search API that transforms text queries into structured, 
+validated event data extracted from billions of web sources.
 
 **Features:**
 
-- **Natural language processing**: Submit queries in plain English and receive
-  structured data with source citations.
-- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**: Response
-  structures adapt to your query, generating relevant fields automatically.
-- **12-stage pipeline**: Track your job through analysis, retrieval, clustering,
-  validation, and extraction phases.
-- **Real-time status tracking**: Monitor job progress from submission to
-  completion.
+- **Plain text input**: Submit queries in plain text and receive structured event 
+  data with source citations.
+- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**: 
+  Response structures adapt to your query, generating relevant fields automatically.
+- **Real-time status tracking**: Track job progress from submission through 
+  completion, including analysis, retrieval, clustering, validation, and extraction.
 
 **Endpoints:**
 
 - [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Create jobs
-  with natural language queries.
+  using a plain text queries.
 - [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status) —
-  Check processing status.
+  Check a job processing status.
 - [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results) —
   Retrieve structured results with citations.
 

@@ -1,0 +1,688 @@
+---
+title: Jobs
+sidebarTitle: Jobs
+description: How CatchAll jobs work and how to move from query to results.
+---
+
+A job is the core unit of work in CatchAll. You submit a query, CatchAll
+processes it asynchronously, and you retrieve structured JSON records when the
+job completes.
+
+## Jobs lifecycle
+
+![Job lifecycle diagram showing three flows: Basic (initialize optional → submit → get status → pull results), Continue (continue → get status → pull results, extends a job submitted with limit), and Audit (list user jobs, returns all jobs for your API key).](/images/guides/job-lifecycle.png)
+
+## Initialize job
+
+[`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job)
+analyzes your query and returns LLM-generated suggestions for validators,
+enrichments, and a date range. It does not create a job or start processing.
+
+This endpoint is a preview — it shows you one example of what validators and
+enrichments could look like for your query. Because the suggestions are
+LLM-generated, they are not deterministic. If you call initialize and then
+submit a job without passing any validators or enrichments, the system generates
+them again from scratch and the results will differ from the initialize
+response.
+
+To use the initialize suggestions in your job, pass them explicitly in your
+submit request. You can use them as-is, modify them, or write your own.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/initialize" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Series B funding rounds for SaaS startups",
+    "context": "Focus on funding amount and company name"
+  }'
+```
+
+```json JSON
+{
+  "query": "Series B funding rounds for SaaS startups",
+  "context": "Focus on funding amount and company name"
+}
+```
+
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+suggestions = client.jobs.initialize(
+    query="Series B funding rounds for SaaS startups",
+    context="Focus on funding amount and company name"
+)
+print(suggestions)
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const suggestions = await client.jobs.initialize({
+  query: "Series B funding rounds for SaaS startups",
+  context: "Focus on funding amount and company name",
+});
+console.log(suggestions);
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.jobs.requests.InitializeRequestDto;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+var suggestions = client.jobs().initialize(
+    InitializeRequestDto.builder()
+        .query("Series B funding rounds for SaaS startups")
+        .context("Focus on funding amount and company name")
+        .build()
+);
+System.out.println(suggestions);
+```
+
+</CodeGroup>
+
+<Expandable title="Initialize job response">
+```json
+{
+  "validators": [
+    {
+      "name": "is_series_b_funding",
+      "description": "true if the article describes a Series B funding round",
+      "type": "boolean"
+    },
+    {
+      "name": "is_saas_startup",
+      "description": "true if the company receiving funding is a SaaS startup",
+      "type": "boolean"
+    }
+  ],
+  "enrichments": [
+    {
+      "name": "funding_amount",
+      "description": "Extract the amount of funding received in the Series B round",
+      "type": "number"
+    },
+    {
+      "name": "investee_company",
+      "description": "Extract the name of the SaaS startup receiving the funding",
+      "type": "company"
+    },
+    {
+      "name": "investor_company",
+      "description": "Extract the name of the investor or lead investor in the funding round",
+      "type": "company"
+    },
+    {
+      "name": "funding_date",
+      "description": "Extract the date when the funding round was announced",
+      "type": "date"
+    }
+  ],
+  "start_date": "2026-02-19T13:56:37.254913+00:00",
+  "end_date": "2026-02-24T13:56:37.254913+00:00",
+  "date_modification_message": [
+    "No dates were provided; using a default window of 5 days (2026-02-19 13:56:37 to 2026-02-24 13:56:37)."
+  ]
+}
+```
+</Expandable>
+
+## Create job
+
+[`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) creates
+the job and starts processing. Only `query` is required — all other parameters
+are optional.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Series B funding rounds for SaaS startups",
+    "context": "Focus on funding amount and company name",
+    "start_date": "2026-02-18T00:00:00Z",
+    "end_date": "2026-02-23T00:00:00Z",
+    "limit": 10
+  }'
+```
+
+```json JSON
+{
+  "query": "Series B funding rounds for SaaS startups",
+  "context": "Focus on funding amount and company name",
+  "start_date": "2026-02-18T00:00:00Z",
+  "end_date": "2026-02-23T00:00:00Z",
+  "limit": 10
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="Series B funding rounds for SaaS startups",
+    context="Focus on funding amount and company name",
+    start_date="2026-02-18T00:00:00Z",
+    end_date="2026-02-23T00:00:00Z",
+    limit=10
+)
+job_id = job.job_id
+print(f"Job created: {job_id}")
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "Series B funding rounds for SaaS startups",
+  context: "Focus on funding amount and company name",
+  start_date: "2026-02-18T00:00:00Z",
+  end_date: "2026-02-23T00:00:00Z",
+  limit: 10,
+});
+const jobId = job.job_id;
+console.log(`Job created: ${jobId}`);
+```
+
+```java Java
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("Series B funding rounds for SaaS startups")
+        .context("Focus on funding amount and company name")
+        .startDate("2026-02-18T00:00:00Z")
+        .endDate("2026-02-23T00:00:00Z")
+        .limit(10)
+        .build()
+);
+String jobId = job.getJobId();
+System.out.println("Job created: " + jobId);
+```
+
+</CodeGroup>
+
+<Expandable title="Create job response">
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+}
+```
+</Expandable>
+
+<Tip>
+  Use `limit: 10` for quick testing. If the results look good, use [Continue
+  job](#continue-job) to process more records without restarting.
+</Tip>
+
+## Get job status
+
+[`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status)
+returns the current processing stage. Poll every 30-60 seconds until status is
+`completed`. Jobs typically take 10-15 minutes.
+
+Jobs progress through these stages in order:
+
+| Stage        | Description                                            |
+| ------------ | ------------------------------------------------------ |
+| `submitted`  | Job queued, waiting to start                           |
+| `analyzing`  | Generating search queries, validators, and enrichments |
+| `fetching`   | Retrieving web pages                                   |
+| `clustering` | Grouping related web pages into event clusters         |
+| `enriching`  | Validating clusters and extracting structured data     |
+| `completed`  | Processing finished, results ready                     |
+| `failed`     | Processing failed                                      |
+
+<CodeGroup>
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/status/5f0c9087-85cb-4917-b3c7-e5a5eff73a0c" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import time
+
+POLL_INTERVAL_SECONDS = 60
+
+while True:
+    status = client.jobs.get_job_status(job_id)
+    print(f"Status: {status.status}")
+
+    if status.status == "completed":
+        break
+    elif status.status == "failed":
+        print("Job failed")
+        break
+
+    time.sleep(POLL_INTERVAL_SECONDS)
+```
+
+```typescript TypeScript
+const POLL_INTERVAL_MS = 60000;
+
+while (true) {
+  const status = await client.jobs.getJobStatus({ job_id: jobId });
+  console.log(`Status: ${status.status}`);
+
+  if (status.status === "completed") {
+    break;
+  } else if (status.status === "failed") {
+    console.log("Job failed");
+    break;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+}
+```
+
+```java Java
+final int POLL_INTERVAL_MS = 60000;
+
+while (true) {
+    var status = client.jobs().getJobStatus(jobId);
+    System.out.println("Status: " + status.getStatus());
+
+    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+        break;
+    } else if (JobStatus.FAILED.equals(status.getStatus().orElse(null))) {
+        System.out.println("Job failed");
+        break;
+    }
+
+    Thread.sleep(POLL_INTERVAL_MS);
+}
+```
+
+</CodeGroup>
+
+<Expandable title="Get job status response">
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "status": "completed",
+  "steps": [
+    {
+      "status": "submitted",
+      "order": 1,
+      "completed": true
+    },
+    {
+      "status": "analyzing",
+      "order": 2,
+      "completed": true
+    },
+    {
+      "status": "fetching",
+      "order": 3,
+      "completed": true
+    },
+    {
+      "status": "clustering",
+      "order": 4,
+      "completed": true
+    },
+    {
+      "status": "enriching",
+      "order": 5,
+      "completed": true
+    },
+    {
+      "status": "completed",
+      "order": 6,
+      "completed": true
+    },
+    {
+      "status": "failed",
+      "order": 7,
+      "completed": false
+    }
+  ]
+}
+```
+</Expandable>
+
+<Note>
+  You can pull partial results once the job reaches the `enriching` stage
+  without waiting for completion. See [Get job results](#get-job-results) below.
+</Note>
+
+## Get job results
+
+[`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
+retrieves structured records. During the `enriching` stage, `progress_validated`
+tracks how many candidate clusters have been processed so far.
+
+<CodeGroup>
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/pull/5f0c9087-85cb-4917-b3c7-e5a5eff73a0c" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+# Pull after completion
+results = client.jobs.get_job_results(job_id)
+print(f"Found {results.valid_records} valid records")
+
+# Or pull during enriching for early access
+while True:
+    status = client.jobs.get_job_status(job_id)
+
+    if status.status in ["enriching", "completed"]:
+        results = client.jobs.get_job_results(job_id)
+        print(f"Progress: {results.progress_validated}/{results.candidate_records} validated, "
+              f"{results.valid_records} valid")
+
+        if status.status == "completed":
+            break
+
+    time.sleep(POLL_INTERVAL_SECONDS)
+```
+
+```typescript TypeScript
+// Pull after completion
+const results = await client.jobs.getJobResults({ job_id: jobId });
+console.log(`Found ${results.valid_records} valid records`);
+
+// Or pull during enriching for early access
+while (true) {
+  const status = await client.jobs.getJobStatus({ job_id: jobId });
+
+  if (status.status === "enriching" || status.status === "completed") {
+    const results = await client.jobs.getJobResults({ job_id: jobId });
+    console.log(
+      `Progress: ${results.progress_validated}/${results.candidate_records} validated, ` +
+        `${results.valid_records} valid`,
+    );
+
+    if (status.status === "completed") break;
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+}
+```
+
+```java Java
+// Pull after completion
+var results = client.jobs().getJobResults(jobId);
+System.out.println("Found " + results.getValidRecords() + " valid records");
+
+// Or pull during enriching for early access
+while (true) {
+    var status = client.jobs().getJobStatus(jobId);
+
+    if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) ||
+        JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+
+        var results = client.jobs().getJobResults(jobId);
+        System.out.println("Progress: " + results.getProgressValidated() +
+            "/" + results.getCandidateRecords() + " validated, " +
+            results.getValidRecords() + " valid");
+
+        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
+    }
+
+    Thread.sleep(POLL_INTERVAL_MS);
+}
+```
+
+</CodeGroup>
+
+<Expandable title="Get job results response">
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "query": "Series B funding rounds for SaaS startups",
+  "context": "Focus on funding amount and company name",
+  "validators": [
+    "is_series_b",
+    "involves_saas_startup",
+    "is_about_funding_round",
+    "mentions_funding_amount"
+  ],
+  "enrichments": [
+    "funding_amount",
+    "funding_currency",
+    "investee_company",
+    "investor_company",
+    "announcement_date",
+    "saas_category",
+    "valuation",
+    "other_investors"
+  ],
+  "status": "completed",
+  "duration": "1m",
+  "candidate_records": 4,
+  "valid_records": 3,
+  "progress_validated": 4,
+  "date_range": {
+    "start_date": "2026-02-17T00:00:00Z",
+    "end_date": "2026-02-24T00:00:00Z"
+  },
+  "page": 1,
+  "page_size": 2,
+  "total_pages": 2,
+  "all_records": [
+    {
+      "record_id": "6983973854314692457",
+      "record_title": "VulnCheck Raises $25M Series B Funding",
+      "enrichment": {
+        "confidence": "high",
+        "saas_category": "cybersecurity",
+        "funding_amount": 25000000,
+        "funding_currency": "USD",
+        "announcement_date": "2026-02-17",
+        "investee_company": {
+          "source_text": "VulnCheck",
+          "confidence": 0.99,
+          "metadata": {
+            "name": "VulnCheck",
+            "domain_url": "vulncheck.com",
+            "confidence": "high"
+          }
+        },
+        "investor_company": {
+          "source_text": "Sorenson Capital",
+          "confidence": 0.99,
+          "metadata": {
+            "name": "Sorenson Capital",
+            "domain_url": null,
+            "confidence": null
+          }
+        },
+        "valuation": 25000000,
+        "other_investors": "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
+      },
+      "citations": [
+        {
+          "title": "Exclusive: VulnCheck raises $25M funding to help companies patch software bugs",
+          "link": "https://www.msn.com/en-us/money/other/exclusive-vulncheck-raises-25m-funding-to-help-companies-patch-software-bugs/ar-AA1WwdjW",
+          "published_date": "2026-02-17T14:01:05Z"
+        },
+        {
+          "title": "VulnCheck lands $25m to expand threat intelligence",
+          "link": "https://fintech.global/2026/02/18/vulncheck-lands-25m-to-expand-threat-intelligence",
+          "published_date": "2026-02-18T10:34:27Z"
+        }
+      ]
+    }
+  ]
+}
+```
+</Expandable>
+
+## Continue job
+
+To process more records after reviewing the initial results of a job submitted
+with a `limit`, use
+[`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job). It
+extends the limit without restarting the job — all analysis, validation, and
+enrichment logic from the original job is preserved.
+
+If you submit without a `limit`, the job processes all available data for the
+scope and there is nothing to continue.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/continue" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+    "new_limit": 100
+  }'
+```
+
+```json JSON
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "new_limit": 100
+}
+```
+
+```python Python
+continued = client.jobs.continue_job(
+    job_id=job_id,
+    new_limit=100
+)
+print(f"Continued: {continued.previous_limit} → {continued.new_limit} records")
+
+# Poll and pull again
+while True:
+    status = client.jobs.get_job_status(job_id)
+    if status.status == "completed":
+        break
+    time.sleep(POLL_INTERVAL_SECONDS)
+
+results = client.jobs.get_job_results(job_id)
+```
+
+```typescript TypeScript
+const continued = await client.jobs.continueJob({
+  job_id: jobId,
+  new_limit: 100,
+});
+console.log(
+  `Continued: ${continued.previous_limit} → ${continued.new_limit} records`,
+);
+
+// Poll and pull again
+while (true) {
+  const status = await client.jobs.getJobStatus({ job_id: jobId });
+  if (status.status === "completed") break;
+  await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+}
+
+const results = await client.jobs.getJobResults({ job_id: jobId });
+```
+
+```java Java
+import com.newscatcher.catchall.resources.jobs.requests.ContinueRequestDto;
+
+var continued = client.jobs().continueJob(
+    ContinueRequestDto.builder()
+        .jobId(jobId)
+        .newLimit(100)
+        .build()
+);
+System.out.println("Continued: " + continued.getPreviousLimit() + " → " + continued.getNewLimit());
+
+// Poll and pull again
+while (true) {
+    var status = client.jobs().getJobStatus(jobId);
+    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
+    Thread.sleep(POLL_INTERVAL_MS);
+}
+
+var results = client.jobs().getJobResults(jobId);
+```
+
+</CodeGroup>
+
+<Expandable title="Continue job response">
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "previous_limit": 10,
+  "new_limit": 20,
+  "status": "accepted"
+}
+```
+</Expandable>
+
+<Warning>
+  `new_limit` must be greater than the limit set in the original job.
+</Warning>
+
+## List user jobs
+
+[`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+returns all jobs created with your API key, sorted by creation date, most recent
+first. Supports pagination via `page` and `page_size` parameters.
+
+<CodeGroup>
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/jobs/user" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+jobs = client.jobs.get_user_jobs()
+
+for job in jobs:
+    print(f"Job {job.job_id}: {job.query} ({job.status})")
+```
+
+```typescript TypeScript
+const jobs = await client.jobs.getUserJobs();
+
+for (const job of jobs) {
+  console.log(`Job ${job.job_id}: ${job.query} (${job.status})`);
+}
+```
+
+```java Java
+var jobs = client.jobs().getUserJobs();
+
+for (var job : jobs.getJobs()) {
+    System.out.println("Job " + job.getJobId() + ": " +
+        job.getQuery() + " (" + job.getStatus() + ")");
+}
+```
+
+</CodeGroup>
+
+<Expandable title="List user jobs response">
+```json
+{
+  "total": 27,
+  "page": 1,
+  "page_size": 2,
+  "total_pages": 14,
+  "jobs": [
+    {
+      "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+      "query": "Series B funding rounds for SaaS startups",
+      "created_at": "2026-02-24T13:57:56.267572",
+      "status": "completed"
+    },
+    {
+      "job_id": "8d618890-f9f5-4c97-af17-236136a306a7",
+      "query": "Find corporate headquarters relocations in the US",
+      "created_at": "2026-02-18T20:25:20.940731",
+      "status": "completed"
+    }
+  ]
+}
+```
+</Expandable>
+
+## See also
+
+- [Monitors](/web-search-api/guides-and-concepts/monitors)
+- [Write effective queries](/web-search-api/how-to/write-effective-queries)
+- [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth)
