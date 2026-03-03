@@ -79,7 +79,8 @@ paths:
             schema:
               $ref: "#/components/schemas/InitializeRequestDTO"
             example:
-              query: "AI company acquisitions in fintech last week"
+              query: "Series B funding rounds for SaaS startups"
+              context: "Focus on funding amount and company name"
       responses:
         "200":
           $ref: "#/components/responses/InitializeResponse"
@@ -109,10 +110,10 @@ paths:
             schema:
               $ref: "#/components/schemas/SubmitRequestDTO"
             example:
-              query: "AI company acquisitions"
-              context: "Focus on deal size and acquiring company details"
-              start_date: "2026-01-30T00:00:00Z"
-              end_date: "2026-02-05T00:00:00Z"
+              query: "Series B funding rounds for SaaS startups"
+              context: "Focus on funding amount and company name"
+              start_date: "2026-02-18T00:00:00Z"
+              end_date: "2026-02-23T00:00:00Z"
               limit: 10
       responses:
         "200":
@@ -142,7 +143,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ContinueRequestDTO"
             example:
-              job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+              job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               new_limit: 100
       responses:
         "200":
@@ -501,7 +502,7 @@ components:
       schema:
         type: string
         format: uuid
-      example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+      example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     Page:
       name: page
@@ -535,30 +536,29 @@ components:
             $ref: "#/components/schemas/InitializeResponseDTO"
           example:
             validators:
-              - name: "is_acquisition_event"
-                description:
-                  "true if web page describes a merger or acquisition event"
+              - name: "is_series_b_funding"
+                description: "true if the web page describes a Series B funding round"
                 type: "boolean"
-              - name: "involves_fintech"
-                description:
-                  "true if the companies involved are in the fintech sector"
+              - name: "is_saas_startup"
+                description: "true if the company receiving funding is a SaaS startup"
                 type: "boolean"
             enrichments:
-              - name: "acquiring_company"
-                description: "Extract the acquiring company name"
-                type: "company"
-              - name: "acquired_company"
-                description: "Extract the acquired company name"
-                type: "text"
-              - name: "deal_value"
-                description: "Extract the deal value if mentioned"
+              - name: "funding_amount"
+                description: "Extract the amount of funding received in the Series B round"
                 type: "number"
-              - name: "announcement_date"
-                description: "Extract the announcement date"
+              - name: "investee_company"
+                description: "Extract the name of the SaaS startup receiving the funding"
+                type: "company"
+              - name: "investor_company"
+                description: "Extract the name of the lead investor"
+                type: "company"
+              - name: "funding_date"
+                description: "Extract the date when the funding round was announced"
                 type: "date"
-            start_date: "2026-01-29T00:00:00Z"
-            end_date: "2026-02-05T00:00:00Z"
-            date_modification_message: []
+            start_date: "2026-02-19T00:00:00Z"
+            end_date: "2026-02-24T00:00:00Z"
+            date_modification_message:
+              - "No dates were provided; using a default window of 5 days."
 
     SubmitResponse:
       description: Job created successfully
@@ -567,7 +567,7 @@ components:
           schema:
             $ref: "#/components/schemas/SubmitResponseBody"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     ContinueResponse:
       description: Job continuation accepted
@@ -576,7 +576,7 @@ components:
           schema:
             $ref: "#/components/schemas/ContinueResponseDTO"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             previous_limit: 10
             new_limit: 100
             status: "accepted"
@@ -588,27 +588,27 @@ components:
           schema:
             $ref: "#/components/schemas/StatusResponseDTO"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-            status: "analyzing"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+            status: "completed"
             steps:
               - status: "submitted"
                 order: 1
                 completed: true
               - status: "analyzing"
                 order: 2
-                completed: false
+                completed: true
               - status: "fetching"
                 order: 3
-                completed: false
+                completed: true
               - status: "clustering"
                 order: 4
-                completed: false
+                completed: true
               - status: "enriching"
                 order: 5
-                completed: false
+                completed: true
               - status: "completed"
                 order: 6
-                completed: false
+                completed: true
               - status: "failed"
                 order: 7
                 completed: false
@@ -619,6 +619,20 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ListUserJobsResponseDto"
+          example:
+            total: 27
+            page: 1
+            page_size: 2
+            total_pages: 14
+            jobs:
+              - job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+                query: "Series B funding rounds for SaaS startups"
+                created_at: "2026-02-24T13:57:56Z"
+                status: "completed"
+              - job_id: "8d618890-f9f5-4c97-af17-236136a306a7"
+                query: "Corporate headquarters relocations in the US"
+                created_at: "2026-02-18T20:25:20Z"
+                status: "completed"
 
     PullJobResponse:
       description: Results retrieved successfully
@@ -626,6 +640,53 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PullJobResponseDTO"
+          example:
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+            query: "Series B funding rounds for SaaS startups"
+            context: "Focus on funding amount and company name"
+            validators:
+              - "is_series_b_funding"
+              - "is_saas_startup"
+            enrichments:
+              - "funding_amount"
+              - "funding_currency"
+              - "investee_company"
+              - "investor_company"
+              - "funding_date"
+            status: "completed"
+            duration: "1m"
+            candidate_records: 4
+            valid_records: 3
+            progress_validated: 4
+            date_range:
+              start_date: "2026-02-18T00:00:00Z"
+              end_date: "2026-02-23T00:00:00Z"
+            page: 1
+            page_size: 2
+            total_pages: 2
+            all_records:
+              - record_id: "6983973854314692457"
+                record_title: "VulnCheck Raises $25M Series B Funding"
+                enrichment:
+                  funding_amount: 25000000
+                  funding_currency: "USD"
+                  funding_date: "2026-02-17"
+                  investee_company:
+                    source_text: "VulnCheck"
+                    confidence: 0.99
+                    metadata:
+                      name: "VulnCheck"
+                      domain_url: "vulncheck.com"
+                  investor_company:
+                    source_text: "Sorenson Capital"
+                    confidence: 0.99
+                    metadata:
+                      name: "Sorenson Capital"
+                      domain_url: null
+                citations:
+                  - title: "VulnCheck raises $25M Series B"
+                    link: "https://www.msn.com/en-us/money/other/exclusive-vulncheck-raises-25m-funding-to-help-companies-patch-software-bugs/ar-AA1WwdjW"
+                    published_date: "2026-02-17T14:01:05Z"
 
     CreateMonitorResponse:
       description: Monitor created successfully
@@ -975,7 +1036,7 @@ components:
           description:
             Unique identifier for the created job. Use this to check status and
             retrieve results.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     ContinueRequestDTO:
       type: object
@@ -988,7 +1049,7 @@ components:
           format: uuid
           description: |
             Job identifier of the completed job to continue.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         new_limit:
           type: integer
           minimum: 1
@@ -1007,7 +1068,7 @@ components:
           type: string
           format: uuid
           description: Job identifier for the continued job.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         previous_limit:
           type: integer
           description: Previous record limit before continuation.
@@ -1075,7 +1136,7 @@ components:
           type: string
           format: uuid
           description: Job identifier.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         status:
           allOf:
             - $ref: "#/components/schemas/PublicJobStatus"
@@ -1130,11 +1191,11 @@ components:
           type: string
           format: uuid
           description: Job identifier.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         query:
           type: string
           description: Plain text query for this job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         created_at:
           type: string
           format: date-time
