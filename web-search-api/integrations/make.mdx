@@ -68,13 +68,15 @@ operations, while Searches retrieve data.
 
 ### Actions
 
-| Module            | Description               | Endpoint                             |
-| ----------------- | ------------------------- | ------------------------------------ |
-| `submit-query`    | Create a new CatchAll job | `/catchAll/submit`                   |
-| `create-monitor`  | Schedule recurring jobs   | `/catchAll/monitors/create`          |
-| `create-monitor-with-webhook` | Schedule recurring jobs with webhook | `/catchAll/monitors/create` |
-| `enable-monitor`  | Resume a paused monitor   | `/catchAll/monitors/{id}/enable`     |
-| `disable-monitor` | Pause a running monitor   | `/catchAll/monitors/{id}/disable`    |
+| Module                        | Description                                                             | Endpoint                          |
+| ----------------------------- | ----------------------------------------------------------------------- | --------------------------------- |
+| `query-builder`               | Get suggested validators, enrichments, and date ranges for a query      | `/catchAll/initialize`            |
+| `submit-query`                | Create a new CatchAll job                                               | `/catchAll/submit`                |
+| `continue`                    | Expand an existing job to process more records beyond the initial limit | `/catchAll/continue`              |
+| `create-monitor`              | Schedule recurring jobs                                                 | `/catchAll/monitors/create`       |
+| `create-monitor-with-webhook` | Schedule recurring jobs with webhook                                    | `/catchAll/monitors/create`       |
+| `enable-monitor`              | Resume a paused monitor                                                 | `/catchAll/monitors/{id}/enable`  |
+| `disable-monitor`             | Pause a running monitor                                                 | `/catchAll/monitors/{id}/disable` |
 
 <Note>
   The `create-monitor-with-webhook` module supports webhook URL and HTTP method. 
@@ -105,13 +107,17 @@ results via email.
 ### Add modules
 
 <Steps>
-  <Step title="Add Sleep module">
-    Add **Tools > Sleep**:
+  <Step title="Initialize query (optional)">
+    Add **NewsCatcher CatchAll > query-builder**:
 
-    - **Delay**: `1`
+    - **Connection**: Select your CatchAll connection
+    - **Query**: Enter a natural language question
+    - **Context** (optional): Add focus instructions
 
-    The Sleep module starts the scenario execution. The 1-second delay ensures 
-    all modules initialize properly before submitting the job.
+    Returns suggested validators, enrichments, and a date range. For each
+    corresponding field in `submit-query`, you can map the `query-builder` output
+    using the **Map** toggle, enter your own values, or leave the field empty to
+    regenerate validators and enrichments from scratch when the job runs.
   </Step>
 
   <Step title="Submit job">
@@ -120,7 +126,11 @@ results via email.
     - **Connection**: Select your CatchAll connection
     - **Query**: Enter a natural language question
     - **Context** (optional): Add focus instructions
-    - **Schema** (optional): Specify output format template
+    - **Limit** (optional): Maximum number of records to process
+    - **Validators** (optional): Add validation rules to filter results
+    - **Enrichments** (optional): Add fields to extract from each record
+    - **Start Date** (optional): Set the start of the date range
+    - **End Date** (optional): Set the end of the date range
   </Step>
 
   <Step title="Add polling loop">
@@ -129,16 +139,16 @@ results via email.
     - **Initial value**: `1`
     - **Repeats**: `10`
 
-    The Repeater creates a loop that checks job status up to 10 times (5 minutes 
-    maximum with 30-second intervals).
+    The Repeater creates a loop that checks job status up to 10 times (10 minutes
+    maximum with 60-second intervals).
   </Step>
 
   <Step title="Wait before check">
     Add **Tools > Sleep**:
 
-    - **Delay**: `30`
+    - **Delay**: `60`
 
-    Wait 30 seconds between status checks.
+    Wait 60 seconds between status checks.
   </Step>
 
   <Step title="Check status">
@@ -153,7 +163,7 @@ results via email.
 
     - **Array**: Drag `steps` from the **search-job-id** module
 
-    The Iterator splits the steps array into individual step objects, making 
+    The Iterator splits the steps array into individual step objects, making
     Router conditions simpler.
   </Step>
 
@@ -163,8 +173,8 @@ results via email.
 </Steps>
 
 <Tip>
-  **Customize timing**: The Repeater iterations and Sleep duration can be 
-  adjusted based on your needs. Increase iterations for longer-running jobs or 
+  **Customize timing**: The Repeater iterations and Sleep duration can be
+  adjusted based on your needs. Increase iterations for longer-running jobs or
   decrease them to stay within scenario execution limits.
 </Tip>
 
@@ -246,7 +256,7 @@ The Router evaluates job status and directs execution to one of two routes.
   </Step>
 </Steps>
 
-## Test Jobs workflow
+## Test jobs workflow
 
 <Steps>
   <Step title="Run scenario">
@@ -254,8 +264,8 @@ The Router evaluates job status and directs execution to one of two routes.
   </Step>
 
   <Step title="Monitor execution">
-    Watch the scenario execute. The Repeater checks job status every 30 seconds 
-    (up to 10 times, 5 minutes maximum) until the job completes or fails.
+    Watch the scenario execute. The Repeater checks job status every 60 seconds 
+    (up to 10 times, 10 minutes maximum) until the job completes or fails.
   </Step>
 
   <Step title="Check email">
@@ -264,7 +274,7 @@ The Router evaluates job status and directs execution to one of two routes.
 </Steps>
 
 <Tip>
-  If jobs consistently take longer than 5 minutes to complete, increase the 
+  If jobs consistently take longer than 10 minutes to complete, increase the 
   Repeater **Repeats** value to 15 or 20.
 </Tip>
 
@@ -360,7 +370,7 @@ The Router evaluates monitor creation status and directs execution to one of two
   </Step>
 </Steps>
 
-## Test Monitors workflow
+## Test monitors workflow
 
 <Steps>
   <Step title="Prepare reference job">

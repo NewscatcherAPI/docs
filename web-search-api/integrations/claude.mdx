@@ -1,0 +1,228 @@
+---
+title: Claude integration
+sidebarTitle: Claude
+description:
+  Use CatchAll in Claude for structured web research with MCP and SKILL.
+---
+
+The integration has two components:
+
+- **MCP server**: Authenticates with the CatchAll API and exposes tools in
+  Claude.
+- **SKILL file**: Teaches Claude when and how to use those tools, including
+  query structure, validators, enrichments, polling, and result formatting.
+
+## Before you start
+
+- CatchAll API key from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+- Claude account at [claude.ai](https://claude.ai)
+- Anthropic API key (only for [Python agent](#python-agent) usage)
+
+## Connect MCP server
+
+<Tabs>
+  <Tab title="Claude.ai">
+    <Steps>
+      <Step title="Open connectors">
+        Go to [claude.ai/customize/connectors](https://claude.ai/customize/connectors). Click **+** and select **Add custom connector**.
+      </Step>
+      <Step title="Configure connection">
+        Fill in the **Add custom connector** dialog:
+
+        - **Name**: `CatchAll`
+        - **Remote MCP server URL**:
+
+        ```
+        https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+        ```
+      </Step>
+      <Step title="Add and verify">
+        Click **Add**. Verify that CatchAll appears under **Web** in your connectors list.
+      </Step>
+      <Step title="Test connection">
+        Open a new chat and type a CatchAll query, for example: "Find AI company acquisitions in the last 7 days, limit 5". Claude should call the CatchAll tools and return structured results.
+      </Step>
+    </Steps>
+
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    Claude Desktop does not natively support remote MCP servers. Use `mcp-remote` to proxy the connection.
+
+    <Steps>
+      <Step title="Install mcp-remote">
+        ```bash
+        npm install -g mcp-remote
+        ```
+      </Step>
+      <Step title="Open configuration file">
+        Open your Claude Desktop configuration file:
+
+        - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+        - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+      </Step>
+      <Step title="Add CatchAll entry">
+        Add the following to your configuration file:
+
+        ```json
+        {
+          "mcpServers": {
+            "catchall": {
+              "command": "npx",
+              "args": [
+                "-y",
+                "mcp-remote",
+                "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+              ]
+            }
+          }
+        }
+        ```
+      </Step>
+      <Step title="Restart Claude Desktop">
+        Quit and relaunch Claude Desktop, as it loads MCP tools on startup.
+      </Step>
+    </Steps>
+
+  </Tab>
+
+  <Tab title="Claude Code">
+    ```bash
+    claude mcp add --transport http catchall \
+      "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  The MCP URL contains your API key. Treat it as a secret and do not share it or
+  commit it to version control.
+</Warning>
+
+## Add SKILL
+
+The SKILL file teaches Claude how to use CatchAll effectively. It includes the
+main prompt in `SKILL.md` along with validator and enrichment references,
+monitor scheduling guidance, and the OpenAPI specification.
+
+<Steps>
+  <Step title="Download SKILL archive">
+    Download [CatchAll-SKILL.zip](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/CatchAll-SKILL.zip) from the integrations repository.
+  </Step>
+  <Step title="Upload to Claude">
+    Go to [claude.ai/customize/skills](https://claude.ai/customize/skills). Click **+**, select **Upload a skill**, and select `CatchAll-SKILL.zip`.
+
+    Claude installs the SKILL and applies it to all your conversations and projects.
+
+  </Step>
+</Steps>
+
+## Available tools
+
+The MCP server exposes tools for jobs (initialize, submit, poll, pull results,
+continue) and monitors (create, update, list, enable, disable, pull results).
+For the full tool reference, see
+[MCP server > Available tools](/web-search-api/integrations/mcp#available-tools).
+
+## Example prompts
+
+With the MCP connector and SKILL installed, describe a research task in chat.
+Claude submits jobs, tracks progress, and returns structured results.
+
+> Find Series B fintech funding rounds announced in the last 14 days, limit 20.
+
+> Search for AI chip export restrictions in the last 30 days and summarize the
+> key regulatory actions.
+
+> Find pharma acquisitions over $1B this month, then create a table sorted by
+> deal value.
+
+> Look for executive leadership changes at Fortune 500 companies last week and
+> identify any patterns.
+
+<Tip>
+  Specify a date range and a record limit in your prompt to scope results. For
+  example: "in the last 14 days, limit 20".
+</Tip>
+
+## Python agent
+
+To use CatchAll programmatically without the MCP connector, use the Anthropic
+SDK to execute CatchAll API calls directly in an agentic loop.
+
+### Setup
+
+```bash
+pip install -r requirements.txt
+```
+
+Set environment variables:
+
+```bash
+export CATCHALL_API_KEY=YOUR_CATCHALL_API_KEY
+export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+```
+
+### Basic agent example
+
+The agent uses hardcoded tool definitions and a standard agentic loop: submit,
+wait, pull with polling.
+
+```python
+client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
+
+response = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=4096,
+    tools=TOOLS,  # Hardcoded tool definitions in claude_agent_example.py
+    messages=[
+        {"role": "user", "content": "Find pharma M&A deals in the last 7 days, limit 20"}
+    ]
+)
+```
+
+For the complete implementation, including polling and result handling, see the
+[agent example on GitHub](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_example.py).
+
+### SKILL-native agent example
+
+The
+[SKILL-native agent](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_skill_example.py)
+loads `SKILL.md` as the system prompt and generates tool definitions
+automatically by parsing its content. When the SKILL changes, the agent picks up
+those changes without code updates.
+
+<Note>
+  This example uses keyword matching to detect parameters in `SKILL.md`. Test
+  after any SKILL update to verify that all parameters are detected correctly.
+</Note>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card title="MCP server" icon="plug" href="/web-search-api/integrations/mcp">
+    Server architecture, authentication, and tool definitions
+  </Card>
+  <Card
+    title="Write effective queries"
+    icon="pencil"
+    href="/web-search-api/how-to/write-effective-queries"
+  >
+    Get better results from CatchAll jobs
+  </Card>
+  <Card
+    title="API reference"
+    icon="book"
+    href="/web-search-api/api-reference/jobs/create-job"
+  >
+    Full endpoint documentation
+  </Card>
+  <Card
+    title="SKILL source"
+    icon="github"
+    href="https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/Claude/CatchAll-SKILL"
+  >
+    SKILL.md and reference files
+  </Card>
+</CardGroup>
