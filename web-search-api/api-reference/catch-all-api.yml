@@ -1158,18 +1158,24 @@ components:
         query:
           type: string
           description: Original plain text query.
-          example: Tech company earnings this quarter.
+          example: "Series B funding rounds for SaaS startups"
         context:
           type: string
           description: Context provided with the query.
-          example: Focus on revenue and profit margins.
+          example: "Focus on funding amount and company name"
         validators:
           type: array
           items:
             type: string
           description: List of validation criteria applied to filter results.
           default: []
-          example: ["is_current_quarter", "contains_financial_data"]
+          example:
+            [
+              "is_series_b",
+              "involves_saas_startup",
+              "is_about_funding_round",
+              "mentions_funding_amount",
+            ]
         enrichments:
           type: array
           items:
@@ -1180,11 +1186,14 @@ components:
           default: []
           example:
             [
-              "company_name",
-              "quarter_identifier",
-              "revenue",
-              "revenue_change",
-              "profit_margin",
+              "funding_amount",
+              "funding_currency",
+              "investee_company",
+              "investor_company",
+              "announcement_date",
+              "saas_category",
+              "valuation",
+              "other_investors",
             ]
         status:
           type: string
@@ -1194,34 +1203,34 @@ components:
         duration:
           type: string
           description: Total time taken to process the job.
-          example: 15m
+          example: "1m"
         candidate_records:
           type: integer
           description:
             Number of distinct event clusters identified before validation.
-          example: 3200
+          example: 4
         valid_records:
           type: integer
           description: Number of validated records extracted.
-          example: 156
+          example: 3
         progress_validated:
           type: integer
           description: |
             Number of candidate clusters that have been validated during processing.
 
             The system process data in batches. This field tracks how many candidates have been checked against validation criteria so far.
-          example: 50
+          example: 4
         date_range:
           type: object
           properties:
             start_date:
               type: string
               format: date-time
-              example: "2025-09-15T00:00:00Z"
+              example: "2026-02-17T00:00:00Z"
             end_date:
               type: string
               format: date-time
-              example: "2025-09-30T23:59:59Z"
+              example: "2026-02-24T00:00:00Z"
         page:
           title: Page
           description: The current page number.
