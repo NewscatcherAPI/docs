@@ -1,0 +1,309 @@
+---
+title: CatchAll MCP server
+sidebarTitle: MCP
+description:
+  Connect CatchAll to any MCP-compatible client for structured web research.
+---
+
+The MCP server exposes CatchAll API tools to any MCP-compatible client. It
+handles authentication, tool routing, and response formatting so the client can
+submit jobs, poll status, retrieve results, and manage monitors.
+
+## Before you start
+
+- CatchAll API key from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+- MCP-compatible client (Claude, Cursor, VS Code, Windsurf, or any client that
+  supports remote MCP)
+
+## Authentication
+
+The MCP server authenticates with the CatchAll API using the `apiKey` query
+parameter in the server URL:
+
+```
+https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+```
+
+Each tool call uses this key automatically. No additional authentication is
+needed from the client.
+
+To rotate your key, update the server URL in your client configuration with the
+new key and restart the client.
+
+<Warning>
+  The URL contains your API key. Treat it as a secret and do not share it or
+  commit it to version control.
+</Warning>
+
+## Connect to client
+
+<Tabs>
+  <Tab title="Claude.ai">
+    <Steps>
+      <Step title="Open connectors">
+        Go to [claude.ai/customize/connectors](https://claude.ai/customize/connectors). Click **+** and select **Add custom connector**.
+      </Step>
+      <Step title="Configure connection">
+        Fill in the **Add custom connector** dialog:
+
+        - **Name**: `CatchAll`
+        - **Remote MCP server URL**:
+
+        ```
+        https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+        ```
+      </Step>
+      <Step title="Add and verify">
+        Click **Add**. Verify that CatchAll appears under **Web** in your connectors list.
+      </Step>
+      <Step title="Test connection">
+        Open a new chat and type a CatchAll query, for example: "Find AI company acquisitions in the last 7 days, limit 5". Claude should call the CatchAll tools and return structured results.
+      </Step>
+    </Steps>
+
+    <Tip>
+      For Claude-specific features like the SKILL file and Python agents, see [Claude integration](/web-search-api/integrations/claude).
+    </Tip>
+
+  </Tab>
+
+  <Tab title="Claude Desktop">
+    Claude Desktop does not natively support remote MCP servers. Use `mcp-remote` to proxy the connection.
+
+    <Steps>
+      <Step title="Install mcp-remote">
+        ```bash
+        npm install -g mcp-remote
+        ```
+      </Step>
+      <Step title="Open configuration file">
+        Open your Claude Desktop configuration file:
+
+        - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+        - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+      </Step>
+      <Step title="Add CatchAll entry">
+        Add the following to your configuration file:
+
+        ```json
+        {
+          "mcpServers": {
+            "catchall": {
+              "command": "npx",
+              "args": [
+                "-y",
+                "mcp-remote",
+                "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+              ]
+            }
+          }
+        }
+        ```
+      </Step>
+      <Step title="Restart Claude Desktop">
+        Quit and relaunch Claude Desktop. Claude Desktop loads MCP tools on startup.
+      </Step>
+    </Steps>
+
+    <Tip>
+      For Claude-specific features like the SKILL file and Python agents, see [Claude integration](/web-search-api/integrations/claude).
+    </Tip>
+
+  </Tab>
+
+  <Tab title="Claude Code">
+    Run in your terminal:
+
+    ```bash
+    claude mcp add --transport http catchall \
+      "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+    ```
+
+    <Tip>
+      For Claude-specific features like the SKILL file and Python agents, see [Claude integration](/web-search-api/integrations/claude).
+    </Tip>
+
+  </Tab>
+
+  <Tab title="Cursor">
+    Add to `~/.cursor/mcp.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "url": "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+        }
+      }
+    }
+    ```
+
+    Restart Cursor after saving.
+
+  </Tab>
+
+  <Tab title="VS Code">
+    Add to `.vscode/mcp.json` in your project root:
+
+    ```json
+    {
+      "servers": {
+        "catchall": {
+          "type": "http",
+          "url": "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+        }
+      }
+    }
+    ```
+
+    Restart VS Code after saving.
+
+  </Tab>
+
+  <Tab title="Windsurf">
+    Add to `~/.codeium/windsurf/mcp_config.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "serverUrl": "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+        }
+      }
+    }
+    ```
+
+    Restart Windsurf after saving.
+
+  </Tab>
+
+  <Tab title="Other clients">
+    Most MCP clients accept the server URL directly:
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "url": "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+        }
+      }
+    }
+    ```
+
+    If your client does not support remote MCP servers, use `mcp-remote` as a proxy:
+
+    ```bash
+    npm install -g mcp-remote
+    ```
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "mcp-remote",
+            "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          ]
+        }
+      }
+    }
+    ```
+
+    Restart your client after saving the configuration.
+
+  </Tab>
+</Tabs>
+
+## Available tools
+
+Each tool maps to a CatchAll API endpoint. For request and response schemas, see
+the [API reference](/web-search-api/api-reference/jobs/create-job).
+
+<Tabs>
+  <Tab title="Jobs">
+    | Tool | Description |
+    |------|-------------|
+    | `initialize_query` | Preview suggested validators, enrichments, and date ranges before submitting a job |
+    | `submit_query` | Submit a natural language query and create a job |
+    | `get_job_status` | Check job progress through the processing pipeline |
+    | `pull_results` | Retrieve validated, enriched records from a completed or in-progress job |
+    | `continue_job` | Expand a job to process additional records beyond the initial limit |
+    | `list_user_jobs` | List all jobs submitted by the authenticated user |
+  </Tab>
+
+  <Tab title="Monitors">
+    | Tool | Description |
+    |------|-------------|
+    | `create_monitor` | Create a recurring monitor from a completed job |
+    | `update_monitor` | Update webhook configuration for an existing monitor |
+    | `list_monitors` | List all monitors for the authenticated user |
+    | `list_monitor_jobs` | List all jobs produced by a specific monitor |
+    | `pull_monitor_results` | Retrieve latest aggregated results from a monitor |
+    | `enable_monitor` | Re-enable a previously disabled monitor |
+    | `disable_monitor` | Pause a monitor without deleting it |
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<Accordion title="Tools not appearing">
+  Restart your MCP client after updating the configuration. Most clients load
+  MCP tools on startup and do not detect changes until restarted.
+</Accordion>
+
+<Accordion title="Connection refused or timeout">
+  Verify your API key is valid by calling an authenticated endpoint:
+
+```bash
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/initialize" \
+  -H "x-api-key: YOUR_CATCHALL_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"query": "test"}'
+```
+
+If this returns a `403` error, your key is invalid. Check it at
+[platform.newscatcherapi.com](https://platform.newscatcherapi.com).
+
+</Accordion>
+
+<Accordion title="Client does not support remote MCP">
+  Use `mcp-remote` to proxy the connection. Install it with `npm install -g
+  mcp-remote`, then use the `npx` configuration shown in the **Other clients**
+  tab.
+</Accordion>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card
+    title="Claude integration"
+    icon="message-bot"
+    href="/web-search-api/integrations/claude"
+  >
+    Full Claude setup with MCP and SKILL
+  </Card>
+  <Card
+    title="API reference"
+    icon="book"
+    href="/web-search-api/api-reference/jobs/create-job"
+  >
+    Full endpoint documentation and schemas
+  </Card>
+  <Card
+    title="Write effective queries"
+    icon="pencil"
+    href="/web-search-api/how-to/write-effective-queries"
+  >
+    Get better results from CatchAll jobs
+  </Card>
+  <Card
+    title="Monitors"
+    icon="clock"
+    href="/web-search-api/guides-and-concepts/monitors"
+  >
+    Automate recurring queries with scheduled execution
+  </Card>
+</CardGroup>
