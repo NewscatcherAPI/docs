@@ -1021,7 +1021,7 @@ components:
           default: "accepted"
           example: "accepted"
 
-    JobStatus:
+    PublicJobStatus:
       type: string
       enum:
         - submitted
@@ -1050,9 +1050,10 @@ components:
       required:
         - status
         - order
+        - completed
       properties:
         status:
-          $ref: "#/components/schemas/JobStatus"
+          $ref: "#/components/schemas/PublicJobStatus"
         order:
           type: integer
           description: Sequential position of this step in the pipeline (1-7).
@@ -1068,7 +1069,6 @@ components:
       type: object
       required:
         - job_id
-        - steps
       properties:
         job_id:
           type: string
@@ -1077,7 +1077,7 @@ components:
           example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
         status:
           allOf:
-            - $ref: "#/components/schemas/JobStatus"
+            - $ref: "#/components/schemas/PublicJobStatus"
           description: Current job processing status.
         steps:
           type: array
