@@ -1,0 +1,125 @@
+---
+title: Apify integration
+sidebarTitle: Apify
+description: Use CatchAll in your Apify workflows.
+---
+
+CatchAll Actors run structured web research jobs directly from the Apify
+platform.
+
+## Before you start
+
+- Apify account from [apify.com](https://apify.com)
+- CatchAll API key from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+
+## Available Actors
+
+The CatchAll Actors are listed under the
+[Newscatcher](https://apify.com/newscatcher) organization page. The suite
+consists of a main Actor for end-to-end job execution and utility Actors for
+modular workflows.
+
+### Main Actor
+
+| Actor      | Description                                                   |
+| ---------- | ------------------------------------------------------------- |
+| `catchall` | Submit a job, poll until completion, and retrieve all results |
+
+### Utility Actors
+
+| Actor                         | Description                                                        |
+| ----------------------------- | ------------------------------------------------------------------ |
+| `catchall-initialize`         | Get suggested validators, enrichments, and date ranges for a query |
+| `catchall-create-job`         | Create a job without polling or fetching results                   |
+| `catchall-get-job-status`     | Check current job status and step progress                         |
+| `catchall-pull-results`       | Retrieve all valid records from a completed job                    |
+| `catchall-early-results`      | Retrieve partial results before a job completes                    |
+| `catchall-continue`           | Expand an existing job to process more records                     |
+| `catchall-create-monitor`     | Create a scheduled monitor for recurring jobs                      |
+| `catchall-update-monitor`     | Update an existing monitor's webhook                               |
+| `catchall-start-stop-monitor` | Pause or resume a monitor                                          |
+
+The utility Actors map to individual CatchAll API endpoints and can be chained
+together to build custom workflows. For the underlying API concepts, see
+[Jobs](/web-search-api/guides-and-concepts/jobs) and
+[Monitors](/web-search-api/guides-and-concepts/monitors).
+
+## Run Actor
+
+The `catchall` Actor manages the base job lifecycle: submit, poll, and retrieve 
+results. Results are saved to both a **Dataset** and a **Key-value store**.
+
+<Steps>
+  <Step title="Open Actor">
+    Open the Actor page at 
+    [apify.com/newscatcher/catchall](https://apify.com/newscatcher/catchall) 
+    and click **Try for free** to access it in your Apify console.
+
+    Alternatively, go to [console.apify.com/store](https://console.apify.com/store), 
+    search for "CatchAll", and select the actor from the results.
+
+  </Step>
+
+  <Step title="Configure input">
+    Enter your CatchAll API key and a query, then adjust optional fields as needed.
+  </Step>
+
+  <Step title="Start run">
+    Click **Save&Start**. The Actor submits the job, polls until completion, and
+    retrieves all results automatically.
+  </Step>
+
+  <Step title="View results">
+    When the run completes, open the **Output** tab to review records, or navigate 
+    to **Storage** to download the dataset.
+  </Step>
+</Steps>
+
+## Connect Actors
+
+Use Apify's built-in features to chain CatchAll Actors with other Actors or
+external services.
+
+<AccordionGroup>
+  <Accordion title="Integrations">
+    On any Actor's page in Apify Console, open the **Integrations** tab to
+    trigger another Actor when a run succeeds or fails. For example, chain
+    `catchall-pull-results` to run automatically after `catchall-create-job`
+    succeeds.
+
+    To learn more, see
+    [Actor integrations](https://docs.apify.com/platform/integrations/actors) in
+    the Apify documentation.
+  </Accordion>
+
+  <Accordion title="Webhooks">
+    Configure HTTP webhooks to notify external services when an Actor run reaches
+    a specific state.
+
+    To learn more, see
+    [Webhooks](https://docs.apify.com/platform/integrations/webhooks) in the
+    Apify documentation.
+  </Accordion>
+
+  <Accordion title="Schedules">
+    Run any CatchAll Actor on a recurring schedule from the **Schedules** section
+    in Apify Console. This is separate from the CatchAll
+    [Monitors](/web-search-api/guides-and-concepts/monitors) feature, which
+    handles job scheduling and records deduplication at the API level.
+  </Accordion>
+
+  <Accordion title="Apify API">
+    Start Actors programmatically using the
+    [Apify API](https://docs.apify.com/api/v2) or the official
+    [Python](https://docs.apify.com/api/client/python) and
+    [JavaScript](https://docs.apify.com/api/client/js) client libraries.
+  </Accordion>
+</AccordionGroup>
+
+## See also
+
+- [Quickstart](/web-search-api/get-started/quickstart)
+- [Jobs](/web-search-api/guides-and-concepts/jobs)
+- [Monitors](/web-search-api/guides-and-concepts/monitors)
+- [Write effective queries](/web-search-api/how-to/write-effective-queries)
