@@ -1261,11 +1261,11 @@ components:
         record_id:
           type: string
           description: Unique identifier for the record.
-          example: "5262823697790152939"
+          example: "6983973854314692457"
         record_title:
           type: string
           description: Short title summarizing the record.
-          example: "Oracle Q1 2026 Earnings Exceed Expectations"
+          example: "VulnCheck Raises $25M Series B Funding"
         enrichment:
           type: object
           description: |
@@ -1274,18 +1274,33 @@ components:
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
           additionalProperties: {}
           example:
-            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
-            company_name: "Oracle"
-            quarter_identifier: "Q1 2026"
-            revenue: "$14.9 billion"
-            revenue_change: "up 12%"
-            profit_margin: "42% non-GAAP operating margin"
+            confidence: "high"
+            saas_category: "cybersecurity"
+            funding_amount: 25000000
+            funding_currency: "USD"
+            announcement_date: "2026-02-17"
+            investee_company:
+              source_text: "VulnCheck"
+              confidence: 0.99
+              metadata:
+                name: "VulnCheck"
+                domain_url: "vulncheck.com"
+                confidence: "high"
+            investor_company:
+              source_text: "Sorenson Capital"
+              confidence: 0.99
+              metadata:
+                name: "Sorenson Capital"
+                domain_url: null
+                confidence: null
+            valuation: 25000000
+            other_investors: "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
         citations:
           type: array
           items:
             $ref: "#/components/schemas/Citation"
           description: Source documents that were used to extract this record.
-
+          
     Citation:
       type: object
       required:
