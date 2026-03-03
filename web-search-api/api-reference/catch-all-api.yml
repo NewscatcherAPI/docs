@@ -618,9 +618,7 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/ListUserJobsResponseDto"
+            $ref: "#/components/schemas/ListUserJobsResponseDto"
 
     PullJobResponse:
       description: Results retrieved successfully
