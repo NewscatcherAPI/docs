@@ -1286,10 +1286,8 @@ components:
           default: []
           example:
             [
-              "is_series_b",
-              "involves_saas_startup",
-              "is_about_funding_round",
-              "mentions_funding_amount",
+              "is_series_b_funding",
+              "is_saas_startup",
             ]
         enrichments:
           type: array
@@ -1323,7 +1321,7 @@ components:
         candidate_records:
           type: integer
           description:
-            Number of distinct event clusters identified before validation.
+            Total number of distinct event clusters identified. Compare with `progress_validated` to estimate how many candidates remain unprocessed for job continuation.
           example: 4
         valid_records:
           type: integer
@@ -1334,7 +1332,7 @@ components:
           description: |
             Number of candidate clusters that have been validated during processing.
 
-            The system process data in batches. This field tracks how many candidates have been checked against validation criteria so far.
+            The system process data in batches. This field tracks how many `candidate_records` have been checked against validation criteria so far.
           example: 4
         date_range:
           type: object
