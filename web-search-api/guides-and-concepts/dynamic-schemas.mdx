@@ -13,8 +13,10 @@ consistent field names.
 
 Every response includes `record_id`, `record_title`, and `citations`.
 
-Field names in `enrichment` are variable with automatic generation, or consistent 
-when you define custom enrichments.
+The `enrichment` object always contains `enrichment_confidence`, added by the
+system regardless of the enrichments generated or defined by you. All other field names
+in `enrichment` are variable with automatic generation, or consistent when you
+define custom enrichments.
 
 ## Why schemas vary
 
@@ -125,6 +127,10 @@ These suggestions help you understand possible enrichments before submitting.
 You can use them as-is, modify them, add more, or ignore them and let the system 
 generate fresh enrichments when you submit the job.
 
+For more information about enrichment types, see 
+[Create job > enrichments > type](/web-search-api/api-reference/jobs/create-job#body-enrichments-items-type).
+
+
 ## Define custom enrichments
 
 Submit enrichments in your request for consistent field names:
@@ -200,30 +206,39 @@ const job = await client.jobs.createJob({
 </CodeGroup>
 
 Every job returns the same field names:
+
 ```json
 {
   "record_id": "12345",
   "record_title": "John Smith Departs Apple as CFO",
   "enrichment": {
+    "enrichment_confidence": "high",
     "executive_name": "John Smith",
     "executive_position": "Chief Financial Officer",
     "subject_company": {
-      "name": "Apple Inc.",
-      "alternative_names": ["Apple"],
-      "website_candidates": ["apple.com"],
-      "people": ["Tim Cook (CEO)"],
-      "address": "Cupertino, California, USA"
+      "source_text": "Apple Inc.",
+      "confidence": 0.99,
+      "metadata": {
+        "name": "Apple Inc.",
+        "domain_url": "apple.com",
+        "domain_url_confidence": "high"
+      }
     },
     "departure_date": "2026-01-15"
   }
 }
 ```
 
-See [Create job endpoint](/web-search-api/api-reference/jobs/create-job) for all enrichment types.
+<Note>
+  Fields of type `company` (like `subject_company` in the example above) return 
+  a structured object with confidence scores for entity identification and domain 
+  resolution. To learn more, see the [Company enrichment](/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
+</Note>
 
 ## Working with dynamic schemas
 
-If you don't define custom enrichments, field names vary between jobs. Handle this with pattern matching:
+If you don't define custom enrichments, field names vary between jobs. 
+Handle this with pattern matching:
 
 <CodeGroup>
 ```python Python
