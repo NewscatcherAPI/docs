@@ -537,23 +537,28 @@ components:
           example:
             validators:
               - name: "is_series_b_funding"
-                description: "true if the web page describes a Series B funding round"
+                description:
+                  "true if the web page describes a Series B funding round"
                 type: "boolean"
               - name: "is_saas_startup"
-                description: "true if the company receiving funding is a SaaS startup"
+                description:
+                  "true if the company receiving funding is a SaaS startup"
                 type: "boolean"
             enrichments:
               - name: "funding_amount"
-                description: "Extract the amount of funding received in the Series B round"
+                description:
+                  "Extract the amount of funding received in the Series B round"
                 type: "number"
               - name: "investee_company"
-                description: "Extract the name of the SaaS startup receiving the funding"
+                description:
+                  "Extract the name of the SaaS startup receiving the funding"
                 type: "company"
               - name: "investor_company"
                 description: "Extract the name of the lead investor"
                 type: "company"
               - name: "funding_date"
-                description: "Extract the date when the funding round was announced"
+                description:
+                  "Extract the date when the funding round was announced"
                 type: "date"
             start_date: "2026-02-19T00:00:00Z"
             end_date: "2026-02-24T00:00:00Z"
@@ -832,16 +837,9 @@ components:
         Additional context to focus on specific aspects of your query.
       example: "Focus on deal size and acquiring company details"
 
-    Schema:
-      type: string
-      description: |
-        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields: [COMPANY], [REVENUE], [TARGET], [AMOUNT], etc.
-
-        When provided, the system generates a `schema_based_summary` field for each record following this template.
-      example: "[ACQUIRER] acquired [TARGET] for [AMOUNT]"
-
     Limit:
       type: integer
+      minimum: 10
       description: |
         Maximum number of records to return. If not specified, defaults to your plan limit.
 
@@ -902,7 +900,6 @@ components:
         - date
         - option
         - url
-        - dict
         - company
       description: |
         Canonical enrichment types supported by the system.
@@ -912,8 +909,10 @@ components:
         - `date`: ISO format dates (YYYY-MM-DD)
         - `option`: Enum-like fixed values (status, category)
         - `url`: Web URLs
-        - `dict`: Complex structured objects
-        - `company`: Structured company data (name, alternative_names, website_candidates, people, address)
+        - `company`: Structured company object. When a field uses this type, its
+          value in the `enrichment` object is a [`CompanyEnrichmentOutput`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto)
+          with `source_text`, `confidence`, and `metadata` (name, domain_url,
+          domain_url_confidence).
 
     EnrichmentSchema:
       type: object
@@ -936,6 +935,46 @@ components:
         Schema for a single enrichment field that extracts structured data.
 
         Enrichments are applied during the enriching stage to extract information from validated clusters.
+
+    CompanyEnrichmentOutput:
+      type: object
+      description: |
+        Appears as the value of company-typed fields in the `enrichment` object of each record. The `metadata` sub-object is populated by the system based on the identified company.
+      required:
+        - source_text
+        - confidence
+        - metadata
+      properties:
+        source_text:
+          type: string
+          description:
+            The text span in the source document where the company was
+            identified.
+          example: "Sorenson Capital"
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the company identification.
+          example: 0.99
+        metadata:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Normalized company name.
+              example: "Sorenson Capital"
+            domain_url:
+              type: string
+              description: Company website domain if resolved, otherwise null.
+              example: "vulncheck.com"
+            domain_url_confidence:
+              type: string
+              description: Confidence level for the domain URL resolution.
+              example: "high"
 
     InitializeRequestDTO:
       type: object
@@ -998,8 +1037,6 @@ components:
       properties:
         query:
           $ref: "#/components/schemas/Query"
-        schema:
-          $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
         limit:
@@ -1355,7 +1392,8 @@ components:
                 domain_url: null
                 confidence: null
             valuation: 25000000
-            other_investors: "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
+            other_investors:
+              "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
         citations:
           type: array
           items:
@@ -1372,7 +1410,9 @@ components:
         title:
           type: string
           description: The title of the source document.
-          example: "Exclusive: VulnCheck raises $25M funding to help companies patch software bugs"
+          example:
+            "Exclusive: VulnCheck raises $25M funding to help companies patch
+            software bugs"
         link:
           type: string
           format: uri

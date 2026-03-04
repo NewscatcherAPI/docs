@@ -70,7 +70,8 @@
                   "web-search-api/api-reference/jobs/continue-job",
                   "web-search-api/api-reference/jobs/list-user-jobs",
                   "web-search-api/api-reference/jobs/get-job-status",
-                  "web-search-api/api-reference/jobs/get-job-results"
+                  "web-search-api/api-reference/jobs/get-job-results",
+                  "web-search-api/api-reference/jobs/company-enrichment-dto"
                 ]
               },
               {
