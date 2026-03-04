@@ -654,7 +654,7 @@ components:
             validators:
               - "is_series_b_funding"
               - "is_saas_startup"
-            example:
+            enrichments:
               - "enrichment_confidence"
               - "funding_amount"
               - "funding_currency"
@@ -664,6 +664,7 @@ components:
               - "valuation"
               - "other_investors"
             status: "completed"
+            error: null
             duration: "1m"
             candidate_records: 4
             valid_records: 3
@@ -674,6 +675,7 @@ components:
             page: 1
             page_size: 2
             total_pages: 2
+            limit: 10
             all_records:
               - record_id: "6983973854314692457"
                 record_title: "VulnCheck Raises $25M Series B Funding"
@@ -977,11 +979,12 @@ components:
               description: Normalized company name.
               example: "Sorenson Capital"
             domain_url:
-              type: string
+              type: [string, "null"]
               description: Company website domain if resolved, otherwise null.
               example: "vulncheck.com"
             domain_url_confidence:
-              type: string
+              type: [string, "null"]
+              enum: ["low", "medium", "high", null]
               description: Confidence level for the domain URL resolution.
               example: "high"
 
@@ -1010,7 +1013,7 @@ components:
           description: Echo of the query from the request.
           example: "Series B funding rounds for SaaS startups"
         context:
-          type: string
+          type: [string, "null"]
           description:
             Echo of the context from the request. Null if not provided.
           example: "Focus on funding amount and company name"
@@ -1096,7 +1099,6 @@ components:
       type: object
       required:
         - job_id
-        - new_limit
       properties:
         job_id:
           type: string
@@ -1106,9 +1108,9 @@ components:
           example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         new_limit:
           type: integer
-          minimum: 1
+          minimum: 20
           description: |
-            New record limit for continued processing. Must be greater than the previous limit.
+            New record limit for continued processing. Must be greater than the previous limit. If not provided, defaults to the plan maximum.
           example: 100
 
     ContinueResponseDTO:
@@ -1314,6 +1316,13 @@ components:
           description: |
             Job status.
           example: "completed"
+        error:
+          type: [string, "null"]
+          description: Error message if the job failed. Null for successful jobs.
+        limit:
+          type: integer
+          description: Record limit for this job. Reflects the value specified at submit time, or the plan default if no limit was provided.
+          example: 100
         duration:
           type: string
           description: Total time taken to process the job.
@@ -1388,6 +1397,12 @@ components:
             **Note:** The system always includes the `enrichment_confidence` field within the `enrichment` object, regardless of whether enrichments are generated or specified by you.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
+          properties:
+            enrichment_confidence:
+              type: ["string", "null"]
+              enum: ["low", "medium", "high", null]
+              description: Overall confidence score for the enrichment extraction.
+              example: "high"
           additionalProperties: {}
           example:
             enrichment_confidence: "high"
@@ -1513,14 +1528,34 @@ components:
             **Note:** The system always includes the `enrichment_confidence` field within the `enrichment` object, regardless of whether enrichments are generated or specified by you.
 
             See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
+          properties:
+            enrichment_confidence:
+              type: ["string", "null"]
+              enum: ["low", "medium", "high", null]
+              description: Overall confidence score for the enrichment extraction.
           additionalProperties: {}
           example:
-            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
-            company_name: "Oracle"
-            quarter_identifier: "Q1 2026"
-            revenue: "$14.9 billion"
-            revenue_change: "up 12%"
-            profit_margin: "42% non-GAAP operating margin"
+            enrichment_confidence: "high"
+            funding_amount: 25000000
+            funding_currency: "USD"
+            funding_date: "2026-02-17"
+            investee_company:
+              source_text: "VulnCheck"
+              confidence: 0.99
+              metadata:
+                name: "VulnCheck"
+                domain_url: "vulncheck.com"
+                domain_url_confidence: "high"
+            investor_company:
+              source_text: "Sorenson Capital"
+              confidence: 0.99
+              metadata:
+                name: "Sorenson Capital"
+                domain_url: null
+                domain_url_confidence: null
+            valuation: 25000000
+            other_investors:
+              "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
         citations:
           type: array
           items:
@@ -1607,7 +1642,7 @@ components:
         - status
       properties:
         monitor_id:
-          type: string
+          type: [string, "null"]
           format: uuid
           description: Monitor ID if successful, null if error.
         status:
