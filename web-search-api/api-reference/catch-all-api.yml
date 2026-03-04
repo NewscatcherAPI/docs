@@ -1373,13 +1373,12 @@ components:
           description:
             Array of extracted records with structured data and citations.
 
-    Record:
+    BaseRecord:
       type: object
       required:
         - record_id
         - record_title
         - enrichment
-        - citations
       properties:
         record_id:
           type: string
@@ -1424,13 +1423,20 @@ components:
                 domain_url: null
                 domain_url_confidence: null
             valuation: 25000000
-            other_investors:
-              "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
-        citations:
-          type: array
-          items:
-            $ref: "#/components/schemas/Citation"
-          description: Source documents that were used to extract this record.
+            other_investors: "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
+
+    Record:
+      allOf:
+        - $ref: "#/components/schemas/BaseRecord"
+        - type: object
+          required:
+            - citations
+          properties:
+            citations:
+              type: array
+              items:
+                $ref: "#/components/schemas/Citation"
+              description: Source documents that were used to extract this record.
 
     Citation:
       type: object
@@ -1459,124 +1465,54 @@ components:
           example: "2026-02-17T14:01:05Z"
 
     MonitorCitation:
-      type: object
-      required:
-        - id
-        - title
-        - link
-        - published_date
-        - job_id
-        - added_on
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the document in the search index.
-          example: "8760624448e9815f9fb4abd114c75e76"
-        title:
-          type: string
-          description: The title of the source document.
-          example: "Oracle Reports Strong Q1 2026 Results"
-        link:
-          type: string
-          format: uri
-          description: URL to the source document.
-          example: "https://example.com/oracle-reports-q1-results"
-        published_date:
-          type: string
-          format: date-time
-          description:
-            The publication date of the source document in ISO 8601 format (UTC
-            timezone).
-          example: "2025-09-26T08:54:20Z"
-        job_id:
-          type: string
-          format: uuid
-          description: Job ID that found this citation.
-          example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
-        added_on:
-          type: string
-          format: date-time
-          description:
-            The date when the citation was added to the record in ISO 8601
-            format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
+      allOf:
+        - $ref: "#/components/schemas/Citation"
+        - type: object
+          required:
+            - id
+            - job_id
+            - added_on
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the document in the search index.
+              example: "8760624448e9815f9fb4abd114c75e76"
+            job_id:
+              type: string
+              format: uuid
+              description: Job ID that found this citation.
+              example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
+            added_on:
+              type: string
+              format: date-time
+              description: The date when the citation was added to the record in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
       description: |
         Citation with monitor-specific metadata. Used in monitor results and webhook payloads.
         Extends base citation with tracking information for job_id and timestamps.
 
     MonitorRecord:
-      type: object
-      required:
-        - record_id
-        - record_title
-        - enrichment
-        - citations
-      properties:
-        record_id:
-          type: string
-          description: Unique identifier for the record.
-          example: "5262823697790152939"
-        record_title:
-          type: string
-          description: Short title summarizing the record.
-          example: "Oracle Q1 2026 Earnings Exceed Expectations"
-        enrichment:
-          type: object
-          description: |
-            Structured data extracted from web pages. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
-
-            **Note:** The system always includes the `enrichment_confidence` field within the `enrichment` object, regardless of whether enrichments are generated or specified by you.
-
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
+      allOf:
+        - $ref: "#/components/schemas/BaseRecord"
+        - type: object
+          required:
+            - citations
           properties:
-            enrichment_confidence:
-              type: ["string", "null"]
-              enum: ["low", "medium", "high", null]
-              description: Overall confidence score for the enrichment extraction.
-          additionalProperties: {}
-          example:
-            enrichment_confidence: "high"
-            funding_amount: 25000000
-            funding_currency: "USD"
-            funding_date: "2026-02-17"
-            investee_company:
-              source_text: "VulnCheck"
-              confidence: 0.99
-              metadata:
-                name: "VulnCheck"
-                domain_url: "vulncheck.com"
-                domain_url_confidence: "high"
-            investor_company:
-              source_text: "Sorenson Capital"
-              confidence: 0.99
-              metadata:
-                name: "Sorenson Capital"
-                domain_url: null
-                domain_url_confidence: null
-            valuation: 25000000
-            other_investors:
-              "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
-        citations:
-          type: array
-          items:
-            $ref: "#/components/schemas/MonitorCitation"
-          description:
-            Source documents with monitor-specific metadata (job_id, added_on
-            timestamps).
-        added_on:
-          type: string
-          format: date-time
-          description:
-            The date when this record was first added to monitor results in ISO
-            8601 format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
-        updated_on:
-          type: string
-          format: date-time
-          description:
-            The date when this record was last updated in monitor results in ISO
-            8601 format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
+            citations:
+              type: array
+              items:
+                $ref: "#/components/schemas/MonitorCitation"
+              description: Source documents with monitor-specific metadata (job_id, added_on timestamps).
+            added_on:
+              type: string
+              format: date-time
+              description: The date when this record was first added to monitor results in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
+            updated_on:
+              type: string
+              format: date-time
+              description: The date when this record was last updated in monitor results in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
       description: |
         Record with monitor-specific metadata. Used in monitor results and webhook payloads.
         Includes timestamps tracking when records were added and updated, and citations include job tracking.
