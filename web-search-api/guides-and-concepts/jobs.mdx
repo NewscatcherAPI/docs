@@ -141,6 +141,11 @@ System.out.println(suggestions);
 the job and starts processing. Only `query` is required — all other parameters
 are optional.
 
+Validators and enrichments are independent. You can define one without the
+other — for example, provide custom enrichments and let the system generate
+validators, or define validators and let the system generate enrichments.
+If you omit both, the system generates both from scratch based on your query.
+
 <Tip>
   Use `limit: 10` for quick testing. If the results look good, use [Continue
   job](#continue-job) to process more records without restarting.
