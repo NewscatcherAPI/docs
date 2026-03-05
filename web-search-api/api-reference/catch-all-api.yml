@@ -243,6 +243,16 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateMonitorRequestDTO"
+            example:
+              reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+              schedule: "every day at 12 PM UTC"
+              backfill: true
+              limit: 10
+              webhook:
+                url: "https://your-endpoint.com/webhook"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer your_token_here"
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
@@ -720,6 +730,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CreateMonitorResponseDTO"
+          example:
+            monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+            status: "Monitor Created Successfully"
 
     UpdateMonitorResponse:
       description: Monitor updated successfully
@@ -773,6 +786,20 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ListMonitorsResponseDTO"
+          example:
+            total: 3
+            page: 1
+            page_size: 100
+            total_pages: 1
+            monitors:
+              - monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+                reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+                reference_job_query: "Series B funding rounds for SaaS startups"
+                enabled: true
+                schedule: "0 12 * * *"
+                schedule_human_readable: "Every day at 12 PM"
+                timezone: "UTC"
+                created_at: "2026-02-24T14:00:00Z"
 
     HealthCheckResponse:
       description: API is healthy
