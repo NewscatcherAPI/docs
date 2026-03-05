@@ -421,6 +421,14 @@ paths:
             type: string
             format: uuid
           description: Monitor identifier.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnableMonitorRequestDTO"
+            example:
+              backfill: true
       responses:
         "200":
           description: Monitor enabled successfully
@@ -1838,6 +1846,20 @@ components:
             End of the data collection time window for this job execution (based
             on monitor schedule) in ISO 8601 format with UTC timezone.
           example: "2025-11-15T00:00:00Z"
+
+    EnableMonitorRequestDTO:
+      type: object
+      description: Optional request body for enabling a monitor.
+      properties:
+        backfill:
+          type: boolean
+          default: true
+          description: |
+            If true, fills the data gap between the last job's `end_date` and
+            the first scheduled run after enabling. The last job's `end_date`
+            must be within the last 7 days. If false, no gap filling occurs
+            and the first run uses the current cron window only — the last
+            job's age does not matter.
 
     Error:
       type: object
