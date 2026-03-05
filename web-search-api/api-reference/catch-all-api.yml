@@ -64,10 +64,7 @@ paths:
       tags:
         - Jobs
       summary: Initialize job
-      description: |
-        Get suggested validators, enrichments, and date ranges for a query before submitting a job.
-
-        Returns LLM-generated suggestions based on query analysis and validates against plan limits.
+      description: Get suggested validators, enrichments, and date ranges for a query.
       operationId: initialize
       externalDocs:
         description: Learn about validator and enrichment suggestions
@@ -94,11 +91,7 @@ paths:
       tags:
         - Jobs
       summary: Create job
-      description: |
-        Submit a query to create a new processing job.
-
-        Optionally specify context, date ranges, limit, custom validators, and enrichments. 
-        If dates exceed plan limits, returns 400 error.
+      description: Submit a query to create a new processing job.
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
@@ -130,8 +123,7 @@ paths:
       tags:
         - Jobs
       summary: Continue job
-      description: |
-        Continue an existing job to process more records beyond the initial limit.
+      description: Continue an existing job to process more records beyond the initial limit.
       operationId: continueJob
       externalDocs:
         description: Learn about job continuation and limits
@@ -221,10 +213,7 @@ paths:
       tags:
         - Monitors
       summary: Create monitor
-      description: |
-        Create a monitor that runs jobs on a schedule based on a reference job.
-
-        The reference job defines the query, validators, and enrichments used for each scheduled run.
+      description: Create a scheduled monitor based on a reference job.
       operationId: createMonitor
       requestBody:
         required: true
@@ -253,16 +242,7 @@ paths:
       tags:
         - Monitors
       summary: Update monitor
-      description: |
-        Update webhook configuration for an existing monitor without recreating it.
-
-        **Supported updates:**
-        - Webhook URL
-        - HTTP method (POST/PUT)
-        - Headers and authentication
-        - Query parameters
-
-        **Note:** Schedule and reference job cannot be modified. To change these, create a new monitor.
+      description: Update the webhook configuration for an existing monitor.
       operationId: updateMonitor
       externalDocs:
         description: Learn about monitor configuration
@@ -302,9 +282,7 @@ paths:
       tags:
         - Monitors
       summary: List monitor jobs
-      description: |
-        Returns all jobs associated with a monitor, sorted by start_date.
-        Each job includes job_id, start_date, and end_date.
+      description: Return all jobs executed by a monitor.
       operationId: listMonitorJobs
       parameters:
         - name: monitor_id
@@ -335,9 +313,7 @@ paths:
       tags:
         - Monitors
       summary: Get monitor results
-      description: |
-        Retrieve aggregated results from all jobs executed by this monitor.
-        Includes monitor configuration, execution history, and all records collected.
+      description: Retrieve aggregated results from all jobs executed by a monitor.
       operationId: pullMonitorResults
       parameters:
         - name: monitor_id
@@ -360,9 +336,7 @@ paths:
       tags:
         - Monitors
       summary: Disable monitor
-      description: |
-        Disables a monitor to stop executing scheduled jobs.
-        Validates that the provided API key is associated with the monitor.
+      description: Stop scheduled job execution for a monitor.
       operationId: disableMonitor
       parameters:
         - name: monitor_id
@@ -408,9 +382,7 @@ paths:
       tags:
         - Monitors
       summary: Enable monitor
-      description: |
-        Enables a monitor to resume executing scheduled jobs.
-        Validates that the provided API key is associated with the monitor.
+      description: Resume scheduled job execution for a monitor.
       operationId: enableMonitor
       parameters:
         - name: monitor_id
