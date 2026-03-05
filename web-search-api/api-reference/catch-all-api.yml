@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.0.0
+  version: 1.1.2
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -64,10 +64,7 @@ paths:
       tags:
         - Jobs
       summary: Initialize job
-      description: |
-        Get suggested validators, enrichments, and date ranges for a query before submitting a job.
-
-        Returns LLM-generated suggestions based on query analysis and validates against plan limits.
+      description: Get suggested validators, enrichments, and date ranges for a query.
       operationId: initialize
       externalDocs:
         description: Learn about validator and enrichment suggestions
@@ -79,7 +76,8 @@ paths:
             schema:
               $ref: "#/components/schemas/InitializeRequestDTO"
             example:
-              query: "AI company acquisitions in fintech last week"
+              query: "Series B funding rounds for SaaS startups"
+              context: "Focus on funding amount and company name"
       responses:
         "200":
           $ref: "#/components/responses/InitializeResponse"
@@ -93,11 +91,7 @@ paths:
       tags:
         - Jobs
       summary: Create job
-      description: |
-        Submit a query to create a new processing job.
-
-        Optionally specify context, date ranges, limit, custom validators, and enrichments. 
-        If dates exceed plan limits, returns 400 error.
+      description: Submit a query to create a new processing job.
       operationId: createJob
       externalDocs:
         description: Detailed documentation for job creation
@@ -109,10 +103,10 @@ paths:
             schema:
               $ref: "#/components/schemas/SubmitRequestDTO"
             example:
-              query: "AI company acquisitions"
-              context: "Focus on deal size and acquiring company details"
-              start_date: "2026-01-30T00:00:00Z"
-              end_date: "2026-02-05T00:00:00Z"
+              query: "Series B funding rounds for SaaS startups"
+              context: "Focus on funding amount and company name"
+              start_date: "2026-02-18T00:00:00Z"
+              end_date: "2026-02-23T00:00:00Z"
               limit: 10
       responses:
         "200":
@@ -129,8 +123,7 @@ paths:
       tags:
         - Jobs
       summary: Continue job
-      description: |
-        Continue an existing job to process more records beyond the initial limit.
+      description: Continue an existing job to process more records beyond the initial limit.
       operationId: continueJob
       externalDocs:
         description: Learn about job continuation and limits
@@ -142,7 +135,7 @@ paths:
             schema:
               $ref: "#/components/schemas/ContinueRequestDTO"
             example:
-              job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+              job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               new_limit: 100
       responses:
         "200":
@@ -220,21 +213,7 @@ paths:
       tags:
         - Monitors
       summary: Create monitor
-      description: |
-        Create a monitor that runs jobs based on a reference job with a specified schedule.
-
-        **Reference job requirements:**
-        - Job's `end_date` must be within the last 7 days
-
-        **Schedule requirements:**
-        - Minimum 24-hour interval between executions
-        - Plain text format (e.g., "every day at 12 PM UTC", "every 48 hours")
-
-        **Validation:**
-        - Reference jobs older than 7 days return 400 Bad Request.
-        - Schedules below minimum frequency return error with descriptive message.
-        - Invalid job IDs return 400 Bad Request.
-        - Duplicate monitors (same job already monitored) return error.
+      description: Create a scheduled monitor based on a reference job.
       operationId: createMonitor
       requestBody:
         required: true
@@ -242,6 +221,16 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateMonitorRequestDTO"
+            example:
+              reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+              schedule: "every day at 12 PM UTC"
+              backfill: true
+              limit: 10
+              webhook:
+                url: "https://your-endpoint.com/webhook"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer your_token_here"
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
@@ -253,16 +242,7 @@ paths:
       tags:
         - Monitors
       summary: Update monitor
-      description: |
-        Update webhook configuration for an existing monitor without recreating it.
-
-        **Supported updates:**
-        - Webhook URL
-        - HTTP method (POST/PUT)
-        - Headers and authentication
-        - Query parameters
-
-        **Note:** Schedule and reference job cannot be modified. To change these, create a new monitor.
+      description: Update the webhook configuration for an existing monitor.
       operationId: updateMonitor
       externalDocs:
         description: Learn about monitor configuration
@@ -302,9 +282,7 @@ paths:
       tags:
         - Monitors
       summary: List monitor jobs
-      description: |
-        Returns all jobs associated with a monitor, sorted by start_date.
-        Each job includes job_id, start_date, and end_date.
+      description: Return all jobs executed by a monitor.
       operationId: listMonitorJobs
       parameters:
         - name: monitor_id
@@ -335,9 +313,7 @@ paths:
       tags:
         - Monitors
       summary: Get monitor results
-      description: |
-        Retrieve aggregated results from all jobs executed by this monitor.
-        Includes monitor configuration, execution history, and all records collected.
+      description: Retrieve aggregated results from all jobs executed by a monitor.
       operationId: pullMonitorResults
       parameters:
         - name: monitor_id
@@ -360,9 +336,7 @@ paths:
       tags:
         - Monitors
       summary: Disable monitor
-      description: |
-        Disables a monitor to stop executing scheduled jobs.
-        Validates that the provided API key is associated with the monitor.
+      description: Stop scheduled job execution for a monitor.
       operationId: disableMonitor
       parameters:
         - name: monitor_id
@@ -408,9 +382,7 @@ paths:
       tags:
         - Monitors
       summary: Enable monitor
-      description: |
-        Enables a monitor to resume executing scheduled jobs.
-        Validates that the provided API key is associated with the monitor.
+      description: Resume scheduled job execution for a monitor.
       operationId: enableMonitor
       parameters:
         - name: monitor_id
@@ -420,6 +392,14 @@ paths:
             type: string
             format: uuid
           description: Monitor identifier.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnableMonitorRequestDTO"
+            example:
+              backfill: true
       responses:
         "200":
           description: Monitor enabled successfully
@@ -458,6 +438,9 @@ paths:
       summary: List monitors
       description: Returns all monitors created by the authenticated user.
       operationId: listMonitors
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
@@ -497,11 +480,11 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job) endpoint.
+        Unique job identifier returned from [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job).
       schema:
         type: string
         format: uuid
-      example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+      example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     Page:
       name: page
@@ -534,40 +517,46 @@ components:
           schema:
             $ref: "#/components/schemas/InitializeResponseDTO"
           example:
+            query: "Series B funding rounds for SaaS startups"
+            context: "Focus on funding amount and company name"
             validators:
-              - name: "is_acquisition_event"
+              - name: "is_series_b_funding"
                 description:
-                  "true if web page describes a merger or acquisition event"
+                  "true if the web page describes a Series B funding round"
                 type: "boolean"
-              - name: "involves_fintech"
+              - name: "is_saas_startup"
                 description:
-                  "true if the companies involved are in the fintech sector"
+                  "true if the company receiving funding is a SaaS startup"
                 type: "boolean"
             enrichments:
-              - name: "acquiring_company"
-                description: "Extract the acquiring company name"
-                type: "company"
-              - name: "acquired_company"
-                description: "Extract the acquired company name"
-                type: "text"
-              - name: "deal_value"
-                description: "Extract the deal value if mentioned"
+              - name: "funding_amount"
+                description:
+                  "Extract the amount of funding received in the Series B round"
                 type: "number"
-              - name: "announcement_date"
-                description: "Extract the announcement date"
+              - name: "investee_company"
+                description:
+                  "Extract the name of the SaaS startup receiving the funding"
+                type: "company"
+              - name: "investor_company"
+                description: "Extract the name of the lead investor"
+                type: "company"
+              - name: "funding_date"
+                description:
+                  "Extract the date when the funding round was announced"
                 type: "date"
-            start_date: "2026-01-29T00:00:00Z"
-            end_date: "2026-02-05T00:00:00Z"
-            date_modification_message: []
+            start_date: "2026-02-19T00:00:00Z"
+            end_date: "2026-02-24T00:00:00Z"
+            date_modification_message:
+              - "No dates were provided; using a default window of 5 days."
 
     SubmitResponse:
       description: Job created successfully
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SubmitResponseBody"
+            $ref: "#/components/schemas/SubmitResponseDTO"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     ContinueResponse:
       description: Job continuation accepted
@@ -576,39 +565,39 @@ components:
           schema:
             $ref: "#/components/schemas/ContinueResponseDTO"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             previous_limit: 10
             new_limit: 100
             status: "accepted"
 
     StatusResponse:
-      description: Status retrieved successfully.
+      description: Status retrieved successfully
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/StatusResponseDTO"
           example:
-            job_id: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
-            status: "analyzing"
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+            status: "completed"
             steps:
               - status: "submitted"
                 order: 1
                 completed: true
               - status: "analyzing"
                 order: 2
-                completed: false
+                completed: true
               - status: "fetching"
                 order: 3
-                completed: false
+                completed: true
               - status: "clustering"
                 order: 4
-                completed: false
+                completed: true
               - status: "enriching"
                 order: 5
-                completed: false
+                completed: true
               - status: "completed"
                 order: 6
-                completed: false
+                completed: true
               - status: "failed"
                 order: 7
                 completed: false
@@ -618,9 +607,21 @@ components:
       content:
         application/json:
           schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/ListUserJobsResponseDto"
+            $ref: "#/components/schemas/ListUserJobsResponseDto"
+          example:
+            total: 27
+            page: 1
+            page_size: 2
+            total_pages: 14
+            jobs:
+              - job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+                query: "Series B funding rounds for SaaS startups"
+                created_at: "2026-02-24T13:57:56Z"
+                status: "completed"
+              - job_id: "8d618890-f9f5-4c97-af17-236136a306a7"
+                query: "Corporate headquarters relocations in the US"
+                created_at: "2026-02-18T20:25:20Z"
+                status: "completed"
 
     PullJobResponse:
       description: Results retrieved successfully
@@ -628,6 +629,61 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/PullJobResponseDTO"
+          example:
+            job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+            query: "Series B funding rounds for SaaS startups"
+            context: "Focus on funding amount and company name"
+            validators:
+              - "is_series_b_funding"
+              - "is_saas_startup"
+            enrichments:
+              - "enrichment_confidence"
+              - "funding_amount"
+              - "funding_currency"
+              - "funding_date"
+              - "investee_company"
+              - "investor_company"
+              - "valuation"
+              - "other_investors"
+            status: "completed"
+            error: null
+            duration: "1m"
+            candidate_records: 4
+            valid_records: 3
+            progress_validated: 4
+            date_range:
+              start_date: "2026-02-18T00:00:00Z"
+              end_date: "2026-02-23T00:00:00Z"
+            page: 1
+            page_size: 2
+            total_pages: 2
+            limit: 10
+            all_records:
+              - record_id: "6983973854314692457"
+                record_title: "VulnCheck Raises $25M Series B Funding"
+                enrichment:
+                  enrichment_confidence: "high"
+                  funding_amount: 25000000
+                  funding_currency: "USD"
+                  funding_date: "2026-02-17"
+                  investee_company:
+                    source_text: "VulnCheck"
+                    confidence: 0.99
+                    metadata:
+                      name: "VulnCheck"
+                      domain_url: "vulncheck.com"
+                      domain_url_confidence: "high"
+                  investor_company:
+                    source_text: "Sorenson Capital"
+                    confidence: 0.99
+                    metadata:
+                      name: "Sorenson Capital"
+                      domain_url: null
+                      domain_url_confidence: null
+                citations:
+                  - title: "VulnCheck raises $25M Series B"
+                    link: "https://www.msn.com/en-us/money/other/exclusive-vulncheck-raises-25m-funding-to-help-companies-patch-software-bugs/ar-AA1WwdjW"
+                    published_date: "2026-02-17T14:01:05Z"
 
     CreateMonitorResponse:
       description: Monitor created successfully
@@ -635,6 +691,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/CreateMonitorResponseDTO"
+          example:
+            monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+            status: "Monitor Created Successfully"
 
     UpdateMonitorResponse:
       description: Monitor updated successfully
@@ -676,7 +735,7 @@ components:
                 description: Array of job executions for this monitor.
 
     PullMonitorResponse:
-      description: Monitor results retrieved successfully.
+      description: Monitor results retrieved successfully
       content:
         application/json:
           schema:
@@ -688,6 +747,20 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/ListMonitorsResponseDTO"
+          example:
+            total: 3
+            page: 1
+            page_size: 100
+            total_pages: 1
+            monitors:
+              - monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+                reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+                reference_job_query: "Series B funding rounds for SaaS startups"
+                enabled: true
+                schedule: "0 12 * * *"
+                schedule_human_readable: "Every day at 12 PM"
+                timezone: "UTC"
+                created_at: "2026-02-24T14:00:00Z"
 
     HealthCheckResponse:
       description: API is healthy
@@ -709,7 +782,7 @@ components:
             properties:
               version:
                 type: string
-                example: "0.3.8"
+                example: "1.1.2"
 
     BadRequestError:
       description: |
@@ -725,8 +798,7 @@ components:
               summary: Date outside plan limit
               value:
                 detail:
-                  "start_date must be >= 2025-02-05, your plan limited to
-                  lookback 365 days."
+                  "start_date must be >= 2025-02-05, your plan limited to lookback 365 days."
             invalid_continuation:
               summary: Invalid job continuation
               value:
@@ -765,24 +837,17 @@ components:
 
         The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
 
-      example: "AI company acquisitions"
+      example: "Series B funding rounds for SaaS startups"
 
     Context:
       type: string
       description: |
         Additional context to focus on specific aspects of your query.
-      example: "Focus on deal size and acquiring company details"
-
-    Schema:
-      type: string
-      description: |
-        Template string to guide record summary formatting. Use placeholder syntax with brackets to indicate desired fields: [COMPANY], [REVENUE], [TARGET], [AMOUNT], etc.
-
-        When provided, the system generates a `schema_based_summary` field for each record following this template.
-      example: "[ACQUIRER] acquired [TARGET] for [AMOUNT]"
+      example: "Focus on funding amount and company name"
 
     Limit:
       type: integer
+      minimum: 10
       description: |
         Maximum number of records to return. If not specified, defaults to your plan limit.
 
@@ -820,11 +885,11 @@ components:
         name:
           type: string
           description: Validator field name (snake_case recommended).
-          example: "is_acquisition_event"
+          example: "is_series_b_funding"
         description:
           type: string
           description: What this validator checks for in the web page.
-          example: "true if web page describes a merger or acquisition event"
+          example: "true if the web page describes a Series B funding round"
         type:
           type: string
           enum: ["boolean"]
@@ -843,7 +908,6 @@ components:
         - date
         - option
         - url
-        - dict
         - company
       description: |
         Canonical enrichment types supported by the system.
@@ -853,8 +917,7 @@ components:
         - `date`: ISO format dates (YYYY-MM-DD)
         - `option`: Enum-like fixed values (status, category)
         - `url`: Web URLs
-        - `dict`: Complex structured objects
-        - `company`: Structured company data (name, alternative_names, website_candidates, people, address)
+        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
 
     EnrichmentSchema:
       type: object
@@ -866,17 +929,58 @@ components:
         name:
           type: string
           description: Enrichment field name (snake_case recommended).
-          example: "acquiring_company"
+          example: "investee_company"
         description:
           type: string
           description: What information this field extracts.
-          example: "Extract the acquiring company name"
+          example: "Extract the name of the SaaS startup receiving the funding"
         type:
           $ref: "#/components/schemas/EnrichmentType"
       description: |
         Schema for a single enrichment field that extracts structured data.
 
         Enrichments are applied during the enriching stage to extract information from validated clusters.
+
+    CompanyEnrichmentOutput:
+      type: object
+      description: |
+        Appears as the value of company-typed fields in the `enrichment` object of each record. The `metadata` sub-object is populated by the system based on the identified company.
+      required:
+        - source_text
+        - confidence
+        - metadata
+      properties:
+        source_text:
+          type: string
+          description:
+            The text span in the source document where the company was
+            identified.
+          example: "Sorenson Capital"
+        confidence:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Confidence score for the company identification.
+          example: 0.99
+        metadata:
+          type: object
+          required:
+            - name
+          properties:
+            name:
+              type: string
+              description: Normalized company name.
+              example: "Sorenson Capital"
+            domain_url:
+              type: [string, "null"]
+              description: Company website domain if resolved, otherwise null.
+              example: "vulncheck.com"
+            domain_url_confidence:
+              type: [string, "null"]
+              enum: ["low", "medium", "high", null]
+              description: Confidence level for the domain URL resolution.
+              example: "high"
 
     InitializeRequestDTO:
       type: object
@@ -894,11 +998,19 @@ components:
     InitializeResponseDTO:
       type: object
       required:
+        - query
         - validators
         - enrichments
-        - start_date
-        - end_date
       properties:
+        query:
+          type: string
+          description: Echo of the query from the request.
+          example: "Series B funding rounds for SaaS startups"
+        context:
+          type: [string, "null"]
+          description:
+            Echo of the context from the request. Null if not provided.
+          example: "Focus on funding amount and company name"
         validators:
           type: array
           items:
@@ -927,10 +1039,6 @@ components:
           example:
             - "start_date must be >= 2025-01-23, your plan limited to lookback
               365 days; we modified start_date to 2025-01-23."
-      description: |
-        Suggestions for validators, enrichments, and date ranges based on query analysis.
-
-        Date ranges are validated against plan limits and adjusted if necessary.
 
     SubmitRequestDTO:
       type: object
@@ -939,8 +1047,6 @@ components:
       properties:
         query:
           $ref: "#/components/schemas/Query"
-        schema:
-          $ref: "#/components/schemas/Schema"
         context:
           $ref: "#/components/schemas/Context"
         limit:
@@ -966,7 +1072,7 @@ components:
 
             If not provided, enrichments are generated automatically based on the query.
 
-    SubmitResponseBody:
+    SubmitResponseDTO:
       type: object
       required:
         - job_id
@@ -977,25 +1083,23 @@ components:
           description:
             Unique identifier for the created job. Use this to check status and
             retrieve results.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
     ContinueRequestDTO:
       type: object
       required:
         - job_id
-        - new_limit
       properties:
         job_id:
           type: string
           format: uuid
           description: |
             Job identifier of the completed job to continue.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         new_limit:
           type: integer
-          minimum: 1
           description: |
-            New record limit for continued processing. Must be greater than the previous limit.
+            New record limit for continued processing. Must be greater than the previous limit. If not provided, defaults to the plan maximum.
           example: 100
 
     ContinueResponseDTO:
@@ -1003,12 +1107,13 @@ components:
       required:
         - job_id
         - new_limit
+        - status
       properties:
         job_id:
           type: string
           format: uuid
           description: Job identifier for the continued job.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         previous_limit:
           type: integer
           description: Previous record limit before continuation.
@@ -1023,7 +1128,7 @@ components:
           default: "accepted"
           example: "accepted"
 
-    JobStatus:
+    PublicJobStatus:
       type: string
       enum:
         - submitted
@@ -1052,9 +1157,10 @@ components:
       required:
         - status
         - order
+        - completed
       properties:
         status:
-          $ref: "#/components/schemas/JobStatus"
+          $ref: "#/components/schemas/PublicJobStatus"
         order:
           type: integer
           description: Sequential position of this step in the pipeline (1-7).
@@ -1070,16 +1176,15 @@ components:
       type: object
       required:
         - job_id
-        - steps
       properties:
         job_id:
           type: string
           format: uuid
           description: Job identifier.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         status:
           allOf:
-            - $ref: "#/components/schemas/JobStatus"
+            - $ref: "#/components/schemas/PublicJobStatus"
           description: Current job processing status.
         steps:
           type: array
@@ -1131,11 +1236,11 @@ components:
           type: string
           format: uuid
           description: Job identifier.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         query:
           type: string
           description: Plain text query for this job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         created_at:
           type: string
           format: date-time
@@ -1150,7 +1255,6 @@ components:
       type: object
       required:
         - job_id
-        - status
       properties:
         job_id:
           type: string
@@ -1159,82 +1263,100 @@ components:
         query:
           type: string
           description: Original plain text query.
-          example: Tech company earnings this quarter.
+          example: "Series B funding rounds for SaaS startups"
         context:
           type: string
           description: Context provided with the query.
-          example: Focus on revenue and profit margins.
+          example: "Focus on funding amount and company name"
         validators:
           type: array
           items:
             type: string
           description: List of validation criteria applied to filter results.
           default: []
-          example: ["is_current_quarter", "contains_financial_data"]
+          example:
+            [
+              "is_series_b_funding",
+              "is_saas_startup",
+            ]
         enrichments:
           type: array
           items:
             type: string
           description: |
-            List of extracted field names generated by the enrichment process.
-            These field names appear in the `enrichment` object of each record.
+            List of extracted field names generated by the enrichment process. These field names appear in the `enrichment` object of each record.
+
+            **Note:** The `enrichment_confidence` field always appears in this list. The system adds it to every record regardless of the enrichments generated or defined.
           default: []
           example:
             [
-              "company_name",
-              "quarter_identifier",
-              "revenue",
-              "revenue_change",
-              "profit_margin",
+              "enrichment_confidence",
+              "funding_amount",
+              "funding_currency",
+              "funding_date",
+              "investee_company",
+              "investor_company",
+              "valuation",
+              "other_investors",
             ]
         status:
           type: string
           description: |
             Job status.
           example: "completed"
+        error:
+          type: [string, "null"]
+          description: Error message if the job failed. Null for successful jobs.
+        limit:
+          type: integer
+          description: Record limit for this job. Reflects the value specified at submit time, or the plan default if no limit was provided.
+          example: 100
         duration:
           type: string
           description: Total time taken to process the job.
-          example: 15m
+          example: "1m"
         candidate_records:
           type: integer
           description:
-            Number of distinct event clusters identified before validation.
-          example: 3200
+            Total number of distinct event clusters identified. Compare with `progress_validated` to estimate how many candidates remain unprocessed for job continuation.
+          example: 4
         valid_records:
           type: integer
           description: Number of validated records extracted.
-          example: 156
+          example: 3
         progress_validated:
-          type: integer
+          type: ["integer", "null"]
           description: |
             Number of candidate clusters that have been validated during processing.
 
-            The system process data in batches. This field tracks how many candidates have been checked against validation criteria so far.
-          example: 50
+            The system process data in batches. This field tracks how many `candidate_records` have been checked against validation criteria so far.
+          example: 4
         date_range:
           type: object
           properties:
             start_date:
               type: string
               format: date-time
-              example: "2025-09-15T00:00:00Z"
+              example: "2026-02-17T00:00:00Z"
             end_date:
               type: string
               format: date-time
-              example: "2025-09-30T23:59:59Z"
+              example: "2026-02-24T00:00:00Z"
         page:
-          title: Page
+          type: integer
+          minimum: 1
+          default: 1
           description: The current page number.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description: The total number of pages available.
-          type: integer
         page_size:
-          title: Page Size
-          description: The number of records per page.
           type: integer
+          minimum: 1
+          default: 10
+          description: The number of records per page.
+        total_pages:
+          type: integer
+          minimum: 0
+          default: 0
+          description: The total number of pages available.
         all_records:
           type: array
           items:
@@ -1242,41 +1364,70 @@ components:
           description:
             Array of extracted records with structured data and citations.
 
-    Record:
+    BaseRecord:
       type: object
       required:
         - record_id
         - record_title
         - enrichment
-        - citations
       properties:
         record_id:
           type: string
           description: Unique identifier for the record.
-          example: "5262823697790152939"
+          example: "6983973854314692457"
         record_title:
           type: string
           description: Short title summarizing the record.
-          example: "Oracle Q1 2026 Earnings Exceed Expectations"
+          example: "VulnCheck Raises $25M Series B Funding"
         enrichment:
           type: object
           description: |
             Structured data extracted from web pages. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
 
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
+            **Note:** The system always includes the `enrichment_confidence` field within the `enrichment` object, regardless of whether enrichments are generated or specified by you.
+
+             For integration guidance, see [Dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas)
+          properties:
+            enrichment_confidence:
+              type: ["string", "null"]
+              enum: ["low", "medium", "high", null]
+              description: Overall confidence score for the enrichment extraction.
+              example: "high"
           additionalProperties: {}
           example:
-            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
-            company_name: "Oracle"
-            quarter_identifier: "Q1 2026"
-            revenue: "$14.9 billion"
-            revenue_change: "up 12%"
-            profit_margin: "42% non-GAAP operating margin"
-        citations:
-          type: array
-          items:
-            $ref: "#/components/schemas/Citation"
-          description: Source documents that were used to extract this record.
+            enrichment_confidence: "high"
+            funding_amount: 25000000
+            funding_currency: "USD"
+            funding_date: "2026-02-17"
+            investee_company:
+              source_text: "VulnCheck"
+              confidence: 0.99
+              metadata:
+                name: "VulnCheck"
+                domain_url: "vulncheck.com"
+                domain_url_confidence: "high"
+            investor_company:
+              source_text: "Sorenson Capital"
+              confidence: 0.99
+              metadata:
+                name: "Sorenson Capital"
+                domain_url: null
+                domain_url_confidence: null
+            valuation: 25000000
+            other_investors: "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
+
+    Record:
+      allOf:
+        - $ref: "#/components/schemas/BaseRecord"
+        - type: object
+          required:
+            - citations
+          properties:
+            citations:
+              type: array
+              items:
+                $ref: "#/components/schemas/Citation"
+              description: Source documents that were used to extract this record.
 
     Citation:
       type: object
@@ -1288,117 +1439,71 @@ components:
         title:
           type: string
           description: The title of the source document.
-          example: "Oracle Reports Strong Q1 2026 Results"
+          example:
+            "Exclusive: VulnCheck raises $25M funding to help companies patch
+            software bugs"
         link:
           type: string
           format: uri
           description: URL to the source document.
-          example: "https://example.com/oracle-reports-q1-results"
+          example: "https://www.msn.com/en-us/money/other/exclusive-vulncheck-raises-25m-funding-to-help-companies-patch-software-bugs/ar-AA1WwdjW"
         published_date:
           type: string
           format: date-time
           description:
             The publication date of the source document in ISO 8601 format (UTC
             timezone).
-          example: "2025-09-26T08:54:20Z"
+          example: "2026-02-17T14:01:05Z"
 
     MonitorCitation:
-      type: object
-      required:
-        - id
-        - title
-        - link
-        - published_date
-        - job_id
-        - added_on
-      properties:
-        id:
-          type: string
-          description: Unique identifier of the document in the search index.
-          example: "8760624448e9815f9fb4abd114c75e76"
-        title:
-          type: string
-          description: The title of the source document.
-          example: "Oracle Reports Strong Q1 2026 Results"
-        link:
-          type: string
-          format: uri
-          description: URL to the source document.
-          example: "https://example.com/oracle-reports-q1-results"
-        published_date:
-          type: string
-          format: date-time
-          description:
-            The publication date of the source document in ISO 8601 format (UTC
-            timezone).
-          example: "2025-09-26T08:54:20Z"
-        job_id:
-          type: string
-          format: uuid
-          description: Job ID that found this citation.
-          example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
-        added_on:
-          type: string
-          format: date-time
-          description:
-            The date when the citation was added to the record in ISO 8601
-            format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
+      allOf:
+        - $ref: "#/components/schemas/Citation"
+        - type: object
+          required:
+            - id
+            - job_id
+            - added_on
+          properties:
+            id:
+              type: string
+              description: Unique identifier of the document in the search index.
+              example: "8760624448e9815f9fb4abd114c75e76"
+            job_id:
+              type: string
+              format: uuid
+              description: Job ID that found this citation.
+              example: "6269aa54-c332-4fff-8a65-0d4e82a365e8"
+            added_on:
+              type: string
+              format: date-time
+              description: The date when the citation was added to the record in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
       description: |
         Citation with monitor-specific metadata. Used in monitor results and webhook payloads.
         Extends base citation with tracking information for job_id and timestamps.
 
     MonitorRecord:
-      type: object
-      required:
-        - record_id
-        - record_title
-        - enrichment
-        - citations
-      properties:
-        record_id:
-          type: string
-          description: Unique identifier for the record.
-          example: "5262823697790152939"
-        record_title:
-          type: string
-          description: Short title summarizing the record.
-          example: "Oracle Q1 2026 Earnings Exceed Expectations"
-        enrichment:
-          type: object
-          description: |
-            Structured data extracted from web pages. Schema is dynamically generated per job. Field names are chosen semantically to match the content.
-
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
-          additionalProperties: {}
-          example:
-            record_title: "Oracle Q1 2026 Earnings Exceed Expectations"
-            company_name: "Oracle"
-            quarter_identifier: "Q1 2026"
-            revenue: "$14.9 billion"
-            revenue_change: "up 12%"
-            profit_margin: "42% non-GAAP operating margin"
-        citations:
-          type: array
-          items:
-            $ref: "#/components/schemas/MonitorCitation"
-          description:
-            Source documents with monitor-specific metadata (job_id, added_on
-            timestamps).
-        added_on:
-          type: string
-          format: date-time
-          description:
-            The date when this record was first added to monitor results in ISO
-            8601 format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
-        updated_on:
-          type: string
-          format: date-time
-          description:
-            The date when this record was last updated in monitor results in ISO
-            8601 format with UTC timezone.
-          example: "2025-11-14T21:00:00Z"
+      allOf:
+        - $ref: "#/components/schemas/BaseRecord"
+        - type: object
+          required:
+            - citations
+          properties:
+            citations:
+              type: array
+              items:
+                $ref: "#/components/schemas/MonitorCitation"
+              description: Source documents with monitor-specific metadata (job_id, added_on timestamps).
+            added_on:
+              type: string
+              format: date-time
+              description: The date when this record was first added to monitor results in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
+            updated_on:
+              type: string
+              format: date-time
+              description: The date when this record was last updated in monitor results in ISO 8601 format with UTC timezone.
+              example: "2025-11-14T21:00:00Z"
       description: |
         Record with monitor-specific metadata. Used in monitor results and webhook payloads.
         Includes timestamps tracking when records were added and updated, and citations include job tracking.
@@ -1413,20 +1518,32 @@ components:
           type: string
           format: uuid
           description: |
-            Job ID to use as template for scheduled runs.
+            Job ID to use as template for scheduled runs. Defines the query, validators, and enrichments used for each scheduled run.
 
-            Job's `end_date` must be within the last 7 days.
+            If [`backfill`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/create-monitor#body-backfill) is true, the job's `end_date` must be within the last 7 days.
         schedule:
           type: string
           description: |
-            Monitor schedule in plain text format (e.g. 'every day at 12 AM EST').
+            Monitor schedule in plain text format (e.g. 'every day at 12 PM UTC', 'every 48 hours').
 
-            **Minimum frequency:** Monitors must be scheduled at least 24 hours apart.
+            Minimum frequency depends on your plan.
           example: "every day at 12 PM UTC"
         webhook:
           $ref: "#/components/schemas/WebhookDTO"
           description:
             Optional webhook to receive notifications when jobs complete.
+        limit:
+          type: integer
+          minimum: 10
+          description: |
+            Maximum number of records per monitor run. If not provided, defaults to the plan limit.
+        backfill:
+          type: boolean
+          default: true
+          description: |
+            If true, fills the data gap between the reference job's `end_date` and the first scheduled run. The reference job's `end_date` must be within the last 7 days. 
+            
+            If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
 
     WebhookDTO:
       type: object
@@ -1464,7 +1581,7 @@ components:
         - status
       properties:
         monitor_id:
-          type: string
+          type: [string, "null"]
           format: uuid
           description: Monitor ID if successful, null if error.
         status:
@@ -1479,6 +1596,11 @@ components:
           $ref: "#/components/schemas/WebhookDTO"
           description: |
             Updated webhook configuration.
+        limit:
+          type: integer
+          minimum: 10
+          description: |
+            Updated maximum number of records per monitor run.
 
     UpdateMonitorResponseDTO:
       type: object
@@ -1503,11 +1625,11 @@ components:
         query:
           type: string
           description: Plain text query from the reference job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         context:
           type: string
           description: Context provided with the reference job query.
-          example: "Focus on deal size and acquiring company details"
+          example: "Focus on funding amount and company name"
 
     PullMonitorResponseDTO:
       type: object
@@ -1525,6 +1647,7 @@ components:
           type: string
           description: |
             The cron expression for a monitor schedule parsed from the text schedule you provide.
+            
             Standard cron format (minute hour day month day-of-week).
           example: "0 12 * * *"
         timezone:
@@ -1563,19 +1686,37 @@ components:
           items:
             $ref: "#/components/schemas/MonitorRecord"
           description: |
-            Aggregated records from all jobs executed by this monitor.
-            Each record includes structured data extracted from web sources with citations.
+            Aggregated records from all jobs executed by this monitor. Each record includes structured data extracted from web sources with citations.
+        limit:
+          type: ["integer", "null"]
+          description: Record limit applied to this monitor's jobs.
+          example: 100
 
     ListMonitorsResponseDTO:
       type: object
       required:
-        - total_monitors
+        - total
+        - page
+        - page_size
+        - total_pages
         - monitors
       properties:
-        total_monitors:
+        total:
           type: integer
           description: Total number of monitors for this user.
           example: 3
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of monitors per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
         monitors:
           type: array
           items:
@@ -1599,11 +1740,11 @@ components:
           type: string
           format: uuid
           description: Job identifier used as a reference for this monitor.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         reference_job_query:
           type: string
           description: Plain text query from the reference job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         enabled:
           type: boolean
           description: Whether the monitor is currently active.
@@ -1701,6 +1842,18 @@ components:
             End of the data collection time window for this job execution (based
             on monitor schedule) in ISO 8601 format with UTC timezone.
           example: "2025-11-15T00:00:00Z"
+
+    EnableMonitorRequestDTO:
+      type: object
+      description: Optional request body for enabling a monitor.
+      properties:
+        backfill:
+          type: boolean
+          default: true
+          description: |
+            If true, fills the data gap between the last job's `end_date` and the first scheduled run after enabling. The last job's `end_date` must be within the last 7 days. 
+            
+            If false, no gap filling occurs and the first run uses the current cron window only — the last job's age does not matter.
 
     Error:
       type: object

@@ -5,6 +5,36 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.1.2" description="2026-03-03">
+## Monitor controls and response improvements
+
+**Features:**
+
+- **Monitor limit**: Control the maximum number of records per monitor run with
+  the new `limit` parameter.
+- **Monitor backfill**: Choose whether to fill the data gap before the first
+  scheduled run with the new `backfill` parameter.
+
+**Improvements:**
+
+- [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors)
+  now supports `page` and `page_size` parameters and sorts by creation date.
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
+  now returns the `error` field for failed jobs and the `limit` applied to the
+  job.
+- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job)
+  now correctly enforces result limits. `new_limit` defaults to your plan
+  maximum if omitted.
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+  now returns a structured response object with pagination metadata instead of a
+  flat array.
+- Consistent status representation across the status and pull endpoints.
+- Improved caching and overall response performance.
+- Submitting a validator or enrichment with an empty `name` now returns a
+  validation error.
+
+</Update>
+
 <Update label="1.0.0" description="2026-02-05">
 ## Stable release with enhanced control and structured company enrichments
 
@@ -30,12 +60,14 @@ controls, and structured company enrichments.
 
 **Endpoints:**
 
-- [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job) — Get
-  validator, enrichment, and date range suggestions.
-- Enhanced [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Now
+- [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job)
+  — Get validator, enrichment, and date range suggestions.
+- Enhanced
+  [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Now
   accepts date ranges, validators, and enrichments.
-- Enhanced [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) —
-  Now supports pagination.
+- Enhanced
+  [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+  — Now supports pagination.
 
 **Improvements:**
 
@@ -62,8 +94,8 @@ controls, and structured company enrichments.
 
 **Endpoints:**
 
-- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) — Continue
-  completed job with higher limit.
+- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) —
+  Continue completed job with higher limit.
 - [`PATCH /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/monitors/update-monitor)
   — Update monitor webhook configuration.
 
@@ -103,8 +135,8 @@ functionality for time-constrained queries.
 **Features:**
 
 - **Progress tracking**: Status endpoint now returns detailed
-  [`steps`](/web-search-api/api-reference/jobs/get-job-status#response-steps) array showing
-  completion state for each processing stage.
+  [`steps`](/web-search-api/api-reference/jobs/get-job-status#response-steps)
+  array showing completion state for each processing stage.
 - **Monitor timestamps**: Monitor records include `added_on` and `updated_on`
   fields to track when each data record was first collected and last updated
   across job executions.
@@ -114,8 +146,8 @@ functionality for time-constrained queries.
 
 **Improvements:**
 
-- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) now
-  returns only user-created jobs, excluding repeated monitor jobs.
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+  now returns only user-created jobs, excluding repeated monitor jobs.
 - Monitor responses use
   [`run_info`](/web-search-api/api-reference/monitors/get-monitor-results#response-run-info)
   structure with `first_run` and `last_run` timestamps instead of `date_range`
@@ -142,8 +174,8 @@ streamline automated data collection workflows.
 
 **Endpoints:**
 
-- [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors) — List all
-  monitors for your API key.
+- [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors)
+  — List all monitors for your API key.
 - [`POST /catchAll/monitors/{monitor_id}/enable`](/web-search-api/api-reference/monitors/enable-monitor)
   — Enable a disabled monitor.
 - [`POST /catchAll/monitors/{monitor_id}/disable`](/web-search-api/api-reference/monitors/disable-monitor)
@@ -166,8 +198,8 @@ and improved data quality.
 
 **Endpoints:**
 
-- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs) — List all
-  jobs created with your API key.
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+  — List all jobs created with your API key.
 - [`GET /catchAll/monitors/pull/{monitor_id}`](/web-search-api/api-reference/monitors/get-monitor-results)
   — Retrieve aggregated results from all monitor jobs.
 
@@ -185,7 +217,8 @@ and improved data quality.
 <Update label="0.3.0" description="2025-10-23">
 ## Monitors feature
 
-Introduced [monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
+Introduced
+[monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
 schedule recurring data collection from a reference job.
 
 **Features:**
@@ -199,8 +232,8 @@ schedule recurring data collection from a reference job.
 
 **Endpoints:**
 
-- [`POST /catchAll/monitors/create`](/web-search-api/api-reference/monitors/create-monitor) —
-  Create scheduled monitor.
+- [`POST /catchAll/monitors/create`](/web-search-api/api-reference/monitors/create-monitor)
+  — Create scheduled monitor.
 - [`GET /catchAll/monitors/{monitor_id}/jobs`](/web-search-api/api-reference/monitors/list-monitor-jobs)
   — List monitor jobs.
 
@@ -214,27 +247,30 @@ schedule recurring data collection from a reference job.
 <Update label="0.1.0" description="2025-10-20">
 ## Initial beta release
 
-CatchAll is a web search API that transforms text queries into structured, 
+CatchAll is a web search API that transforms text queries into structured,
 validated event data extracted from billions of web sources.
 
 **Features:**
 
-- **Plain text input**: Submit queries in plain text and receive structured event 
-  data with source citations.
-- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**: 
-  Response structures adapt to your query, generating relevant fields automatically.
-- **Real-time status tracking**: Track job progress from submission through 
-  completion, including analysis, retrieval, clustering, validation, and extraction.
+- **Plain text input**: Submit queries in plain text and receive structured
+  event data with source citations.
+- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**:
+  Response structures adapt to your query, generating relevant fields
+  automatically.
+- **Real-time status tracking**: Track job progress from submission through
+  completion, including analysis, retrieval, clustering, validation, and
+  extraction.
 
 **Endpoints:**
 
-- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Create jobs
-  using a plain text queries.
-- [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status) —
-  Check a job processing status.
-- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results) —
-  Retrieve structured results with citations.
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) —
+  Create jobs using a plain text queries.
+- [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status)
+  — Check a job processing status.
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
+  — Retrieve structured results with citations.
 
-→ [Get started with the quickstart guide](/web-search-api/get-started/quickstart)
+→
+[Get started with the quickstart guide](/web-search-api/get-started/quickstart)
 
 </Update>

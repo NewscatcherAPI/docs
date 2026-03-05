@@ -141,6 +141,16 @@ System.out.println(suggestions);
 the job and starts processing. Only `query` is required — all other parameters
 are optional.
 
+Validators and enrichments are independent. You can define one without the
+other — for example, provide custom enrichments and let the system generate
+validators, or define validators and let the system generate enrichments.
+If you omit both, the system generates both from scratch based on your query.
+
+<Tip>
+  Use `limit: 10` for quick testing. If the results look good, use [Continue
+  job](#continue-job) to process more records without restarting.
+</Tip>
+
 <CodeGroup>
 ```bash cURL
 curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
@@ -215,10 +225,10 @@ System.out.println("Job created: " + jobId);
 ```
 </Expandable>
 
-<Tip>
-  Use `limit: 10` for quick testing. If the results look good, use [Continue
-  job](#continue-job) to process more records without restarting.
-</Tip>
+<Note>
+  If you submit without a `limit`, the job processes all available data for the
+  scope, and there is nothing left for [Continue job](#continue-job).
+</Note>
 
 ## Get job status
 
@@ -439,18 +449,16 @@ while (true) {
   "query": "Series B funding rounds for SaaS startups",
   "context": "Focus on funding amount and company name",
   "validators": [
-    "is_series_b",
-    "involves_saas_startup",
-    "is_about_funding_round",
-    "mentions_funding_amount"
+    "is_series_b_funding",
+    "is_saas_startup"
   ],
   "enrichments": [
+    "enrichment_confidence",
     "funding_amount",
     "funding_currency",
+    "funding_date",
     "investee_company",
     "investor_company",
-    "announcement_date",
-    "saas_category",
     "valuation",
     "other_investors"
   ],
@@ -471,18 +479,17 @@ while (true) {
       "record_id": "6983973854314692457",
       "record_title": "VulnCheck Raises $25M Series B Funding",
       "enrichment": {
-        "confidence": "high",
-        "saas_category": "cybersecurity",
+        "enrichment_confidence": "high",
         "funding_amount": 25000000,
         "funding_currency": "USD",
-        "announcement_date": "2026-02-17",
+        "funding_date": "2026-02-17",
         "investee_company": {
           "source_text": "VulnCheck",
           "confidence": 0.99,
           "metadata": {
             "name": "VulnCheck",
             "domain_url": "vulncheck.com",
-            "confidence": "high"
+            "domain_url_confidence": "high"
           }
         },
         "investor_company": {
@@ -491,7 +498,7 @@ while (true) {
           "metadata": {
             "name": "Sorenson Capital",
             "domain_url": null,
-            "confidence": null
+            "domain_url_confidence": null
           }
         },
         "valuation": 25000000,
@@ -515,16 +522,24 @@ while (true) {
 ```
 </Expandable>
 
+<Note>
+  Fields of type `company` (like `investee_company` and `investor_company` in
+  the example above) return a structured object with confidence scores for entity
+  identification and domain resolution. See the [Company enrichment](/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
+</Note>
+
 ## Continue job
 
 To process more records after reviewing the initial results of a job submitted
-with a `limit`, use
-[`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job). It
-extends the limit without restarting the job — all analysis, validation, and
+with a `limit`, use [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job). 
+It extends the limit without restarting the job — all analysis, validation, and
 enrichment logic from the original job is preserved.
 
-If you submit without a `limit`, the job processes all available data for the
-scope and there is nothing to continue.
+Before continuing, check `candidate_records` and `progress_validated` in the pull 
+response to estimate how much data remains. `candidate_records` is the total number 
+of event clusters found, `progress_validated` is how many have been checked so far. 
+The difference tells you roughly how many candidates are still unprocessed — note 
+that hit rate is not linear, so the number of new valid records per continuation may vary.
 
 <CodeGroup>
 ```bash cURL
@@ -608,7 +623,7 @@ var results = client.jobs().getJobResults(jobId);
 {
   "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
   "previous_limit": 10,
-  "new_limit": 20,
+  "new_limit": 100,
   "status": "accepted"
 }
 ```
