@@ -1698,6 +1698,10 @@ components:
           description: |
             Aggregated records from all jobs executed by this monitor.
             Each record includes structured data extracted from web sources with citations.
+        limit:
+          type: ["integer", "null"]
+          description: Record limit applied to this monitor's jobs.
+          example: 100
 
     ListMonitorsResponseDTO:
       type: object
