@@ -554,7 +554,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SubmitResponseBody"
+            $ref: "#/components/schemas/SubmitResponseDTO"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
@@ -1072,7 +1072,7 @@ components:
 
             If not provided, enrichments are generated automatically based on the query.
 
-    SubmitResponseBody:
+    SubmitResponseDTO:
       type: object
       required:
         - job_id
