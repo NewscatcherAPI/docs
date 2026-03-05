@@ -222,20 +222,9 @@ paths:
         - Monitors
       summary: Create monitor
       description: |
-        Create a monitor that runs jobs based on a reference job with a specified schedule.
+        Create a monitor that runs jobs on a schedule based on a reference job.
 
-        **Reference job requirements:**
-        - Job's `end_date` must be within the last 7 days
-
-        **Schedule requirements:**
-        - Minimum 24-hour interval between executions
-        - Plain text format (e.g., "every day at 12 PM UTC", "every 48 hours")
-
-        **Validation:**
-        - Reference jobs older than 7 days return 400 Bad Request.
-        - Schedules below minimum frequency return error with descriptive message.
-        - Invalid job IDs return 400 Bad Request.
-        - Duplicate monitors (same job already monitored) return error.
+        The reference job defines the query, validators, and enrichments used for each scheduled run.
       operationId: createMonitor
       requestBody:
         required: true
@@ -610,7 +599,7 @@ components:
             status: "accepted"
 
     StatusResponse:
-      description: Status retrieved successfully.
+      description: Status retrieved successfully
       content:
         application/json:
           schema:
@@ -774,7 +763,7 @@ components:
                 description: Array of job executions for this monitor.
 
     PullMonitorResponse:
-      description: Monitor results retrieved successfully.
+      description: Monitor results retrieved successfully
       content:
         application/json:
           schema:
@@ -956,7 +945,7 @@ components:
         - `date`: ISO format dates (YYYY-MM-DD)
         - `option`: Enum-like fixed values (status, category)
         - `url`: Web URLs
-        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. See [Company enrichment](/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
+        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
 
     EnrichmentSchema:
       type: object
@@ -1078,10 +1067,6 @@ components:
           example:
             - "start_date must be >= 2025-01-23, your plan limited to lookback
               365 days; we modified start_date to 2025-01-23."
-      description: |
-        Suggestions for validators, enrichments, and date ranges based on query analysis.
-
-        Date ranges are validated against plan limits and adjusted if necessary.
 
     SubmitRequestDTO:
       type: object
@@ -1561,15 +1546,15 @@ components:
           type: string
           format: uuid
           description: |
-            Job ID to use as template for scheduled runs.
+            Job ID to use as template for scheduled runs. Defines the query, validators, and enrichments used for each scheduled run.
 
-            Job's `end_date` must be within the last 7 days.
+            If [`backfill`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/create-monitor#body-backfill) is true, the job's `end_date` must be within the last 7 days.
         schedule:
           type: string
           description: |
-            Monitor schedule in plain text format (e.g. 'every day at 12 AM EST').
+            Monitor schedule in plain text format (e.g. 'every day at 12 PM UTC', 'every 48 hours').
 
-            **Minimum frequency:** Monitors must be scheduled at least 24 hours apart.
+            Minimum frequency depends on your plan.
           example: "every day at 12 PM UTC"
         webhook:
           $ref: "#/components/schemas/WebhookDTO"
