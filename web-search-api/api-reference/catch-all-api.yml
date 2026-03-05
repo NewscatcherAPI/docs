@@ -1714,13 +1714,28 @@ components:
     ListMonitorsResponseDTO:
       type: object
       required:
-        - total_monitors
+        - total
+        - page
+        - page_size
+        - total_pages
         - monitors
       properties:
-        total_monitors:
+        total:
           type: integer
           description: Total number of monitors for this user.
           example: 3
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of monitors per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
         monitors:
           type: array
           items:
