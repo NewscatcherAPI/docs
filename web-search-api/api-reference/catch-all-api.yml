@@ -810,8 +810,7 @@ components:
               summary: Date outside plan limit
               value:
                 detail:
-                  "start_date must be >= 2025-02-05, your plan limited to
-                  lookback 365 days."
+                  "start_date must be >= 2025-02-05, your plan limited to lookback 365 days."
             invalid_continuation:
               summary: Invalid job continuation
               value:
@@ -850,13 +849,13 @@ components:
 
         The system analyzes your input to generate search queries, validators, and extractors. More specific queries produce more focused results.
 
-      example: "AI company acquisitions"
+      example: "Series B funding rounds for SaaS startups"
 
     Context:
       type: string
       description: |
         Additional context to focus on specific aspects of your query.
-      example: "Focus on deal size and acquiring company details"
+      example: "Focus on funding amount and company name"
 
     Limit:
       type: integer
@@ -898,11 +897,11 @@ components:
         name:
           type: string
           description: Validator field name (snake_case recommended).
-          example: "is_acquisition_event"
+          example: "is_series_b_funding"
         description:
           type: string
           description: What this validator checks for in the web page.
-          example: "true if web page describes a merger or acquisition event"
+          example: "true if the web page describes a Series B funding round"
         type:
           type: string
           enum: ["boolean"]
@@ -942,11 +941,11 @@ components:
         name:
           type: string
           description: Enrichment field name (snake_case recommended).
-          example: "acquiring_company"
+          example: "investee_company"
         description:
           type: string
           description: What information this field extracts.
-          example: "Extract the acquiring company name"
+          example: "Extract the name of the SaaS startup receiving the funding"
         type:
           $ref: "#/components/schemas/EnrichmentType"
       description: |
@@ -957,11 +956,7 @@ components:
     CompanyEnrichmentOutput:
       type: object
       description: |
-        Output structure for enrichment fields of type `company`.
-
-        Appears as the value of company-typed fields in the `enrichment` object
-        of each record. The `metadata` sub-object is populated by the system
-        based on the identified company.
+        Appears as the value of company-typed fields in the `enrichment` object of each record. The `metadata` sub-object is populated by the system based on the identified company.
       required:
         - source_text
         - confidence
@@ -1557,17 +1552,14 @@ components:
           type: integer
           minimum: 10
           description: |
-            Maximum number of records per monitor run. If not provided, defaults
-            to the plan limit.
+            Maximum number of records per monitor run. If not provided, defaults to the plan limit.
         backfill:
           type: boolean
           default: true
           description: |
-            If true, fills the data gap between the reference job's `end_date`
-            and the first scheduled run. The reference job's `end_date` must be
-            within the last 7 days. If false, no gap filling occurs and the
-            first run uses the current cron window only — the reference job's
-            age does not matter.
+            If true, fills the data gap between the reference job's `end_date` and the first scheduled run. The reference job's `end_date` must be within the last 7 days. 
+            
+            If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
 
     WebhookDTO:
       type: object
@@ -1649,11 +1641,11 @@ components:
         query:
           type: string
           description: Plain text query from the reference job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         context:
           type: string
           description: Context provided with the reference job query.
-          example: "Focus on deal size and acquiring company details"
+          example: "Focus on funding amount and company name"
 
     PullMonitorResponseDTO:
       type: object
@@ -1764,11 +1756,11 @@ components:
           type: string
           format: uuid
           description: Job identifier used as a reference for this monitor.
-          example: "af7a26d6-cf0b-458c-a6ed-4b6318c74da3"
+          example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         reference_job_query:
           type: string
           description: Plain text query from the reference job.
-          example: "AI company acquisitions"
+          example: "Series B funding rounds for SaaS startups"
         enabled:
           type: boolean
           description: Whether the monitor is currently active.
@@ -1875,11 +1867,9 @@ components:
           type: boolean
           default: true
           description: |
-            If true, fills the data gap between the last job's `end_date` and
-            the first scheduled run after enabling. The last job's `end_date`
-            must be within the last 7 days. If false, no gap filling occurs
-            and the first run uses the current cron window only — the last
-            job's age does not matter.
+            If true, fills the data gap between the last job's `end_date` and the first scheduled run after enabling. The last job's `end_date` must be within the last 7 days. 
+            
+            If false, no gap filling occurs and the first run uses the current cron window only — the last job's age does not matter.
 
     Error:
       type: object
