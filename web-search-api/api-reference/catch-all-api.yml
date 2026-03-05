@@ -1276,7 +1276,6 @@ components:
       type: object
       required:
         - job_id
-        - status
       properties:
         job_id:
           type: string
@@ -1347,7 +1346,7 @@ components:
           description: Number of validated records extracted.
           example: 3
         progress_validated:
-          type: integer
+          type: ["integer", "null"]
           description: |
             Number of candidate clusters that have been validated during processing.
 
@@ -1365,17 +1364,20 @@ components:
               format: date-time
               example: "2026-02-24T00:00:00Z"
         page:
-          title: Page
+          type: integer
+          minimum: 1
+          default: 1
           description: The current page number.
-          type: integer
-        total_pages:
-          title: Total Pages
-          description: The total number of pages available.
-          type: integer
         page_size:
-          title: Page Size
-          description: The number of records per page.
           type: integer
+          minimum: 1
+          default: 10
+          description: The number of records per page.
+        total_pages:
+          type: integer
+          minimum: 0
+          default: 0
+          description: The total number of pages available.
         all_records:
           type: array
           items:
