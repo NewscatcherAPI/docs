@@ -480,7 +480,7 @@ components:
       in: path
       required: true
       description: |
-        Unique job identifier returned from the [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job) endpoint.
+        Unique job identifier returned from [`POST /catchAll/submit`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job).
       schema:
         type: string
         format: uuid
@@ -782,7 +782,7 @@ components:
             properties:
               version:
                 type: string
-                example: "0.3.8"
+                example: "1.1.2"
 
     BadRequestError:
       description: |
@@ -1386,7 +1386,7 @@ components:
 
             **Note:** The system always includes the `enrichment_confidence` field within the `enrichment` object, regardless of whether enrichments are generated or specified by you.
 
-            See [Understanding dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas) for integration guidance.
+             For integration guidance, see [Dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas)
           properties:
             enrichment_confidence:
               type: ["string", "null"]
@@ -1647,6 +1647,7 @@ components:
           type: string
           description: |
             The cron expression for a monitor schedule parsed from the text schedule you provide.
+            
             Standard cron format (minute hour day month day-of-week).
           example: "0 12 * * *"
         timezone:
@@ -1685,8 +1686,7 @@ components:
           items:
             $ref: "#/components/schemas/MonitorRecord"
           description: |
-            Aggregated records from all jobs executed by this monitor.
-            Each record includes structured data extracted from web sources with citations.
+            Aggregated records from all jobs executed by this monitor. Each record includes structured data extracted from web sources with citations.
         limit:
           type: ["integer", "null"]
           description: Record limit applied to this monitor's jobs.
