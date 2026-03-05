@@ -1108,7 +1108,6 @@ components:
           example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
         new_limit:
           type: integer
-          minimum: 20
           description: |
             New record limit for continued processing. Must be greater than the previous limit. If not provided, defaults to the plan maximum.
           example: 100
@@ -1541,6 +1540,21 @@ components:
           $ref: "#/components/schemas/WebhookDTO"
           description:
             Optional webhook to receive notifications when jobs complete.
+        limit:
+          type: integer
+          minimum: 10
+          description: |
+            Maximum number of records per monitor run. If not provided, defaults
+            to the plan limit.
+        backfill:
+          type: boolean
+          default: true
+          description: |
+            If true, fills the data gap between the reference job's `end_date`
+            and the first scheduled run. The reference job's `end_date` must be
+            within the last 7 days. If false, no gap filling occurs and the
+            first run uses the current cron window only — the reference job's
+            age does not matter.
 
     WebhookDTO:
       type: object
@@ -1593,6 +1607,11 @@ components:
           $ref: "#/components/schemas/WebhookDTO"
           description: |
             Updated webhook configuration.
+        limit:
+          type: integer
+          minimum: 10
+          description: |
+            Updated maximum number of records per monitor run.
 
     UpdateMonitorResponseDTO:
       type: object
