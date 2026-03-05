@@ -467,6 +467,9 @@ paths:
       summary: List monitors
       description: Returns all monitors created by the authenticated user.
       operationId: listMonitors
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
