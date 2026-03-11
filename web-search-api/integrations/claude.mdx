@@ -2,15 +2,21 @@
 title: Claude integration
 sidebarTitle: Claude
 description:
-  Use CatchAll in Claude for structured web research with MCP and SKILL.
+  Use CatchAll in Claude with MCP for chat-based research or the Python SDK for
+  programmatic workflows.
 ---
 
-The integration has two components:
+CatchAll integrates with Claude through two paths:
 
-- **MCP server**: Authenticates with the CatchAll API and exposes tools in
-  Claude.
-- **SKILL file**: Teaches Claude when and how to use those tools, including
-  query structure, validators, enrichments, polling, and result formatting.
+- **MCP server**: Connects CatchAll as a tool in Claude's chat interface. Claude
+  calls pre-built tools to submit jobs, poll status, and pull results — no code
+  execution required.
+- **Python agent**: Uses the Anthropic SDK to run CatchAll queries
+  programmatically in an agentic loop.
+
+You can also use the
+[CatchAll API SKILL](/web-search-api/integrations/skill) alongside either path
+to improve query quality and result presentation.
 
 ## Before you start
 
@@ -20,6 +26,8 @@ The integration has two components:
 - Anthropic API key (only for [Python agent](#python-agent) usage)
 
 ## Connect MCP server
+
+The MCP server authenticates with the CatchAll API and exposes tools in Claude.
 
 <Tabs>
   <Tab title="Claude.ai">
@@ -34,7 +42,7 @@ The integration has two components:
         - **Remote MCP server URL**:
 
         ```
-        https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+        https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
         ```
       </Step>
       <Step title="Add and verify">
@@ -44,7 +52,6 @@ The integration has two components:
         Open a new chat and type a CatchAll query, for example: "Find AI company acquisitions in the last 7 days, limit 5". Claude should call the CatchAll tools and return structured results.
       </Step>
     </Steps>
-
   </Tab>
 
   <Tab title="Claude Desktop">
@@ -73,7 +80,7 @@ The integration has two components:
               "args": [
                 "-y",
                 "mcp-remote",
-                "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+                "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
               ]
             }
           }
@@ -84,13 +91,12 @@ The integration has two components:
         Quit and relaunch Claude Desktop, as it loads MCP tools on startup.
       </Step>
     </Steps>
-
   </Tab>
 
   <Tab title="Claude Code">
     ```bash
     claude mcp add --transport http catchall \
-      "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+      "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
     ```
   </Tab>
 </Tabs>
@@ -100,24 +106,6 @@ The integration has two components:
   commit it to version control.
 </Warning>
 
-## Add SKILL
-
-The SKILL file teaches Claude how to use CatchAll effectively. It includes the
-main prompt in `SKILL.md` along with validator and enrichment references,
-monitor scheduling guidance, and the OpenAPI specification.
-
-<Steps>
-  <Step title="Download SKILL archive">
-    Download [CatchAll-SKILL.zip](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/CatchAll-SKILL.zip) from the integrations repository.
-  </Step>
-  <Step title="Upload to Claude">
-    Go to [claude.ai/customize/skills](https://claude.ai/customize/skills). Click **+**, select **Upload a skill**, and select `CatchAll-SKILL.zip`.
-
-    Claude installs the SKILL and applies it to all your conversations and projects.
-
-  </Step>
-</Steps>
-
 ## Available tools
 
 The MCP server exposes tools for jobs (initialize, submit, poll, pull results,
@@ -125,31 +113,10 @@ continue) and monitors (create, update, list, enable, disable, pull results).
 For the full tool reference, see
 [MCP server > Available tools](/web-search-api/integrations/mcp#available-tools).
 
-## Example prompts
-
-With the MCP connector and SKILL installed, describe a research task in chat.
-Claude submits jobs, tracks progress, and returns structured results.
-
-> Find Series B fintech funding rounds announced in the last 14 days, limit 20.
-
-> Search for AI chip export restrictions in the last 30 days and summarize the
-> key regulatory actions.
-
-> Find pharma acquisitions over $1B this month, then create a table sorted by
-> deal value.
-
-> Look for executive leadership changes at Fortune 500 companies last week and
-> identify any patterns.
-
-<Tip>
-  Specify a date range and a record limit in your prompt to scope results. For
-  example: "in the last 14 days, limit 20".
-</Tip>
-
 ## Python agent
 
-To use CatchAll programmatically without the MCP connector, use the Anthropic
-SDK to execute CatchAll API calls directly in an agentic loop.
+To use CatchAll programmatically with Claude, use the Anthropic SDK to execute
+CatchAll API calls in an agentic loop.
 
 ### Setup
 
@@ -185,22 +152,16 @@ response = client.messages.create(
 For the complete implementation, including polling and result handling, see the
 [agent example on GitHub](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_example.py).
 
-### SKILL-native agent example
-
-The
-[SKILL-native agent](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_skill_example.py)
-loads `SKILL.md` as the system prompt and generates tool definitions
-automatically by parsing its content. When the SKILL changes, the agent picks up
-those changes without code updates.
-
-<Note>
-  This example uses keyword matching to detect parameters in `SKILL.md`. Test
-  after any SKILL update to verify that all parameters are detected correctly.
-</Note>
-
 ## See also
 
 <CardGroup cols={2}>
+  <Card
+    title="CatchAll API SKILL"
+    icon="book-open"
+    href="/web-search-api/integrations/skill"
+  >
+    Platform-agnostic API SKILL setup for any AI agent
+  </Card>
   <Card title="MCP server" icon="plug" href="/web-search-api/integrations/mcp">
     Server architecture, authentication, and tool definitions
   </Card>
@@ -217,12 +178,5 @@ those changes without code updates.
     href="/web-search-api/api-reference/jobs/create-job"
   >
     Full endpoint documentation
-  </Card>
-  <Card
-    title="SKILL source"
-    icon="github"
-    href="https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/Claude/CatchAll-SKILL"
-  >
-    SKILL.md and reference files
   </Card>
 </CardGroup>
