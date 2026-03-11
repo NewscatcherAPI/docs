@@ -297,9 +297,9 @@ while (true) {
     var status = client.jobs().getJobStatus(jobId);
     System.out.println("Status: " + status.getStatus());
 
-    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+    if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
         break;
-    } else if (JobStatus.FAILED.equals(status.getStatus().orElse(null))) {
+    } else if (PublicJobStatus.FAILED.equals(status.getStatus().orElse(null))) {
         System.out.println("Job failed");
         break;
     }
@@ -425,15 +425,15 @@ System.out.println("Found " + results.getValidRecords() + " valid records");
 while (true) {
     var status = client.jobs().getJobStatus(jobId);
 
-    if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) ||
-        JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+    if (PublicJobStatus.ENRICHING.equals(status.getStatus().orElse(null)) ||
+        PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
 
         var results = client.jobs().getJobResults(jobId);
         System.out.println("Progress: " + results.getProgressValidated() +
             "/" + results.getCandidateRecords() + " validated, " +
             results.getValidRecords() + " valid");
 
-        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
+        if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
     }
 
     Thread.sleep(POLL_INTERVAL_MS);
@@ -609,7 +609,7 @@ System.out.println("Continued: " + continued.getPreviousLimit() + " → " + cont
 // Poll and pull again
 while (true) {
     var status = client.jobs().getJobStatus(jobId);
-    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
+    if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) break;
     Thread.sleep(POLL_INTERVAL_MS);
 }
 
