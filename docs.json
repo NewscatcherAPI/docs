@@ -109,6 +109,7 @@
             "pages": [
               "web-search-api/integrations/mcp",
               "web-search-api/integrations/claude",
+              "web-search-api/integrations/skill",
               "web-search-api/integrations/langchain",
               "web-search-api/integrations/make",
               "web-search-api/integrations/n8n",

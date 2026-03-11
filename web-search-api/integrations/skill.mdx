@@ -1,0 +1,178 @@
+---
+title: CatchAll API SKILL
+sidebarTitle: API SKILL
+description:
+  Use the CatchAll API SKILL to teach any AI agent how to search, validate, and
+  extract structured data from the web.
+---
+
+The CatchAll API SKILL is a structured prompt file that teaches an AI agent how
+to use the CatchAll API. It contains the complete API workflow —
+authentication, endpoints, query construction, polling, and result formatting —
+so the agent can make API calls directly without additional tooling. For
+Claude-specific setup with MCP, see the
+[Claude integration](/web-search-api/integrations/claude) page.
+
+## How it works
+
+The API SKILL file is a Markdown document that an agent reads as instructions. When
+the agent has code execution capabilities (shell commands, HTTP requests, or SDK
+calls), it uses the API SKILL to construct and send API requests on its own. No
+connector, plugin, or middleware is required.
+
+<Frame>
+  <img src="/images/integrations/skill-architecture.png" alt="Diagram showing an AI agent with code execution reading SKILL.md and calling the CatchAll API server directly over HTTPS." />
+</Frame>
+
+The API SKILL is **platform-agnostic**. It works with any agent runtime that
+supports Markdown-based instructions and can execute HTTP requests, including
+Claude (claude.ai, Claude Desktop, Claude Code), OpenAI Assistants, LangChain
+agents, and custom agent frameworks.
+
+## Before you start
+
+- CatchAll API key from
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+- An AI agent with code execution capabilities (for example, Claude with
+  computer use, an OpenAI Assistant with Code Interpreter, or a custom agent with
+  HTTP access)
+
+## API SKILL contents
+
+The API SKILL archive contains:
+
+<Tree>
+  <Tree.Folder name="CatchAll-SKILL" defaultOpen>
+    <Tree.File name="SKILL.md" />
+
+    <Tree.Folder name="references" defaultOpen>
+      <Tree.File name="VALIDATORS.md" />
+
+      <Tree.File name="ENRICHMENT-TYPES.md" />
+
+      <Tree.File name="MONITOR-SCHEDULING.md" />
+
+      <Tree.File name="openapi-spec.json" />
+    </Tree.Folder>
+
+    <Tree.Folder name="assets" defaultOpen>
+      <Tree.File name="example-submit.json" />
+
+      <Tree.File name="example_pull_response.json" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Main prompt: authentication, job workflow (submit → poll → pull), monitor workflow, result presentation rules, and edge case handling |
+| `references/VALIDATORS.md` | Guidance on writing effective validators, including cost control, the validators-vs-date-range distinction, and common validator patterns |
+| `references/ENRICHMENT-TYPES.md` | Available enrichment types (`text`, `number`, `date`, `option`, `url`, `company`) with real-world examples |
+| `references/MONITOR-SCHEDULING.md` | Natural language schedule formats and webhook configuration |
+| `references/openapi-spec.json` | Full OpenAPI 3.0 specification for the CatchAll API |
+| `assets/example-submit.json` | Minimal example submit request body (query and limit) |
+| `assets/example_pull_response.json` | Example pull response with clustered results |
+
+## Set up
+
+How you load the API SKILL depends on your agent platform. The core requirement
+is the same everywhere: the agent must be able to read `SKILL.md` and its
+reference files, and have access to your API key.
+
+<Tabs>
+  <Tab title="Claude (claude.ai)">
+    Claude supports SKILL files natively through the Skills feature.
+
+    <Steps>
+      <Step title="Download the API SKILL archive">
+        Download [CatchAll-SKILL.zip](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/CatchAll-SKILL.zip) from the integrations repository.
+      </Step>
+      <Step title="Upload as a skill">
+        Go to [claude.ai/customize/skills](https://claude.ai/customize/skills). Click **+**, select **Upload a skill**, and choose `CatchAll-SKILL.zip`.
+
+        Claude installs the API SKILL and applies it to all your conversations and projects.
+      </Step>
+      <Step title="Set your API key">
+        When you run your first query, the API SKILL instructs Claude to make API calls with an `X-API-Key` header. Provide your API key when prompted, or set it as an environment variable in your project.
+      </Step>
+    </Steps>
+
+    <Tip>
+      When the API SKILL is active, Claude uses its code execution environment to
+      call the CatchAll API directly over HTTPS. No MCP connector is needed for
+      this path.
+    </Tip>
+  </Tab>
+
+  <Tab title="Python agent (any LLM)">
+    Load `SKILL.md` as the system prompt in your agent framework.
+
+    ```python
+    from pathlib import Path
+
+    skill_prompt = Path("CatchAll-SKILL/SKILL.md").read_text()
+
+    # Use as system prompt with any LLM SDK
+    messages = [
+        {"role": "system", "content": skill_prompt},
+        {"role": "user", "content": "Find fintech funding rounds in the last 7 days, limit 10"}
+    ]
+    ```
+  <Warning>
+    The agent needs a tool or function that can execute HTTP requests. The
+    API SKILL contains the base URL `https://catchall.newscatcherapi.com`,
+    required header `X-API-Key`, and request formats for each endpoint.
+   </Warning> 
+  </Tab>
+</Tabs>
+
+## Example prompts
+
+Describe your research task in natural language. The agent submits the job,
+tracks progress, and returns structured results.
+
+> Find Series B fintech funding rounds announced in the last 7 days, limit 10.
+
+> Search for AI chip export restrictions in the last 30 days and summarize the
+> key regulatory actions.
+
+> Find pharma acquisitions over $1B this month, then create a table sorted by
+> deal value.
+
+<Tip>
+  Include a date range and a record limit in your prompt to control scope and
+  cost. For example: "in the last 14 days, limit 20".
+</Tip>
+
+## See also
+
+<CardGroup cols={2}>
+  <Card
+    title="Write effective queries"
+    icon="pencil"
+    href="/web-search-api/how-to/write-effective-queries"
+  >
+    Get better results from CatchAll jobs
+  </Card>
+  <Card
+    title="API reference"
+    icon="book"
+    href="/web-search-api/api-reference/jobs/create-job"
+  >
+    Full endpoint documentation
+  </Card>
+  <Card
+    title="Claude integration"
+    icon="message-bot"
+    href="/web-search-api/integrations/claude"
+  >
+    MCP server setup and Python agent examples for Claude
+  </Card>
+  <Card
+    title="SKILL source"
+    icon="github"
+    href="https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/Claude/CatchAll-SKILL"
+  >
+    SKILL.md and reference files on GitHub
+  </Card>
+</CardGroup>
