@@ -1,0 +1,32 @@
+name: Validate llms.txt
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Check llms.txt is up to date
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Regenerate llms.txt
+        run: python scripts/generate_llms_txt.py
+
+      - name: Fail if llms.txt is out of date
+        run: |
+          if ! git diff --exit-code llms.txt; then
+            echo ""
+            echo "llms.txt is out of date."
+            echo "Run 'npm run llms:generate' locally and commit the updated file."
+            exit 1
+          fi
