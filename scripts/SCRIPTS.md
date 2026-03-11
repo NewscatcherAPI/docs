@@ -1,27 +1,88 @@
-# Documentation Migration Scripts
+# Documentation Scripts
 
-This folder contains scripts and configuration files used for the documentation portal restructure (v3 → new structure).
+This folder contains scripts used for documentation portal maintenance and
+historical migration (v3 → current structure).
 
 ## Overview
 
-**Purpose:** Automate the migration of documentation from the `v3/` structure to the new flat structure without URL prefixes.
+### Maintenance scripts
+
+Ongoing scripts for keeping the documentation portal healthy.
+
+### Migration scripts
+
+Scripts used for the v3 → current structure migration (completed 2025-02-10).
+Retained as an audit trail and reference for future restructures.
+
+---
+
+## Maintenance Scripts
+
+### `generate_llms_txt.py`
+
+Generates a structured `llms.txt` file at the repository root, overriding the
+default auto-generated file produced by Mintlify.
+
+**What it does:**
+
+- Reads `docs.json` as the navigation source of truth
+- Walks every leaf page path recursively, including nested API reference groups
+- Reads `title` and `description` from each `.mdx` file's frontmatter
+- For API endpoint pages (with an `openapi:` frontmatter field), looks up the
+  operation `description` from the corresponding OAS YAML file when no
+  frontmatter description is present
+- Appends `(GET)` or `(POST)` to titles of endpoint pages whose slugs end in
+  `-get` or `-post`, disambiguating twin variants
+- Outputs a product-first, navigation-ordered `llms.txt` following the
+  [llms.txt spec](https://llmstxt.org)
+- Excludes legacy specs (`events-api`, `news-api-v2`) from the API
+  Specifications section
+
+**Usage:**
+
+```bash
+# Generate llms.txt at the repository root
+python scripts/generate_llms_txt.py
+
+# Specify a custom output path
+python scripts/generate_llms_txt.py --output path/to/llms.txt
+
+# Validate without writing (used in CI via npm run llms:generate + git diff)
+python scripts/generate_llms_txt.py --check
+```
+
+**npm shortcut:**
+
+```bash
+npm run llms:generate
+```
+
+**Requirements:** Python 3.8+, `pyyaml` (`pip install pyyaml`)
+
+**Exit codes:**
+
+- `0` — File generated (or validated as up to date when `--check` is used)
+- `1` — File is out of date (`--check` mode only)
+
+**CI:** `.github/workflows/llms-txt.yml` runs this script on every PR and
+fails if the committed `llms.txt` does not match the freshly generated output.
+
+---
+
+## Migration Scripts
 
 **Status:** ✅ Migration complete (2025-02-10)
 
 **Usage:** These scripts remain in the repository as:
 
 - Documentation of the migration process
-- Reference for future restructures  
+- Reference for future restructures
 - Audit trail of changes made
 - Training material for team members
 
 ---
 
-## Files
-
-### Core Scripts
-
-#### `restructure.sh`
+### `restructure.sh`
 
 Restructures file and folder organization.
 
@@ -44,7 +105,7 @@ Restructures file and folder organization.
 
 ---
 
-#### `update_links.py`
+### `update_links.py`
 
 Updates internal links in MDX and YAML files based on redirect map.
 
@@ -69,7 +130,7 @@ python scripts/update_links.py redirect-map.json
 
 ---
 
-#### `validate_redirects.py`
+### `validate_redirects.py`
 
 Validates redirect configuration against schema and best practices.
 
@@ -95,7 +156,7 @@ python scripts/validate_redirects.py redirect-map.json --schema redirect-map.sch
 
 ---
 
-#### `export_redirects.py`
+### `export_redirects.py`
 
 Exports redirect rules to various platform formats.
 
@@ -119,7 +180,8 @@ python scripts/export_redirects.py redirect-map.json --format mintlify
 python scripts/export_redirects.py redirect-map.json --format all
 ```
 
-**Output:** Creates files in `exported-redirects/` directory (at project root, excluded from git).
+**Output:** Creates files in `exported-redirects/` directory (at project root,
+excluded from git).
 
 ---
 
@@ -128,8 +190,6 @@ python scripts/export_redirects.py redirect-map.json --format all
 ### `redirect-map.json` (Project Root)
 
 Master redirect mapping containing redirect rules.
-
-**Purpose:** Single source of truth for all URL changes during migration.
 
 **Structure:**
 
@@ -146,11 +206,7 @@ Master redirect mapping containing redirect rules.
 }
 ```
 
-**Used by:**
-
-- `update_links.py` - Updates internal links
-- `export_redirects.py` - Generates platform-specific redirects
-- `validate_redirects.py` - Validates structure
+**Used by:** `update_links.py`, `export_redirects.py`, `validate_redirects.py`
 
 ---
 
@@ -158,20 +214,21 @@ Master redirect mapping containing redirect rules.
 
 JSON Schema for validating redirect-map.json structure.
 
-**Validates:**
-
-- Required fields (source, destination, permanent)
-- Data types (strings, booleans)
-- URL format patterns
-- Array structure
-
 **Usage:** Automatically used by `validate_redirects.py`
 
 ---
 
 ## Quick Start
 
-### Complete Migration Workflow
+### Regenerate llms.txt
+
+```bash
+npm run llms:generate
+git add llms.txt
+git commit -m "chore: regenerate llms.txt"
+```
+
+### Complete Migration Workflow (historical reference)
 
 ```bash
 # 1. Validate redirect configuration
@@ -188,16 +245,6 @@ python scripts/update_links.py redirect-map.json
 python scripts/export_redirects.py redirect-map.json --format mintlify
 ```
 
-### For Future Migrations
-
-If you need to do similar restructuring:
-
-1. Create new `redirect-map.json` with your mappings
-2. Validate with `validate_redirects.py`
-3. Adapt `restructure.sh` for your new structure
-4. Use `update_links.py` to update internal links
-5. Export redirects with `export_redirects.py`
-
 ---
 
 ## Requirements
@@ -210,108 +257,28 @@ If you need to do similar restructuring:
 
 ### Python Dependencies
 
-All scripts use Python standard library only:
+| Script | Dependencies |
+|--------|-------------|
+| `generate_llms_txt.py` | `pyyaml` (external) |
+| All migration scripts | stdlib only (`json`, `pathlib`, `re`, `argparse`, `datetime`, `shutil`) |
 
-- `json` - JSON parsing
-- `pathlib` - Path manipulation
-- `re` - Regular expressions
-- `argparse` - Command-line parsing
-- `datetime` - Timestamps
-- `shutil` - File operations
+Install maintenance script dependencies:
 
-No external packages required - ready to run.
-
----
-
-## Safety Features
-
-### Built-in Protections
-
-✅ **Automatic Backups**
-
-- `restructure.sh` creates timestamped backup before changes
-- Located at `backup-YYYYMMDD-HHMMSS/`
-
-✅ **Dry-Run Mode**
-
-- `update_links.py --dry-run` shows changes without applying them
-- Preview exactly what will be modified
-
-✅ **Validation Before Changes**
-
-- `validate_redirects.py` catches errors before migration
-- Prevents invalid configurations
-
----
-
-## Files Created/Modified During Migration
-
-### New Directories Created
-
+```bash
+pip install pyyaml
 ```
-docs/
-├── docs.json
-├── home/
-│   └── index.mdx
-├── web-search-api/
-│   ├── get-started/
-│   ├── guides-and-concepts/
-│   ├── how-to/
-│   ├── api-reference/
-│   │   ├── overview/
-│   │   └── endpoints/
-│   ├── libraries/
-│   └── integrations/
-├── news-api/
-│   ├── get-started/
-│   ├── guides-and-concepts/
-│   ├── how-to/
-│   ├── troubleshooting/
-│   ├── migration/
-│   ├── api-reference/
-│   │   ├── overview/
-│   │   └── endpoints/
-│   └── libraries/
-├── local-news-api/
-│   ├── get-started/
-│   ├── guides-and-concepts/
-│   └── api-reference/
-│       ├── overview/
-│       └── endpoints/
-│
-└── backup-YYYYMMDD-HHMMSS/  # Safety backup (not committed)
-    ├── docs.json
-    └── v3/
-
-└── exported-redirects/      # Generated redirect files (not committed)
-    ├── mintlify-redirects.json
-    ├── cloudflare-rules.txt
-    └── ... (other platform formats)
-```
-
-### Modified Files
-
-- `docs.json` - Complete navigation restructure
-- All `md`, `.mdx` files with internal links
-- All `yml`,`.yaml` files with OpenAPI references
-
-### Preserved Structure
-
-- `v3/events-api/` - Kept unchanged (not part of migration)
-- `logos/` - Kept unchanged
-- Root configuration files - Kept unchanged (backup added to .gitignore)
 
 ---
 
 ## Version History
 
-| Date       | Version | Changes                                        |
-|------------|---------|------------------------------------------------|
-| 2025-02-10 | 1.0.0   | Initial migration scripts created              |
-| 2025-02-10 | 1.1.0   | Scripts patched and moved to `scripts/` folder |
+| Date       | Version | Changes                                                  |
+|------------|---------|----------------------------------------------------------|
+| 2025-02-10 | 1.0.0   | Initial migration scripts created                        |
+| 2025-02-10 | 1.1.0   | Scripts patched and moved to `scripts/` folder           |
+| 2026-03-11 | 1.2.0   | Added `generate_llms_txt.py` maintenance script          |
 
 ---
 
-**Last Updated:** 2025-02-10  
-**Migration Status:** ✅ Complete  
+**Last Updated:** 2026-03-11
 **Scripts Location:** `docs/scripts/`
