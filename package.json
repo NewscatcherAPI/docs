@@ -1,0 +1,8 @@
+{
+  "name": "newscatcher-docs",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "llms:generate": "python scripts/generate_llms_txt.py"
+  }
+}
