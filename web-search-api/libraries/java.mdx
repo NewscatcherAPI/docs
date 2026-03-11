@@ -60,14 +60,14 @@ Get started with CatchAll in three steps:
   <Step title="Wait and retrieve results">
     ```java
     import com.newscatcher.catchall.types.StatusResponseDto;
-    import com.newscatcher.catchall.types.JobStatus;
+    import com.newscatcher.catchall.types.PublicJobStatus;
 
     final int POLL_INTERVAL_MS = 60000;
 
     // Poll for completion
     while (true) {
         StatusResponseDto status = client.jobs().getJobStatus(jobId);
-        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+        if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
             break;
         }
         Thread.sleep(POLL_INTERVAL_MS);
@@ -175,7 +175,7 @@ Get started with CatchAll in three steps:
     ```java
     import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
     import com.newscatcher.catchall.types.StatusResponseDto;
-    import com.newscatcher.catchall.types.JobStatus;
+    import com.newscatcher.catchall.types.PublicJobStatus;
 
     final int POLL_INTERVAL_MS = 60000;
 
@@ -218,7 +218,7 @@ Get started with CatchAll in three steps:
     while (true) {
         StatusResponseDto status = client.jobs().getJobStatus(jobId);
 
-        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+        if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
             break;
         }
 
@@ -273,7 +273,7 @@ Get started with CatchAll in three steps:
     // Wait for completion
     while (true) {
         StatusResponseDto status = client.jobs().getJobStatus(jobId);
-        if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+        if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
             break;
         }
         Thread.sleep(POLL_INTERVAL_MS);
@@ -301,8 +301,8 @@ Get started with CatchAll in three steps:
     while (true) {
         StatusResponseDto status = client.jobs().getJobStatus(jobId);
 
-        if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
-            JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+        if (PublicJobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
+            PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
             
             PullJobResponseDto results = client.jobs().getJobResults(jobId);
             
@@ -315,7 +315,7 @@ Get started with CatchAll in three steps:
                 ));
             }
 
-            if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+            if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
                 break;
             }
         }
@@ -353,7 +353,7 @@ import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
 import com.newscatcher.catchall.resources.jobs.requests.ContinueRequestDto;
 import com.newscatcher.catchall.types.StatusResponseDto;
 import com.newscatcher.catchall.types.PullJobResponseDto;
-import com.newscatcher.catchall.types.JobStatus;
+import com.newscatcher.catchall.types.PublicJobStatus;
 import com.newscatcher.catchall.core.NewscatcherApiApiException;
 
 public class CompleteExample {
@@ -394,8 +394,8 @@ public class CompleteExample {
             while (true) {
                 StatusResponseDto status = client.jobs().getJobStatus(jobId);
 
-                if (JobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
-                    JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                if (PublicJobStatus.ENRICHING.equals(status.getStatus().orElse(null)) || 
+                    PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
                     
                     PullJobResponseDto results = client.jobs().getJobResults(jobId);
                     if (results.getValidRecords().orElse(0) > 0) {
@@ -405,7 +405,7 @@ public class CompleteExample {
                         ));
                     }
 
-                    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                    if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
                         break;
                     }
                 }
@@ -425,7 +425,7 @@ public class CompleteExample {
 
                 while (true) {
                     StatusResponseDto status = client.jobs().getJobStatus(jobId);
-                    if (JobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
+                    if (PublicJobStatus.COMPLETED.equals(status.getStatus().orElse(null))) {
                         break;
                     }
                     Thread.sleep(POLL_INTERVAL_MS);
