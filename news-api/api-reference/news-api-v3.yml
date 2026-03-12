@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: NewsCatcher News API
   description: |
@@ -208,6 +208,7 @@ paths:
       parameters:
         - $ref: "#/components/parameters/When"
         - $ref: "#/components/parameters/ByParseDate"
+        - $ref: "#/components/parameters/SortBy"
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/NotLang"
         - $ref: "#/components/parameters/Countries"
@@ -1418,8 +1419,7 @@ components:
       schema:
         type: number
         format: float
-        minimum: 0
-        exclusiveMinimum: true
+        exclusiveMinimum: 0
         maximum: 1.0
         default: 0.6
       example: 0.6
@@ -3075,6 +3075,7 @@ components:
               items:
                 type: string
             - type: string
+            - type: 'null'
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3086,15 +3087,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: string
+          type: [string, 'null']
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: string
+          type: [string, 'null']
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: string
+          type: [string, 'null']
         link:
           title: Link
           description: The URL link to the article.
@@ -3171,7 +3172,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: string
+          type: [string, 'null']
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -3564,6 +3565,7 @@ components:
               items:
                 type: string
             - type: string
+            - type: 'null'
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3575,15 +3577,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: string
+          type: [string, 'null']
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: string
+          type: [string, 'null']
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: string
+          type: [string, 'null']
         link:
           title: Link
           description: The URL link to the article.
@@ -3651,7 +3653,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: string
+          type: [string, 'null']
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -4329,8 +4331,7 @@ components:
     ClusteringThreshold:
       type: number
       format: float
-      minimum: 0
-      exclusiveMinimum: true
+      exclusiveMinimum: 0
       maximum: 1.0
       default: 0.6
       description: |
