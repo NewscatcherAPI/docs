@@ -57,11 +57,6 @@ tags:
     externalDocs:
       description: Search for articles by link or ID.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-by-link/search-articles-by-links-or-ids-get
-  - name: SearchSimilar
-    description: Operations to find similar articles.
-    externalDocs:
-      description: Find articles similar to a given query.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-similar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
@@ -547,106 +542,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/SearchLinkResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "408":
-          $ref: "#/components/responses/RequestTimeoutError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-        "429":
-          $ref: "#/components/responses/RateLimitError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  # Search Similar is the hidden endpoint, discuss with Maksym and Aditia.
-  /api/search_similar:
-    get:
-      tags:
-        - SearchSimilar
-      summary: Search similar articles
-      description: Searches for articles similar to a specified query.
-      operationId: SearchSimilar_get
-      parameters:
-        - $ref: "#/components/parameters/Q"
-        - $ref: "#/components/parameters/SearchIn"
-        - $ref: "#/components/parameters/IncludeTranslationFields"
-        - $ref: "#/components/parameters/IncludeSimilarDocuments"
-        - $ref: "#/components/parameters/SimilarDocumentsNumber"
-        - $ref: "#/components/parameters/SimilarDocumentsFields"
-        - $ref: "#/components/parameters/PredefinedSources"
-        - $ref: "#/components/parameters/Sources"
-        - $ref: "#/components/parameters/NotSources"
-        - $ref: "#/components/parameters/Lang"
-        - $ref: "#/components/parameters/NotLang"
-        - $ref: "#/components/parameters/Countries"
-        - $ref: "#/components/parameters/NotCountries"
-        - $ref: "#/components/parameters/From"
-        - $ref: "#/components/parameters/To"
-        - $ref: "#/components/parameters/ByParseDate"
-        - $ref: "#/components/parameters/PublishedDatePrecision"
-        - $ref: "#/components/parameters/SortBy"
-        - $ref: "#/components/parameters/RankedOnly"
-        - $ref: "#/components/parameters/FromRank"
-        - $ref: "#/components/parameters/ToRank"
-        - $ref: "#/components/parameters/IsHeadline"
-        - $ref: "#/components/parameters/IsOpinion"
-        - $ref: "#/components/parameters/IsPaidContent"
-        - $ref: "#/components/parameters/ParentUrl"
-        - $ref: "#/components/parameters/AllLinks"
-        - $ref: "#/components/parameters/AllDomainLinks"
-        - $ref: "#/components/parameters/AllLinksText"
-        - $ref: "#/components/parameters/WordCountMin"
-        - $ref: "#/components/parameters/WordCountMax"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/IncludeNlpData"
-        - $ref: "#/components/parameters/HasNlp"
-        - $ref: "#/components/parameters/Theme"
-        - $ref: "#/components/parameters/NotTheme"
-        - $ref: "#/components/parameters/NerName"
-        - $ref: "#/components/parameters/TitleSentimentMin"
-        - $ref: "#/components/parameters/TitleSentimentMax"
-        - $ref: "#/components/parameters/ContentSentimentMin"
-        - $ref: "#/components/parameters/ContentSentimentMax"
-        - $ref: "#/components/parameters/IptcTags"
-        - $ref: "#/components/parameters/NotIptcTags"
-        - $ref: "#/components/parameters/CustomTags"
-        - $ref: "#/components/parameters/RobotsCompliant"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSimilarResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "408":
-          $ref: "#/components/responses/RequestTimeoutError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-        "429":
-          $ref: "#/components/responses/RateLimitError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    # Search Similar POST
-    post:
-      tags:
-        - SearchSimilar
-      summary: Search similar articles
-      description:
-        Searches for articles similar to the specified query. You can filter
-        results by language, country, source, and more.
-      operationId: SearchSimilar_post
-      requestBody:
-        $ref: "#/components/requestBodies/SearchSimilarRequestBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSimilarResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -1840,39 +1735,6 @@ components:
           summary: Multiple article IDs
           value: "5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"
 
-    IncludeSimilarDocuments:
-      description: |
-        If true, includes similar documents in the response.
-      name: include_similar_documents
-      in: query
-      required: false
-      schema:
-        type: boolean
-        default: false
-      example: true
-
-    SimilarDocumentsNumber:
-      description: |
-        The number of similar documents to return.
-      name: similar_documents_number
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 5
-      example: 10
-
-    SimilarDocumentsFields:
-      description: |
-        The fields to consider for finding similar documents.
-      name: similar_documents_fields
-      in: query
-      required: false
-      schema:
-        type: string
-        default: title,content
-      example: title,summary
-
     NerName:
       description: |
         The name of person, organization, location, product or other named entity to search for. To specify multiple names use a comma-separated string. 
@@ -2551,114 +2413,6 @@ components:
             example:
               links: https://www.reuters.com/business/energy/oil-prices-up-after-israeli-attacks-oversupply-caps-gains-2025-09-10/
 
-    SearchSimilarRequestBody:
-      description:
-        Request body for searching similar articles based on specified criteria
-        such as query, language, country, source, and more.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - q
-            properties:
-              q:
-                $ref: "#/components/schemas/Q"
-              search_in:
-                $ref: "#/components/schemas/SearchIn"
-              include_translation_fields:
-                $ref: "#/components/schemas/IncludeTranslationFields"
-              include_similar_documents:
-                $ref: "#/components/schemas/IncludeSimilarDocuments"
-              similar_documents_number:
-                $ref: "#/components/schemas/SimilarDocumentsNumber"
-              similar_documents_fields:
-                $ref: "#/components/schemas/SimilarDocumentsFields"
-              predefined_sources:
-                $ref: "#/components/schemas/PredefinedSources"
-              sources:
-                $ref: "#/components/schemas/Sources"
-              not_sources:
-                $ref: "#/components/schemas/NotSources"
-              lang:
-                $ref: "#/components/schemas/Lang"
-              not_lang:
-                $ref: "#/components/schemas/NotLang"
-              countries:
-                $ref: "#/components/schemas/Countries"
-              not_countries:
-                $ref: "#/components/schemas/NotCountries"
-              from_:
-                $ref: "#/components/schemas/From"
-              to_:
-                $ref: "#/components/schemas/To"
-              by_parse_date:
-                $ref: "#/components/schemas/ByParseDate"
-              published_date_precision:
-                $ref: "#/components/schemas/PublishedDatePrecision"
-              sort_by:
-                $ref: "#/components/schemas/SortBy"
-              ranked_only:
-                $ref: "#/components/schemas/RankedOnly"
-              from_rank:
-                $ref: "#/components/schemas/FromRank"
-              to_rank:
-                $ref: "#/components/schemas/ToRank"
-              is_headline:
-                $ref: "#/components/schemas/IsHeadline"
-              is_opinion:
-                $ref: "#/components/schemas/IsOpinion"
-              is_paid_content:
-                $ref: "#/components/schemas/IsPaidContent"
-              parent_url:
-                $ref: "#/components/schemas/ParentUrl"
-              all_links:
-                $ref: "#/components/schemas/AllLinks"
-              all_domain_links:
-                $ref: "#/components/schemas/AllDomainLinks"
-              all_links_text:
-                $ref: "#/components/schemas/AllLinksText"
-              word_count_min:
-                $ref: "#/components/schemas/WordCountMin"
-              word_count_max:
-                $ref: "#/components/schemas/WordCountMax"
-              page:
-                $ref: "#/components/schemas/Page"
-              page_size:
-                $ref: "#/components/schemas/PageSize"
-              include_nlp_data:
-                $ref: "#/components/schemas/IncludeNlpData"
-              has_nlp:
-                $ref: "#/components/schemas/HasNlp"
-              theme:
-                $ref: "#/components/schemas/Theme"
-              not_theme:
-                $ref: "#/components/schemas/NotTheme"
-              ner_name:
-                $ref: "#/components/schemas/NerName"
-              title_sentiment_min:
-                $ref: "#/components/schemas/TitleSentimentMin"
-              title_sentiment_max:
-                $ref: "#/components/schemas/TitleSentimentMax"
-              content_sentiment_min:
-                $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentiment_max:
-                $ref: "#/components/schemas/ContentSentimentMax"
-              iptc_tags:
-                $ref: "#/components/schemas/IptcTags"
-              not_iptc_tags:
-                $ref: "#/components/schemas/NotIptcTags"
-              custom_tags:
-                $ref: "#/components/schemas/CustomTags"
-              robots_compliant:
-                $ref: "#/components/schemas/RobotsCompliant"
-            example:
-              q: '"supply chain" AND Amazon NOT China'
-              include_similar_documents: true
-              similar_documents_number: 5
-              page_size: 10
-
     SourcesRequestBody:
       description:
         Request body for searching news sources based on specified criteria such
@@ -2748,18 +2502,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/SearchResponseDto"
-
-    SearchSimilarResponse:
-      description:
-        A successful response containing articles similar to the specified
-        query. If no matches, returns a failed search response according to the
-        defined schema.
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - $ref: "#/components/schemas/SearchSimilarResponseDto"
-              - $ref: "#/components/schemas/FailedSearchSimilarResponseDto"
 
     SourcesResponse:
       description:
@@ -3075,7 +2817,7 @@ components:
               items:
                 type: string
             - type: string
-            - type: 'null'
+            - type: "null"
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3087,15 +2829,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: [string, 'null']
+          type: [string, "null"]
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: [string, 'null']
+          type: [string, "null"]
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: [string, 'null']
+          type: [string, "null"]
         link:
           title: Link
           description: The URL link to the article.
@@ -3172,7 +2914,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: [string, 'null']
+          type: [string, "null"]
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -3459,46 +3201,6 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
-    # Search Similar related schemas for the response object
-    SearchSimilarResponseDto:
-      title: Search Similar Response
-      description: |
-        The response model for a successful `Search similar` request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
-        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
-      allOf:
-        - $ref: "#/components/schemas/BaseSearchResponseDto"
-        - type: object
-          properties:
-            articles:
-              title: Articles
-              description: A list of articles matching the search criteria.
-              type: array
-              items:
-                $ref: "#/components/schemas/SimilarArticleEntity"
-              default: []
-            user_input:
-              $ref: "#/components/schemas/UserInputDto"
-
-    FailedSearchSimilarResponseDto:
-      title: Failed Search Similar Response
-      description: The response model for a failed `Search Similar` request.
-      allOf:
-        - $ref: "#/components/schemas/BaseSearchResponseDto"
-        - type: object
-          properties:
-            articles:
-              title: Articles
-              description: An empty list of articles, as no matches were found.
-              type: array
-              items:
-                type: object
-              default: []
-            user_input:
-              $ref: "#/components/schemas/UserInputDto"
-
     BreakingNewsEventEntity:
       title: Breaking News Event Object
       description: |
@@ -3565,7 +3267,7 @@ components:
               items:
                 type: string
             - type: string
-            - type: 'null'
+            - type: "null"
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3577,15 +3279,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: [string, 'null']
+          type: [string, "null"]
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: [string, 'null']
+          type: [string, "null"]
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: [string, 'null']
+          type: [string, "null"]
         link:
           title: Link
           description: The URL link to the article.
@@ -3653,7 +3355,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: [string, 'null']
+          type: [string, "null"]
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -3688,53 +3390,6 @@ components:
             True if the article content can be safely accessed according to the publisher's robots.txt rules; false otherwise.
           type: boolean
           example: true
-
-    SimilarArticleEntity:
-      title: Search Similar Article Object
-      description: |
-        The data model for an article result in the `Search similar` articles request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
-      allOf:
-        - $ref: "#/components/schemas/ArticleEntity"
-        - type: object
-          properties:
-            similar_documents:
-              title: Similar Documents
-              description: A list of documents similar to the article.
-              type: array
-              items:
-                $ref: "#/components/schemas/SimilarDocument"
-              default: []
-
-    SimilarDocument:
-      title: Similar Document
-      description:
-        The data model for a similar document in the `Search similar` articles
-        request.
-      required:
-        - id
-        - score
-        - title
-        - link
-      type: object
-      properties:
-        id:
-          title: Id
-          description: The unique identifier of the similar document.
-          type: string
-        score:
-          title: Score
-          description: The relevance score of the similar document.
-          type: number
-        title:
-          title: Title
-          description: The title of the similar document.
-          type: string
-        link:
-          title: Link
-          description: The link to the similar document.
-          type: string
 
     # Sources related schemas for the response object
     SourcesResponseDto:
@@ -4674,27 +4329,6 @@ components:
 
         **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
-
-    IncludeSimilarDocuments:
-      type: boolean
-      default: false
-      description: |
-        If true, includes similar documents in the response.
-      example: true
-
-    SimilarDocumentsNumber:
-      type: integer
-      default: 5
-      description: |
-        The number of similar documents to return.
-      example: 10
-
-    SimilarDocumentsFields:
-      type: string
-      default: title,content
-      description: |
-        The fields to consider for finding similar documents.
-      example: title,summary
 
     NerName:
       type: string
