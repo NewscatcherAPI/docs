@@ -16,7 +16,7 @@ info:
   contact:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
-  version: 3.2.16
+  version: 3.24.0
 externalDocs:
   description: Find out more about NewsCatcher News API
   url: https://www.newscatcherapi.com/docs
@@ -2788,7 +2788,6 @@ components:
         - full_domain_url
         - parent_url
         - rank
-        - content
         - id
         - score
       type: object
@@ -3238,7 +3237,6 @@ components:
         - full_domain_url
         - parent_url
         - rank
-        - content
         - id
         - score
       type: object
@@ -3311,6 +3309,7 @@ components:
         paid_content:
           title: Paid Content
           description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+          type: boolean
         parent_url:
           title: Parent URL
           description: The categorical URL of the article.
