@@ -84,7 +84,7 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for articles based on specified criteria such as keyword,
+        Searches for articles based on specified criteria such as keywords,
         language, country, source, and more.
       operationId: searchGet
       parameters:
@@ -168,7 +168,7 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for articles based on specified criteria such as keyword,
+        Searches for articles based on specified criteria such as keywords,
         language, country, source, and more.
       operationId: searchPost
       requestBody:
@@ -1049,7 +1049,7 @@ components:
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/PublishedDatePrecision'
+        $ref: "#/components/schemas/PublishedDatePrecision"
 
     ByParseDate:
       description: |
@@ -1232,14 +1232,14 @@ components:
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/Theme'
+        $ref: "#/components/schemas/Theme"
 
     NotTheme:
       name: not_theme
       in: query
       required: false
       schema:
-        $ref: '#/components/schemas/NotTheme'
+        $ref: "#/components/schemas/NotTheme"
 
     OrgEntityName:
       description: |
@@ -1493,7 +1493,7 @@ components:
         Filters articles by content completeness.
 
         If false, returns only articles for which full-text content is publicly available. If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
-        
+
         **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       name: is_paid_content
       in: query
@@ -2256,9 +2256,9 @@ components:
 
     SearchResponse:
       description:
-        A successful response containing articles that match the specified
-        search criteria. The response may include clustering information if
-        enabled.
+        A successful response containing articles that match the search
+        criteria. When `clustering_enabled` is `true`, returns a Clustered
+        Articles Response. Otherwise, returns a Search Response.
       content:
         application/json:
           schema:
@@ -2295,7 +2295,8 @@ components:
 
     SubscriptionResponse:
       description:
-        A successful response containing information about the current subscription plan.
+        A successful response containing information about the current
+        subscription plan.
       content:
         application/json:
           schema:
@@ -2639,7 +2640,9 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+          description:
+            Indicates whether the source labels the article as paywalled or
+            requiring a subscription for full access.
           type: boolean
         parent_url:
           title: Parent URL
@@ -3088,7 +3091,9 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+          description:
+            Indicates whether the source labels the article as paywalled or
+            requiring a subscription for full access.
           type: boolean
         parent_url:
           title: Parent URL
@@ -3316,7 +3321,8 @@ components:
         historical_days:
           title: Historical Days
           description:
-            The number of historical days accessible under the current subscription plan.
+            The number of historical days accessible under the current
+            subscription plan.
           type: integer
 
     # Error response
@@ -3610,11 +3616,13 @@ components:
     AllLinks:
       oneOf:
         - type: string
-          example: "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
+          example:
+            "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
         - type: array
           items:
             type: string
-          example: ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
+          example:
+            ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
       description: |
         The complete URL(s) mentioned in the article. For multiple URLs, use a comma-separated string or an array of strings.
 
@@ -3973,7 +3981,7 @@ components:
         Filters articles by content completeness.
 
         If false, returns only articles for which full-text content is publicly available. If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
-        
+
         **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       example: false
 
