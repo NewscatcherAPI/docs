@@ -1055,21 +1055,11 @@ components:
         default: "now"
 
     PublishedDatePrecision:
-      description: |
-        The precision of the published date. There are three types:
-        - `full`: The day and time of an article is correctly identified with the appropriate timezone.
-        - `timezone unknown`: The day and time of an article is correctly identified without timezone.
-        - `date`: Only the day is identified without an exact time.
       name: published_date_precision
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - full
-          - timezone unknown
-          - date
-      example: full
+        $ref: '#/components/schemas/PublishedDatePrecision'
 
     ByParseDate:
       description: |
@@ -3607,10 +3597,6 @@ components:
 
     PublishedDatePrecision:
       type: string
-      enum:
-        - full
-        - timezone unknown
-        - date
       description: |
         The precision of the published date. There are three types:
         - `full`: The day and time of an article is correctly identified with the appropriate timezone.
