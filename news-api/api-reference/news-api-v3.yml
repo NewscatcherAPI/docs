@@ -321,7 +321,6 @@ paths:
         - $ref: "#/components/parameters/TitleSentimentMax"
         - $ref: "#/components/parameters/ContentSentimentMin"
         - $ref: "#/components/parameters/ContentSentimentMax"
-        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/BreakingNewsResponse"
@@ -2228,8 +2227,6 @@ components:
                 $ref: "#/components/schemas/ContentSentimentMin"
               content_sentient_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
-              robots_compliant:
-                $ref: "#/components/schemas/RobotsCompliant"
             example:
               sort_by: relevancy
               ranked_only: true
@@ -2894,11 +2891,11 @@ components:
           description: The content of the article.
           type: string
         title_translated_en:
-          type: string
+          type: [string, "null"]
           description: |
             English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
         content_translated_en:
-          type: string
+          type: [string, "null"]
           description: |
             English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
         word_count:
@@ -3342,6 +3339,14 @@ components:
           title: Content
           description: The content of the article.
           type: string
+        title_translated_en:
+          type: [string, "null"]
+          description: |
+            English translation of the article title. Available when setting the `include_translation_fields` parameter to `true`.
+        content_translated_en:
+          type: [string, "null"]
+          description: |
+            English translation of the article content. Available when setting the `include_translation_fields` parameter to `true`.
         word_count:
           title: Word Count
           description: The word count of the article.
@@ -3383,12 +3388,6 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
-        robots_compliant:
-          title: Robots Compliant
-          description: |
-            True if the article content can be safely accessed according to the publisher's robots.txt rules; false otherwise.
-          type: boolean
-          example: true
 
     # Sources related schemas for the response object
     SourcesResponseDto:
