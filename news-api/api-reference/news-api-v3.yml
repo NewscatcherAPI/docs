@@ -86,7 +86,7 @@ paths:
       description:
         Searches for articles based on specified criteria such as keyword,
         language, country, source, and more.
-      operationId: Search_get
+      operationId: searchGet
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/SearchIn"
@@ -170,7 +170,7 @@ paths:
       description:
         Searches for articles based on specified criteria such as keyword,
         language, country, source, and more.
-      operationId: Search_post
+      operationId: searchPost
       requestBody:
         $ref: "#/components/requestBodies/SearchRequestBody"
       responses:
@@ -199,7 +199,7 @@ paths:
       description:
         Retrieves the latest headlines for the specified time period. You can
         filter results by language, country, source, and more.
-      operationId: LatestHeadlines_get
+      operationId: latestHeadlinesGet
       parameters:
         - $ref: "#/components/parameters/When"
         - $ref: "#/components/parameters/ByParseDate"
@@ -270,7 +270,7 @@ paths:
       description:
         Retrieves the latest headlines for the specified time period. You can
         filter results by language, country, source, and more.
-      operationId: LatestHeadlines_post
+      operationId: latestHeadlinesPost
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
       responses:
@@ -299,7 +299,7 @@ paths:
       description:
         Retrieves breaking news articles and sorts them based on specified
         criteria.
-      operationId: BreakingNews_get
+      operationId: breakingNewsGet
       parameters:
         - $ref: "#/components/parameters/SortBy"
         - $ref: "#/components/parameters/RankedOnly"
@@ -346,7 +346,7 @@ paths:
       description:
         Retrieves breaking news articles and sorts them based on specified
         criteria.
-      operationId: BreakingNews_post
+      operationId: breakingNewsPost
       requestBody:
         $ref: "#/components/requestBodies/BreakingNewsRequestBody"
       responses:
@@ -375,7 +375,7 @@ paths:
       description:
         Searches for articles written by a specified author. You can filter
         results by language, country, source, and more.
-      operationId: Authors_get
+      operationId: authorsGet
       parameters:
         - $ref: "#/components/parameters/AuthorName"
         - $ref: "#/components/parameters/NotAuthorName"
@@ -445,7 +445,7 @@ paths:
       description:
         Searches for articles by author. You can filter results by language,
         country, source, and more.
-      operationId: Authors_post
+      operationId: authorsPost
       requestBody:
         $ref: "#/components/requestBodies/AuthorsRequestBody"
       responses:
@@ -474,7 +474,7 @@ paths:
       description:
         Searches for articles based on specified links or IDs. You can filter
         results by date range.
-      operationId: search_url_get
+      operationId: searchByLinkGet
       parameters:
         - $ref: "#/components/parameters/Ids"
         - $ref: "#/components/parameters/Links"
@@ -535,7 +535,7 @@ paths:
         - SearchLink
       summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
-      operationId: Search_url_post
+      operationId: searchByLinkPost
       requestBody:
         $ref: "#/components/requestBodies/SearchLinkRequestBody"
       responses:
@@ -564,7 +564,7 @@ paths:
       description:
         Retrieves a list of sources based on specified criteria such as
         language, country, rank, and more.
-      operationId: Sources_get
+      operationId: sourcesGet
       parameters:
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/Countries"
@@ -602,7 +602,7 @@ paths:
       description:
         Retrieves the list of sources available in the database. You can filter
         the sources by language, country, and more.
-      operationId: Sources_post
+      operationId: sourcesPost
       requestBody:
         $ref: "#/components/requestBodies/SourcesRequestBody"
       responses:
@@ -632,7 +632,7 @@ paths:
       description:
         Retrieves the count of articles aggregated by day or hour based on
         various search criteria, such as keyword, language, country, and source.
-      operationId: Aggregation_get
+      operationId: aggregationCountGet
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/AggregationBy"
@@ -703,7 +703,7 @@ paths:
       description:
         Retrieves the count of articles aggregated by day or hour based on
         various search criteria, such as keyword, language, country, and source.
-      operationId: Aggregation_post
+      operationId: aggregationCountPost
       requestBody:
         $ref: "#/components/requestBodies/AggregationRequestBody"
       responses:
