@@ -42,7 +42,7 @@ tags:
         Retrieve the latest headlines since a specified date, with filtering
         options.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/latest-headlines/retrieve-latest-headlines-get
-  - name: Breaking News
+  - name: BreakingNews
     description: Operations to retrieve breaking news articles.
     externalDocs:
       description: Retrieve breaking news articles.
@@ -52,7 +52,7 @@ tags:
     externalDocs:
       description: Search for articles by author.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/authors/search-articles-by-author-get
-  - name: SearchLink
+  - name: SearchByLink
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
@@ -294,7 +294,7 @@ paths:
   /api/breaking_news:
     get:
       tags:
-        - Breaking News
+        - BreakingNews
       summary: Get breaking news
       description:
         Retrieves breaking news articles and sorts them based on specified
@@ -341,7 +341,7 @@ paths:
 
     post:
       tags:
-        - Breaking News
+        - BreakingNews
       summary: Get breaking news
       description:
         Retrieves breaking news articles and sorts them based on specified
@@ -469,7 +469,7 @@ paths:
   /api/search_by_link:
     get:
       tags:
-        - SearchLink
+        - SearchByLink
       summary: Search articles by links or IDs
       description:
         Searches for articles based on specified links or IDs. You can filter
@@ -532,7 +532,7 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     post:
       tags:
-        - SearchLink
+        - SearchByLink
       summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
       operationId: searchByLinkPost
