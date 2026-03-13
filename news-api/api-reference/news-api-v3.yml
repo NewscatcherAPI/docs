@@ -2,16 +2,17 @@ openapi: 3.1.0
 info:
   title: NewsCatcher News API
   description: |
-    The NewsCatcher News API provides streamlined access to vast global news content tailored specifically for developers and data scientists. This version introduces significant enhancements, including advanced Natural Language Processing (NLP) capabilities, which enable more sophisticated searches and content analysis. It's designed to integrate seamlessly into various applications, from data analytics platforms to AI-driven news aggregation services.
+    NewsCatcher News API provides programmatic access to a continuously updated global news index. It includes endpoints for article search, latest headlines, breaking news, author search, aggregation counts, and source discovery.
 
-    ## Key Features
+    ## Key features
 
-    - **NLP Enhancements**: Each article is enriched with NLP features such as theme classification, sentiment analysis, and named entity recognition, offering deeper insights and refined search capabilities.
-    - **Advanced Search Filters**: Perform searches based on specific parameters, such as language, publication date, and detailed content type.
-    - **Article Clustering**: Group similar articles to reduce noise and focus on unique content, enhancing the efficiency of news aggregation.
-    - **Deduplication**: Automatically identify and exclude duplicate articles to ensure that each dataset contains only unique news entries, optimizing content quality and relevancy.
+    - **Full-text search**: Query articles by keyword, phrase, language, country, source, publication date, sentiment, and more using Boolean operators and advanced filters.
+    - **NLP enrichment**: Articles include theme classification, sentiment scores, and named entity recognition (people, organizations, locations).
+    - **Article clustering**: Group similar articles into clusters to reduce noise and surface unique stories.
+    - **Deduplication**: Exclude duplicate articles from results to keep datasets clean and relevant.
+    - **Source intelligence**: Discover and filter news sources by domain, type, rank, and geographic origin.
 
-    For detailed documentation, integration guides, and SDKs, visit our [developer portal](https://www.newscatcherapi.com/docs).
+    For documentation, integration guides, and SDKs, visit the [developer portal](https://wwwnewscatcherapi.com/docs).
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
     name: Maksym Sugonyaka
@@ -623,7 +624,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  # Aggregation count
   /api/aggregation_count:
     get:
       tags:
@@ -724,7 +724,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  # Subscriptions
   /api/subscription:
     get:
       tags:
@@ -2010,7 +2009,6 @@ components:
           schema:
             $ref: "#/components/schemas/SubscriptionResponseDto"
 
-    # Errors
     BadRequestError:
       description: Bad request
       content:
@@ -2148,13 +2146,11 @@ components:
           items:
             $ref: "#/components/schemas/ClusterEntity"
 
-    # Simple generic user input schema
     UserInputDto:
       type: object
       description: The user input parameters for the request.
       additionalProperties: true
 
-    # Aggregation related schemas for the response object
     AggregationCountResponseDto:
       title: Aggregation Response
       description: |
@@ -2605,7 +2601,6 @@ components:
         news_type: "News and Blogs"
         news_domain_type: "Original Content"
 
-    # Latest Headlines related schemas for the response object
     ClusteredSearchResponseDto:
       title: Clustered Articles Response
       description: |
@@ -2649,7 +2644,6 @@ components:
           items:
             $ref: "#/components/schemas/ArticleEntity"
 
-    # Search related schemas for the response object
     SearchResponseDto:
       title: Search Response
       description: |
@@ -2885,7 +2879,6 @@ components:
           description: The relevance score of the article.
           type: number
 
-    # Sources related schemas for the response object
     SourcesResponseDto:
       title: Sources Response
       description: |
@@ -2984,7 +2977,6 @@ components:
         news_type: "General News Outlets"
         robots_compliant: "100%"
 
-    # Subscription related schema for the response object
     SubscriptionResponseDto:
       title: Subscription Response
       description: |
@@ -3033,7 +3025,6 @@ components:
             subscription plan.
           type: integer
 
-    # Error response
     Error:
       type: object
       properties:
@@ -3051,7 +3042,6 @@ components:
         - status_code
         - status
 
-    # Parameter schemas to use in Request Bodies
     Q:
       type: string
       description: |
@@ -3769,7 +3759,6 @@ components:
         The aggregation interval for the results.
       default: day
 
-    # New params
     NewsDomainType:
       type: string
       enum:
@@ -3815,7 +3804,6 @@ components:
         If true, filters results to include only news domains.
       example: true
 
-    # Breaking news
     TopNArticles:
       type: integer
       minimum: 1
