@@ -2225,7 +2225,7 @@ components:
                 $ref: "#/components/schemas/TitleSentimentMax"
               content_sentiment_min:
                 $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentient_max:
+              content_sentiment_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
             example:
               sort_by: relevancy
@@ -3872,11 +3872,11 @@ components:
         - `["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]`
 
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
-      example:
-        string-input:
+      examples:
+        - string-input:
           summary: Comma-separated string
           value: "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
-        array-input:
+        - array-input:
           summary: Array of strings
           value:
             ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
@@ -3895,11 +3895,11 @@ components:
         - `["who.int", "nih.gov"]`
 
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
-      example:
-        string-input:
+      examples:
+        - string-input:
           summary: Comma-separated string
           value: "who.int, nih.gov"
-        array-input:
+        - array-input:
           summary: Array of strings
           value: ["who.int", "nih.gov"]
 
