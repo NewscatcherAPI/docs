@@ -1,22 +1,23 @@
-openapi: 3.0.2
+openapi: 3.1.0
 info:
   title: NewsCatcher News API
   description: |
-    The NewsCatcher News API provides streamlined access to vast global news content tailored specifically for developers and data scientists. This version introduces significant enhancements, including advanced Natural Language Processing (NLP) capabilities, which enable more sophisticated searches and content analysis. It's designed to integrate seamlessly into various applications, from data analytics platforms to AI-driven news aggregation services.
+    NewsCatcher News API provides programmatic access to a continuously updated global news index. It includes endpoints for article search, latest headlines, breaking news, author search, aggregation counts, and source discovery.
 
-    ## Key Features
+    ## Key features
 
-    - **NLP Enhancements**: Each article is enriched with NLP features such as theme classification, sentiment analysis, and named entity recognition, offering deeper insights and refined search capabilities.
-    - **Advanced Search Filters**: Perform searches based on specific parameters, such as language, publication date, and detailed content type.
-    - **Article Clustering**: Group similar articles to reduce noise and focus on unique content, enhancing the efficiency of news aggregation.
-    - **Deduplication**: Automatically identify and exclude duplicate articles to ensure that each dataset contains only unique news entries, optimizing content quality and relevancy.
+    - **Full-text search**: Query articles by keyword, phrase, language, country, source, publication date, sentiment, and more using Boolean operators and advanced filters.
+    - **NLP enrichment**: Articles include theme classification, sentiment scores, and named entity recognition (people, organizations, locations).
+    - **Article clustering**: Group similar articles into clusters to reduce noise and surface unique stories.
+    - **Deduplication**: Exclude duplicate articles from results to keep datasets clean and relevant.
+    - **Source intelligence**: Discover and filter news sources by domain, type, rank, and geographic origin.
 
-    For detailed documentation, integration guides, and SDKs, visit our [developer portal](https://www.newscatcherapi.com/docs).
+    For documentation, integration guides, and SDKs, visit the [developer portal](https://wwwnewscatcherapi.com/docs).
   termsOfService: https://newscatcherapi.com/terms-of-service
   contact:
     name: Maksym Sugonyaka
     email: maksym@newscatcherapi.com
-  version: 3.2.16
+  version: 3.24.0
 externalDocs:
   description: Find out more about NewsCatcher News API
   url: https://www.newscatcherapi.com/docs
@@ -42,7 +43,7 @@ tags:
         Retrieve the latest headlines since a specified date, with filtering
         options.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/latest-headlines/retrieve-latest-headlines-get
-  - name: Breaking News
+  - name: BreakingNews
     description: Operations to retrieve breaking news articles.
     externalDocs:
       description: Retrieve breaking news articles.
@@ -52,16 +53,11 @@ tags:
     externalDocs:
       description: Search for articles by author.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/authors/search-articles-by-author-get
-  - name: SearchLink
+  - name: SearchByLink
     description: Operations to search by link or ID.
     externalDocs:
       description: Search for articles by link or ID.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-by-link/search-articles-by-links-or-ids-get
-  - name: SearchSimilar
-    description: Operations to find similar articles.
-    externalDocs:
-      description: Find articles similar to a given query.
-      url: https://www.newscatcherapi.com/docs/news-api/api-reference/search-similar/search-similar-articles-get
   - name: Sources
     description: Operations to retrieve news sources.
     externalDocs:
@@ -89,9 +85,9 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for articles based on specified criteria such as keyword,
+        Searches for articles based on specified criteria such as keywords,
         language, country, source, and more.
-      operationId: Search_get
+      operationId: searchGet
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/SearchIn"
@@ -173,9 +169,9 @@ paths:
         - Search
       summary: Search articles
       description:
-        Searches for articles based on specified criteria such as keyword,
+        Searches for articles based on specified criteria such as keywords,
         language, country, source, and more.
-      operationId: Search_post
+      operationId: searchPost
       requestBody:
         $ref: "#/components/requestBodies/SearchRequestBody"
       responses:
@@ -204,10 +200,11 @@ paths:
       description:
         Retrieves the latest headlines for the specified time period. You can
         filter results by language, country, source, and more.
-      operationId: LatestHeadlines_get
+      operationId: latestHeadlinesGet
       parameters:
         - $ref: "#/components/parameters/When"
         - $ref: "#/components/parameters/ByParseDate"
+        - $ref: "#/components/parameters/SortBy"
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/NotLang"
         - $ref: "#/components/parameters/Countries"
@@ -274,7 +271,7 @@ paths:
       description:
         Retrieves the latest headlines for the specified time period. You can
         filter results by language, country, source, and more.
-      operationId: LatestHeadlines_post
+      operationId: latestHeadlinesPost
       requestBody:
         $ref: "#/components/requestBodies/LatestHeadlinesRequestBody"
       responses:
@@ -298,12 +295,12 @@ paths:
   /api/breaking_news:
     get:
       tags:
-        - Breaking News
+        - BreakingNews
       summary: Get breaking news
       description:
         Retrieves breaking news articles and sorts them based on specified
         criteria.
-      operationId: BreakingNews_get
+      operationId: breakingNewsGet
       parameters:
         - $ref: "#/components/parameters/SortBy"
         - $ref: "#/components/parameters/RankedOnly"
@@ -325,7 +322,6 @@ paths:
         - $ref: "#/components/parameters/TitleSentimentMax"
         - $ref: "#/components/parameters/ContentSentimentMin"
         - $ref: "#/components/parameters/ContentSentimentMax"
-        - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
           $ref: "#/components/responses/BreakingNewsResponse"
@@ -346,12 +342,12 @@ paths:
 
     post:
       tags:
-        - Breaking News
+        - BreakingNews
       summary: Get breaking news
       description:
         Retrieves breaking news articles and sorts them based on specified
         criteria.
-      operationId: BreakingNews_post
+      operationId: breakingNewsPost
       requestBody:
         $ref: "#/components/requestBodies/BreakingNewsRequestBody"
       responses:
@@ -380,7 +376,7 @@ paths:
       description:
         Searches for articles written by a specified author. You can filter
         results by language, country, source, and more.
-      operationId: Authors_get
+      operationId: authorsGet
       parameters:
         - $ref: "#/components/parameters/AuthorName"
         - $ref: "#/components/parameters/NotAuthorName"
@@ -450,7 +446,7 @@ paths:
       description:
         Searches for articles by author. You can filter results by language,
         country, source, and more.
-      operationId: Authors_post
+      operationId: authorsPost
       requestBody:
         $ref: "#/components/requestBodies/AuthorsRequestBody"
       responses:
@@ -474,12 +470,12 @@ paths:
   /api/search_by_link:
     get:
       tags:
-        - SearchLink
+        - SearchByLink
       summary: Search articles by links or IDs
       description:
         Searches for articles based on specified links or IDs. You can filter
         results by date range.
-      operationId: search_url_get
+      operationId: searchByLinkGet
       parameters:
         - $ref: "#/components/parameters/Ids"
         - $ref: "#/components/parameters/Links"
@@ -537,115 +533,15 @@ paths:
           $ref: "#/components/responses/InternalServerError"
     post:
       tags:
-        - SearchLink
+        - SearchByLink
       summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
-      operationId: Search_url_post
+      operationId: searchByLinkPost
       requestBody:
         $ref: "#/components/requestBodies/SearchLinkRequestBody"
       responses:
         "200":
           $ref: "#/components/responses/SearchLinkResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "408":
-          $ref: "#/components/responses/RequestTimeoutError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-        "429":
-          $ref: "#/components/responses/RateLimitError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-
-  # Search Similar is the hidden endpoint, discuss with Maksym and Aditia.
-  /api/search_similar:
-    get:
-      tags:
-        - SearchSimilar
-      summary: Search similar articles
-      description: Searches for articles similar to a specified query.
-      operationId: SearchSimilar_get
-      parameters:
-        - $ref: "#/components/parameters/Q"
-        - $ref: "#/components/parameters/SearchIn"
-        - $ref: "#/components/parameters/IncludeTranslationFields"
-        - $ref: "#/components/parameters/IncludeSimilarDocuments"
-        - $ref: "#/components/parameters/SimilarDocumentsNumber"
-        - $ref: "#/components/parameters/SimilarDocumentsFields"
-        - $ref: "#/components/parameters/PredefinedSources"
-        - $ref: "#/components/parameters/Sources"
-        - $ref: "#/components/parameters/NotSources"
-        - $ref: "#/components/parameters/Lang"
-        - $ref: "#/components/parameters/NotLang"
-        - $ref: "#/components/parameters/Countries"
-        - $ref: "#/components/parameters/NotCountries"
-        - $ref: "#/components/parameters/From"
-        - $ref: "#/components/parameters/To"
-        - $ref: "#/components/parameters/ByParseDate"
-        - $ref: "#/components/parameters/PublishedDatePrecision"
-        - $ref: "#/components/parameters/SortBy"
-        - $ref: "#/components/parameters/RankedOnly"
-        - $ref: "#/components/parameters/FromRank"
-        - $ref: "#/components/parameters/ToRank"
-        - $ref: "#/components/parameters/IsHeadline"
-        - $ref: "#/components/parameters/IsOpinion"
-        - $ref: "#/components/parameters/IsPaidContent"
-        - $ref: "#/components/parameters/ParentUrl"
-        - $ref: "#/components/parameters/AllLinks"
-        - $ref: "#/components/parameters/AllDomainLinks"
-        - $ref: "#/components/parameters/AllLinksText"
-        - $ref: "#/components/parameters/WordCountMin"
-        - $ref: "#/components/parameters/WordCountMax"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PageSize"
-        - $ref: "#/components/parameters/IncludeNlpData"
-        - $ref: "#/components/parameters/HasNlp"
-        - $ref: "#/components/parameters/Theme"
-        - $ref: "#/components/parameters/NotTheme"
-        - $ref: "#/components/parameters/NerName"
-        - $ref: "#/components/parameters/TitleSentimentMin"
-        - $ref: "#/components/parameters/TitleSentimentMax"
-        - $ref: "#/components/parameters/ContentSentimentMin"
-        - $ref: "#/components/parameters/ContentSentimentMax"
-        - $ref: "#/components/parameters/IptcTags"
-        - $ref: "#/components/parameters/NotIptcTags"
-        - $ref: "#/components/parameters/CustomTags"
-        - $ref: "#/components/parameters/RobotsCompliant"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSimilarResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "401":
-          $ref: "#/components/responses/UnauthorizedError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "408":
-          $ref: "#/components/responses/RequestTimeoutError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-        "429":
-          $ref: "#/components/responses/RateLimitError"
-        "500":
-          $ref: "#/components/responses/InternalServerError"
-    # Search Similar POST
-    post:
-      tags:
-        - SearchSimilar
-      summary: Search similar articles
-      description:
-        Searches for articles similar to the specified query. You can filter
-        results by language, country, source, and more.
-      operationId: SearchSimilar_post
-      requestBody:
-        $ref: "#/components/requestBodies/SearchSimilarRequestBody"
-      responses:
-        "200":
-          $ref: "#/components/responses/SearchSimilarResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -669,7 +565,7 @@ paths:
       description:
         Retrieves a list of sources based on specified criteria such as
         language, country, rank, and more.
-      operationId: Sources_get
+      operationId: sourcesGet
       parameters:
         - $ref: "#/components/parameters/Lang"
         - $ref: "#/components/parameters/Countries"
@@ -707,7 +603,7 @@ paths:
       description:
         Retrieves the list of sources available in the database. You can filter
         the sources by language, country, and more.
-      operationId: Sources_post
+      operationId: sourcesPost
       requestBody:
         $ref: "#/components/requestBodies/SourcesRequestBody"
       responses:
@@ -728,7 +624,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  # Aggregation count
   /api/aggregation_count:
     get:
       tags:
@@ -737,7 +632,7 @@ paths:
       description:
         Retrieves the count of articles aggregated by day or hour based on
         various search criteria, such as keyword, language, country, and source.
-      operationId: Aggregation_get
+      operationId: aggregationCountGet
       parameters:
         - $ref: "#/components/parameters/Q"
         - $ref: "#/components/parameters/AggregationBy"
@@ -808,7 +703,7 @@ paths:
       description:
         Retrieves the count of articles aggregated by day or hour based on
         various search criteria, such as keyword, language, country, and source.
-      operationId: Aggregation_post
+      operationId: aggregationCountPost
       requestBody:
         $ref: "#/components/requestBodies/AggregationRequestBody"
       responses:
@@ -829,7 +724,6 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
 
-  # Subscriptions
   /api/subscription:
     get:
       tags:
@@ -889,9 +783,7 @@ components:
 
     Lang:
       description: |
-        The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string. 
-
-        Example: `"en, es"`
+        The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string.
 
         To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       name: lang
@@ -899,19 +791,11 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-lang:
-          summary: Single language
-          value: en
-        multiple-langs:
-          summary: Multiple languages
-          value: en,es
+        example: "en,es"
 
     NotLang:
       description: |
         The language(s) to exclude from the search. The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To exclude multiple languages, use a comma-separated string. 
-
-        Example: `"fr, de"`
 
         To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
       name: not_lang
@@ -919,13 +803,7 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-lang:
-          summary: Single language
-          value: fr
-        multiple-langs:
-          summary: Multiple languages
-          value: fr,de
+        example: "fr,de"
 
     SearchIn:
       name: search_in
@@ -945,27 +823,17 @@ components:
       description: |
         The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string.
 
-        Example: `"US, CA"`
-
         To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       name: countries
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-country:
-          summary: Single country
-          value: "US"
-        multiple-countries:
-          summary: Multiple countries
-          value: "US,CA"
+        example: "US,CA"
 
     NotCountries:
       description: |
         The publisher location countries to exclude from the search. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To exclude multiple countries, use a comma-separated string. 
-
-        Example:`"US, CA"`
 
         To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
       name: not_countries
@@ -973,75 +841,45 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-country:
-          summary: Single country
-          value: "UK"
-        multiple-countries:
-          summary: Multiple countries
-          value: "UK,FR"
+        example: "UK,FR"
 
     Sources:
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable.To specify multiple sources, use a comma-separated string.
-
-        Examples:
-        - `"nytimes.com"`
-        - `"theguardian.com, finance.yahoo.com"`
       name: sources
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-source:
-          summary: Single source
-          value: "nytimes.com"
-        multiple-sources:
-          summary: Multiple sources
-          value: "nytimes.com,theguardian.com,finance.yahoo.com"
+        example: "nytimes.com,finance.yahoo.com"
 
     NotSources:
       description: |
-        The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string. 
-
-        Example: `"cnn.com, wsj.com"`
+        The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string.
       name: not_sources
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-source:
-          summary: Single source
-          value: "cnn.com"
-        multiple-sources:
-          summary: Multiple sources
-          value: "cnn.com,wsj.com"
+        example: "cnn.com,wsj.com"
 
     PredefinedSources:
       description: |
         Predefined top news sources per country. 
 
-        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Multiple countries with the number of top sources can be specified as a comma-separated string.
+        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). 
 
-        Examples: 
-        - `"top 100 US"`
-        - `"top 33 AT"`
-        - `"top 50 US, top 20 GB"`
-        - `"top 33 AT, top 50 IT"`
+        Multiple countries with the number of top sources can be specified as a comma-separated string.
       name: predefined_sources
       in: query
       required: false
       schema:
         type: string
-      example: top 100 US, top 5 GB
+        example: "top 50 US, top 20 GB"
 
     SourceName:
       description: |
         Word or phrase to search within the source names. To specify multiple values, use a comma-separated string.
-
-        Example: `"sport, tech"`
 
         **Note**: The search doesn't require an exact match and returns sources containing the specified terms in their names. You can use any word or phrase, like `"sport"` or `"new york times"`. For example, `"sport"` returns sources such as `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
       name: source_name
@@ -1049,220 +887,99 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-source-name:
-          summary: Single term
-          value: "sport"
-        multiple-source-names:
-          summary: Multiple terms
-          value: "sport, tech"
+        example: "sport,tech"
 
     ParentUrl:
       description: |
         The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string.
-
-        Example: `"wsj.com/politics, wsj.com/tech"`
       name: parent_url
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-parent-url:
-          summary: Single parent URL
-          value: "https://www.washingtonpost.com/politics"
-        multiple-parent-urls:
-          summary: Multiple parent URLs
-          value: "https://www.washingtonpost.com/politics,https://www.washingtonpost.com/technology"
+        example: "wsj.com/politics,wsj.com/tech"
 
     RankedOnly:
-      description: |
-        If true, limits the search to sources ranked in the top 1 million online websites. If false, includes unranked sources which are assigned a rank of 999999.
       name: ranked_only
       in: query
       required: false
       schema:
-        type: boolean
-        default: true
-      example: true
+        $ref: "#/components/schemas/RankedOnly"
 
     FromRank:
-      description: |
-        The lowest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       name: from_rank
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 1
-        maximum: 999999
-        default: 1
-        format: int32
-      example: 100
+        $ref: "#/components/schemas/FromRank"
 
     ToRank:
-      description: |
-        The highest boundary of the rank of a news website to filter by. A lower rank indicates a more popular source.
       name: to_rank
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 1
-        maximum: 999999
-        default: 999999
-        format: int32
-      example: 100
+        $ref: "#/components/schemas/ToRank"
 
     SortBy:
-      description: |
-        The sorting order of the results. Possible values are:
-        - `relevancy`: The most relevant results first.
-        - `date`: The most recently published results first.
-        - `rank`: The results from the highest-ranked sources first.
       name: sort_by
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - relevancy
-          - date
-          - rank
-        default: relevancy
+        $ref: "#/components/schemas/SortBy"
       example: date
 
     PageSize:
-      description: |
-        The number of articles to return per page.
       name: page_size
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 1
-        maximum: 1000
-        default: 100
-      example: 50
+        $ref: "#/components/schemas/PageSize"
 
     Page:
-      description: |
-        The page number to scroll through the results. Use for pagination, as a single API response can return up to 1,000 articles. 
-
-        For details, see [How to paginate large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets).
       name: page
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 1
-        default: 1
-      example: 2
+        $ref: "#/components/schemas/Page"
 
     From:
-      description: |
-        The starting point in time to search from. Accepts date-time strings in ISO 8601 format and plain text. The default time zone is UTC. 
-
-        Formats with examples:
-        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
-        - YYYY-MM-dd: `2024-07-01`
-        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
-        - YYYY/mm/dd: `2024/07/01`
-        - English phrases: `7 day ago`, `today`
-
-        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: from_
       in: query
       required: false
       schema:
-        oneOf:
-          - type: string
-            format: date-time
-            example: 2024-07-01T00:00:00
-          - type: string
-            example: 1 day ago
-        default: 7 days ago
-      examples:
-        specific-date:
-          summary: Specific date
-          value: 2021/01/01
-        relative-date:
-          summary: Relative date
-          value: 7 days ago
+        $ref: "#/components/schemas/From"
 
     To:
-      description: |
-        The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text. The default time zone is UTC. 
-
-        Formats with examples:
-        - YYYY-mm-ddTHH:MM:SS: `2024-07-01T00:00:00`
-        - YYYY-MM-dd: `2024-07-01`
-        - YYYY/mm/dd HH:MM:SS: `2024/07/01 00:00:00`
-        - YYYY/mm/dd: `2024/07/01`
-        - English phrases: `1 day ago`, `now`
-
-        **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
       name: to_
       in: query
       required: false
       schema:
-        oneOf:
-          - type: string
-            format: date-time
-            example: 2024-07-01T00:00:00
-          - type: string
-            example: 1 day ago
-      examples:
-        specific-date:
-          summary: Specific date
-          value: 2021/12/31
-        relative-date:
-          summary: Relative date
-          value: 1 day ago
+        $ref: "#/components/schemas/To"
 
     PublishedDatePrecision:
-      description: |
-        The precision of the published date. There are three types:
-        - `full`: The day and time of an article is correctly identified with the appropriate timezone.
-        - `timezone unknown`: The day and time of an article is correctly identified without timezone.
-        - `date`: Only the day is identified without an exact time.
       name: published_date_precision
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - full
-          - timezone unknown
-          - date
-      example: full
+        $ref: "#/components/schemas/PublishedDatePrecision"
 
     ByParseDate:
-      description: |
-        If true, the `from_` and `to_` parameters use article parse dates instead of published dates. Additionally, the `parse_date` variable is added to the output for each article object.
       name: by_parse_date
       in: query
       required: false
       schema:
-        type: boolean
-        default: false
-      example: true
+        $ref: "#/components/schemas/ByParseDate"
 
     IsHeadline:
-      description: |
-        If true, only returns articles that were posted on the home page of a given news domain.
       name: is_headline
       in: query
       required: false
       schema:
-        type: boolean
-      example: true
+        $ref: "#/components/schemas/IsHeadline"
 
     AllLinks:
       description: |
         The complete URL(s) mentioned in the article. For multiple URLs, use a comma-separated string.
-
-        Example: `"https://aiindex.stanford.edu/report, https://www.stateof.ai"`
 
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       name: all_links
@@ -1270,19 +987,11 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-link:
-          summary: Single link
-          value: "https://aiindex.stanford.edu/report"
-        multiple-links:
-          summary: Multiple links
-          value: "https://aiindex.stanford.edu/report, https://www.stateof.ai"
+        example: "https://aiindex.stanford.edu/report,https://www.stateof.ai"
 
     AllDomainLinks:
       description: |
         The domain(s) mentioned in the article. For multiple domains, use a comma-separated string.
-
-        Example: `"who.int, nih.gov"`
 
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       name: all_domain_links
@@ -1290,139 +999,73 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-domain-url:
-          summary: Single domain URL
-          value: "nvidia.com"
-        multiple-domain-urls:
-          summary: Multiple domain URLs
-          value: "who.int,nih.gov"
+        example: "who.int,nih.gov"
 
     AllLinksText:
       description: |
         The text content of links mentioned in the article. Searches for links where the anchor text contains the specified terms. For multiple terms, use a comma-separated string.
 
-        Example: `"Nvidia, Tesla"`
-
         **Note**: When this parameter is used, the response includes the `all_links_data` field with detailed link information.
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
+        To learn more, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
       name: all_links_text
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-text:
-          summary: Single link text
-          value: "Nvidia"
-        multiple-texts:
-          summary: Multiple link texts
-          value: "Nvidia,Tesla"
+        example: "Nvidia,Tesla"
 
     AuthorName:
-      description: |
-        The name of the author to search for. This parameter returns exact matches only.
       name: author_name
       in: query
       required: true
       schema:
-        type: string
-      example: Jane Smith
+        $ref: "#/components/schemas/AuthorName"
 
     NotAuthorName:
       description: |
         The list of author names to exclude from your search. To exclude articles by specific authors, use a comma-separated string.
-
-        Example: `"John Doe, Jane Doe"`
       name: not_author_name
       in: query
       required: false
       schema:
         type: string
-      examples:
-        single-author-name:
-          summary: Single author name
-          value: "John Doe"
-        multiple-author-names:
-          summary: Multiple author names
-          value: "John Doe, Jane Doe"
+        example: "John Doe, Jane Doe"
 
     WordCountMin:
-      description: |
-        The minimum number of words an article must contain. To be used for avoiding articles with small content.
       name: word_count_min
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 0
-      example: 300
+        $ref: "#/components/schemas/WordCountMin"
 
     WordCountMax:
-      description: |
-        The maximum number of words an article can contain. To be used for avoiding articles with large content.
       name: word_count_max
       in: query
       required: false
       schema:
-        type: integer
-        minimum: 0
-      example: 1000
+        $ref: "#/components/schemas/WordCountMax"
 
     ClusteringEnabled:
-      description: |
-        Determines whether to group similar articles into clusters. If true, the API returns clustered results.
-
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_enabled
       in: query
       required: false
       schema:
-        type: boolean
-        default: false
-      example: true
+        $ref: "#/components/schemas/ClusteringEnabled"
 
     ClusteringVariable:
-      description: |
-        Specifies which part of the article to use for determining similarity when clustering.
-
-        Possible values are:
-        - `content`: Uses the full article content (default).
-        - `title`: Uses only the article title.
-        - `summary`: Uses the article summary.
-
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_variable
       in: query
       required: false
       schema:
-        type: string
-        enum: [content, title, summary]
-        default: content
-      example: content
+        $ref: "#/components/schemas/ClusteringVariable"
 
     ClusteringThreshold:
-      description: |
-        Sets the similarity threshold for grouping articles into clusters. A lower value creates more inclusive clusters, while a higher value requires greater similarity between articles.
-
-        Examples:
-        - `0.3`: Results in larger, more diverse clusters.
-        - `0.6`: Balances cluster size and article similarity (default).
-        - `0.9`: Creates smaller, tightly related clusters.
-
-        To learn more, see [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles).
       name: clustering_threshold
       in: query
       required: false
       schema:
-        type: number
-        format: float
-        minimum: 0
-        exclusiveMinimum: true
-        maximum: 1.0
-        default: 0.6
-      example: 0.6
+        $ref: "#/components/schemas/ClusteringThreshold"
 
     IncludeNlpData:
       name: include_nlp_data
@@ -1439,233 +1082,78 @@ components:
         $ref: "#/components/schemas/HasNlp"
 
     Theme:
-      description: |
-        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string.
-
-        Example: `"Finance, Tech"`
-
-        **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
-
-        Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
-
       name: theme
       in: query
       required: false
       schema:
-        type: string
-      example: Business,Finance
+        $ref: "#/components/schemas/Theme"
 
     NotTheme:
-      description: |
-        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string. 
-
-        Example: `"Crime, Tech"`
-
-        **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: not_theme
       in: query
       required: false
       schema:
-        type: string
-      example: Crime
+        $ref: "#/components/schemas/NotTheme"
 
     OrgEntityName:
-      description: |
-        Filters articles that mention specific organization names, as identified by NLP analysis. To specify multiple organizations, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
-
-        Example: `"Apple, Microsoft"`
-
-        **Note**: The `ORG_entity_name` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: ORG_entity_name
       in: query
       required: false
       schema:
-        type: string
-      examples:
-        single-entity:
-          summary: Single entity
-          value: "Apple"
-        multiple-entities:
-          summary: Multiple entities
-          value: "Apple,Microsoft"
-        count-based:
-          summary: Count-based filter
-          value: "COUNT('Apple', 2, 'gt')"
+        $ref: "#/components/schemas/OrgEntityName"
 
     PerEntityName:
-      description: |
-        Filters articles that mention specific person names, as identified by NLP analysis. To specify multiple names, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
-
-        Example: `"Elon Musk, Jeff Bezos"`
-
-        **Note**: The `PER_entity_name` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: PER_entity_name
       in: query
       required: false
       schema:
-        type: string
-      examples:
-        single-entity:
-          summary: Single entity
-          value: "Elon Musk"
-        multiple-entities:
-          summary: Multiple entities
-          value: "Elon Musk,Jeff Bezos"
-        count-based:
-          summary: Count-based filter
-          value: "COUNT('Elon Musk', 3, 'gt')"
+        $ref: "#/components/schemas/PerEntityName"
 
     LocEntityName:
-      description: |
-        Filters articles that mention specific location names, as identified by NLP analysis. To specify multiple locations, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
-
-        Example: `"California, New York"`
-
-        **Note**: The `LOC_entity_name` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: LOC_entity_name
       in: query
       required: false
       schema:
-        type: string
-      examples:
-        single-entity:
-          summary: Single entity
-          value: "California"
-        multiple-entities:
-          summary: Multiple entities
-          value: "California,New York"
-        count-based:
-          summary: Count-based filter
-          value: "COUNT('California', 2, 'eq')"
+        $ref: "#/components/schemas/LocEntityName"
 
     MiscEntityName:
-      description: |
-        Filters articles that mention other named entities not falling under person, organization, or location categories. Includes events, nationalities, products, works of art, and more. To specify multiple entities, use a comma-separated string. To search named entities in translations, combine with the translation options of the `search_in` parameter (e.g., `title_content_translated`).
-
-        Example: `"Bitcoin, Blockchain"`
-
-        **Note**: The `MISC_entity_name` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [Search by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity).
       name: MISC_entity_name
       in: query
       required: false
       schema:
-        type: string
-      examples:
-        single-entity:
-          summary: Single entity
-          value: "Bitcoin"
-        multiple-entities:
-          summary: Multiple entities
-          value: "Bitcoin,Blockchain"
-        count-based:
-          summary: Count-based filter
-          value: "COUNT('Bitcoin', 1, 'gt')"
+        $ref: "#/components/schemas/MiscEntityName"
 
     TitleSentimentMin:
-      description: |
-        Filters articles based on the minimum sentiment score of their titles.
-
-        Range is `-1.0` to `1.0`, where:
-        - Negative values indicate negative sentiment.
-        - Positive values indicate positive sentiment.
-        - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: title_sentiment_min
       in: query
       required: false
       schema:
-        type: number
-        format: float
-        minimum: -1.0
-        maximum: 1.0
-      example: -0.5
+        $ref: "#/components/schemas/TitleSentimentMin"
 
     TitleSentimentMax:
-      description: |
-        Filters articles based on the maximum sentiment score of their titles.
-
-        Range is `-1.0` to `1.0`, where:
-        - Negative values indicate negative sentiment.
-        - Positive values indicate positive sentiment.
-        - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: title_sentiment_max
       in: query
       required: false
       schema:
-        type: number
-        format: float
-        minimum: -1.0
-        maximum: 1.0
-      example: 0.5
+        $ref: "#/components/schemas/TitleSentimentMax"
 
     ContentSentimentMin:
-      description: |
-        Filters articles based on the minimum sentiment score of their content.
-
-        Range is `-1.0` to `1.0`, where:
-        - Negative values indicate negative sentiment.
-        - Positive values indicate positive sentiment.
-        - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: content_sentiment_min
       in: query
       required: false
       schema:
-        type: number
-        format: float
-        minimum: -1.0
-        maximum: 1.0
-      example: -0.5
+        $ref: "#/components/schemas/ContentSentimentMin"
 
     ContentSentimentMax:
-      description: |
-        Filters articles based on the maximum sentiment score of their content.
-
-        Range is `-1.0` to `1.0`, where:
-        - Negative values indicate negative sentiment.
-        - Positive values indicate positive sentiment.
-        - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
-
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       name: content_sentiment_max
       in: query
       required: false
       schema:
-        type: number
-        format: float
-        minimum: -1.0
-        maximum: 1.0
-      example: 0.5
+        $ref: "#/components/schemas/ContentSentimentMax"
 
     IptcTags:
       description: |
         Filters articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags, use a comma-separated string of tag IDs. 
-
-        Example: `"20000199, 20000209"`
 
         **Note**: The `iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
@@ -1675,13 +1163,11 @@ components:
       required: false
       schema:
         type: string
-      example: 20000199,20000209
+        example: "20000199,20000209"
 
     NotIptcTags:
       description: |
-        Inverse of the `iptc_tags` parameter. Excludes articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags to exclude, use a comma-separated string of tag IDs. 
-
-        Example: `"20000205, 20000209"`
+        Inverse of the `iptc_tags` parameter. Excludes articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags to exclude, use a comma-separated string of tag IDs.
 
         **Note**: The `not_iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
@@ -1691,13 +1177,11 @@ components:
       required: false
       schema:
         type: string
-      example: 20000205,20000209
+        example: "20000205,20000209"
 
     IabTags:
       description: |
-        Filters articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string. 
-
-        Example: `"Business, Events"`
+        Filters articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string.
 
         **Note**: The `iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
@@ -1707,13 +1191,11 @@ components:
       required: false
       schema:
         type: string
-      example: Business,Events
+        example: "Business,Events"
 
     NotIabTags:
       description: |
-        Inverse of the `iab_tags` parameter. Excludes articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories to exclude, use a comma-separated string. 
-
-        Example: `"Agriculture, Metals"`
+        Inverse of the `iab_tags` parameter. Excludes articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories to exclude, use a comma-separated string.
 
         **Note**: The `not_iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
@@ -1723,15 +1205,15 @@ components:
       required: false
       schema:
         type: string
-      example: Agriculture,Metals
+        example: "Agriculture,Metals"
 
     CustomTags:
       description: |
         Filters articles based on provided taxonomy that is tailored to your specific needs and is accessible only with your API key. To specify tags, use the following pattern: 
 
-        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, where `taxonomy` is the taxonomy name and `Tag1,Tag2,Tag3` is a comma-separated list of tags.
+        - `custom_tags.taxonomy=Tag1,Tag2`, where `taxonomy` is the taxonomy name and `Tag1,Tag2` is a comma-separated list of tag names.
 
-        Example: `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
+        Example: `custom_tags.industry="Manufacturing,Logistics"`
 
         To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags).
       name: custom_tags
@@ -1739,72 +1221,39 @@ components:
       required: false
       schema:
         type: string
-      example: "Tag1,Tag2,Tag3"
+        example: "Tag1,Tag2"
 
     ExcludeDuplicates:
-      description: |
-        If true, excludes duplicate and highly similar articles from the search results. If false, returns all relevant articles, including duplicates. 
-
-        To learn more, see [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication).
       name: exclude_duplicates
       in: query
       required: false
       schema:
-        type: boolean
-      example: true
+        $ref: "#/components/schemas/ExcludeDuplicates"
 
     When:
-      description: |
-        The time period for which you want to get the latest headlines.
-
-        Format examples:
-        - `7d`: Last seven days
-        - `30d`: Last 30 days
-        - `1h`: Last hour
-        - `24h`: Last 24 hours
       name: when
       in: query
       required: false
       schema:
-        type: string
-        default: 7d
-      examples:
-        daily:
-          summary: Last 7 days
-          value: 7d
-        hourly:
-          summary: Last hour
-          value: 1h
+        $ref: "#/components/schemas/When"
 
     IsOpinion:
-      description: |
-        If true, returns only opinion pieces. If false, excludes opinion-based articles and returns news only.
       name: is_opinion
       in: query
       required: false
       schema:
-        type: boolean
-      example: true
+        $ref: "#/components/schemas/IsOpinion"
 
     IsPaidContent:
-      description: |
-        Filters articles by content completeness.
-
-        If false, returns only articles for which full-text content is publicly available. If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
-        
-        **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       name: is_paid_content
       in: query
       required: false
       schema:
-        type: boolean
-      example: false
+        $ref: "#/components/schemas/IsPaidContent"
 
     Links:
       description: |
-        The article link or list of article links to search for. To specify multiple links, use a comma-separated string. 
-
-        Example: `"https://example.com/article1, https://example.com/article2"`
+        The article link or list of article links to search for. To specify multiple links, use a comma-separated string.
 
         **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: links
@@ -1812,19 +1261,11 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-link:
-          summary: Single article link
-          value: "https://nytimes.com/article1"
-        multiple-links:
-          summary: Multiple article links
-          value: "https://nytimes.com/article1,https://bbc.com/article2"
+        example: "https://nytimes.com/article1,https://bbc.com/article2"
 
     Ids:
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string. 
-
-        Example: `"1234567890abcdef, abcdef1234567890"`
 
         **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       name: ids
@@ -1832,74 +1273,21 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-id:
-          summary: Single article ID
-          value: "5f8d0d55b6e45e00179c6e7e"
-        multiple-ids:
-          summary: Multiple article IDs
-          value: "5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"
-
-    IncludeSimilarDocuments:
-      description: |
-        If true, includes similar documents in the response.
-      name: include_similar_documents
-      in: query
-      required: false
-      schema:
-        type: boolean
-        default: false
-      example: true
-
-    SimilarDocumentsNumber:
-      description: |
-        The number of similar documents to return.
-      name: similar_documents_number
-      in: query
-      required: false
-      schema:
-        type: integer
-        default: 5
-      example: 10
-
-    SimilarDocumentsFields:
-      description: |
-        The fields to consider for finding similar documents.
-      name: similar_documents_fields
-      in: query
-      required: false
-      schema:
-        type: string
-        default: title,content
-      example: title,summary
+        example: "5f8d0d55b6e45e00179c6e7e"
 
     NerName:
-      description: |
-        The name of person, organization, location, product or other named entity to search for. To specify multiple names use a comma-separated string. 
-
-        Example: `"Tesla, Amazon"`
       name: ner_name
       in: query
       required: false
       schema:
-        type: string
-      example: Tesla
+        $ref: "#/components/schemas/NerName"
 
     IncludeAdditionalInfo:
-      description: |
-        If true, returns the following additional datapoints about each news source:
-        - `nb_articles_for_7d`: The number of articles published by the source in the last week.
-        - `country`: Source country of origin.
-        - `rank`: SEO rank.
-        - `is_news_domain`: Boolean indicating if the source is a news domain.
-        - `news_domain_type`: Type of news domain (e.g., "Original Content").
-        - `news_type`: Category of news (e.g., "General News Outlets").
       name: include_additional_info
       in: query
       required: false
       schema:
-        type: boolean
-      example: true
+        $ref: "#/components/schemas/IncludeAdditionalInfo"
 
     SourceUrl:
       description: |
@@ -1921,56 +1309,30 @@ components:
       schema:
         $ref: "#/components/schemas/AggregationBy"
 
-    # New parameters
     AdditionalDomainInfo:
       name: additional_domain_info
       in: query
       required: false
       schema:
-        type: boolean
-      description: |
-        If true, includes additional domain information in the response for each article:
-        - `is_news_domain`: Boolean indicating if the source is a news domain.
-        - `news_domain_type`: Type of news domain (e.g., `"Original Content"`).
-        - `news_type`: Category of news (e.g., `"News and Blogs"`).
-      example: true
+        $ref: "#/components/schemas/AdditionalDomainInfo"
 
     IsNewsDomain:
       name: is_news_domain
       in: query
       required: false
       schema:
-        type: boolean
-      description: |
-        If true, filters results to include only news domains.
-      example: true
+        $ref: "#/components/schemas/IsNewsDomain"
 
     NewsDomainType:
-      description: |
-        Filters results based on the news domain type. Possible values are:
-        - `Original Content`: Sources that produce their own content.
-        - `Aggregator`: Sources that collect content from various other sources.
-        - `Press Releases`: Sources primarily publishing press releases.
-        - `Republisher`: Sources that republish content from other sources.
-        - `Other`: Sources that don't fit into main categories.
       name: news_domain_type
       in: query
       required: false
       schema:
-        type: string
-        enum:
-          - Original Content
-          - Aggregator
-          - Press Releases
-          - Republisher
-          - Other
-      example: "Original Content"
+        $ref: "#/components/schemas/NewsDomainType"
 
     NewsType:
       description: |
         Filters results based on the news type. Multiple types can be specified using a comma-separated string.
-
-        Example: `"General News Outlets,Tech News and Updates"`
 
         For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#news-type-news-type).
       name: news_type
@@ -1978,15 +1340,8 @@ components:
       required: false
       schema:
         type: string
-      examples:
-        single-type:
-          summary: Single news type
-          value: "General News Outlets"
-        multiple-types:
-          summary: Multiple news types
-          value: "General News Outlets,Tech News and Updates"
+      example: "General News Outlets,Tech News and Updates"
 
-    # Breaking news
     TopNArticles:
       name: top_n_articles
       in: query
@@ -1999,10 +1354,7 @@ components:
       in: query
       required: false
       schema:
-        type: boolean
-      description: |
-        If true, returns only articles that comply with the publisher's robots.txt rules. If false, returns only articles that do not comply with robots.txt rules. If omitted, returns all articles regardless of compliance status.
-      example: true
+        $ref: "#/components/schemas/RobotsCompliant"
 
   requestBodies:
     AggregationRequestBody:
@@ -2364,10 +1716,8 @@ components:
                 $ref: "#/components/schemas/TitleSentimentMax"
               content_sentiment_min:
                 $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentient_max:
+              content_sentiment_max:
                 $ref: "#/components/schemas/ContentSentimentMax"
-              robots_compliant:
-                $ref: "#/components/schemas/RobotsCompliant"
             example:
               sort_by: relevancy
               ranked_only: true
@@ -2551,114 +1901,6 @@ components:
             example:
               links: https://www.reuters.com/business/energy/oil-prices-up-after-israeli-attacks-oversupply-caps-gains-2025-09-10/
 
-    SearchSimilarRequestBody:
-      description:
-        Request body for searching similar articles based on specified criteria
-        such as query, language, country, source, and more.
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            required:
-              - q
-            properties:
-              q:
-                $ref: "#/components/schemas/Q"
-              search_in:
-                $ref: "#/components/schemas/SearchIn"
-              include_translation_fields:
-                $ref: "#/components/schemas/IncludeTranslationFields"
-              include_similar_documents:
-                $ref: "#/components/schemas/IncludeSimilarDocuments"
-              similar_documents_number:
-                $ref: "#/components/schemas/SimilarDocumentsNumber"
-              similar_documents_fields:
-                $ref: "#/components/schemas/SimilarDocumentsFields"
-              predefined_sources:
-                $ref: "#/components/schemas/PredefinedSources"
-              sources:
-                $ref: "#/components/schemas/Sources"
-              not_sources:
-                $ref: "#/components/schemas/NotSources"
-              lang:
-                $ref: "#/components/schemas/Lang"
-              not_lang:
-                $ref: "#/components/schemas/NotLang"
-              countries:
-                $ref: "#/components/schemas/Countries"
-              not_countries:
-                $ref: "#/components/schemas/NotCountries"
-              from_:
-                $ref: "#/components/schemas/From"
-              to_:
-                $ref: "#/components/schemas/To"
-              by_parse_date:
-                $ref: "#/components/schemas/ByParseDate"
-              published_date_precision:
-                $ref: "#/components/schemas/PublishedDatePrecision"
-              sort_by:
-                $ref: "#/components/schemas/SortBy"
-              ranked_only:
-                $ref: "#/components/schemas/RankedOnly"
-              from_rank:
-                $ref: "#/components/schemas/FromRank"
-              to_rank:
-                $ref: "#/components/schemas/ToRank"
-              is_headline:
-                $ref: "#/components/schemas/IsHeadline"
-              is_opinion:
-                $ref: "#/components/schemas/IsOpinion"
-              is_paid_content:
-                $ref: "#/components/schemas/IsPaidContent"
-              parent_url:
-                $ref: "#/components/schemas/ParentUrl"
-              all_links:
-                $ref: "#/components/schemas/AllLinks"
-              all_domain_links:
-                $ref: "#/components/schemas/AllDomainLinks"
-              all_links_text:
-                $ref: "#/components/schemas/AllLinksText"
-              word_count_min:
-                $ref: "#/components/schemas/WordCountMin"
-              word_count_max:
-                $ref: "#/components/schemas/WordCountMax"
-              page:
-                $ref: "#/components/schemas/Page"
-              page_size:
-                $ref: "#/components/schemas/PageSize"
-              include_nlp_data:
-                $ref: "#/components/schemas/IncludeNlpData"
-              has_nlp:
-                $ref: "#/components/schemas/HasNlp"
-              theme:
-                $ref: "#/components/schemas/Theme"
-              not_theme:
-                $ref: "#/components/schemas/NotTheme"
-              ner_name:
-                $ref: "#/components/schemas/NerName"
-              title_sentiment_min:
-                $ref: "#/components/schemas/TitleSentimentMin"
-              title_sentiment_max:
-                $ref: "#/components/schemas/TitleSentimentMax"
-              content_sentiment_min:
-                $ref: "#/components/schemas/ContentSentimentMin"
-              content_sentiment_max:
-                $ref: "#/components/schemas/ContentSentimentMax"
-              iptc_tags:
-                $ref: "#/components/schemas/IptcTags"
-              not_iptc_tags:
-                $ref: "#/components/schemas/NotIptcTags"
-              custom_tags:
-                $ref: "#/components/schemas/CustomTags"
-              robots_compliant:
-                $ref: "#/components/schemas/RobotsCompliant"
-            example:
-              q: '"supply chain" AND Amazon NOT China'
-              include_similar_documents: true
-              similar_documents_number: 5
-              page_size: 10
-
     SourcesRequestBody:
       description:
         Request body for searching news sources based on specified criteria such
@@ -2721,9 +1963,9 @@ components:
 
     SearchResponse:
       description:
-        A successful response containing articles that match the specified
-        search criteria. The response may include clustering information if
-        enabled.
+        A successful response containing articles that match the search
+        criteria. When `clustering_enabled` is `true`, returns a Clustered
+        Articles Response. Otherwise, returns a Search Response.
       content:
         application/json:
           schema:
@@ -2749,18 +1991,6 @@ components:
           schema:
             $ref: "#/components/schemas/SearchResponseDto"
 
-    SearchSimilarResponse:
-      description:
-        A successful response containing articles similar to the specified
-        query. If no matches, returns a failed search response according to the
-        defined schema.
-      content:
-        application/json:
-          schema:
-            oneOf:
-              - $ref: "#/components/schemas/SearchSimilarResponseDto"
-              - $ref: "#/components/schemas/FailedSearchSimilarResponseDto"
-
     SourcesResponse:
       description:
         A successful response containing a list of news sources that match the
@@ -2779,7 +2009,6 @@ components:
           schema:
             $ref: "#/components/schemas/SubscriptionResponseDto"
 
-    # Errors
     BadRequestError:
       description: Bad request
       content:
@@ -2917,13 +2146,11 @@ components:
           items:
             $ref: "#/components/schemas/ClusterEntity"
 
-    # Simple generic user input schema
     UserInputDto:
       type: object
       description: The user input parameters for the request.
       additionalProperties: true
 
-    # Aggregation related schemas for the response object
     AggregationCountResponseDto:
       title: Aggregation Response
       description: |
@@ -3046,7 +2273,6 @@ components:
         - full_domain_url
         - parent_url
         - rank
-        - content
         - id
         - score
       type: object
@@ -3075,6 +2301,7 @@ components:
               items:
                 type: string
             - type: string
+            - type: "null"
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3086,15 +2313,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: string
+          type: [string, "null"]
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: string
+          type: [string, "null"]
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: string
+          type: [string, "null"]
         link:
           title: Link
           description: The URL link to the article.
@@ -3117,7 +2344,9 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+          description:
+            Indicates whether the source labels the article as paywalled or
+            requiring a subscription for full access.
           type: boolean
         parent_url:
           title: Parent URL
@@ -3152,11 +2381,11 @@ components:
           description: The content of the article.
           type: string
         title_translated_en:
-          type: string
+          type: [string, "null"]
           description: |
             English translation of the article title. Available when using the `search_in` parameter with the `title_translated` option or by setting the `include_translation_fields` parameter to `true`.
         content_translated_en:
-          type: string
+          type: [string, "null"]
           description: |
             English translation of the article content. Available when using the `search_in` parameter with the `content_translated` option or by setting the `include_translation_fields` parameter to `true`.
         word_count:
@@ -3171,7 +2400,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: string
+          type: [string, "null"]
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -3254,7 +2483,7 @@ components:
           description: |
             A dense 1024-dimensional vector representation of the article content, generated using  the [multilingual-e5-large](https://huggingface.co/intfloat/multilingual-e5-large) model.
 
-            **Note**: The `new_embedding` field is only available in the `v3_local_news_nlp_embeddings` subscription plan.
+            **Note**: The `new_embedding` field is only available in the `v3_nlp_embeddings` subscription plan.
         ner_PER:
           allOf:
             - $ref: "#/components/schemas/NamedEntityList"
@@ -3372,7 +2601,6 @@ components:
         news_type: "News and Blogs"
         news_domain_type: "Original Content"
 
-    # Latest Headlines related schemas for the response object
     ClusteredSearchResponseDto:
       title: Clustered Articles Response
       description: |
@@ -3416,7 +2644,6 @@ components:
           items:
             $ref: "#/components/schemas/ArticleEntity"
 
-    # Search related schemas for the response object
     SearchResponseDto:
       title: Search Response
       description: |
@@ -3458,46 +2685,6 @@ components:
             user_input:
               $ref: "#/components/schemas/UserInputDto"
 
-    # Search Similar related schemas for the response object
-    SearchSimilarResponseDto:
-      title: Search Similar Response
-      description: |
-        The response model for a successful `Search similar` request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
-        - To access article properties in the `articles` response array, use array index notation. For example, `articles[n].title`, where `n` is the zero-based index of the article object (0, 1, 2, etc.).
-        - The `nlp` property within the article object `articles[n].nlp` is only available with NLP-enabled subscription plans.
-      allOf:
-        - $ref: "#/components/schemas/BaseSearchResponseDto"
-        - type: object
-          properties:
-            articles:
-              title: Articles
-              description: A list of articles matching the search criteria.
-              type: array
-              items:
-                $ref: "#/components/schemas/SimilarArticleEntity"
-              default: []
-            user_input:
-              $ref: "#/components/schemas/UserInputDto"
-
-    FailedSearchSimilarResponseDto:
-      title: Failed Search Similar Response
-      description: The response model for a failed `Search Similar` request.
-      allOf:
-        - $ref: "#/components/schemas/BaseSearchResponseDto"
-        - type: object
-          properties:
-            articles:
-              title: Articles
-              description: An empty list of articles, as no matches were found.
-              type: array
-              items:
-                type: object
-              default: []
-            user_input:
-              $ref: "#/components/schemas/UserInputDto"
-
     BreakingNewsEventEntity:
       title: Breaking News Event Object
       description: |
@@ -3535,7 +2722,6 @@ components:
         - full_domain_url
         - parent_url
         - rank
-        - content
         - id
         - score
       type: object
@@ -3564,6 +2750,7 @@ components:
               items:
                 type: string
             - type: string
+            - type: "null"
         published_date:
           title: Published Date
           description: The date the article was published.
@@ -3575,15 +2762,15 @@ components:
         updated_date:
           title: Updated Date
           description: The date the article was last updated.
-          type: string
+          type: [string, "null"]
         updated_date_precision:
           title: Updated Date Precision
           description: The precision of the updated date.
-          type: string
+          type: [string, "null"]
         parse_date:
           title: Parse Date
           description: The date the article was parsed.
-          type: string
+          type: [string, "null"]
         link:
           title: Link
           description: The URL link to the article.
@@ -3606,7 +2793,10 @@ components:
           type: boolean
         paid_content:
           title: Paid Content
-          description: Indicates whether the source labels the article as paywalled or requiring a subscription for full access.
+          description:
+            Indicates whether the source labels the article as paywalled or
+            requiring a subscription for full access.
+          type: boolean
         parent_url:
           title: Parent URL
           description: The categorical URL of the article.
@@ -3639,6 +2829,14 @@ components:
           title: Content
           description: The content of the article.
           type: string
+        title_translated_en:
+          type: [string, "null"]
+          description: |
+            English translation of the article title. Available when setting the `include_translation_fields` parameter to `true`.
+        content_translated_en:
+          type: [string, "null"]
+          description: |
+            English translation of the article content. Available when setting the `include_translation_fields` parameter to `true`.
         word_count:
           title: Word Count
           description: The word count of the article.
@@ -3651,7 +2849,7 @@ components:
         twitter_account:
           title: Twitter Account
           description: The Twitter account associated with the article.
-          type: string
+          type: [string, "null"]
         all_links:
           title: All Links
           description: A list of all URLs mentioned in the article.
@@ -3680,61 +2878,7 @@ components:
           title: Score
           description: The relevance score of the article.
           type: number
-        robots_compliant:
-          title: Robots Compliant
-          description: |
-            True if the article content can be safely accessed according to the publisher's robots.txt rules; false otherwise.
-          type: boolean
-          example: true
 
-    SimilarArticleEntity:
-      title: Search Similar Article Object
-      description: |
-        The data model for an article result in the `Search similar` articles request. Response field behavior:
-        - Required fields are guaranteed to be present and non-null. 
-        - Optional fields may be `null` or `undefined` if the data point is not presented or couldn't be extracted during processing.
-      allOf:
-        - $ref: "#/components/schemas/ArticleEntity"
-        - type: object
-          properties:
-            similar_documents:
-              title: Similar Documents
-              description: A list of documents similar to the article.
-              type: array
-              items:
-                $ref: "#/components/schemas/SimilarDocument"
-              default: []
-
-    SimilarDocument:
-      title: Similar Document
-      description:
-        The data model for a similar document in the `Search similar` articles
-        request.
-      required:
-        - id
-        - score
-        - title
-        - link
-      type: object
-      properties:
-        id:
-          title: Id
-          description: The unique identifier of the similar document.
-          type: string
-        score:
-          title: Score
-          description: The relevance score of the similar document.
-          type: number
-        title:
-          title: Title
-          description: The title of the similar document.
-          type: string
-        link:
-          title: Link
-          description: The link to the similar document.
-          type: string
-
-    # Sources related schemas for the response object
     SourcesResponseDto:
       title: Sources Response
       description: |
@@ -3833,7 +2977,6 @@ components:
         news_type: "General News Outlets"
         robots_compliant: "100%"
 
-    # Subscription related schema for the response object
     SubscriptionResponseDto:
       title: Subscription Response
       description: |
@@ -3882,7 +3025,6 @@ components:
             subscription plan.
           type: integer
 
-    # Error response
     Error:
       type: object
       properties:
@@ -3900,7 +3042,6 @@ components:
         - status_code
         - status
 
-    # Parameter schemas to use in Request Bodies
     Q:
       type: string
       description: |
@@ -3920,34 +3061,28 @@ components:
     Lang:
       oneOf:
         - type: string
+          example: "en,es"
         - type: array
           items:
             type: string
+          example: ["en", "es"]
       description: |
         The language(s) of the search. The only accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To select multiple languages, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"en,es"`
-        - `["en", "es"]`
-
         To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
-      example: ["en", "es"]
 
     NotLang:
       oneOf:
         - type: string
+          example: "fr,de"
         - type: array
           items:
             type: string
+          example: ["fr", "de"]
       description: |
         The language(s) to exclude from the search. The accepted format is the two-letter [ISO 639-1](https://en.wikipedia.org/wiki/ISO_639-1) code. To exclude multiple languages, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"fr,de"`
-        - `["fr", "de"]`
-
         To learn more, see [Enumerated parameters > Language](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
-      example: ["fr", "de"]
 
     SearchIn:
       type: string
@@ -3971,110 +3106,89 @@ components:
     Countries:
       oneOf:
         - type: string
+          example: "US,CA"
         - type: array
           items:
             type: string
+          example: ["US", "CA"]
       description: |
         The countries where the news publisher is located. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To select multiple countries, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"US,CA"`
-        - `["US", "CA"]`
-
         To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
-      example: ["US", "CA"]
 
     NotCountries:
       oneOf:
         - type: string
+          example: "UK,FR"
         - type: array
           items:
             type: string
+          example: ["UK", "FR"]
       description: |
         The publisher location countries to exclude from the search. The accepted format is the two-letter [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) code. To exclude multiple countries, use a comma-separated string or an array of strings.
 
-        Examples: 
-        - `"UK,FR"`
-        - `["UK", "FR"]`
-
         To learn more, see [Enumerated parameters > Country](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#country-country-and-not-country).
-      example: ["UK", "FR"]
 
     Sources:
       oneOf:
         - type: string
+          example: "nytimes.com, theguardian.com"
         - type: array
           items:
             type: string
+          example: ["nytimes.com", "theguardian.com"]
       description: |
         One or more news sources to narrow down the search. The format must be a domain URL. Subdomains, such as `finance.yahoo.com`, are also acceptable. To specify multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"nytimes.com, theguardian.com"`
-        - `["nytimes.com", "theguardian.com"]`
-      example: ["nytimes.com", "theguardian.com"]
 
     NotSources:
       oneOf:
         - type: string
+          example: "cnn.com, wsj.com"
         - type: array
           items:
             type: string
+          example: ["cnn.com", "wsj.com"]
       description: |
         The news sources to exclude from the search. To exclude multiple sources, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"cnn.com, wsj.com"`
-        - `["cnn.com", "wsj.com"]`
-      example: ["cnn.com", "wsj.com"]
 
     PredefinedSources:
       oneOf:
         - type: string
+          example: "top 50 US, top 20 GB"
         - type: array
           items:
             type: string
+          example: ["top 50 US", "top 20 GB"]
       description: |
         Predefined top news sources per country. 
 
-        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). Multiple countries with the number of top sources can be specified as a comma-separated string or an array of strings. 
+        Format: start with the word `top`, followed by the number of desired sources, and then the two-letter country code [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2). 
 
-        Examples: 
-        - `"top 100 US"`
-        - `"top 33 AT"`
-        - `"top 50 US, top 20 GB"`
-        - `["top 50 US", "top 20 GB"]`
-      example: ["top 50 US", "top 20 GB"]
+        Multiple countries with the number of top sources can be specified as a comma-separated string or an array of strings.
 
     SourceName:
       oneOf:
         - type: string
+          example: "sport, tech"
         - type: array
           items:
             type: string
+          example: ["sport", "tech"]
       description: |
         Specifies terms to search within the source names. To specify multiple terms, use a comma-separated string or an array of strings.
 
-        Examples: 
-        - `"sport, tech"`
-        - `["sport", "tech"]`
-
         **Note**: The search does not require an exact match and returns all sources that include the specified terms anywhere in their names. You can use any word, phrase, or outlet name, such as `"sport"`, or `"new york times"`. For example, using `"sport"` as a term returns sources like `"Motorsport"`, `"Dot Esport"`, and `"Tuttosport"`.
-      example: ["sport", "tech"]
 
     ParentUrl:
       oneOf:
         - type: string
+          example: "wsj.com/politics,wsj.com/tech"
         - type: array
           items:
             type: string
+          example: ["wsj.com/politics", "wsj.com/tech"]
       description: |
         The categorical URL(s) to filter your search. To filter your search by multiple categorical URLs, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"wsj.com/politics,wsj.com/tech"`
-        - `["wsj.com/politics", "wsj.com/tech"]`
-      example: ["wsj.com/politics", "wsj.com/tech"]
 
     RankedOnly:
       type: boolean
@@ -4115,7 +3229,7 @@ components:
         - `relevancy`: The most relevant results first.
         - `date`: The most recently published results first.
         - `rank`: The results from the highest-ranked sources first.
-      example: date
+      example: "date"
 
     PageSize:
       type: integer
@@ -4163,7 +3277,7 @@ components:
           format: date-time
           example: 2024-01-01T00:00:00
         - type: string
-          example: 1 day ago
+          example: "1 day ago"
       description: |
         The ending point in time to search up to. Accepts date-time strings in ISO 8601 format and plain text strings. The default time zone is UTC. 
 
@@ -4175,14 +3289,10 @@ components:
         - English phrases: `1 day ago`, `now`
 
         **Note**: By default, applied to the publication date of the article. To use the article's parse date instead, set the `by_parse_date` parameter to `true`.
-      example: 2021/12/31
+      default: "now"
 
     PublishedDatePrecision:
       type: string
-      enum:
-        - full
-        - timezone unknown
-        - date
       description: |
         The precision of the published date. There are three types:
         - `full`: The day and time of an article is correctly identified with the appropriate timezone.
@@ -4206,65 +3316,45 @@ components:
     AllLinks:
       oneOf:
         - type: string
+          example:
+            "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
         - type: array
           items:
             type: string
+          example:
+            ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
       description: |
         The complete URL(s) mentioned in the article. For multiple URLs, use a comma-separated string or an array of strings.
 
-        Examples: 
-        - `"https://aiindex.stanford.edu/report/, https://www.stateof.ai/"`
-        - `["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]`
-
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
-      example:
-        string-input:
-          summary: Comma-separated string
-          value: "https://aiindex.stanford.edu/report/, https://www.stateof.ai/"
-        array-input:
-          summary: Array of strings
-          value:
-            ["https://aiindex.stanford.edu/report/", "https://www.stateof.ai/"]
 
     AllDomainLinks:
       oneOf:
         - type: string
+          example: "who.int, nih.gov"
         - type: array
           items:
             type: string
+          example: ["who.int", "nih.gov"]
       description: |
         The domain(s) mentioned in the article. For multiple domains, use a comma-separated string or an array of strings.
 
-        Examples: 
-        - `"who.int, nih.gov"`
-        - `["who.int", "nih.gov"]`
-
         For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
-      example:
-        string-input:
-          summary: Comma-separated string
-          value: "who.int, nih.gov"
-        array-input:
-          summary: Array of strings
-          value: ["who.int", "nih.gov"]
 
     AllLinksText:
       oneOf:
         - type: string
+          example: "Nvidia, Tesla"
         - type: array
           items:
             type: string
+          example: ["Nvidia", "Tesla"]
       description: |
         The text content of links mentioned in the article. Searches for links where the anchor text contains the specified terms. For multiple terms, use a comma-separated string or an array of strings.
 
-        Examples:
-        - `"Nvidia, Tesla"`
-        - `["Nvidia", "Tesla"]`
-
         **Note**: When this parameter is used, the response includes the `all_links_data` field with detailed link information.
 
-        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/v3/documentation/how-to/search-by-url).
-      example: ["Nvidia", "Tesla"]
+        For more details, see [Search by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url).
 
     AuthorName:
       type: string
@@ -4275,16 +3365,13 @@ components:
     NotAuthorName:
       oneOf:
         - type: string
+          example: "John Doe, Jane Doe"
         - type: array
           items:
             type: string
+          example: ["John Doe", "Jane Doe"]
       description: |
-        The list of author names to exclude from your search. To exclude articles by specific authors, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"John Doe, Jane Doe"`
-        - `["John Doe", "Jane Doe"]`
-      example: ["John Doe", "Jane Doe"]
+        The list of author names to exclude from your search. To exclude articles by specific authors, use a comma-separated string or an array of strings.
 
     WordCountMin:
       type: integer
@@ -4329,8 +3416,7 @@ components:
     ClusteringThreshold:
       type: number
       format: float
-      minimum: 0
-      exclusiveMinimum: true
+      exclusiveMinimum: 0
       maximum: 1.0
       default: 0.6
       description: |
@@ -4363,42 +3449,22 @@ components:
       example: true
 
     Theme:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
+      example: "Finance,Tech"
       description: |
-        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"Finance, Tech"`
-        - `["Finance", "Tech"]`
-
-        **Note**: The `theme` parameter is only available if NLP is included in your subscription plan.
+        Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string.
 
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
-      example: ["Business", "Finance"]
 
     NotTheme:
-      oneOf:
-        - type: string
-        - type: array
-          items:
-            type: string
+      type: string
+      example: "Crime,Sports"
       description: |
-        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"Crime, Tech"`
-        - `["Crime", "Tech"]`
-
-        **Note**: The `not_theme` parameter is only available if NLP is included in your subscription plan.
+        Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string.
 
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
-      example: ["Crime"]
 
     OrgEntityName:
       type: string
@@ -4456,8 +3522,6 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        **Note**: The `title_sentiment_min` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
@@ -4473,8 +3537,6 @@ components:
         - Negative values indicate negative sentiment.
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
-
-        **Note**: The `title_sentiment_max` parameter is only available if NLP is included in your subscription plan.
 
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
@@ -4492,8 +3554,6 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        **Note**: The `content_sentiment_min` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: -0.5
 
@@ -4510,100 +3570,83 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        **Note**: The `content_sentiment_max` parameter is only available if NLP is included in your subscription plan.
-
         To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
       example: 0.5
 
     IptcTags:
       oneOf:
         - type: string
+          example: "20000199,20000209"
         - type: array
           items:
             type: string
+          example: ["20000199", "20000209"]
       description: |
         Filters articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"20000199, 20000209"`
-        - `["20000199", "20000209"]`
 
         **Note**: The `iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
-      example: ["20000199", "20000209"]
 
     NotIptcTags:
       oneOf:
         - type: string
+          example: "20000205, 20000209"
         - type: array
           items:
             type: string
+          example: ["20000205", "20000209"]
       description: |
         Inverse of the `iptc_tags` parameter. Excludes articles based on International Press Telecommunications Council (IPTC) media topic tags. To specify multiple IPTC tags to exclude, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"20000205, 20000209"`
-        - `["20000205", "20000209"]`
 
         **Note**: The `not_iptc_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see [IPTC Media Topic NewsCodes](https://www.iptc.org/std/NewsCodes/treeview/mediatopic/mediatopic-en-GB.html).
-      example: ["20000205", "20000209"]
 
     IabTags:
       oneOf:
         - type: string
+          example: "Business,Events"
         - type: array
           items:
             type: string
+          example: ["Business", "Events"]
       description: |
-        Filters articles based on Interactive Advertising Bureau (IAB) content categories.These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"Business, Events"`
-        - `["Business", "Events"]`
+        Filters articles based on Interactive Advertising Bureau (IAB) content categories.These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories, use a comma-separated string or an array of strings.
 
         **Note**: The `iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
-      example: ["Business", "Events"]
 
     NotIabTags:
       oneOf:
         - type: string
+          example: "Agriculture,Metals"
         - type: array
           items:
             type: string
+          example: ["Agriculture", "Metals"]
       description: |
         Inverse of the `iab_tags` parameter. Excludes articles based on Interactive Advertising Bureau (IAB) content categories. These tags provide a standardized taxonomy for digital advertising content categorization. To specify multiple IAB categories to exclude, use a comma-separated string or an array of strings. 
-
-        Examples: 
-        - `"Agriculture, Metals"`
-        - `["Agriculture", "Metals"]`
 
         **Note**: The `not_iab_tags` parameter is only available in the `v3_nlp_iptc_tags` subscription plan.
 
         To learn more, see the [IAB Content taxonomy](https://iabtechlab.com/standards/content-taxonomy/).
-      example: ["Agriculture", "Metals"]
 
     CustomTags:
       oneOf:
         - type: string
+          example: "Tag1,Tag2"
         - type: array
           items:
             type: string
+          example: ["Tag1", "Tag2"]
       description: |
         Filters articles based on provided taxonomy that is tailored to your specific needs and is accessible only with your API key. To specify tags, use the following pattern: 
 
-        - `custom_tags.taxonomy=Tag1,Tag2,Tag3`, where `taxonomy` is the taxonomy name and `Tag1,Tag2,Tag3` are comma-separated tags. For POST requests, you can also specify tags as an array of strings.
-
-        Examples:
-        - `custom_tags.industry="Manufacturing, Supply Chain, Logistics"`
-        - `"custom_tags.industry": ["Manufacturing", "Supply Chain", "Logistics"]`
+        - `custom_tags.taxonomy=Tag1,Tag2`, where `taxonomy` is the taxonomy name and `Tag1,Tag2` are comma-separated tag names. For POST requests, you can also specify tags as an array of strings.
 
         To learn more, see the [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags).
-      example: ["Tag1", "Tag2", "Tag3"]
 
     ExcludeDuplicates:
       type: boolean
@@ -4638,22 +3681,20 @@ components:
         Filters articles by content completeness.
 
         If false, returns only articles for which full-text content is publicly available. If true, returns all indexed articles, including those where only partial content is publicly available (e.g., headlines, summaries, or preview paragraphs from paywalled sources).
-        
+
         **Note**: NewsCatcher indexes content that is publicly accessible and available for crawling in accordance with publisher access controls (e.g., robots.txt and similar mechanisms). For paywalled sources, only content that publishers make publicly available (such as headlines, summaries, or preview text) is indexed. NewsCatcher does not bypass paywalls, authentication systems, or other technical access restrictions.
       example: false
 
     Links:
       oneOf:
         - type: string
+          example: "https://nytimes.com/article1, https://bbc.com/article2"
         - type: array
           items:
             type: string
+          example: ["https://nytimes.com/article1", "https://bbc.com/article2"]
       description: |
         The article link or list of article links to search for. To specify multiple links, use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"https://nytimes.com/article1, https://bbc.com/article2"`
-        - `["https://nytimes.com/article1", "https://bbc.com/article2"]`
 
         **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
       example: https://nytimes.com/article1
@@ -4661,39 +3702,15 @@ components:
     Ids:
       oneOf:
         - type: string
+          example: "5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"
         - type: array
           items:
             type: string
+          example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
       description: |
         The Newscatcher article ID (corresponds to the `_id` field in API response) or a list of article IDs to search for. To specify multiple IDs, use a comma-separated string or an array of strings.
 
-        Examples: 
-        - `"5f8d0d55b6e45e00179c6e7e,5f8d0d55b6e45e00179c6e7f"` 
-        - `["5f8d0d55b6e45e00179c6e7e","5f8d0d55b6e45e00179c6e7f"]`
-
         **Caution**: You can use either the `links` or the `ids` parameter, but not both at the same time.
-      example: ["5f8d0d55b6e45e00179c6e7e", "5f8d0d55b6e45e00179c6e7f"]
-
-    IncludeSimilarDocuments:
-      type: boolean
-      default: false
-      description: |
-        If true, includes similar documents in the response.
-      example: true
-
-    SimilarDocumentsNumber:
-      type: integer
-      default: 5
-      description: |
-        The number of similar documents to return.
-      example: 10
-
-    SimilarDocumentsFields:
-      type: string
-      default: title,content
-      description: |
-        The fields to consider for finding similar documents.
-      example: title,summary
 
     NerName:
       type: string
@@ -4720,16 +3737,14 @@ components:
     SourceUrl:
       oneOf:
         - type: string
+          example: "bbc.com,nytimes.com"
         - type: array
           items:
             type: string
+          example: ["bbc.com", "nytimes.com"]
       description: |
         The domains of the news publication to search for. To specify multiple news sources, 
         use a comma-separated string or an array of strings.
-
-        Examples: 
-        - `"bbc.com, nytimes.com"`
-        - `["bbc.com", "nytimes.com"]`
 
         **Caution**:  When specifying the `source_url` parameter, you can only use `include_additional_info` as an extra parameter.
       example: bbc.com
@@ -4744,7 +3759,6 @@ components:
         The aggregation interval for the results.
       default: day
 
-    # New params
     NewsDomainType:
       type: string
       enum:
@@ -4765,19 +3779,15 @@ components:
     NewsType:
       oneOf:
         - type: string
+          example: "General News Outlets,Tech News and Updates"
         - type: array
           items:
             type: string
+          example: ["General News Outlets", "Tech News and Updates"]
       description: |
         Filters results based on the news type. Multiple types can be specified using a comma-separated string or an array of strings.
 
-        Examples:
-        - `"General News Outlets,Tech News and Updates"`
-        - `["General News Outlets", "Tech News and Updates"]`
-
         For a complete list of available news types, see [Enumerated parameters > News type](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters#news-type-news-type).
-
-      example: ["General News Outlets", "Tech News and Updates"]
 
     AdditionalDomainInfo:
       type: boolean
@@ -4794,7 +3804,6 @@ components:
         If true, filters results to include only news domains.
       example: true
 
-    # Breaking news
     TopNArticles:
       type: integer
       minimum: 1
