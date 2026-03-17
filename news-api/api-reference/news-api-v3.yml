@@ -65,7 +65,7 @@ tags:
         Retrieve the list of available sources, filtered by language and
         country.
       url: https://www.newscatcherapi.com/docs/news-api/api-reference/sources/retrieve-sources-get
-  - name: Aggregation
+  - name: AggregationCount
     description: Operations to aggregate news counts.
     externalDocs:
       description:
@@ -81,6 +81,8 @@ tags:
 paths:
   /api/search:
     get:
+      x-fern-sdk-group-name: search
+      x-fern-sdk-method-name: get
       tags:
         - Search
       summary: Search articles
@@ -165,6 +167,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 
     post:
+      x-fern-sdk-group-name: search
+      x-fern-sdk-method-name: post
       tags:
         - Search
       summary: Search articles
@@ -194,6 +198,8 @@ paths:
 
   /api/latest_headlines:
     get:
+      x-fern-sdk-group-name: latest_headlines
+      x-fern-sdk-method-name: get
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
@@ -265,6 +271,8 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
+      x-fern-sdk-group-name: latest_headlines
+      x-fern-sdk-method-name: post
       tags:
         - LatestHeadlines
       summary: Retrieve latest headlines
@@ -294,6 +302,8 @@ paths:
 
   /api/breaking_news:
     get:
+      x-fern-sdk-group-name: breaking_news
+      x-fern-sdk-method-name: get
       tags:
         - BreakingNews
       summary: Get breaking news
@@ -341,6 +351,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 
     post:
+      x-fern-sdk-group-name: breaking_news
+      x-fern-sdk-method-name: post
       tags:
         - BreakingNews
       summary: Get breaking news
@@ -370,6 +382,8 @@ paths:
 
   /api/authors:
     get:
+      x-fern-sdk-group-name: authors
+      x-fern-sdk-method-name: get
       tags:
         - Authors
       summary: Search articles by author
@@ -439,7 +453,10 @@ paths:
           $ref: "#/components/responses/RateLimitError"
         "500":
           $ref: "#/components/responses/InternalServerError"
+
     post:
+      x-fern-sdk-group-name: authors
+      x-fern-sdk-method-name: post
       tags:
         - Authors
       summary: Search articles by author
@@ -469,6 +486,8 @@ paths:
 
   /api/search_by_link:
     get:
+      x-fern-sdk-group-name: search_by_link
+      x-fern-sdk-method-name: get
       tags:
         - SearchByLink
       summary: Search articles by links or IDs
@@ -516,7 +535,7 @@ paths:
         - $ref: "#/components/parameters/RobotsCompliant"
       responses:
         "200":
-          $ref: "#/components/responses/SearchLinkResponse"
+          $ref: "#/components/responses/SearchByLinkResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -532,16 +551,18 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
+      x-fern-sdk-group-name: search_by_link
+      x-fern-sdk-method-name: post
       tags:
         - SearchByLink
       summary: Search articles by links or IDs
       description: Searches for articles using their ID(s) or link(s).
       operationId: searchByLinkPost
       requestBody:
-        $ref: "#/components/requestBodies/SearchLinkRequestBody"
+        $ref: "#/components/requestBodies/SearchByLinkRequestBody"
       responses:
         "200":
-          $ref: "#/components/responses/SearchLinkResponse"
+          $ref: "#/components/responses/SearchByLinkResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
         "401":
@@ -559,6 +580,8 @@ paths:
 
   /api/sources:
     get:
+      x-fern-sdk-group-name: sources
+      x-fern-sdk-method-name: get
       tags:
         - Sources
       summary: Retrieve sources
@@ -597,6 +620,8 @@ paths:
           $ref: "#/components/responses/InternalServerError"
 
     post:
+      x-fern-sdk-group-name: sources
+      x-fern-sdk-method-name: post
       tags:
         - Sources
       summary: Retrieve sources
@@ -626,8 +651,10 @@ paths:
 
   /api/aggregation_count:
     get:
+      x-fern-sdk-group-name: aggregation_count
+      x-fern-sdk-method-name: get
       tags:
-        - Aggregation
+        - AggregationCount
       summary: Get aggregation count by interval
       description:
         Retrieves the count of articles aggregated by day or hour based on
@@ -697,8 +724,10 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
+      x-fern-sdk-group-name: aggregation_count
+      x-fern-sdk-method-name: post
       tags:
-        - Aggregation
+        - AggregationCount
       summary: Get aggregation count by interval
       description:
         Retrieves the count of articles aggregated by day or hour based on
@@ -726,11 +755,13 @@ paths:
 
   /api/subscription:
     get:
+      x-fern-sdk-group-name: subscription
+      x-fern-sdk-method-name: get
       tags:
         - Subscription
       summary: Retrieve subscription plan information
       description: Retrieves information about your subscription plan.
-      operationId: Subscription_get
+      operationId: subscriptionGet
       responses:
         "200":
           $ref: "#/components/responses/SubscriptionResponse"
@@ -749,11 +780,13 @@ paths:
         "500":
           $ref: "#/components/responses/InternalServerError"
     post:
+      x-fern-sdk-group-name: subscription
+      x-fern-sdk-method-name: post
       tags:
         - Subscription
       summary: Retrieve subscription plan information
       description: Retrieves information about your subscription plan.
-      operationId: Subscription_post
+      operationId: subscriptionPost
       responses:
         "200":
           $ref: "#/components/responses/SubscriptionResponse"
@@ -1853,7 +1886,7 @@ components:
               q: '"supply chain" AND Amazon NOT China'
               page_size: 1
 
-    SearchLinkRequestBody:
+    SearchByLinkRequestBody:
       description:
         Request body for searching articles based on specified links or IDs.
       required: true
@@ -1982,7 +2015,7 @@ components:
           schema:
             $ref: "#/components/schemas/BreakingNewsResponseDto"
 
-    SearchLinkResponse:
+    SearchByLinkResponse:
       description:
         A successful response containing articles that match the provided links
         or IDs.
