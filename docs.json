@@ -238,9 +238,7 @@
             "pages": [
               "news-api/libraries/python",
               "news-api/libraries/typescript",
-              "news-api/libraries/java",
-              "news-api/libraries/go",
-              "news-api/libraries/csharp"
+              "news-api/libraries/java"
             ]
           }
         ]
