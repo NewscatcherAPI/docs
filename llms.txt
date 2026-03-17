@@ -117,8 +117,8 @@
 
 ### API Reference — Search
 
-- [Search Articles Get (GET)](https://www.newscatcherapi.com/docs/news-api/api-reference/search/search-articles-get): Searches for articles based on specified criteria such as keyword, language, country, source, and more.
-- [Search Articles Post (POST)](https://www.newscatcherapi.com/docs/news-api/api-reference/search/search-articles-post): Searches for articles based on specified criteria such as keyword, language, country, source, and more.
+- [Search Articles Get (GET)](https://www.newscatcherapi.com/docs/news-api/api-reference/search/search-articles-get): Searches for articles based on specified criteria such as keywords, language, country, source, and more.
+- [Search Articles Post (POST)](https://www.newscatcherapi.com/docs/news-api/api-reference/search/search-articles-post): Searches for articles based on specified criteria such as keywords, language, country, source, and more.
 
 ### API Reference — Latest headlines
 
@@ -160,8 +160,6 @@
 - [Python SDK](https://www.newscatcherapi.com/docs/news-api/libraries/python): Python client library for News API
 - [TypeScript SDK](https://www.newscatcherapi.com/docs/news-api/libraries/typescript): TypeScript client library for News API
 - [Java SDK](https://www.newscatcherapi.com/docs/news-api/libraries/java): Java client library for News API
-- [Go SDK](https://www.newscatcherapi.com/docs/news-api/libraries/go): Go client library for News API
-- [C# SDK](https://www.newscatcherapi.com/docs/news-api/libraries/csharp): C# client library for News API
 
 ## Local News API
 
@@ -199,5 +197,5 @@
 ## API Specifications
 
 - [catch-all-api](https://github.com/NewscatcherAPI/docs/blob/main/web-search-api/api-reference/catch-all-api.yml): CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web.
-- [news-api-v3](https://github.com/NewscatcherAPI/docs/blob/main/news-api/api-reference/news-api-v3.yml): The NewsCatcher News API provides streamlined access to vast global news content tailored specifically for developers and data scientists.
+- [news-api-v3](https://github.com/NewscatcherAPI/docs/blob/main/news-api/api-reference/news-api-v3.yml): NewsCatcher News API provides programmatic access to a continuously updated global news index.
 - [local-news-api](https://github.com/NewscatcherAPI/docs/blob/main/local-news-api/api-reference/local-news-api.yml): The Local News API provides access to local news articles with location-specific filtering capabilities.
