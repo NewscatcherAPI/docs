@@ -12,7 +12,7 @@ Java SDK provides access to the News API from Java or Kotlin applications.
 
 ```groovy
 dependencies {
-    implementation 'com.newscatcherapi:newscatcher-sdk:1.1.0'
+    implementation 'com.newscatcherapi:newscatcher-sdk:2.0.0'
 }
 ```
 
@@ -22,7 +22,7 @@ dependencies {
 <dependency>
     <groupId>com.newscatcherapi</groupId>
     <artifactId>newscatcher-sdk</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
@@ -30,14 +30,13 @@ dependencies {
 
 ```java
 import com.newscatcher.api.NewscatcherApiClient;
-import com.newscatcher.api.resources.search.requests.SearchPostRequest;
-import java.util.Arrays;
+import com.newscatcher.api.resources.search.requests.PostSearchRequest;
 
 NewscatcherApiClient client = NewscatcherApiClient.builder()
     .apiKey("YOUR_API_KEY")
     .build();
 
-client.search().post(SearchPostRequest.builder()
+client.search().post(PostSearchRequest.builder()
     .q("renewable energy")
     .lang(Arrays.asList("en"))
     .build());
