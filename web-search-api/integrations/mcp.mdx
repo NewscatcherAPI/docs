@@ -22,7 +22,7 @@ The MCP server authenticates with the CatchAll API using the `apiKey` query
 parameter in the server URL:
 
 ```
-https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY
 ```
 
 Each tool call uses this key automatically. No additional authentication is
@@ -51,7 +51,7 @@ new key and restart the client.
         - **Remote MCP server URL**:
 
         ```
-        https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+        https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY
         ```
       </Step>
       <Step title="Add and verify">
@@ -94,7 +94,7 @@ new key and restart the client.
               "args": [
                 "-y",
                 "mcp-remote",
-                "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+                "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
               ]
             }
           }
@@ -117,7 +117,7 @@ new key and restart the client.
 
     ```bash
     claude mcp add --transport http catchall \
-      "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+      "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
     ```
 
     <Tip>
@@ -133,7 +133,7 @@ new key and restart the client.
     {
       "mcpServers": {
         "catchall": {
-          "url": "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -151,7 +151,7 @@ new key and restart the client.
       "servers": {
         "catchall": {
           "type": "http",
-          "url": "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -168,7 +168,7 @@ new key and restart the client.
     {
       "mcpServers": {
         "catchall": {
-          "serverUrl": "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "serverUrl": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -185,7 +185,7 @@ new key and restart the client.
     {
       "mcpServers": {
         "catchall": {
-          "url": "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -205,7 +205,7 @@ new key and restart the client.
           "args": [
             "-y",
             "mcp-remote",
-            "https://catchall-mcp.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+            "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
           ]
         }
       }
