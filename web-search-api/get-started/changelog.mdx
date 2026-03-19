@@ -5,6 +5,38 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.3.1" description="2026-03-19">
+## Job modes, plan limits, and response improvements
+
+**Features:**
+
+- **Job modes**: Submit jobs in `lite` or `base` mode with the new `mode`
+  parameter. Lite mode provides lightweight extraction with titles and citations
+  only. Base mode runs the full pipeline with validation and enrichment.
+- **Plan limits**: Retrieve plan features and current usage, including
+  concurrency slots, max results, lookback limits, and monthly credits.
+
+**Endpoints:**
+
+- [`POST /catchAll/user/limits`](/web-search-api/api-reference/meta/get-plan-limits)
+  — Get plan features and current usage.
+
+**Improvements:**
+
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
+  now returns `mode` and full validator/enrichment objects instead of name-only
+  arrays.
+- [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+  now returns `mode` and masked `user_key` for each job.
+- [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors)
+  now returns masked `user_key` for each monitor.
+- Fixed duplicate confidence values appearing in enrichment records.
+- Fixed pagination handling in the pull endpoint.
+- Improved multi-word query handling for lite mode.
+- Gateway authentication caching reduces response times.
+
+</Update>
+
 <Update label="1.1.2" description="2026-03-03">
 ## Monitor controls and response improvements
 
