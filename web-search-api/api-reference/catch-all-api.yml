@@ -623,10 +623,14 @@ components:
                 query: "Series B funding rounds for SaaS startups"
                 created_at: "2026-02-24T13:57:56Z"
                 status: "completed"
+                user_key: "***...a1b2"
+                mode: "base"
               - job_id: "8d618890-f9f5-4c97-af17-236136a306a7"
                 query: "Corporate headquarters relocations in the US"
                 created_at: "2026-02-18T20:25:20Z"
                 status: "completed"
+                user_key: "***...a1b2"
+                mode: "base"
 
     PullJobResponse:
       description: Results retrieved successfully
@@ -757,6 +761,10 @@ components:
                 schedule_human_readable: "Every day at 12 PM"
                 timezone: "UTC"
                 created_at: "2026-02-24T14:00:00Z"
+                webhook:
+                  url: "https://example.com/webhook"
+                  method: "POST"
+                user_key: "***...a1b2"
 
     HealthCheckResponse:
       description: API is healthy
@@ -1262,6 +1270,10 @@ components:
           default: "base"
           description: Processing mode used for this job.
           example: "base"
+        user_key:
+          type: string
+          description: Masked API key that created this job.
+          example: "***...a1b2"
 
     PullJobResponseDTO:
       type: object
@@ -1785,8 +1797,15 @@ components:
           description: The date when the monitor was created.
           example: "2025-10-23T14:30:00Z"
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
-          description: Webhook configuration for this monitor (if set).
+          oneOf:
+            - $ref: "#/components/schemas/WebhookDTO"
+            - type: "null"
+          description:
+            Webhook configuration for this monitor, or null if not set.
+        user_key:
+          type: string
+          description: Masked API key associated with this monitor.
+          example: "***...a1b2"
 
     WebhookPayload:
       type: object
