@@ -91,7 +91,8 @@
                 "group": "Meta",
                 "pages": [
                   "web-search-api/api-reference/meta/health",
-                  "web-search-api/api-reference/meta/version"
+                  "web-search-api/api-reference/meta/version",
+                  "web-search-api/api-reference/meta/get-plan-limits"
                 ]
               }
             ]
