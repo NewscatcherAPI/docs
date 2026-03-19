@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.1.2
+  version: 1.3.1
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -64,7 +64,8 @@ paths:
       tags:
         - Jobs
       summary: Initialize job
-      description: Get suggested validators, enrichments, and date ranges for a query.
+      description:
+        Get suggested validators, enrichments, and date ranges for a query.
       operationId: initialize
       externalDocs:
         description: Learn about validator and enrichment suggestions
@@ -108,6 +109,7 @@ paths:
               start_date: "2026-02-18T00:00:00Z"
               end_date: "2026-02-23T00:00:00Z"
               limit: 10
+              mode: "base"
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
@@ -123,7 +125,9 @@ paths:
       tags:
         - Jobs
       summary: Continue job
-      description: Continue an existing job to process more records beyond the initial limit.
+      description:
+        Continue an existing job to process more records beyond the initial
+        limit.
       operationId: continueJob
       externalDocs:
         description: Learn about job continuation and limits
@@ -313,7 +317,8 @@ paths:
       tags:
         - Monitors
       summary: Get monitor results
-      description: Retrieve aggregated results from all jobs executed by a monitor.
+      description:
+        Retrieve aggregated results from all jobs executed by a monitor.
       operationId: pullMonitorResults
       parameters:
         - name: monitor_id
@@ -473,6 +478,20 @@ paths:
         "200":
           $ref: "#/components/responses/VersionResponse"
 
+  /catchAll/user/limits:
+    post:
+      tags:
+        - Meta
+      summary: Get plan limits
+      description: |
+        Returns plan features and current usage for the authenticated organization.
+      operationId: getPlanLimits
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPlanLimitsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
 components:
   parameters:
     JobId:
@@ -618,10 +637,14 @@ components:
                 query: "Series B funding rounds for SaaS startups"
                 created_at: "2026-02-24T13:57:56Z"
                 status: "completed"
+                user_key: "***...a1b2"
+                mode: "base"
               - job_id: "8d618890-f9f5-4c97-af17-236136a306a7"
                 query: "Corporate headquarters relocations in the US"
                 created_at: "2026-02-18T20:25:20Z"
                 status: "completed"
+                user_key: "***...a1b2"
+                mode: "base"
 
     PullJobResponse:
       description: Results retrieved successfully
@@ -633,18 +656,8 @@ components:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             query: "Series B funding rounds for SaaS startups"
             context: "Focus on funding amount and company name"
-            validators:
-              - "is_series_b_funding"
-              - "is_saas_startup"
-            enrichments:
-              - "enrichment_confidence"
-              - "funding_amount"
-              - "funding_currency"
-              - "funding_date"
-              - "investee_company"
-              - "investor_company"
-              - "valuation"
-              - "other_investors"
+            validators: []
+            enrichments: []
             status: "completed"
             error: null
             duration: "1m"
@@ -658,6 +671,7 @@ components:
             page_size: 2
             total_pages: 2
             limit: 10
+            mode: "base"
             all_records:
               - record_id: "6983973854314692457"
                 record_title: "VulnCheck Raises $25M Series B Funding"
@@ -761,6 +775,10 @@ components:
                 schedule_human_readable: "Every day at 12 PM"
                 timezone: "UTC"
                 created_at: "2026-02-24T14:00:00Z"
+                webhook:
+                  url: "https://example.com/webhook"
+                  method: "POST"
+                user_key: "***...a1b2"
 
     HealthCheckResponse:
       description: API is healthy
@@ -782,7 +800,31 @@ components:
             properties:
               version:
                 type: string
-                example: "1.1.2"
+                example: "1.3.1"
+
+    GetPlanLimitsResponse:
+      description: Plan limits retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetPlanLimitsResponseDTO"
+          example:
+            features:
+              - name: "Jobs Concurrency"
+                code: "Jobs_Concurrency"
+                value_type: "integer"
+                value: 20
+                current_usage: 1
+              - name: "Max Results"
+                code: "Job_Max_Results"
+                value_type: "integer"
+                value: 100000
+                current_usage: 0
+              - name: "Monthly Granted Credits"
+                code: "monthly_free_credits"
+                value_type: "integer"
+                value: 200000
+                current_usage: 0
 
     BadRequestError:
       description: |
@@ -798,7 +840,8 @@ components:
               summary: Date outside plan limit
               value:
                 detail:
-                  "start_date must be >= 2025-02-05, your plan limited to lookback 365 days."
+                  "start_date must be >= 2025-02-05, your plan limited to
+                  lookback 365 days."
             invalid_continuation:
               summary: Invalid job continuation
               value:
@@ -1071,6 +1114,15 @@ components:
             Custom enrichment fields for data extraction.
 
             If not provided, enrichments are generated automatically based on the query.
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: |
+            Job processing mode.
+
+            - `base`: Full pipeline with validation and enrichment.
+            - `lite`: Lightweight extraction with faster processing. Returns titles and citations only.
 
     SubmitResponseDTO:
       type: object
@@ -1250,6 +1302,16 @@ components:
           type: string
           description: Current processing status of the job.
           example: "completed"
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: Processing mode used for this job.
+          example: "base"
+        user_key:
+          type: string
+          description: Masked API key that created this job.
+          example: "***...a1b2"
 
     PullJobResponseDTO:
       type: object
@@ -1271,34 +1333,17 @@ components:
         validators:
           type: array
           items:
-            type: string
-          description: List of validation criteria applied to filter results.
+            type: object
+          description: Validators applied to filter results.
           default: []
-          example:
-            [
-              "is_series_b_funding",
-              "is_saas_startup",
-            ]
+          example: []
         enrichments:
           type: array
           items:
-            type: string
-          description: |
-            List of extracted field names generated by the enrichment process. These field names appear in the `enrichment` object of each record.
-
-            **Note:** The `enrichment_confidence` field always appears in this list. The system adds it to every record regardless of the enrichments generated or defined.
+            type: object
+          description: Enrichment fields used for data extraction.
           default: []
-          example:
-            [
-              "enrichment_confidence",
-              "funding_amount",
-              "funding_currency",
-              "funding_date",
-              "investee_company",
-              "investor_company",
-              "valuation",
-              "other_investors",
-            ]
+          example: []
         status:
           type: string
           description: |
@@ -1306,10 +1351,13 @@ components:
           example: "completed"
         error:
           type: [string, "null"]
-          description: Error message if the job failed. Null for successful jobs.
+          description:
+            Error message if the job failed. Null for successful jobs.
         limit:
           type: integer
-          description: Record limit for this job. Reflects the value specified at submit time, or the plan default if no limit was provided.
+          description:
+            Record limit for this job. Reflects the value specified at submit
+            time, or the plan default if no limit was provided.
           example: 100
         duration:
           type: string
@@ -1318,7 +1366,9 @@ components:
         candidate_records:
           type: integer
           description:
-            Total number of distinct event clusters identified. Compare with `progress_validated` to estimate how many candidates remain unprocessed for job continuation.
+            Total number of distinct event clusters identified. Compare with
+            `progress_validated` to estimate how many candidates remain
+            unprocessed for job continuation.
           example: 4
         valid_records:
           type: integer
@@ -1357,6 +1407,12 @@ components:
           minimum: 0
           default: 0
           description: The total number of pages available.
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: Processing mode used for this job.
+          example: "base"
         all_records:
           type: array
           items:
@@ -1391,7 +1447,8 @@ components:
             enrichment_confidence:
               type: ["string", "null"]
               enum: ["low", "medium", "high", null]
-              description: Overall confidence score for the enrichment extraction.
+              description:
+                Overall confidence score for the enrichment extraction.
               example: "high"
           additionalProperties: {}
           example:
@@ -1414,7 +1471,8 @@ components:
                 domain_url: null
                 domain_url_confidence: null
             valuation: 25000000
-            other_investors: "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
+            other_investors:
+              "National Grid Partners, Ten Eleven Ventures, In-Q-Tel"
 
     Record:
       allOf:
@@ -1427,7 +1485,8 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/Citation"
-              description: Source documents that were used to extract this record.
+              description:
+                Source documents that were used to extract this record.
 
     Citation:
       type: object
@@ -1466,7 +1525,8 @@ components:
           properties:
             id:
               type: string
-              description: Unique identifier of the document in the search index.
+              description:
+                Unique identifier of the document in the search index.
               example: "8760624448e9815f9fb4abd114c75e76"
             job_id:
               type: string
@@ -1476,7 +1536,9 @@ components:
             added_on:
               type: string
               format: date-time
-              description: The date when the citation was added to the record in ISO 8601 format with UTC timezone.
+              description:
+                The date when the citation was added to the record in ISO 8601
+                format with UTC timezone.
               example: "2025-11-14T21:00:00Z"
       description: |
         Citation with monitor-specific metadata. Used in monitor results and webhook payloads.
@@ -1493,16 +1555,22 @@ components:
               type: array
               items:
                 $ref: "#/components/schemas/MonitorCitation"
-              description: Source documents with monitor-specific metadata (job_id, added_on timestamps).
+              description:
+                Source documents with monitor-specific metadata (job_id,
+                added_on timestamps).
             added_on:
               type: string
               format: date-time
-              description: The date when this record was first added to monitor results in ISO 8601 format with UTC timezone.
+              description:
+                The date when this record was first added to monitor results in
+                ISO 8601 format with UTC timezone.
               example: "2025-11-14T21:00:00Z"
             updated_on:
               type: string
               format: date-time
-              description: The date when this record was last updated in monitor results in ISO 8601 format with UTC timezone.
+              description:
+                The date when this record was last updated in monitor results in
+                ISO 8601 format with UTC timezone.
               example: "2025-11-14T21:00:00Z"
       description: |
         Record with monitor-specific metadata. Used in monitor results and webhook payloads.
@@ -1542,7 +1610,7 @@ components:
           default: true
           description: |
             If true, fills the data gap between the reference job's `end_date` and the first scheduled run. The reference job's `end_date` must be within the last 7 days. 
-            
+
             If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
 
     WebhookDTO:
@@ -1647,7 +1715,7 @@ components:
           type: string
           description: |
             The cron expression for a monitor schedule parsed from the text schedule you provide.
-            
+
             Standard cron format (minute hour day month day-of-week).
           example: "0 12 * * *"
         timezone:
@@ -1767,8 +1835,15 @@ components:
           description: The date when the monitor was created.
           example: "2025-10-23T14:30:00Z"
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
-          description: Webhook configuration for this monitor (if set).
+          oneOf:
+            - $ref: "#/components/schemas/WebhookDTO"
+            - type: "null"
+          description:
+            Webhook configuration for this monitor, or null if not set.
+        user_key:
+          type: string
+          description: Masked API key associated with this monitor.
+          example: "***...a1b2"
 
     WebhookPayload:
       type: object
@@ -1852,8 +1927,45 @@ components:
           default: true
           description: |
             If true, fills the data gap between the last job's `end_date` and the first scheduled run after enabling. The last job's `end_date` must be within the last 7 days. 
-            
+
             If false, no gap filling occurs and the first run uses the current cron window only — the last job's age does not matter.
+
+    GetPlanLimitsResponseDTO:
+      type: object
+      required:
+        - features
+      properties:
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanFeature"
+          description: Plan features with current usage.
+
+    PlanFeature:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+          description: Human-readable feature name.
+          example: "Jobs Concurrency"
+        code:
+          type: string
+          description: Machine-readable feature identifier.
+          example: "Jobs_Concurrency"
+        value_type:
+          type: string
+          description: Data type of the feature value.
+          example: "integer"
+        value:
+          description: Feature limit. Type depends on `value_type`.
+          example: 20
+        current_usage:
+          type: number
+          description: Current usage count for this feature.
+          example: 1
 
     Error:
       type: object
