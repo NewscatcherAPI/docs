@@ -109,6 +109,7 @@ paths:
               start_date: "2026-02-18T00:00:00Z"
               end_date: "2026-02-23T00:00:00Z"
               limit: 10
+              mode: "base"
       responses:
         "200":
           $ref: "#/components/responses/SubmitResponse"
@@ -652,6 +653,7 @@ components:
             page_size: 2
             total_pages: 2
             limit: 10
+            mode: "base"
             all_records:
               - record_id: "6983973854314692457"
                 record_title: "VulnCheck Raises $25M Series B Funding"
@@ -1066,6 +1068,15 @@ components:
             Custom enrichment fields for data extraction.
 
             If not provided, enrichments are generated automatically based on the query.
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: |
+            Job processing mode.
+
+            - `base`: Full pipeline with validation and enrichment.
+            - `lite`: Lightweight extraction with faster processing. Returns titles and citations only.
 
     SubmitResponseDTO:
       type: object
@@ -1245,6 +1256,12 @@ components:
           type: string
           description: Current processing status of the job.
           example: "completed"
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: Processing mode used for this job.
+          example: "base"
 
     PullJobResponseDTO:
       type: object
@@ -1340,6 +1357,12 @@ components:
           minimum: 0
           default: 0
           description: The total number of pages available.
+        mode:
+          type: string
+          enum: ["lite", "base"]
+          default: "base"
+          description: Processing mode used for this job.
+          example: "base"
         all_records:
           type: array
           items:
