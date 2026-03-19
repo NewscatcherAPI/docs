@@ -50,6 +50,8 @@
 
 - [Health](https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/health): Check API availability.
 - [Version](https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/version): Returns current API version.
+- [Get Plan Limits](https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/get-plan-limits): Returns plan features and current usage for the authenticated organization.
+
 
 ### Libraries
 
