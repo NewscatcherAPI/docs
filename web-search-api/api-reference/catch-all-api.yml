@@ -478,6 +478,20 @@ paths:
         "200":
           $ref: "#/components/responses/VersionResponse"
 
+  /catchAll/user/limits:
+    post:
+      tags:
+        - Meta
+      summary: Get plan limits
+      description: |
+        Returns plan features and current usage for the authenticated organization.
+      operationId: getPlanLimits
+      responses:
+        "200":
+          $ref: "#/components/responses/GetPlanLimitsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
 components:
   parameters:
     JobId:
@@ -787,6 +801,30 @@ components:
               version:
                 type: string
                 example: "1.3.1"
+
+    GetPlanLimitsResponse:
+      description: Plan limits retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetPlanLimitsResponseDTO"
+          example:
+            features:
+              - name: "Jobs Concurrency"
+                code: "Jobs_Concurrency"
+                value_type: "integer"
+                value: 20
+                current_usage: 1
+              - name: "Max Results"
+                code: "Job_Max_Results"
+                value_type: "integer"
+                value: 100000
+                current_usage: 0
+              - name: "Monthly Granted Credits"
+                code: "monthly_free_credits"
+                value_type: "integer"
+                value: 200000
+                current_usage: 0
 
     BadRequestError:
       description: |
@@ -1891,6 +1929,43 @@ components:
             If true, fills the data gap between the last job's `end_date` and the first scheduled run after enabling. The last job's `end_date` must be within the last 7 days. 
 
             If false, no gap filling occurs and the first run uses the current cron window only — the last job's age does not matter.
+
+    GetPlanLimitsResponseDTO:
+      type: object
+      required:
+        - features
+      properties:
+        features:
+          type: array
+          items:
+            $ref: "#/components/schemas/PlanFeature"
+          description: Plan features with current usage.
+
+    PlanFeature:
+      type: object
+      required:
+        - name
+        - code
+      properties:
+        name:
+          type: string
+          description: Human-readable feature name.
+          example: "Jobs Concurrency"
+        code:
+          type: string
+          description: Machine-readable feature identifier.
+          example: "Jobs_Concurrency"
+        value_type:
+          type: string
+          description: Data type of the feature value.
+          example: "integer"
+        value:
+          description: Feature limit. Type depends on `value_type`.
+          example: 20
+        current_usage:
+          type: number
+          description: Current usage count for this feature.
+          example: 1
 
     Error:
       type: object
