@@ -18,22 +18,19 @@ submit jobs, poll status, retrieve results, and manage monitors.
 
 ## Authentication
 
-The MCP server authenticates with the CatchAll API using the `apiKey` query
-parameter in the server URL:
+The MCP server authenticates using the `x-api-key` request header. Each tool
+call uses this key automatically. No additional authentication is needed from
+the client.
 
-```
-https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY
-```
+To rotate your key, update your client configuration with the new key and
+restart the client.
 
-Each tool call uses this key automatically. No additional authentication is
-needed from the client.
-
-To rotate your key, update the server URL in your client configuration with the
-new key and restart the client.
+The exception is Claude.ai, which passes the key as a query parameter because
+its connector UI does not support custom request headers.
 
 <Warning>
-  The URL contains your API key. Treat it as a secret and do not share it or
-  commit it to version control.
+  Your configuration file contains your API key in plain text. Treat it as a
+  secret and do not share it or commit it to version control.
 </Warning>
 
 ## Connect to client
@@ -69,22 +66,44 @@ new key and restart the client.
   </Tab>
 
   <Tab title="Claude Desktop">
-    Claude Desktop does not natively support remote MCP servers. Use `mcp-remote` to proxy the connection.
+    Claude Desktop supports remote MCP servers through the Connectors UI (**Settings > Customize > Connectors**) — the same flow as Claude.ai.
 
+    Alternatively, you can configure it via a JSON config file. This approach does not support native remote MCP, so it requires `mcp-remote` as a proxy.
     <Steps>
+      <Step title="Install Node.js">
+        Run `node --version` to check if Node.js is installed. If the command fails, download and install it from [nodejs.org](https://nodejs.org) before continuing.
+      </Step>
+      <Step title="Fix npm permissions (once)">
+        Run this once to avoid permission errors when using `npx`:
+
+        ```bash
+        sudo chown -R $(whoami) ~/.npm
+        ```
+      </Step>
       <Step title="Install mcp-remote">
         ```bash
         npm install -g mcp-remote
         ```
       </Step>
       <Step title="Open configuration file">
-        Open your Claude Desktop configuration file:
 
-        - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-        - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+        <Tabs>
+          <Tab title="macOS">
+          ```txt
+          ~/Library/Application Support/Claude/claude_desktop_config.json
+          ```
+          </Tab>
+          <Tab title="Windows">
+          ```txt
+          %APPDATA%\Claude\claude_desktop_config.json
+          ```
+          </Tab>
+        </Tabs>
+
+        Or open it from Claude Desktop: **Settings > Developer > Edit Config**.
       </Step>
       <Step title="Add CatchAll entry">
-        Add the following to your configuration file:
+        Paste the following into the file:
 
         ```json
         {
@@ -92,9 +111,10 @@ new key and restart the client.
             "catchall": {
               "command": "npx",
               "args": [
-                "-y",
                 "mcp-remote",
-                "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+                "https://catchall-mcp.newscatcherapi.com/mcp",
+                "--header",
+                "x-api-key:YOUR_CATCHALL_API_KEY"
               ]
             }
           }
@@ -102,7 +122,10 @@ new key and restart the client.
         ```
       </Step>
       <Step title="Restart Claude Desktop">
-        Quit and relaunch Claude Desktop. Claude Desktop loads MCP tools on startup.
+        Save the file and quit Claude Desktop completely, then relaunch it. Claude Desktop loads MCP tools on startup.
+      </Step>
+      <Step title="Verify connection">
+        Go to **Settings > Developer**. Next to **catchall**, the status should show **running**.
       </Step>
     </Steps>
 
@@ -117,7 +140,8 @@ new key and restart the client.
 
     ```bash
     claude mcp add --transport http catchall \
-      "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+      "https://catchall-mcp.newscatcherapi.com/mcp" \
+      --header "x-api-key:YOUR_CATCHALL_API_KEY"
     ```
 
     <Tip>
@@ -133,7 +157,11 @@ new key and restart the client.
     {
       "mcpServers": {
         "catchall": {
-          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "type": "http",
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
         }
       }
     }
@@ -151,7 +179,10 @@ new key and restart the client.
       "servers": {
         "catchall": {
           "type": "http",
-          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
         }
       }
     }
@@ -168,7 +199,10 @@ new key and restart the client.
     {
       "mcpServers": {
         "catchall": {
-          "serverUrl": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "serverUrl": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
         }
       }
     }
@@ -179,23 +213,22 @@ new key and restart the client.
   </Tab>
 
   <Tab title="Other clients">
-    Most MCP clients accept the server URL directly:
+    For clients that support native HTTP MCP with headers:
 
     ```json
     {
       "mcpServers": {
         "catchall": {
-          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
         }
       }
     }
     ```
 
-    If your client does not support remote MCP servers, use `mcp-remote` as a proxy:
-
-    ```bash
-    npm install -g mcp-remote
-    ```
+    If your client does not support remote MCP servers natively, use `mcp-remote` as a proxy:
 
     ```json
     {
@@ -203,9 +236,10 @@ new key and restart the client.
         "catchall": {
           "command": "npx",
           "args": [
-            "-y",
             "mcp-remote",
-            "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+            "https://catchall-mcp.newscatcherapi.com/mcp",
+            "--header",
+            "x-api-key:YOUR_CATCHALL_API_KEY"
           ]
         }
       }
@@ -245,6 +279,14 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `enable_monitor` | Re-enable a previously disabled monitor |
     | `disable_monitor` | Pause a monitor without deleting it |
   </Tab>
+  
+  <Tab title="Meta">
+    | Tool | Description |
+    |------|-------------|
+    | `check_health` | Check API health status |
+    | `get_version` | Get the current API version |
+    | `get_user_limits` | Retrieve plan features and current usage against plan limits |
+  </Tab>
 </Tabs>
 
 ## Troubleshooting
@@ -270,9 +312,8 @@ If this returns a `403` error, your key is invalid. Check it at
 </Accordion>
 
 <Accordion title="Client does not support remote MCP">
-  Use `mcp-remote` to proxy the connection. Install it with `npm install -g
-  mcp-remote`, then use the `npx` configuration shown in the **Other clients**
-  tab.
+  Use `mcp-remote` to proxy the connection. Install Node.js, then use the
+  `npx` configuration shown in the **Other clients** tab.
 </Accordion>
 
 ## See also
