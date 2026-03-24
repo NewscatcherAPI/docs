@@ -42,7 +42,7 @@ The MCP server authenticates with the CatchAll API and exposes tools in Claude.
         - **Remote MCP server URL**:
 
         ```
-        https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY
+        https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY
         ```
       </Step>
       <Step title="Add and verify">
@@ -55,22 +55,44 @@ The MCP server authenticates with the CatchAll API and exposes tools in Claude.
   </Tab>
 
   <Tab title="Claude Desktop">
-    Claude Desktop does not natively support remote MCP servers. Use `mcp-remote` to proxy the connection.
+    Claude Desktop supports remote MCP servers through the Connectors UI (**Settings > Customize > Connectors**) — the same flow as Claude.ai.
 
+    Alternatively, you can configure it via a JSON config file. This approach does not support native remote MCP, so it requires `mcp-remote` as a proxy.
     <Steps>
+      <Step title="Install Node.js">
+        Run `node --version` to check if Node.js is installed. If the command fails, download and install it from [nodejs.org](https://nodejs.org) before continuing.
+      </Step>
+      <Step title="Fix npm permissions (once)">
+        Run this once to avoid permission errors when using `npx`:
+
+        ```bash
+        sudo chown -R $(whoami) ~/.npm
+        ```
+      </Step>
       <Step title="Install mcp-remote">
         ```bash
         npm install -g mcp-remote
         ```
       </Step>
       <Step title="Open configuration file">
-        Open your Claude Desktop configuration file:
 
-        - **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-        - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+        <Tabs>
+          <Tab title="macOS">
+          ```txt
+          ~/Library/Application Support/Claude/claude_desktop_config.json
+          ```
+          </Tab>
+          <Tab title="Windows">
+          ```txt
+          %APPDATA%\Claude\claude_desktop_config.json
+          ```
+          </Tab>
+        </Tabs>
+
+        Or open it from Claude Desktop: **Settings > Developer > Edit Config**.
       </Step>
       <Step title="Add CatchAll entry">
-        Add the following to your configuration file:
+        Paste the following into the file:
 
         ```json
         {
@@ -78,9 +100,10 @@ The MCP server authenticates with the CatchAll API and exposes tools in Claude.
             "catchall": {
               "command": "npx",
               "args": [
-                "-y",
                 "mcp-remote",
-                "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+                "https://catchall-mcp.newscatcherapi.com/mcp",
+                "--header",
+                "x-api-key:YOUR_CATCHALL_API_KEY"
               ]
             }
           }
@@ -88,22 +111,28 @@ The MCP server authenticates with the CatchAll API and exposes tools in Claude.
         ```
       </Step>
       <Step title="Restart Claude Desktop">
-        Quit and relaunch Claude Desktop, as it loads MCP tools on startup.
+        Save the file and quit Claude Desktop completely, then relaunch it. Claude Desktop loads MCP tools on startup.
+      </Step>
+      <Step title="Verify connection">
+        Go to **Settings > Developer**. Next to **catchall**, the status should show **running**.
       </Step>
     </Steps>
   </Tab>
 
   <Tab title="Claude Code">
+    Run in your terminal:
+
     ```bash
     claude mcp add --transport http catchall \
-      "https://catchall-mc.fastmcp.app/mcp?apiKey=YOUR_CATCHALL_API_KEY"
+      "https://catchall-mcp.newscatcherapi.com/mcp" \
+      --header "x-api-key:YOUR_CATCHALL_API_KEY"
     ```
   </Tab>
 </Tabs>
 
 <Warning>
-  The MCP URL contains your API key. Treat it as a secret and do not share it or
-  commit it to version control.
+  Your configuration file contains your API key in plain text. Treat it as a
+  secret and do not share it or commit it to version control.
 </Warning>
 
 ## Available tools
