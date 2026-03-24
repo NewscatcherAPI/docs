@@ -1,0 +1,29 @@
+name: Validate sitemap.xml
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Check sitemap.xml is up to date
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Regenerate sitemap.xml
+        run: python scripts/generate_sitemap.py
+
+      - name: Fail if sitemap.xml is out of date
+        run: |
+          if ! git diff --exit-code sitemap.xml; then
+            echo ""
+            echo "sitemap.xml is out of date."
+            echo "Run 'python scripts/generate_sitemap.py' locally and commit the updated file."
+            exit 1
+          fi
