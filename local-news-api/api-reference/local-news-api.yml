@@ -698,8 +698,46 @@ components:
             Fourth-order administrative division filter (smallest administrative units).
           example:
             name: "Downtown"
-        coordinates:
-          $ref: "#/components/schemas/CoordinatesFilter"
+        lat:
+          type: object
+          nullable: true
+          description: The latitude range to filter by. Can be `null`.
+          properties:
+            min:
+              type: number
+              format: float
+              minimum: -90
+              maximum: 90
+              description: Minimum latitude (inclusive).
+            max:
+              type: number
+              format: float
+              minimum: -90
+              maximum: 90
+              description: Maximum latitude (inclusive).
+          example:
+            min: 37.0
+            max: 38.5
+        lon:
+          type: object
+          nullable: true
+          description: The longitude range to filter by. Can be `null`.
+          properties:
+            min:
+              type: number
+              format: float
+              minimum: -180
+              maximum: 180
+              description: Minimum longitude (inclusive).
+            max:
+              type: number
+              format: float
+              minimum: -180
+              maximum: 180
+              description: Maximum longitude (inclusive).
+          example:
+            min: -123.0
+            max: -121.5
         feature_class:
           type: string
           nullable: true
@@ -814,52 +852,6 @@ components:
       example:
         lat: 40.71427
         lon: -74.00597
-
-    CoordinatesFilter:
-      type: object
-      description:
-        Geographic coordinate ranges for filtering locations in requests.
-      properties:
-        lat:
-          type: object
-          nullable: true
-          description: The latitude range of the location. Can be `null`.
-          properties:
-            min:
-              type: number
-              format: float
-              minimum: -90
-              maximum: 90
-              description: Minimum latitude (inclusive).
-            max:
-              type: number
-              format: float
-              minimum: -90
-              maximum: 90
-              description: Maximum latitude (inclusive).
-          example:
-            min: 40.0
-            max: 41.0
-        lon:
-          type: object
-          nullable: true
-          description: The longitude range of the location. Can be `null`.
-          properties:
-            min:
-              type: number
-              format: float
-              minimum: -180
-              maximum: 180
-              description: Minimum longitude (inclusive).
-            max:
-              type: number
-              format: float
-              minimum: -180
-              maximum: 180
-              description: Maximum longitude (inclusive).
-          example:
-            min: -75.0
-            max: -73.0
 
     IncludeTranslationFields:
       type: boolean
