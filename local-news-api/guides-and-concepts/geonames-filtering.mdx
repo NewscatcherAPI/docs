@@ -125,8 +125,14 @@ Search within a geographic area using coordinates:
   "geonames": [
     {
       "coordinates": {
-        "lat": 37.7749,
-        "lon": -122.4194
+        "lat": {
+          "min": 37.0,
+          "max": 38.5
+        },
+        "lon": {
+          "min": -123.0,
+          "max": -121.5
+        }
       }
     }
   ]
@@ -467,7 +473,8 @@ Convert simple location queries to GeoNames format:
 - GeoNames filtering is only available on advanced endpoints
   (`/search/advanced`, `/latest_headlines/advanced`).
 - Some detection methods may have limited coverage in certain countries.
-- Coordinate-based filtering requires precise latitude/longitude values.
+- Coordinate-based filtering uses latitude/longitude ranges (min/max). Both min
+  and max are optional — you can specify either or both bounds.
 - Alternative name search may return broader results than expected.
 
 ## See also
