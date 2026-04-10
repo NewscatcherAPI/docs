@@ -59,6 +59,25 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  /catchAll/jobs/user:
+    get:
+      tags:
+        - Jobs
+      summary: List user jobs
+      description: Returns all jobs created by the authenticated user.
+      operationId: getUserJobs
+      externalDocs:
+        description: Learn about job management
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListUserJobsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
   /catchAll/initialize:
     post:
       tags:
@@ -120,6 +139,48 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/status/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job status
+      description: Retrieve the current processing status of a job.
+      operationId: getJobStatus
+      externalDocs:
+        description: Understanding job statuses and polling
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          $ref: "#/components/responses/StatusResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/pull/{job_id}:
+    get:
+      tags:
+        - Jobs
+      summary: Get job results
+      description: Retrieve the final results for a completed job.
+      operationId: getJobResults
+      externalDocs:
+        description: Working with job results and dynamic schemas
+        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          $ref: "#/components/responses/PullJobResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   /catchAll/continue:
     post:
       tags:
@@ -151,66 +212,23 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
-  /catchAll/status/{job_id}:
+  /catchAll/monitors:
     get:
       tags:
-        - Jobs
-      summary: Get job status
-      description: Retrieve the current processing status of a job.
-      operationId: getJobStatus
-      externalDocs:
-        description: Understanding job statuses and polling
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status
-      parameters:
-        - $ref: "#/components/parameters/JobId"
-      responses:
-        "200":
-          $ref: "#/components/responses/StatusResponse"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-
-  /catchAll/jobs/user:
-    get:
-      tags:
-        - Jobs
-      summary: List user jobs
-      description: Returns all jobs created by the authenticated user.
-      operationId: getUserJobs
-      externalDocs:
-        description: Learn about job management
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs
+        - Monitors
+      summary: List monitors
+      description: Returns all monitors created by the authenticated user.
+      operationId: listMonitors
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
       responses:
         "200":
-          $ref: "#/components/responses/ListUserJobsResponse"
+          $ref: "#/components/responses/ListMonitorsResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
-
-  /catchAll/pull/{job_id}:
-    get:
-      tags:
-        - Jobs
-      summary: Get job results
-      description: Retrieve the final results for a completed job.
-      operationId: getJobResults
-      externalDocs:
-        description: Working with job results and dynamic schemas
-        url: https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results
-      parameters:
-        - $ref: "#/components/parameters/JobId"
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PageSize"
-      responses:
-        "200":
-          $ref: "#/components/responses/PullJobResponse"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /catchAll/monitors/create:
     post:
@@ -241,16 +259,14 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
-  /catchAll/monitors/{monitor_id}:
-    patch:
+  /catchAll/monitors/pull/{monitor_id}:
+    get:
       tags:
         - Monitors
-      summary: Update monitor
-      description: Update the webhook configuration for an existing monitor.
-      operationId: updateMonitor
-      externalDocs:
-        description: Learn about monitor configuration
-        url: https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors
+      summary: Get monitor results
+      description:
+        Retrieve aggregated results from all jobs executed by a monitor.
+      operationId: pullMonitorResults
       parameters:
         - name: monitor_id
           in: path
@@ -259,23 +275,9 @@ paths:
             type: string
             format: uuid
           description: Monitor identifier.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
-            example:
-              webhook:
-                url: "https://new-endpoint.com/webhook"
-                method: "POST"
-                headers:
-                  Authorization: "Bearer new_token_xyz"
       responses:
         "200":
-          $ref: "#/components/responses/UpdateMonitorResponse"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
+          $ref: "#/components/responses/PullMonitorResponse"
         "404":
           $ref: "#/components/responses/NotFoundError"
         "422":
@@ -307,76 +309,6 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorJobsResponse"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-
-  /catchAll/monitors/pull/{monitor_id}:
-    get:
-      tags:
-        - Monitors
-      summary: Get monitor results
-      description:
-        Retrieve aggregated results from all jobs executed by a monitor.
-      operationId: pullMonitorResults
-      parameters:
-        - name: monitor_id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Monitor identifier.
-      responses:
-        "200":
-          $ref: "#/components/responses/PullMonitorResponse"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-
-  /catchAll/monitors/{monitor_id}/disable:
-    post:
-      tags:
-        - Monitors
-      summary: Disable monitor
-      description: Stop scheduled job execution for a monitor.
-      operationId: disableMonitor
-      parameters:
-        - name: monitor_id
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Monitor identifier.
-      responses:
-        "200":
-          description: Monitor disabled successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - success
-                  - message
-                  - monitor_id
-                properties:
-                  success:
-                    type: boolean
-                    description: Whether the operation succeeded.
-                    example: true
-                  message:
-                    type: string
-                    description: Human-readable success message.
-                    example: "Monitor disabled successfully."
-                  monitor_id:
-                    type: string
-                    format: uuid
-                    description: ID of the disabled monitor.
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
         "422":
@@ -436,21 +368,89 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
-  /catchAll/monitors:
-    get:
+  /catchAll/monitors/{monitor_id}/disable:
+    post:
       tags:
         - Monitors
-      summary: List monitors
-      description: Returns all monitors created by the authenticated user.
-      operationId: listMonitors
+      summary: Disable monitor
+      description: Stop scheduled job execution for a monitor.
+      operationId: disableMonitor
       parameters:
-        - $ref: "#/components/parameters/Page"
-        - $ref: "#/components/parameters/PageSize"
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
       responses:
         "200":
-          $ref: "#/components/responses/ListMonitorsResponse"
+          description: Monitor disabled successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - message
+                  - monitor_id
+                properties:
+                  success:
+                    type: boolean
+                    description: Whether the operation succeeded.
+                    example: true
+                  message:
+                    type: string
+                    description: Human-readable success message.
+                    example: "Monitor disabled successfully."
+                  monitor_id:
+                    type: string
+                    format: uuid
+                    description: ID of the disabled monitor.
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}:
+    patch:
+      tags:
+        - Monitors
+      summary: Update monitor
+      description: Update the webhook configuration for an existing monitor.
+      operationId: updateMonitor
+      externalDocs:
+        description: Learn about monitor configuration
+        url: https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
+            example:
+              webhook:
+                url: "https://new-endpoint.com/webhook"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer new_token_xyz"
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateMonitorResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
 
