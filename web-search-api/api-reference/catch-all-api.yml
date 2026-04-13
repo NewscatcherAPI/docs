@@ -488,7 +488,7 @@ paths:
 
   # ── Entities ──────────────────────────────────────────────────────────────
 
-  /catchAll/entities/:
+  /catchAll/entities:
     get:
       tags:
         - Entities
@@ -712,43 +712,7 @@ paths:
 
   # ── Datasets ──────────────────────────────────────────────────────────────
 
-  /catchAll/datasets/:
-    post:
-      tags:
-        - Datasets
-      summary: Create dataset
-      description: |
-        Creates a new dataset from a list of existing entity IDs.
-
-        If any of the provided entity IDs do not exist or do not belong to
-        your organization, the request fails with `400`. All entity IDs must
-        be valid before the dataset is created.
-
-        To create a dataset and entities in one step, use the CSV upload
-        endpoint instead.
-      operationId: createDataset
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateDatasetRequest"
-            example:
-              name: My Portfolio
-              description: Companies in our investment portfolio
-              entity_ids:
-                - 854198fa-f702-49db-a381-0427fa87f173
-                - a1b2c3d4-e5f6-7890-abcd-ef1234567890
-      responses:
-        "200":
-          $ref: "#/components/responses/DatasetResponse"
-        "400":
-          $ref: "#/components/responses/BadRequestError"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-
+  /catchAll/datasets:
     get:
       tags:
         - Datasets
@@ -802,6 +766,42 @@ paths:
           $ref: "#/components/responses/DatasetListResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - Datasets
+      summary: Create dataset
+      description: |
+        Creates a new dataset from a list of existing entity IDs.
+
+        If any of the provided entity IDs do not exist or do not belong to
+        your organization, the request fails with `400`. All entity IDs must
+        be valid before the dataset is created.
+
+        To create a dataset and entities in one step, use the CSV upload
+        endpoint instead.
+      operationId: createDataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDatasetRequest"
+            example:
+              name: My Portfolio
+              description: Companies in our investment portfolio
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+                - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /catchAll/datasets/upload:
     post:
@@ -927,65 +927,6 @@ paths:
           $ref: "#/components/responses/NotFoundError"
 
   /catchAll/datasets/{dataset_id}/entities:
-    post:
-      tags:
-        - Datasets
-      summary: Add entities to dataset
-      description: |
-        Adds one or more existing entities to a dataset. Returns the number
-        of entities added.
-      operationId: addEntitiesToDataset
-      parameters:
-        - $ref: "#/components/parameters/DatasetId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DatasetEntityIdsRequest"
-            example:
-              entity_ids:
-                - 854198fa-f702-49db-a381-0427fa87f173
-      responses:
-        "200":
-          $ref: "#/components/responses/ManageEntitiesResponse"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-
-    delete:
-      tags:
-        - Datasets
-      summary: Remove entities from dataset
-      description: |
-        Removes one or more entities from a dataset. The entities themselves
-        are not deleted — they are only removed from this dataset. Returns
-        the number of entities removed.
-      operationId: removeEntitiesFromDataset
-      parameters:
-        - $ref: "#/components/parameters/DatasetId"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DatasetEntityIdsRequest"
-            example:
-              entity_ids:
-                - 854198fa-f702-49db-a381-0427fa87f173
-      responses:
-        "200":
-          $ref: "#/components/responses/ManageEntitiesResponse"
-        "403":
-          $ref: "#/components/responses/ForbiddenError"
-        "404":
-          $ref: "#/components/responses/NotFoundError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
-
     get:
       tags:
         - Datasets
@@ -1044,6 +985,65 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+    post:
+      tags:
+        - Datasets
+      summary: Add entities to dataset
+      description: |
+        Adds one or more existing entities to a dataset. Returns the number
+        of entities added.
+      operationId: addEntitiesToDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Datasets
+      summary: Remove entities from dataset
+      description: |
+        Removes one or more entities from a dataset. The entities themselves
+        are not deleted — they are only removed from this dataset. Returns
+        the number of entities removed.
+      operationId: removeEntitiesFromDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /catchAll/datasets/{dataset_id}/status:
     get:
