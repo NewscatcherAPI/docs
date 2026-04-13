@@ -60,6 +60,26 @@ tags:
         Automate recurring queries with scheduled jobs and webhook
         notifications.
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors
+  - name: Entities
+    description: |
+      Operations to create, update, and delete company entities.
+
+      Entities are the building blocks of Company Search. Each entity represents
+      a company (or person) you want to track. Add identifying information such as
+      domain, alternative names, and key persons to improve matching quality.
+    externalDocs:
+      description: Learn about Company Search and entities
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
+  - name: Datasets
+    description: |
+      Operations to create and manage datasets of entities.
+
+      A dataset is a named collection of entities — think of it as a watchlist or
+      portfolio. Connect a dataset to a job via `connected_dataset_ids` to activate
+      Company Search mode. Datasets can be reused across multiple jobs and monitors.
+    externalDocs:
+      description: Learn about datasets and Company Search
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
   - name: Meta
     description: Operations to check API health and version.
 
