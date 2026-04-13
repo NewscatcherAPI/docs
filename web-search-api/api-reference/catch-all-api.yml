@@ -124,7 +124,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InitializeRequestDTO"
+              $ref: "#/components/schemas/InitializeRequestDto"
             example:
               query: "Series B funding rounds for SaaS startups"
               context: "Focus on funding amount and company name"
@@ -151,7 +151,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubmitRequestDTO"
+              $ref: "#/components/schemas/SubmitRequestDto"
             example:
               query: "Series B funding rounds for SaaS startups"
               context: "Focus on funding amount and company name"
@@ -228,7 +228,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContinueRequestDTO"
+              $ref: "#/components/schemas/ContinueRequestDto"
             example:
               job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               new_limit: 100
@@ -274,7 +274,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateMonitorRequestDTO"
+              $ref: "#/components/schemas/CreateMonitorRequestDto"
             example:
               reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               schedule: "every day at 12 PM UTC"
@@ -366,7 +366,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EnableMonitorRequestDTO"
+              $ref: "#/components/schemas/EnableMonitorRequestDto"
             example:
               backfill: true
       responses:
@@ -469,7 +469,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
+              $ref: "#/components/schemas/UpdateMonitorRequestDto"
             example:
               webhook:
                 url: "https://new-endpoint.com/webhook"
@@ -808,7 +808,7 @@ paths:
         Use semicolons (`;`) to separate multiple values in `alternative_names` and `key_persons`. Rows with empty `name` are skipped and reported in `validation_report`. 
 
         **Note**: The response shape differs from the JSON dataset creation endpoint: it returns `dataset_id` (not `id`) and includes a `validation_report` with details on skipped rows.
-      operationId: createDatasetFromCSV
+      operationId: createDatasetFromCsv
       requestBody:
         required: true
         content:
@@ -833,7 +833,7 @@ paths:
                   example: Companies from Q1 2026 watchlist
       responses:
         "200":
-          $ref: "#/components/responses/CreateDatasetCSVResponse"
+          $ref: "#/components/responses/CreateDatasetCsvResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -1065,7 +1065,7 @@ paths:
                   description: The CSV file to upload.
       responses:
         "200":
-          $ref: "#/components/responses/UploadCSVToDatasetResponse"
+          $ref: "#/components/responses/UploadCsvToDatasetResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1175,7 +1175,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/InitializeResponseDTO"
+            $ref: "#/components/schemas/InitializeResponseDto"
           example:
             query: "Series B funding rounds for SaaS startups"
             context: "Focus on funding amount and company name"
@@ -1214,7 +1214,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SubmitResponseDTO"
+            $ref: "#/components/schemas/SubmitResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
@@ -1223,7 +1223,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ContinueResponseDTO"
+            $ref: "#/components/schemas/ContinueResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             previous_limit: 10
@@ -1235,7 +1235,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StatusResponseDTO"
+            $ref: "#/components/schemas/StatusResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             status: "completed"
@@ -1292,7 +1292,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullJobResponseDTO"
+            $ref: "#/components/schemas/PullJobResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             query: "Series B funding rounds for SaaS startups"
@@ -1345,7 +1345,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CreateMonitorResponseDTO"
+            $ref: "#/components/schemas/CreateMonitorResponseDto"
           example:
             monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
             status: "Monitor Created Successfully"
@@ -1355,7 +1355,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UpdateMonitorResponseDTO"
+            $ref: "#/components/schemas/UpdateMonitorResponseDto"
           example:
             monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
             status: "Monitor updated Successfully"
@@ -1394,14 +1394,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullMonitorResponseDTO"
+            $ref: "#/components/schemas/PullMonitorResponseDto"
 
     ListMonitorsResponse:
       description: List of user monitors
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ListMonitorsResponseDTO"
+            $ref: "#/components/schemas/ListMonitorsResponseDto"
           example:
             total: 3
             page: 1
@@ -1503,12 +1503,12 @@ components:
           schema:
             $ref: "#/components/schemas/DatasetListResponse"
 
-    CreateDatasetCSVResponse:
+    CreateDatasetCsvResponse:
       description: Dataset created from CSV successfully.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CreateDatasetCSVResponse"
+            $ref: "#/components/schemas/CreateDatasetCsvResponse"
           example:
             dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
             dataset_name: My Portfolio
@@ -1521,12 +1521,12 @@ components:
                 - row: 3
                   reason: "missing required field: name"
 
-    UploadCSVToDatasetResponse:
+    UploadCsvToDatasetResponse:
       description: Companies added to dataset from CSV successfully.
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UploadCSVToDatasetResponse"
+            $ref: "#/components/schemas/UploadCsvToDatasetResponse"
           example:
             dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
             entities_created: 3
@@ -1599,7 +1599,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GetPlanLimitsResponseDTO"
+            $ref: "#/components/schemas/GetPlanLimitsResponseDto"
           example:
             features:
               - name: "Jobs Concurrency"
@@ -1851,7 +1851,7 @@ components:
               description: Confidence level for the domain URL resolution.
               example: "high"
 
-    InitializeRequestDTO:
+    InitializeRequestDto:
       type: object
       required:
         - query
@@ -1864,7 +1864,7 @@ components:
         Request to get validator, enrichment, and date range suggestions for a
         query.
 
-    InitializeResponseDTO:
+    InitializeResponseDto:
       type: object
       required:
         - query
@@ -1909,7 +1909,7 @@ components:
             - "start_date must be >= 2025-01-23, your plan limited to lookback
               365 days; we modified start_date to 2025-01-23."
 
-    SubmitRequestDTO:
+    SubmitRequestDto:
       type: object
       required:
         - query
@@ -1961,7 +1961,7 @@ components:
           example:
             - "ccabb755-afc2-4047-b84c-78d1f23d49b2"
 
-    SubmitResponseDTO:
+    SubmitResponseDto:
       type: object
       required:
         - job_id
@@ -1974,7 +1974,7 @@ components:
             retrieve results.
           example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
-    ContinueRequestDTO:
+    ContinueRequestDto:
       type: object
       required:
         - job_id
@@ -1991,7 +1991,7 @@ components:
             New record limit for continued processing. Must be greater than the previous limit. If not provided, defaults to the plan maximum.
           example: 100
 
-    ContinueResponseDTO:
+    ContinueResponseDto:
       type: object
       required:
         - job_id
@@ -2061,7 +2061,7 @@ components:
           default: false
           description: Whether this step has finished processing.
 
-    StatusResponseDTO:
+    StatusResponseDto:
       type: object
       required:
         - job_id
@@ -2150,7 +2150,7 @@ components:
           description: Masked API key that created this job.
           example: "***...a1b2"
 
-    PullJobResponseDTO:
+    PullJobResponseDto:
       type: object
       required:
         - job_id
@@ -2421,7 +2421,7 @@ components:
 
         Includes timestamps tracking when records were added and updated, and citations include job tracking.
 
-    CreateMonitorRequestDTO:
+    CreateMonitorRequestDto:
       type: object
       required:
         - reference_job_id
@@ -2442,7 +2442,7 @@ components:
             Minimum frequency depends on your plan.
           example: "every day at 12 PM UTC"
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
+          $ref: "#/components/schemas/WebhookDto"
           description:
             Optional webhook to receive notifications when jobs complete.
         limit:
@@ -2458,7 +2458,7 @@ components:
 
             If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
 
-    WebhookDTO:
+    WebhookDto:
       type: object
       required:
         - url
@@ -2488,7 +2488,7 @@ components:
           maxItems: 2
           description: Basic auth credentials [username, password].
 
-    CreateMonitorResponseDTO:
+    CreateMonitorResponseDto:
       type: object
       required:
         - status
@@ -2502,11 +2502,11 @@ components:
           description: Creation status or error message
           example: "Monitor Created Successfully"
 
-    UpdateMonitorRequestDTO:
+    UpdateMonitorRequestDto:
       type: object
       properties:
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
+          $ref: "#/components/schemas/WebhookDto"
           description: |
             Updated webhook configuration.
         limit:
@@ -2515,7 +2515,7 @@ components:
           description: |
             Updated maximum number of records per monitor run.
 
-    UpdateMonitorResponseDTO:
+    UpdateMonitorResponseDto:
       type: object
       required:
         - monitor_id
@@ -2544,7 +2544,7 @@ components:
           description: Context provided with the reference job query.
           example: "Focus on funding amount and company name"
 
-    PullMonitorResponseDTO:
+    PullMonitorResponseDto:
       type: object
       required:
         - monitor_id
@@ -2605,7 +2605,7 @@ components:
           description: Record limit applied to this monitor's jobs.
           example: 100
 
-    ListMonitorsResponseDTO:
+    ListMonitorsResponseDto:
       type: object
       required:
         - total
@@ -2633,10 +2633,10 @@ components:
         monitors:
           type: array
           items:
-            $ref: "#/components/schemas/MonitorListItemDTO"
+            $ref: "#/components/schemas/MonitorListItemDto"
           description: Array of monitor summaries.
 
-    MonitorListItemDTO:
+    MonitorListItemDto:
       type: object
       required:
         - monitor_id
@@ -2681,7 +2681,7 @@ components:
           example: "2025-10-23T14:30:00Z"
         webhook:
           oneOf:
-            - $ref: "#/components/schemas/WebhookDTO"
+            - $ref: "#/components/schemas/WebhookDto"
             - type: "null"
           description:
             Webhook configuration for this monitor, or null if not set.
@@ -2763,7 +2763,7 @@ components:
             on monitor schedule) in ISO 8601 format with UTC timezone.
           example: "2025-11-15T00:00:00Z"
 
-    EnableMonitorRequestDTO:
+    EnableMonitorRequestDto:
       type: object
       description: Optional request body for enabling a monitor.
       properties:
@@ -3294,7 +3294,7 @@ components:
           description: Human-readable explanation of why the row was skipped.
           example: "missing required field: name"
 
-    CreateDatasetCSVResponse:
+    CreateDatasetCsvResponse:
       type: object
       required:
         - dataset_id
@@ -3318,7 +3318,7 @@ components:
         validation_report:
           $ref: "#/components/schemas/ValidationReport"
 
-    UploadCSVToDatasetResponse:
+    UploadCsvToDatasetResponse:
       type: object
       required:
         - dataset_id
@@ -3480,7 +3480,7 @@ components:
             "Lucid Gravity is positioned as a direct competitor to the Tesla
             Model X."
 
-    GetPlanLimitsResponseDTO:
+    GetPlanLimitsResponseDto:
       type: object
       required:
         - features
