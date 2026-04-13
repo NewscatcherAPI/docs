@@ -1975,6 +1975,22 @@ components:
 
             - `base`: Full pipeline with validation and enrichment.
             - `lite`: Lightweight extraction with faster processing. Returns titles and citations only.
+        connected_dataset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            Dataset IDs to connect to this job. When provided, activates
+            Company Search mode — the job returns only events relevant to
+            companies in the connected datasets, with each record including a
+            `connected_entities` array scored per company.
+
+            The dataset must have `latest_status: ready` before the job is
+            submitted. Submitting with a non-existent or inaccessible dataset
+            ID returns `400`.
+          example:
+            - "ccabb755-afc2-4047-b84c-78d1f23d49b2"
 
     SubmitResponseDTO:
       type: object
@@ -2339,6 +2355,13 @@ components:
                 $ref: "#/components/schemas/Citation"
               description:
                 Source documents that were used to extract this record.
+            connected_entities:
+              type: array
+              items:
+                $ref: "#/components/schemas/ConnectedEntity"
+              description: |
+                Entities from the connected dataset that are relevant to this record.
+                Only present when the job was submitted with `connected_dataset_ids`.
 
     Citation:
       type: object
@@ -2426,6 +2449,7 @@ components:
               example: "2025-11-14T21:00:00Z"
       description: |
         Record with monitor-specific metadata. Used in monitor results and webhook payloads.
+
         Includes timestamps tracking when records were added and updated, and citations include job tracking.
 
     CreateMonitorRequestDTO:
