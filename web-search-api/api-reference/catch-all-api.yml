@@ -87,6 +87,8 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  # ── Jobs ──────────────────────────────────────────────────────────────
+
   /catchAll/jobs/user:
     get:
       tags:
@@ -239,6 +241,8 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  # ── Monitors ──────────────────────────────────────────────────────────────
 
   /catchAll/monitors:
     get:
@@ -482,6 +486,8 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  # ── Entities ──────────────────────────────────────────────────────────────
+
   /catchAll/entities/:
     get:
       tags:
@@ -703,6 +709,399 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  # ── Datasets ──────────────────────────────────────────────────────────────
+
+  /catchAll/datasets/:
+    post:
+      tags:
+        - Datasets
+      summary: Create dataset
+      description: |
+        Creates a new dataset from a list of existing entity IDs.
+
+        If any of the provided entity IDs do not exist or do not belong to
+        your organization, the request fails with `400`. All entity IDs must
+        be valid before the dataset is created.
+
+        To create a dataset and entities in one step, use the CSV upload
+        endpoint instead.
+      operationId: createDataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDatasetRequest"
+            example:
+              name: My Portfolio
+              description: Companies in our investment portfolio
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+                - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Datasets
+      summary: List datasets
+      description: |
+        Returns a paginated list of datasets belonging to the authenticated
+        organization. Supports filtering by status and sorting by name,
+        status, or creation date.
+      operationId: listDatasets
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of datasets per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description:
+            Filter datasets by name (case-insensitive substring match).
+          example: Portfolio
+        - name: latest_status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DatasetStatus"
+          description: |
+            Filter by dataset status. Note: the query parameter is named
+            `latest_status`, not `status`.
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DatasetSortBy"
+          description: Field to sort by. Defaults to `created_at`.
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+          description: Sort direction. Defaults to `desc`.
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/datasets/upload:
+    post:
+      tags:
+        - Datasets
+      summary: Create dataset from CSV
+      description: |
+        Creates a new dataset by uploading a CSV file. Each row in the CSV
+        becomes an entity. The `name` column is required; all other columns
+        are optional.
+
+        **CSV format:**
+        ```
+        name,description,domain,alternative_names,key_persons
+        NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+        OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+        ```
+
+        Use semicolons (`;`) to separate multiple values in
+        `alternative_names` and `key_persons`. Rows with an empty `name`
+        field are skipped and reported in the `validation_report`.
+
+        The response shape differs from the JSON dataset creation endpoint:
+        it returns `dataset_id` (not `id`) and includes a `validation_report`
+        with details on any skipped rows.
+      operationId: createDatasetFromCSV
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - name
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The CSV file to upload.
+                name:
+                  type: string
+                  description: Name for the new dataset.
+                  example: My Portfolio
+                description:
+                  type: string
+                  description: Optional description for the dataset.
+                  example: Companies from Q1 2026 watchlist
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateDatasetCSVResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/datasets/{dataset_id}:
+    get:
+      tags:
+        - Datasets
+      summary: Get dataset
+      description:
+        Returns a single dataset by ID including entity count and current
+        status.
+      operationId: getDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Datasets
+      summary: Update dataset
+      description: |
+        Updates the name or description of a dataset. Only `name` and
+        `description` can be updated. To change the entities in a dataset,
+        use the add or remove entity endpoints.
+      operationId: updateDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDatasetRequest"
+            example:
+              name: My Portfolio (updated)
+              description: Updated Q1 2026 watchlist
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Datasets
+      summary: Delete dataset
+      description: |
+        Permanently deletes a dataset. The entities within the dataset are
+        not deleted — only the dataset itself. This operation cannot be
+        undone.
+      operationId: deleteDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "204":
+          description: Dataset deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/datasets/{dataset_id}/entities:
+    post:
+      tags:
+        - Datasets
+      summary: Add entities to dataset
+      description: |
+        Adds one or more existing entities to a dataset. Returns the number
+        of entities added.
+      operationId: addEntitiesToDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Datasets
+      summary: Remove entities from dataset
+      description: |
+        Removes one or more entities from a dataset. The entities themselves
+        are not deleted — they are only removed from this dataset. Returns
+        the number of entities removed.
+      operationId: removeEntitiesFromDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Datasets
+      summary: List entities in dataset
+      description: |
+        Returns a paginated list of entities in a dataset. Supports filtering
+        by status and entity type.
+
+        Note: entities returned here use a summary shape with a flat
+        `attributes` key rather than the nested
+        `additional_attributes.company_attributes` structure used in the
+        standalone entity endpoints.
+      operationId: listEntitiesInDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of entities per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter entities by name.
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityStatus"
+        - name: entity_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityType"
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntitySortBy"
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetEntityListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/datasets/{dataset_id}/status:
+    get:
+      tags:
+        - Datasets
+      summary: Get dataset status history
+      description: |
+        Returns the full status change history for a dataset, ordered
+        chronologically from oldest to newest.
+      operationId: getDatasetStatusHistory
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetStatusHistoryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/datasets/{dataset_id}/upload:
+    post:
+      tags:
+        - Datasets
+      summary: Add companies to dataset via CSV
+      description: |
+        Appends new companies to an existing dataset by uploading a CSV file.
+        Uses the same CSV format as the dataset creation endpoint.
+
+        The response omits `dataset_name` compared to the create-from-CSV
+        endpoint since the dataset already exists.
+      operationId: uploadCSVToDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The CSV file to upload.
+      responses:
+        "200":
+          $ref: "#/components/responses/UploadCSVToDatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  # ── Meta ──────────────────────────────────────────────────────────────
 
   /health:
     get:
