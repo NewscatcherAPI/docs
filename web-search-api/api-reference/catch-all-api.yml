@@ -1177,6 +1177,26 @@ components:
       description: |
         Number of records per page.
 
+    EntityId:
+      name: entity_id
+      in: path
+      required: true
+      description: Unique entity identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "854198fa-f702-49db-a381-0427fa87f173"
+
+    DatasetId:
+      name: dataset_id
+      in: path
+      required: true
+      description: Unique dataset identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+
   responses:
     InitializeResponse:
       description: Suggestions retrieved successfully
