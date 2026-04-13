@@ -522,25 +522,21 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/EntityStatus"
-          description: Filter by entity status.
         - name: entity_type
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/EntityType"
-          description: Filter by entity type.
         - name: sort_by
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/EntitySortBy"
-          description: Field to sort by. Defaults to `created_at`.
         - name: sort_order
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/SortOrder"
-          description: Sort direction. Defaults to `desc`.
       responses:
         "200":
           $ref: "#/components/responses/EntityListResponse"
@@ -558,9 +554,6 @@ paths:
         enrichment completes. Provide as much identifying information as
         possible — `domain` is the highest-signal field because it is
         unambiguous.
-
-        Only `name` is required. All other fields are optional but improve
-        matching quality.
       operationId: createEntity
       requestBody:
         required: true
@@ -659,12 +652,7 @@ paths:
         - Entities
       summary: Update entity
       description: |
-        Updates one or more fields of an existing entity. All fields are
-        optional — fields not included in the request body are left unchanged.
-
-        **Note:** when updating `additional_attributes.company_attributes`,
-        the provided object replaces the existing `company_attributes` in
-        full. Include all attribute fields you want to retain.
+        Updates one or more fields of an existing entity.
       operationId: updateEntity
       parameters:
         - $ref: "#/components/parameters/EntityId"
@@ -754,13 +742,11 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/DatasetSortBy"
-          description: Field to sort by. Defaults to `created_at`.
         - name: sort_order
           in: query
           required: false
           schema:
             $ref: "#/components/schemas/SortOrder"
-          description: Sort direction. Defaults to `desc`.
       responses:
         "200":
           $ref: "#/components/responses/DatasetListResponse"
@@ -1460,7 +1446,7 @@ components:
             status: pending
 
     EntityResponse:
-      description: Entity details.
+      description: Full entity object with all attributes and metadata.
       content:
         application/json:
           schema:
@@ -2920,18 +2906,13 @@ components:
     CompanyAttributes:
       type: object
       description: |
-        Identifying attributes for a company entity. All fields are optional
-        but improve matching quality.
-
-        `domain` is the highest-signal field because it is unambiguous.
-        `alternative_names` helps resolve common abbreviations and aliases.
-        `key_persons` improves recall for articles that mention people rather
-        than the company name directly.
+        Identifying attributes for a company entity. All fields are optional but improve matching quality.
       properties:
         domain:
           type: ["string", "null"]
           description: |
             Company website domain without protocol or trailing slash.
+
             The most reliable identifier — strongly recommended when available.
           example: newscatcherapi.com
         description:
@@ -2943,9 +2924,7 @@ components:
           items:
             type: string
           description: |
-            Names of key people associated with the company (founders,
-            executives, etc.). Improves matching for articles that mention
-            people rather than the company name.
+            Names of key people associated with the company (founders, executives, etc.). Improves matching for articles that mention people rather than the company name.
           example:
             - Artem Bugara
             - Maksym Sugonyaka
@@ -2954,8 +2933,7 @@ components:
           items:
             type: string
           description: |
-            Alternative names, abbreviations, or aliases. Helps resolve
-            common variations of the company name.
+            Alternative names, abbreviations, or aliases. Helps resolve common variations of the company name.
           example:
             - NC
             - NewsCatcher API
@@ -2986,8 +2964,7 @@ components:
         description:
           type: string
           description: |
-            Free-text description of the entity used for disambiguation
-            when similar names exist.
+            Free-text description of the entity used for disambiguation when similar names exist.
           example: AI-powered news data provider
         additional_attributes:
           $ref: "#/components/schemas/AdditionalAttributes"
@@ -2995,13 +2972,9 @@ components:
     UpdateEntityRequest:
       type: object
       description: |
-        Request body for updating an entity. All fields are optional — only
-        fields included in the request are updated. Fields not included are
-        left unchanged.
+        Request body for updating an entity. All fields are optional — only fields included in the request are updated. Fields not included are left unchanged.
 
-        When updating `additional_attributes.company_attributes`, the
-        provided object replaces the existing company attributes in full.
-        Include all attribute fields you want to retain.
+        **Note**: When updating `additional_attributes.company_attributes`, the provided object replaces the existing company attributes in full. Include all attribute fields you want to retain.
       properties:
         name:
           type: string
@@ -3019,7 +2992,6 @@ components:
       required:
         - id
         - status
-      description: Response returned immediately after entity creation.
       properties:
         id:
           type: string
@@ -3029,8 +3001,7 @@ components:
         status:
           type: string
           description: |
-            Initial status of the entity. Always `pending` immediately
-            after creation — enrichment happens asynchronously.
+            Initial status of the entity. Always `pending` immediately after creation — enrichment happens asynchronously.
           example: pending
 
     EntityResponse:
@@ -3041,7 +3012,6 @@ components:
         - organization_id
         - name
         - status
-      description: Full entity object with all attributes and metadata.
       properties:
         id:
           type: string
@@ -3076,15 +3046,13 @@ components:
           type: string
           format: date-time
           description: |
-            ISO 8601 timestamp of when the entity was created. Returned
-            without timezone offset (server-local time).
+            ISO 8601 timestamp of when the entity was created. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:17.272139"
         updated_at:
           type: string
           format: date-time
           description: |
-            ISO 8601 timestamp of when the entity was last updated. Returned
-            without timezone offset (server-local time).
+            ISO 8601 timestamp of when the entity was last updated. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:18.248316"
 
     CreateEntitiesBatchRequest:
@@ -3113,7 +3081,6 @@ components:
             $ref: "#/components/schemas/CreateEntityResponse"
           description: |
             Array of created entity stubs in the same order as the input.
-            Each item contains only the `id` and initial `status`.
         count:
           type: integer
           description: Total number of entities created.
@@ -3264,15 +3231,13 @@ components:
           type: string
           format: date-time
           description: |
-            ISO 8601 timestamp of when the dataset was created. Returned
-            without timezone offset (server-local time).
+            ISO 8601 timestamp of when the dataset was created. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:36.026993"
         updated_at:
           type: string
           format: date-time
           description: |
-            ISO 8601 timestamp of when the dataset was last updated. Returned
-            without timezone offset (server-local time).
+            ISO 8601 timestamp of when the dataset was last updated. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:38.401148"
 
     DatasetListResponse:
@@ -3489,8 +3454,7 @@ components:
           type: string
           format: date-time
           description: |
-            ISO 8601 timestamp of when this status was set. Returned
-            without timezone offset (server-local time).
+            ISO 8601 timestamp of when this status was set. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:36.066271"
 
     # ── Company Search output schema ──────────────────────────────────────────
