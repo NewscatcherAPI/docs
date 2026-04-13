@@ -735,8 +735,7 @@ paths:
           schema:
             $ref: "#/components/schemas/DatasetStatus"
           description: |
-            Filter by dataset status. Note: the query parameter is named
-            `latest_status`, not `status`.
+            Filter by dataset status.
         - name: sort_by
           in: query
           required: false
@@ -764,7 +763,7 @@ paths:
         your organization, the request fails with `400`. All entity IDs must
         be valid before the dataset is created.
 
-        To create a dataset and entities in one step, use the CSV upload
+        To create a dataset and entities in one step, use the [`Create dataset from CSV`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset-from-csv)
         endpoint instead.
       operationId: createDataset
       requestBody:
@@ -800,19 +799,15 @@ paths:
         are optional.
 
         **CSV format:**
-        ```
+        ```csv
         name,description,domain,alternative_names,key_persons
         NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
         OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
         ```
 
-        Use semicolons (`;`) to separate multiple values in
-        `alternative_names` and `key_persons`. Rows with an empty `name`
-        field are skipped and reported in the `validation_report`.
+        Use semicolons (`;`) to separate multiple values in `alternative_names` and `key_persons`. Rows with empty `name` are skipped and reported in `validation_report`. 
 
-        The response shape differs from the JSON dataset creation endpoint:
-        it returns `dataset_id` (not `id`) and includes a `validation_report`
-        with details on any skipped rows.
+        **Note**: The response shape differs from the JSON dataset creation endpoint: it returns `dataset_id` (not `id`) and includes a `validation_report` with details on skipped rows.
       operationId: createDatasetFromCSV
       requestBody:
         required: true
@@ -868,9 +863,7 @@ paths:
         - Datasets
       summary: Update dataset
       description: |
-        Updates the name or description of a dataset. Only `name` and
-        `description` can be updated. To change the entities in a dataset,
-        use the add or remove entity endpoints.
+        Updates the name or description of a dataset.
       operationId: updateDataset
       parameters:
         - $ref: "#/components/parameters/DatasetId"
@@ -918,13 +911,7 @@ paths:
         - Datasets
       summary: List entities in dataset
       description: |
-        Returns a paginated list of entities in a dataset. Supports filtering
-        by status and entity type.
-
-        Note: entities returned here use a summary shape with a flat
-        `attributes` key rather than the nested
-        `additional_attributes.company_attributes` structure used in the
-        standalone entity endpoints.
+        Returns a paginated list of entities in a dataset. Supports filtering by status and entity type.
       operationId: listEntitiesInDataset
       parameters:
         - $ref: "#/components/parameters/DatasetId"
@@ -977,8 +964,7 @@ paths:
         - Datasets
       summary: Add entities to dataset
       description: |
-        Adds one or more existing entities to a dataset. Returns the number
-        of entities added.
+        Adds one or more existing entities to a dataset. Returns the number of entities added.
       operationId: addEntitiesToDataset
       parameters:
         - $ref: "#/components/parameters/DatasetId"
@@ -1494,7 +1480,7 @@ components:
             count: 2
 
     DatasetResponse:
-      description: Dataset details.
+      description: Full dataset object with metadata and current status.
       content:
         application/json:
           schema:
@@ -1798,7 +1784,9 @@ components:
         - `date`: ISO format dates (YYYY-MM-DD)
         - `option`: Enum-like fixed values (status, category)
         - `url`: Web URLs
-        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
+        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. 
+
+        See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
 
     EnrichmentSchema:
       type: object
@@ -1967,14 +1955,9 @@ components:
             type: string
             format: uuid
           description: |
-            Dataset IDs to connect to this job. When provided, activates
-            Company Search mode — the job returns only events relevant to
-            companies in the connected datasets, with each record including a
-            `connected_entities` array scored per company.
+            Dataset IDs to connect to this job. When provided, activates Company Search mode — the job returns only events relevant to companies in the connected datasets with each record including a `connected_entities` array scored per company.
 
-            The dataset must have `latest_status: ready` before the job is
-            submitted. Submitting with a non-existent or inaccessible dataset
-            ID returns `400`.
+            The dataset must have `latest_status: ready` before the job is submitted. Submitting with a non-existent or inaccessible dataset ID returns `400`.
           example:
             - "ccabb755-afc2-4047-b84c-78d1f23d49b2"
 
@@ -3167,9 +3150,7 @@ components:
             type: string
             format: uuid
           description: |
-            IDs of existing entities to include in the dataset. All IDs
-            must belong to the authenticated organization. If any ID is
-            invalid or not found, the request fails with `400`.
+            IDs of existing entities to include in the dataset. All IDs must belong to the authenticated organization. If any ID is invalid or not found, the request fails with `400`.
           example:
             - "854198fa-f702-49db-a381-0427fa87f173"
             - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
@@ -3195,7 +3176,6 @@ components:
         - id
         - organization_id
         - name
-      description: Full dataset object with metadata and current status.
       properties:
         id:
           type: string
@@ -3306,6 +3286,7 @@ components:
           type: integer
           description: |
             1-based row number in the CSV file (including the header row).
+
             A value of `3` means the third line of the file (second data row).
           example: 3
         reason:
@@ -3320,10 +3301,6 @@ components:
         - dataset_name
         - entities_created
         - validation_report
-      description: |
-        Response from creating a new dataset via CSV upload. Uses
-        `dataset_id` (not `id`) and `dataset_name` (not `name`), unlike
-        the JSON-based dataset creation response.
       properties:
         dataset_id:
           type: string
@@ -3347,9 +3324,6 @@ components:
         - dataset_id
         - entities_created
         - validation_report
-      description: |
-        Response from adding companies to an existing dataset via CSV upload.
-        Same shape as `CreateDatasetCSVResponse` but without `dataset_name`.
       properties:
         dataset_id:
           type: string
@@ -3383,7 +3357,6 @@ components:
       required:
         - dataset_id
         - affected_count
-      description: Result of adding or removing entities from a dataset.
       properties:
         dataset_id:
           type: string
