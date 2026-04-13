@@ -29,21 +29,21 @@
 
 - [Initialize Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job): Get suggested validators, enrichments, and date ranges for a query.
 - [Create Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job): Submit a query to create a new processing job.
-- [Continue Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job): Continue an existing job to process more records beyond the initial limit.
-- [List User Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs): Returns all jobs created by the authenticated user.
 - [Get Job Status](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status): Retrieve the current processing status of a job.
 - [Get Job Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results): Retrieve the final results for a completed job.
+- [Continue Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job): Continue an existing job to process more records beyond the initial limit.
+- [List User Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs): Returns all jobs created by the authenticated user.
 - [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto): Data model for enrichment fields of type company.
 
 ### API Reference — Monitors
 
 - [Create Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/create-monitor): Create a scheduled monitor based on a reference job.
-- [Update Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor): Update the webhook configuration for an existing monitor.
+- [Get Monitor Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results): Retrieve aggregated results from all jobs executed by a monitor.
 - [List Monitors](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitors): Returns all monitors created by the authenticated user.
 - [List Monitor Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitor-jobs): Return all jobs executed by a monitor.
-- [Get Monitor Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results): Retrieve aggregated results from all jobs executed by a monitor.
 - [Enable Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/enable-monitor): Resume scheduled job execution for a monitor.
 - [Disable Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/disable-monitor): Stop scheduled job execution for a monitor.
+- [Update Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor): Update the webhook configuration for an existing monitor.
 - [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload): Data model for a payload sent to the webhook URL when a monitor job completes.
 
 ### API Reference — Meta
