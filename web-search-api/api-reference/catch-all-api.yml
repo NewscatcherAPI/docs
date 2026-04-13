@@ -482,6 +482,228 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/entities/:
+    get:
+      tags:
+        - Entities
+      summary: List entities
+      description: |
+        Returns a paginated list of entities belonging to the authenticated
+        organization. Supports filtering by status and entity type, and
+        sorting by name, status, or creation date.
+      operationId: listEntities
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of entities per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description:
+            Filter entities by name (case-insensitive substring match).
+          example: NewsCatcher
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityStatus"
+          description: Filter by entity status.
+        - name: entity_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityType"
+          description: Filter by entity type.
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntitySortBy"
+          description: Field to sort by. Defaults to `created_at`.
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+          description: Sort direction. Defaults to `desc`.
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - Entities
+      summary: Create entity
+      description: |
+        Creates a new company entity and begins background enrichment.
+
+        The entity status starts as `pending` and transitions to `ready` once
+        enrichment completes. Provide as much identifying information as
+        possible — `domain` is the highest-signal field because it is
+        unambiguous.
+
+        Only `name` is required. All other fields are optional but improve
+        matching quality.
+      operationId: createEntity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEntityRequest"
+            example:
+              name: NewsCatcher
+              entity_type: company
+              description: AI-powered news data provider
+              additional_attributes:
+                company_attributes:
+                  domain: newscatcherapi.com
+                  alternative_names:
+                    - NC
+                    - NewsCatcher API
+                  key_persons:
+                    - Artem Bugara
+                    - Maksym Sugonyaka
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateEntityResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/entities/batch:
+    post:
+      tags:
+        - Entities
+      summary: Create entities in batch
+      description: |
+        Creates multiple entities in a single request. Each entity is
+        processed independently — a failure in one does not affect others.
+
+        Returns an array of `{id, status}` objects in the same order as
+        the input array.
+      operationId: createEntitiesBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEntitiesBatchRequest"
+            example:
+              entities:
+                - name: OpenAI
+                  entity_type: company
+                  description: Artificial intelligence research company
+                  additional_attributes:
+                    company_attributes:
+                      domain: openai.com
+                      alternative_names:
+                        - Open AI
+                      key_persons:
+                        - Sam Altman
+                - name: Stripe
+                  entity_type: company
+                  description: Online payment processing platform
+                  additional_attributes:
+                    company_attributes:
+                      domain: stripe.com
+                      key_persons:
+                        - Patrick Collison
+                        - John Collison
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateEntitiesBatchResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/entities/{entity_id}:
+    get:
+      tags:
+        - Entities
+      summary: Get entity
+      description:
+        Returns a single entity by ID with all attributes and current status.
+      operationId: getEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Entities
+      summary: Update entity
+      description: |
+        Updates one or more fields of an existing entity. All fields are
+        optional — fields not included in the request body are left unchanged.
+
+        **Note:** when updating `additional_attributes.company_attributes`,
+        the provided object replaces the existing `company_attributes` in
+        full. Include all attribute fields you want to retain.
+      operationId: updateEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEntityRequest"
+            example:
+              description: Updated description
+              additional_attributes:
+                company_attributes:
+                  alternative_names:
+                    - NC
+                    - NewsCatcher API
+                    - NCA
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    delete:
+      tags:
+        - Entities
+      summary: Delete entity
+      description: |
+        Permanently deletes an entity. The entity is removed from all
+        datasets and the search index. This operation cannot be undone.
+      operationId: deleteEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "204":
+          description: Entity deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   /health:
     get:
       tags:
