@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.3.1
+  version: 1.4.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -9,7 +9,7 @@ info:
 
     All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Basic Workflow
+    ### Job workflow
 
     1. (Optional) Get suggestions via /catchAll/initialize
     2. Submit a query via /catchAll/submit with optional date ranges and custom validators/enrichments
@@ -22,9 +22,17 @@ info:
     2. Create monitor via /catchAll/monitors/create with schedule
     3. Retrieve aggregated results via /catchAll/monitors/pull/{monitor_id}
 
+    ### Company search workflow
+
+    1. Create a dataset via `POST /catchAll/datasets/` or `POST /catchAll/datasets/upload`
+    2. Wait for the dataset `latest_status` to reach `ready`
+    3. Submit a job with `connected_dataset_ids` pointing to your dataset
+    4. Retrieve results — each record includes a `connected_entities` array
+       with relevance scores per matched company
+
     ### Important notes
 
-    **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
+    **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs unless explicitly specified.
 
   contact:
     name: NewsCatcher
