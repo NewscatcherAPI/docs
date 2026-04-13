@@ -13,8 +13,8 @@ submit jobs, poll status, retrieve results, and manage monitors.
 
 - CatchAll API key from
   [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
-- MCP-compatible client (Claude, Cursor, VS Code, Windsurf, or any client that
-  supports remote MCP)
+- MCP-compatible client (Claude, Cursor, VS Code, Windsurf, Zed, Warp, Gemini
+  CLI, Roo Code, or any client that supports remote MCP)
 
 ## Authentication
 
@@ -33,7 +33,7 @@ its connector UI does not support custom request headers.
   secret and do not share it or commit it to version control.
 </Warning>
 
-## Connect to client
+## Connect to Claude
 
 <Tabs>
   <Tab title="Claude.ai">
@@ -69,6 +69,7 @@ its connector UI does not support custom request headers.
     Claude Desktop supports remote MCP servers through the Connectors UI (**Settings > Customize > Connectors**) — the same flow as Claude.ai.
 
     Alternatively, you can configure it via a JSON config file. This approach does not support native remote MCP, so it requires `mcp-remote` as a proxy.
+
     <Steps>
       <Step title="Install Node.js">
         Run `node --version` to check if Node.js is installed. If the command fails, download and install it from [nodejs.org](https://nodejs.org) before continuing.
@@ -86,17 +87,16 @@ its connector UI does not support custom request headers.
         ```
       </Step>
       <Step title="Open configuration file">
-
         <Tabs>
           <Tab title="macOS">
-          ```txt
-          ~/Library/Application Support/Claude/claude_desktop_config.json
-          ```
+            ```txt
+            ~/Library/Application Support/Claude/claude_desktop_config.json
+            ```
           </Tab>
           <Tab title="Windows">
-          ```txt
-          %APPDATA%\Claude\claude_desktop_config.json
-          ```
+            ```txt
+            %APPDATA%\Claude\claude_desktop_config.json
+            ```
           </Tab>
         </Tabs>
 
@@ -149,19 +149,22 @@ its connector UI does not support custom request headers.
     </Tip>
 
   </Tab>
+</Tabs>
 
+## Connect to other clients
+
+<Tabs>
   <Tab title="Cursor">
-    Add to `~/.cursor/mcp.json`:
+    [![Install in Cursor](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en/install-mcp?name=catchall&config=eyJuYW1lIjoiY2F0Y2hhbGwiLCJ0eXBlIjoiaHR0cCIsInVybCI6Imh0dHBzOi8vY2F0Y2hhbGwtbWNwLm5ld3NjYXRjaGVyYXBpLmNvbS9tY3A/YXBpS2V5PVlPVVJfQ0FUQ0hBTExfQVBJX0tFWSJ9)
+
+    Or add to `~/.cursor/mcp.json` manually:
 
     ```json
     {
       "mcpServers": {
         "catchall": {
           "type": "http",
-          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
-          "headers": {
-            "x-api-key": "YOUR_CATCHALL_API_KEY"
-          }
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -172,17 +175,16 @@ its connector UI does not support custom request headers.
   </Tab>
 
   <Tab title="VS Code">
-    Add to `.vscode/mcp.json` in your project root:
+    [![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=catchall&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fcatchall-mcp.newscatcherapi.com%2Fmcp%22%7D)
+
+    Or add to `.vscode/mcp.json` in your project root manually:
 
     ```json
     {
       "servers": {
         "catchall": {
           "type": "http",
-          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
-          "headers": {
-            "x-api-key": "YOUR_CATCHALL_API_KEY"
-          }
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY"
         }
       }
     }
@@ -209,6 +211,83 @@ its connector UI does not support custom request headers.
     ```
 
     Restart Windsurf after saving.
+
+  </Tab>
+
+  <Tab title="Zed">
+    Add to your Zed settings (`~/.config/zed/settings.json`):
+
+    ```json
+    {
+      "context_servers": {
+        "catchall": {
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+
+    Restart Zed after saving.
+
+  </Tab>
+
+  <Tab title="Warp">
+    Go to **Settings > MCP Servers > Add MCP Server** and add:
+
+    ```json
+    {
+      "catchall": {
+        "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+        "headers": {
+          "x-api-key": "YOUR_CATCHALL_API_KEY"
+        }
+      }
+    }
+    ```
+
+  </Tab>
+
+  <Tab title="Gemini CLI">
+    Add to `~/.gemini/settings.json`:
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "httpUrl": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+
+    Restart Gemini CLI after saving.
+
+  </Tab>
+
+  <Tab title="Roo Code">
+    Add to your Roo Code MCP config:
+
+    ```json
+    {
+      "mcpServers": {
+        "catchall": {
+          "type": "streamable-http",
+          "url": "https://catchall-mcp.newscatcherapi.com/mcp",
+          "headers": {
+            "x-api-key": "YOUR_CATCHALL_API_KEY"
+          }
+        }
+      }
+    }
+    ```
+
+    Restart Roo Code after saving.
 
   </Tab>
 
@@ -251,6 +330,11 @@ its connector UI does not support custom request headers.
   </Tab>
 </Tabs>
 
+<Note>
+  Replace `YOUR_CATCHALL_API_KEY` with your key. Do not share it or commit it
+  to version control.
+</Note>
+
 ## Available tools
 
 Each tool maps to a CatchAll API endpoint. For request and response schemas, see
@@ -279,7 +363,7 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `enable_monitor` | Re-enable a previously disabled monitor |
     | `disable_monitor` | Pause a monitor without deleting it |
   </Tab>
-  
+
   <Tab title="Meta">
     | Tool | Description |
     |------|-------------|
@@ -299,15 +383,15 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
 <Accordion title="Connection refused or timeout">
   Verify your API key is valid by calling an authenticated endpoint:
 
-```bash
-curl -X POST "https://catchall.newscatcherapi.com/catchAll/initialize" \
-  -H "x-api-key: YOUR_CATCHALL_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"query": "test"}'
-```
+  ```bash
+  curl -X POST "https://catchall.newscatcherapi.com/catchAll/initialize" \
+    -H "x-api-key: YOUR_CATCHALL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"query": "test"}'
+  ```
 
-If this returns a `403` error, your key is invalid. Check it at
-[platform.newscatcherapi.com](https://platform.newscatcherapi.com).
+  If this returns a `403` error, your key is invalid. Check it at
+  [platform.newscatcherapi.com](https://platform.newscatcherapi.com).
 
 </Accordion>
 
