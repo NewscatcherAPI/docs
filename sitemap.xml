@@ -40,16 +40,16 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job</loc>
-    </url>
-    <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto</loc>
@@ -58,7 +58,7 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/create-monitor</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitors</loc>
@@ -67,13 +67,13 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitor-jobs</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/enable-monitor</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/disable-monitor</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload</loc>
