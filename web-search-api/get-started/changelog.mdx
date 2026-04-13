@@ -5,6 +5,69 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.4.0" description="2026-04-14">
+## Company search
+
+Introduces company search — track specific companies across CatchAll jobs by
+connecting datasets of entities.
+
+**Features:**
+
+- **Entities**: Define companies with names, domains, alternative names, and key
+  persons.
+- **Datasets**: Group entities into reusable collections (watchlists,
+  portfolios).
+- **Connected jobs**: Submit jobs with `connected_dataset_ids` to activate
+  company search mode.
+- **Per-company scoring**: Each result record includes a `connected_entities`
+  array with `entity_id`, `name`, `ed_score`, and `relation` for each matched
+  company.
+
+**Endpoints:**
+
+- [`GET /catchAll/entities`](/web-search-api/api-reference/entities/list-entities)
+  — List entities.
+- [`POST /catchAll/entities`](/web-search-api/api-reference/entities/create-entity)
+  — Create a company entity.
+- [`POST /catchAll/entities/batch`](/web-search-api/api-reference/entities/create-entities-batch)
+  — Create multiple entities.
+- [`GET /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/get-entity)
+  — Get entity.
+- [`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity)
+  — Update entity.
+- [`DELETE /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/delete-entity)
+  — Delete entity.
+- [`GET /catchAll/datasets`](/web-search-api/api-reference/datasets/list-datasets)
+  — List datasets.
+- [`POST /catchAll/datasets`](/web-search-api/api-reference/datasets/create-dataset)
+  — Create dataset from entity IDs.
+- [`POST /catchAll/datasets/upload`](/web-search-api/api-reference/datasets/create-dataset-from-csv)
+  — Create dataset from CSV.
+- [`GET /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/get-dataset)
+  — Get dataset.
+- [`PATCH /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/update-dataset)
+  — Update dataset.
+- [`DELETE /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/delete-dataset)
+  — Delete dataset.
+- [`GET /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/list-entities-in-dataset)
+  — List entities in dataset.
+- [`POST /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/add-entities-to-dataset)
+  — Add entities to dataset.
+- [`DELETE /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/remove-entities-from-dataset)
+  — Remove entities from dataset.
+- [`GET /catchAll/datasets/{dataset_id}/status`](/web-search-api/api-reference/datasets/get-dataset-status-history)
+  — Get dataset status history.
+- [`POST /catchAll/datasets/{dataset_id}/upload`](/web-search-api/api-reference/datasets/upload-csv-to-dataset)
+  — Add companies to dataset via CSV.
+
+**Changed:**
+
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) now
+  accepts `connected_dataset_ids` — an optional array of dataset UUIDs that
+  activates company search mode.
+
+</Update>
+
 <Update label="1.3.1" description="2026-03-19">
 ## Job modes, plan limits, and response improvements
 
