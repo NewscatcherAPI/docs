@@ -542,6 +542,100 @@ try {
 ```
 </Accordion>
 
+## Company search
+
+Company search lets you track specific companies across jobs. Create entities,
+group them into a dataset, then connect the dataset to any job to get per-company
+relevance scores in results.
+
+<Tabs>
+  <Tab title="Create entity">
+```typescript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const entity = await client.entities.createEntity({
+  name: "NewsCatcher",
+  entity_type: "company",
+  description: "AI-powered news data provider",
+  additional_attributes: {
+    company_attributes: {
+      domain: "newscatcherapi.com",
+      alternative_names: ["NC", "NewsCatcher API"],
+      key_persons: ["Artem Bugara", "Maksym Sugonyaka"],
+    },
+  },
+});
+const entityId = entity.id;
+```
+  </Tab>
+
+  <Tab title="Create dataset from CSV">
+    Upload a CSV to create a dataset and entities in one step:
+
+```typescript
+import { createReadStream } from "fs";
+
+const dataset = await client.datasets.createDatasetFromCsv({
+  file: createReadStream("companies.csv"),
+  name: "My Portfolio",
+});
+const datasetId = dataset.dataset_id;
+```
+
+    CSV format:
+
+```csv
+name,description,domain,alternative_names,key_persons
+NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+```
+  </Tab>
+
+  <Tab title="Submit connected job">
+    Wait for the dataset to reach `ready` status, then submit a job:
+
+```typescript
+const POLL_INTERVAL_MS = 5000;
+
+// Poll until ready
+while (true) {
+  const status = await client.datasets.getDataset({ dataset_id: datasetId });
+  if (status.latest_status === "ready") break;
+  await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+}
+
+// Submit connected job
+const job = await client.jobs.createJob({
+  query: "AI chip partnerships",
+  connected_dataset_ids: [datasetId],
+});
+```
+  </Tab>
+
+  <Tab title="Read results">
+    Each record includes a `connected_entities` array with relevance scores:
+
+```typescript
+const results = await client.jobs.getJobResults({ job_id: job.job_id });
+
+for (const record of results.all_records) {
+  console.log(record.record_title);
+  for (const entity of record.connected_entities ?? []) {
+    console.log(`  ${entity.name}: score ${entity.ed_score}/10`);
+    console.log(`  ${entity.relation}`);
+  }
+}
+```
+  </Tab>
+</Tabs>
+
+<Tip>
+  For a full step-by-step walkthrough including batch entity creation and the
+  JSON API path, see [Set up company search](/web-search-api/how-to/set-up-company-search).
+</Tip>
+
 ## Type safety
 
 The SDK exports all request and response types for full TypeScript support:
