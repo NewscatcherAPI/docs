@@ -514,6 +514,100 @@ except ApiError as e:
 ```
 </Accordion>
 
+## Company search
+
+Company search lets you track specific companies across jobs. Create entities,
+group them into a dataset, then connect the dataset to any job to get per-company
+relevance scores in results.
+
+<Tabs>
+  <Tab title="Create entity">
+```python
+from newscatcher_catchall import (
+    CatchAllApi,
+    AdditionalAttributes,
+    CompanyAttributes,
+)
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+entity = client.entities.create_entity(
+    name="NewsCatcher",
+    entity_type="company",
+    description="AI-powered news data provider",
+    additional_attributes=AdditionalAttributes(
+        company_attributes=CompanyAttributes(
+            domain="newscatcherapi.com",
+            alternative_names=["NC", "NewsCatcher API"],
+            key_persons=["Artem Bugara", "Maksym Sugonyaka"],
+        )
+    ),
+)
+entity_id = entity.id
+```
+  </Tab>
+
+  <Tab title="Create dataset from CSV">
+    Upload a CSV to create a dataset and entities in one step:
+
+```python
+dataset = client.datasets.create_dataset_from_csv(
+    file=open("companies.csv", "rb"),
+    name="My Portfolio",
+)
+dataset_id = dataset.dataset_id
+```
+
+    CSV format:
+
+```csv
+name,description,domain,alternative_names,key_persons
+NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+```
+  </Tab>
+
+  <Tab title="Submit connected job">
+    Wait for the dataset to reach `ready` status, then submit a job:
+
+```python
+import time
+
+# Poll until ready
+while True:
+    status = client.datasets.get_dataset(dataset_id)
+    if status.latest_status == "ready":
+        break
+    time.sleep(5)
+
+# Submit connected job
+job = client.jobs.create_job(
+    query="AI chip partnerships",
+    connected_dataset_ids=[dataset_id],
+)
+```
+  </Tab>
+
+  <Tab title="Read results">
+    Each record includes a `connected_entities` array with relevance scores:
+
+```python
+results = client.jobs.get_job_results(job.job_id)
+
+for record in results.all_records:
+    print(record.record_title)
+    for entity in record.connected_entities:
+        print(f"  {entity.name}: score {entity.ed_score}/10")
+        print(f"  {entity.relation}")
+```
+  </Tab>
+</Tabs>
+
+<Tip>
+  For a full step-by-step walkthrough including batch entity creation and the
+  JSON API path, see [Set up company search](/web-search-api/how-to/set-up-company-search).
+</Tip>
+
 ## Async usage
 
 Use the async client for non-blocking API calls:
