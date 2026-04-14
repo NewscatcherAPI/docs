@@ -47,6 +47,7 @@
             "pages": [
               "web-search-api/guides-and-concepts/jobs",
               "web-search-api/guides-and-concepts/monitors",
+              "web-search-api/guides-and-concepts/company-search",
               "web-search-api/guides-and-concepts/index-and-search-depth",
               "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
