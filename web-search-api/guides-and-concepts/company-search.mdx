@@ -1,0 +1,135 @@
+---
+title: Company search
+sidebarTitle: Company search
+description: Track specific companies across CatchAll jobs with per-company relevance scores.
+---
+
+Company search filters CatchAll job results to a predefined list of companies and
+scores each matching record per company. Use it when you want to track a specific
+set of companies — a portfolio, a competitor list, a watchlist — rather than run
+broad queries.
+
+## How it works
+
+Company search uses three connected concepts:
+
+**Entities** are individual company definitions. Each entity stores identifying
+information — name, domain, alternative names, key persons — that the system uses
+to recognize the company in web content.
+
+**Datasets** are named collections of entities. A dataset acts as a watchlist or
+portfolio. You create it once and can reuse it across multiple jobs and monitors.
+
+**Connected jobs** are standard CatchAll jobs submitted with a `connected_dataset_ids`
+parameter. Adding this parameter activates company search mode; everything else
+about the job — query, validators, enrichments, date ranges — works identically
+to a normal job.
+
+## Entities
+
+An entity represents a company (or person) you want to track. Only `name` is
+required; all other fields are optional but improve matching quality.
+
+| Field | Required | Notes |
+|---|---|---|
+| `name` | Yes | Company name |
+| `entity_type` | No | `"company"` (default) or `"person"` |
+| `description` | No | Free-text description used for disambiguation |
+| `additional_attributes.company_attributes.domain` | No | Website domain — highest-signal field |
+| `additional_attributes.company_attributes.alternative_names` | No | Aliases and ticker symbols |
+| `additional_attributes.company_attributes.key_persons` | No | CEO, founders, and other key people |
+
+Matching quality depends on what you provide. `domain` is the most reliable signal
+— two companies can share a name, but not a domain.
+
+### Status lifecycle
+
+Entities move through the following statuses after creation:
+
+`pending` → `enriching` → `ready` (or `failed`)
+
+<Note>
+  External enrichment is not yet active. Entities move directly to `ready` based
+  on the fields you supply. The behavior will change in a future release when the
+  enrichment pipeline is enabled.
+</Note>
+
+## Datasets
+
+A dataset is a named, reusable collection of entities scoped to your organization.
+You can create a dataset from a CSV file — which creates entities and the dataset
+in a single step — or from a list of existing entity IDs via the JSON API. You
+can add entities to or remove them from a dataset at any time without affecting
+jobs that have already run.
+
+Datasets follow the same `pending → enriching → ready` (or `failed`) lifecycle
+as entities. A dataset must reach `ready` before it can be used in a job.
+
+<Note>
+  Only one dataset per job is currently supported, even though
+  `connected_dataset_ids` accepts an array.
+</Note>
+
+## Company search jobs
+
+To activate company search, add `connected_dataset_ids` to a standard job
+submission:
+
+```bash
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "AI chip partnerships",
+    "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"]
+  }'
+```
+
+The job processes identically to a normal job — only the results differ.
+
+## Output
+
+Each matching record includes a `connected_entities` array with one entry per
+matched entity.
+
+| Field | Type | Notes |
+|---|---|---|
+| `entity_id` | string | UUID of the matched entity |
+| `name` | string | Entity name |
+| `ed_score` | number | Relevance score from 1 to 10. Entities scoring 0 are filtered from output and never appear. |
+| `relation` | string | Description of how the entity relates to the record. Maximum 100 characters. |
+
+Example record with `connected_entities`:
+
+```json
+{
+  "record_id": "6417909601438475967",
+  "record_title": "NVIDIA Expands AI Infrastructure Partnership with NewsCatcher",
+  "enrichment": {
+    "partnership_type": "technology integration",
+    "deal_stage": "announced",
+    "enrichment_confidence": "high"
+  },
+  "citations": [
+    {
+      "title": "NVIDIA Announces New AI Data Partners",
+      "link": "https://example.com/nvidia-ai-partners",
+      "published_date": "2026-04-10T09:00:00Z"
+    }
+  ],
+  "connected_entities": [
+    {
+      "entity_id": "854198fa-f702-49db-a381-0427fa87f173",
+      "name": "NewsCatcher",
+      "ed_score": 9,
+      "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal"
+    }
+  ]
+}
+```
+
+<Tip>
+  For step-by-step instructions including entity creation, CSV upload, dataset
+  polling, and reading results in Python, TypeScript, and Java, see
+  [Set up company search](/web-search-api/how-to/set-up-company-search).
+</Tip>
