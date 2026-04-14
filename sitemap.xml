@@ -19,6 +19,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth</loc>
     </url>
     <url>
@@ -77,6 +80,57 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/list-entities</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entity</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entities-batch</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/get-entity</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/update-entity</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/delete-entity</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/list-datasets</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset-from-csv</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/get-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/update-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/delete-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/list-entities-in-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/add-entities-to-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/remove-entities-from-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/get-dataset-status-history</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/health</loc>
