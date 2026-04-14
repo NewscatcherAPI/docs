@@ -16,6 +16,7 @@
 
 - [Jobs](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/jobs): How CatchAll jobs work and how to move from query to results.
 - [Monitors](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
+- [Company search](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
 
@@ -45,6 +46,87 @@
 - [Disable Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/disable-monitor): Stop scheduled job execution for a monitor.
 - [Update Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor): Update the webhook configuration for an existing monitor.
 - [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload): Data model for a payload sent to the webhook URL when a monitor job completes.
+
+### API Reference — Entities
+
+- [List Entities](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/list-entities): Returns a paginated list of entities belonging to the authenticated
+organization. Supports filtering by status and entity type, and
+sorting by name, status, or creation date.
+
+- [Create Entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entity): Creates a new company entity and begins background enrichment.
+
+The entity status starts as `pending` and transitions to `ready` once
+enrichment completes. Provide as much identifying information as
+possible — `domain` is the highest-signal field because it is
+unambiguous.
+
+- [Create Entities Batch](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entities-batch): Creates multiple entities in a single request. Each entity is
+processed independently — a failure in one does not affect others.
+
+Returns an array of `{id, status}` objects in the same order as
+the input array.
+
+- [Get Entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/get-entity): Returns a single entity by ID with all attributes and current status.
+- [Update Entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/update-entity): Updates one or more fields of an existing entity.
+
+- [Delete Entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/delete-entity): Permanently deletes an entity. The entity is removed from all
+datasets and the search index. This operation cannot be undone.
+
+
+### API Reference — Datasets
+
+- [List Datasets](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/list-datasets): Returns a paginated list of datasets belonging to the authenticated
+organization. Supports filtering by status and sorting by name,
+status, or creation date.
+
+- [Create Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset): Creates a new dataset from a list of existing entity IDs.
+
+If any of the provided entity IDs do not exist or do not belong to
+your organization, the request fails with `400`. All entity IDs must
+be valid before the dataset is created.
+
+To create a dataset and entities in one step, use the [`Create dataset from CSV`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset-from-csv)
+endpoint instead.
+
+- [Create Dataset From Csv](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset-from-csv): Creates a new dataset by uploading a CSV file. Each row in the CSV
+becomes an entity. The `name` column is required; all other columns
+are optional.
+
+**CSV format:**
+```csv
+name,description,domain,alternative_names,key_persons
+NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+```
+
+Use semicolons (`;`) to separate multiple values in `alternative_names` and `key_persons`. Rows with empty `name` are skipped and reported in `validation_report`. 
+
+**Note**: The response shape differs from the JSON dataset creation endpoint: it returns `dataset_id` (not `id`) and includes a `validation_report` with details on skipped rows.
+
+- [Get Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/get-dataset): Returns a single dataset by ID including entity count and current status.
+- [Update Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/update-dataset): Updates the name or description of a dataset.
+
+- [Delete Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/delete-dataset): Permanently deletes a dataset. The entities within the dataset are
+not deleted — only the dataset itself. This operation cannot be
+undone.
+
+- [List Entities In Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/list-entities-in-dataset): Returns a paginated list of entities in a dataset. Supports filtering by status and entity type.
+
+- [Add Entities To Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/add-entities-to-dataset): Adds one or more existing entities to a dataset. Returns the number of entities added.
+
+- [Remove Entities From Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/remove-entities-from-dataset): Removes one or more entities from a dataset. The entities themselves
+are not deleted — they are only removed from this dataset. Returns
+the number of entities removed.
+
+- [Get Dataset Status History](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/get-dataset-status-history): Returns the full status change history for a dataset, ordered
+chronologically from oldest to newest.
+
+- [Upload Csv To Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset): Appends new companies to an existing dataset by uploading a CSV file.
+Uses the same CSV format as the dataset creation endpoint.
+
+The response omits `dataset_name` compared to the create-from-CSV
+endpoint since the dataset already exists.
+
 
 ### API Reference — Meta
 
