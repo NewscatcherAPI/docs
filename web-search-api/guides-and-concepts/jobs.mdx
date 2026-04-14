@@ -151,6 +151,13 @@ If you omit both, the system generates both from scratch based on your query.
   job](#continue-job) to process more records without restarting.
 </Tip>
 
+<Note>
+  To activate Company search mode and filter results to specific companies,
+  add `connected_dataset_ids` to your submit request. See [Company
+  search](/web-search-api/guides-and-concepts/company-search) for setup
+  instructions.
+</Note>
+
 <CodeGroup>
 ```bash cURL
 curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
@@ -224,11 +231,6 @@ System.out.println("Job created: " + jobId);
 }
 ```
 </Expandable>
-
-<Note>
-  If you submit without a `limit`, the job processes all available data for the
-  scope, and there is nothing left for [Continue job](#continue-job).
-</Note>
 
 ## Get job status
 
@@ -527,6 +529,13 @@ while (true) {
   the example above) return a structured object with confidence scores for entity
   identification and domain resolution. See the [Company enrichment](/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
 </Note>
+
+<Info>
+  Records from Company Search jobs include a `connected_entities` array with
+  one entry per matched company — each with `entity_id`, `name`, `ed_score`
+  (1–10), and `relation`. See [Company search](/web-search-api/guides-and-concepts/company-search) 
+  for the full output format.
+</Info>
 
 ## Continue job
 

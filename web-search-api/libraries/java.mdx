@@ -12,7 +12,7 @@ Java SDK provides access to the CatchAll API from Java applications.
   <Tab title="Gradle">
     ```groovy
     dependencies {
-        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:0.3.1'
+        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:1.4.0'
     }
     ```
   </Tab>
@@ -22,7 +22,7 @@ Java SDK provides access to the CatchAll API from Java applications.
     <dependency>
         <groupId>com.newscatcherapi</groupId>
         <artifactId>newscatcher-catchall-sdk</artifactId>
-        <version>0.3.1</version>
+        <version>1.4.0</version>
     </dependency>
     ```
   </Tab>
@@ -667,6 +667,125 @@ public class MonitorExample {
 }
 ```
 </Accordion>
+
+## Company search
+
+Company search lets you track specific companies across jobs. Create entities,
+group them into a dataset, then connect the dataset to any job to get per-company
+relevance scores in results.
+
+<Tabs>
+  <Tab title="Create entity">
+```java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.types.AdditionalAttributes;
+import com.newscatcher.catchall.types.CompanyAttributes;
+import com.newscatcher.catchall.types.CreateEntityRequest;
+import com.newscatcher.catchall.types.CreateEntityResponse;
+import com.newscatcher.catchall.types.EntityType;
+import java.util.List;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+CreateEntityResponse entity = client.entities().createEntity(
+    CreateEntityRequest.builder()
+        .name("NewsCatcher")
+        .entityType(EntityType.COMPANY)
+        .description("AI-powered news data provider")
+        .additionalAttributes(AdditionalAttributes.builder()
+            .companyAttributes(CompanyAttributes.builder()
+                .domain("newscatcherapi.com")
+                .alternativeNames(List.of("NC", "NewsCatcher API"))
+                .keyPersons(List.of("Artem Bugara", "Maksym Sugonyaka"))
+                .build())
+            .build())
+        .build()
+);
+String entityId = entity.getId();
+```
+  </Tab>
+
+  <Tab title="Create dataset from CSV">
+    Upload a CSV to create a dataset and entities in one step:
+
+```java
+import com.newscatcher.catchall.resources.datasets.requests.CreateDatasetFromCsvRequest;
+import com.newscatcher.catchall.types.CreateDatasetCsvResponse;
+import java.io.File;
+
+CreateDatasetCsvResponse dataset = client.datasets().createDatasetFromCsv(
+    new File("companies.csv"),
+    CreateDatasetFromCsvRequest.builder()
+        .name("My Portfolio")
+        .build()
+);
+String datasetId = dataset.getDatasetId();
+```
+
+    CSV format:
+
+```csv
+name,description,domain,alternative_names,key_persons
+NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+```
+  </Tab>
+
+  <Tab title="Submit connected job">
+    Wait for the dataset to reach `ready` status, then submit a job:
+
+```java
+import com.newscatcher.catchall.types.DatasetResponse;
+import com.newscatcher.catchall.types.DatasetStatus;
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+// Poll until ready
+while (true) {
+    DatasetResponse status = client.datasets().getDataset(datasetId);
+    if (DatasetStatus.READY.equals(status.getLatestStatus().orElse(null))) break;
+    TimeUnit.SECONDS.sleep(5);
+}
+
+// Submit connected job
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("AI chip partnerships")
+        .connectedDatasetIds(List.of(datasetId))
+        .build()
+);
+```
+  </Tab>
+
+  <Tab title="Read results">
+    Each record includes a `connected_entities` list with relevance scores:
+
+```java
+import com.newscatcher.catchall.types.PullJobResponseDto;
+
+PullJobResponseDto results = client.jobs().getJobResults(job.getJobId());
+
+results.getAllRecords().forEach(record -> {
+    System.out.println(record.getRecordTitle());
+    record.getConnectedEntities().ifPresent(entities ->
+        entities.forEach(entity -> {
+            System.out.printf("  %s: score %.0f/10%n",
+                entity.getName(), entity.getEdScore());
+            System.out.println("  " + entity.getRelation());
+        })
+    );
+});
+```
+  </Tab>
+</Tabs>
+
+<Tip>
+  For a full step-by-step walkthrough including batch entity creation and the
+  JSON API path, see [Set up company search](/web-search-api/how-to/set-up-company-search).
+</Tip>
 
 ## Error handling
 

@@ -47,6 +47,7 @@
             "pages": [
               "web-search-api/guides-and-concepts/jobs",
               "web-search-api/guides-and-concepts/monitors",
+              "web-search-api/guides-and-concepts/company-search",
               "web-search-api/guides-and-concepts/index-and-search-depth",
               "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
@@ -85,6 +86,33 @@
                   "web-search-api/api-reference/monitors/disable-monitor",
                   "web-search-api/api-reference/monitors/update-monitor",
                   "web-search-api/api-reference/monitors/webhook-payload"
+                ]
+              },
+              {
+                "group": "Entities",
+                "pages": [
+                  "web-search-api/api-reference/entities/list-entities",
+                  "web-search-api/api-reference/entities/create-entity",
+                  "web-search-api/api-reference/entities/create-entities-batch",
+                  "web-search-api/api-reference/entities/get-entity",
+                  "web-search-api/api-reference/entities/update-entity",
+                  "web-search-api/api-reference/entities/delete-entity"
+                ]
+              },
+              {
+                "group": "Datasets",
+                "pages": [
+                  "web-search-api/api-reference/datasets/list-datasets",
+                  "web-search-api/api-reference/datasets/create-dataset",
+                  "web-search-api/api-reference/datasets/create-dataset-from-csv",
+                  "web-search-api/api-reference/datasets/get-dataset",
+                  "web-search-api/api-reference/datasets/update-dataset",
+                  "web-search-api/api-reference/datasets/delete-dataset",
+                  "web-search-api/api-reference/datasets/list-entities-in-dataset",
+                  "web-search-api/api-reference/datasets/add-entities-to-dataset",
+                  "web-search-api/api-reference/datasets/remove-entities-from-dataset",
+                  "web-search-api/api-reference/datasets/get-dataset-status-history",
+                  "web-search-api/api-reference/datasets/upload-csv-to-dataset"
                 ]
               },
               {

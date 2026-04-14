@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.3.1
+  version: 1.4.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -9,7 +9,7 @@ info:
 
     All endpoints except /health and /version require `x-api-key` header. If the key is invalid or missing, the API returns the `403 Forbidden` error.
 
-    ### Basic Workflow
+    ### Job workflow
 
     1. (Optional) Get suggestions via /catchAll/initialize
     2. Submit a query via /catchAll/submit with optional date ranges and custom validators/enrichments
@@ -22,9 +22,17 @@ info:
     2. Create monitor via /catchAll/monitors/create with schedule
     3. Retrieve aggregated results via /catchAll/monitors/pull/{monitor_id}
 
+    ### Company search workflow
+
+    1. Create a dataset via `POST /catchAll/datasets/` or `POST /catchAll/datasets/upload`
+    2. Wait for the dataset `latest_status` to reach `ready`
+    3. Submit a job with `connected_dataset_ids` pointing to your dataset
+    4. Retrieve results — each record includes a `connected_entities` array
+       with relevance scores per matched company
+
     ### Important notes
 
-    **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs.
+    **Dynamic schemas**: Response schemas are generated dynamically by LLMs. Field names in the `enrichment` object may vary and are not deterministic across jobs unless explicitly specified.
 
   contact:
     name: NewsCatcher
@@ -52,6 +60,26 @@ tags:
         Automate recurring queries with scheduled jobs and webhook
         notifications.
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors
+  - name: Entities
+    description: |
+      Operations to create, update, and delete company entities.
+
+      Entities are the building blocks of Company Search. Each entity represents
+      a company (or person) you want to track. Add identifying information such as
+      domain, alternative names, and key persons to improve matching quality.
+    externalDocs:
+      description: Learn about Company Search and entities
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
+  - name: Datasets
+    description: |
+      Operations to create and manage datasets of entities.
+
+      A dataset is a named collection of entities — think of it as a watchlist or
+      portfolio. Connect a dataset to a job via `connected_dataset_ids` to activate
+      Company Search mode. Datasets can be reused across multiple jobs and monitors.
+    externalDocs:
+      description: Learn about datasets and Company Search
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
   - name: Meta
     description: Operations to check API health and version.
 
@@ -59,6 +87,8 @@ security:
   - ApiKeyAuth: []
 
 paths:
+  # ── Jobs ──────────────────────────────────────────────────────────────
+
   /catchAll/jobs/user:
     get:
       tags:
@@ -94,7 +124,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/InitializeRequestDTO"
+              $ref: "#/components/schemas/InitializeRequestDto"
             example:
               query: "Series B funding rounds for SaaS startups"
               context: "Focus on funding amount and company name"
@@ -121,7 +151,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/SubmitRequestDTO"
+              $ref: "#/components/schemas/SubmitRequestDto"
             example:
               query: "Series B funding rounds for SaaS startups"
               context: "Focus on funding amount and company name"
@@ -198,7 +228,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ContinueRequestDTO"
+              $ref: "#/components/schemas/ContinueRequestDto"
             example:
               job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               new_limit: 100
@@ -211,6 +241,8 @@ paths:
           $ref: "#/components/responses/ForbiddenError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  # ── Monitors ──────────────────────────────────────────────────────────────
 
   /catchAll/monitors:
     get:
@@ -242,7 +274,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateMonitorRequestDTO"
+              $ref: "#/components/schemas/CreateMonitorRequestDto"
             example:
               reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
               schedule: "every day at 12 PM UTC"
@@ -334,7 +366,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/EnableMonitorRequestDTO"
+              $ref: "#/components/schemas/EnableMonitorRequestDto"
             example:
               backfill: true
       responses:
@@ -437,7 +469,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/UpdateMonitorRequestDTO"
+              $ref: "#/components/schemas/UpdateMonitorRequestDto"
             example:
               webhook:
                 url: "https://new-endpoint.com/webhook"
@@ -453,6 +485,595 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  # ── Entities ──────────────────────────────────────────────────────────────
+
+  /catchAll/entities:
+    get:
+      tags:
+        - Entities
+      summary: List entities
+      description: |
+        Returns a paginated list of entities belonging to the authenticated
+        organization. Supports filtering by status and entity type, and
+        sorting by name, status, or creation date.
+      operationId: listEntities
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of entities per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description:
+            Filter entities by name (case-insensitive substring match).
+          example: NewsCatcher
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityStatus"
+        - name: entity_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityType"
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntitySortBy"
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - Entities
+      summary: Create entity
+      description: |
+        Creates a new company entity and begins background enrichment.
+
+        The entity status starts as `pending` and transitions to `ready` once
+        enrichment completes. Provide as much identifying information as
+        possible — `domain` is the highest-signal field because it is
+        unambiguous.
+      operationId: createEntity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEntityRequest"
+            example:
+              name: NewsCatcher
+              entity_type: company
+              description: AI-powered news data provider
+              additional_attributes:
+                company_attributes:
+                  domain: newscatcherapi.com
+                  alternative_names:
+                    - NC
+                    - NewsCatcher API
+                  key_persons:
+                    - Artem Bugara
+                    - Maksym Sugonyaka
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateEntityResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/entities/batch:
+    post:
+      tags:
+        - Entities
+      summary: Create entities in batch
+      description: |
+        Creates multiple entities in a single request. Each entity is
+        processed independently — a failure in one does not affect others.
+
+        Returns an array of `{id, status}` objects in the same order as
+        the input array.
+      operationId: createEntitiesBatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEntitiesBatchRequest"
+            example:
+              entities:
+                - name: OpenAI
+                  entity_type: company
+                  description: Artificial intelligence research company
+                  additional_attributes:
+                    company_attributes:
+                      domain: openai.com
+                      alternative_names:
+                        - Open AI
+                      key_persons:
+                        - Sam Altman
+                - name: Stripe
+                  entity_type: company
+                  description: Online payment processing platform
+                  additional_attributes:
+                    company_attributes:
+                      domain: stripe.com
+                      key_persons:
+                        - Patrick Collison
+                        - John Collison
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateEntitiesBatchResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/entities/{entity_id}:
+    get:
+      tags:
+        - Entities
+      summary: Get entity
+      description:
+        Returns a single entity by ID with all attributes and current status.
+      operationId: getEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Entities
+      summary: Update entity
+      description: |
+        Updates one or more fields of an existing entity.
+      operationId: updateEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEntityRequest"
+            example:
+              description: Updated description
+              additional_attributes:
+                company_attributes:
+                  alternative_names:
+                    - NC
+                    - NewsCatcher API
+                    - NCA
+      responses:
+        "200":
+          $ref: "#/components/responses/EntityResponse"
+        "400":
+          $ref: "#/components/responses/EntityBadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    delete:
+      tags:
+        - Entities
+      summary: Delete entity
+      description: |
+        Permanently deletes an entity. The entity is removed from all
+        datasets and the search index. This operation cannot be undone.
+      operationId: deleteEntity
+      parameters:
+        - $ref: "#/components/parameters/EntityId"
+      responses:
+        "204":
+          description: Entity deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  # ── Datasets ──────────────────────────────────────────────────────────────
+
+  /catchAll/datasets:
+    get:
+      tags:
+        - Datasets
+      summary: List datasets
+      description: |
+        Returns a paginated list of datasets belonging to the authenticated
+        organization. Supports filtering by status and sorting by name,
+        status, or creation date.
+      operationId: listDatasets
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of datasets per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description:
+            Filter datasets by name (case-insensitive substring match).
+          example: Portfolio
+        - name: latest_status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DatasetStatus"
+          description: |
+            Filter by dataset status.
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/DatasetSortBy"
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+
+    post:
+      tags:
+        - Datasets
+      summary: Create dataset
+      description: |
+        Creates a new dataset from a list of existing entity IDs.
+
+        If any of the provided entity IDs do not exist or do not belong to
+        your organization, the request fails with `400`. All entity IDs must
+        be valid before the dataset is created.
+
+        To create a dataset and entities in one step, use the [`Create dataset from CSV`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/create-dataset-from-csv)
+        endpoint instead.
+      operationId: createDataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateDatasetRequest"
+            example:
+              name: My Portfolio
+              description: Companies in our investment portfolio
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+                - a1b2c3d4-e5f6-7890-abcd-ef1234567890
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/datasets/upload:
+    post:
+      tags:
+        - Datasets
+      summary: Create dataset from CSV
+      description: |
+        Creates a new dataset by uploading a CSV file. Each row in the CSV
+        becomes an entity. The `name` column is required; all other columns
+        are optional.
+
+        **CSV format:**
+        ```csv
+        name,description,domain,alternative_names,key_persons
+        NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+        OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+        ```
+
+        Use semicolons (`;`) to separate multiple values in `alternative_names` and `key_persons`. Rows with empty `name` are skipped and reported in `validation_report`. 
+
+        **Note**: The response shape differs from the JSON dataset creation endpoint: it returns `dataset_id` (not `id`) and includes a `validation_report` with details on skipped rows.
+      operationId: createDatasetFromCsv
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - name
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The CSV file to upload.
+                name:
+                  type: string
+                  description: Name for the new dataset.
+                  example: My Portfolio
+                description:
+                  type: string
+                  description: Optional description for the dataset.
+                  example: Companies from Q1 2026 watchlist
+      responses:
+        "200":
+          $ref: "#/components/responses/CreateDatasetCsvResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/datasets/{dataset_id}:
+    get:
+      tags:
+        - Datasets
+      summary: Get dataset
+      description:
+        Returns a single dataset by ID including entity count and current
+        status.
+      operationId: getDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Datasets
+      summary: Update dataset
+      description: |
+        Updates the name or description of a dataset.
+      operationId: updateDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDatasetRequest"
+            example:
+              name: My Portfolio (updated)
+              description: Updated Q1 2026 watchlist
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Datasets
+      summary: Delete dataset
+      description: |
+        Permanently deletes a dataset. The entities within the dataset are
+        not deleted — only the dataset itself. This operation cannot be
+        undone.
+      operationId: deleteDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "204":
+          description: Dataset deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/datasets/{dataset_id}/entities:
+    get:
+      tags:
+        - Datasets
+      summary: List entities in dataset
+      description: |
+        Returns a paginated list of entities in a dataset. Supports filtering by status and entity type.
+      operationId: listEntitiesInDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of entities per page.
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter entities by name.
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityStatus"
+        - name: entity_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntityType"
+        - name: sort_by
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/EntitySortBy"
+        - name: sort_order
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/SortOrder"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetEntityListResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    post:
+      tags:
+        - Datasets
+      summary: Add entities to dataset
+      description: |
+        Adds one or more existing entities to a dataset. Returns the number of entities added.
+      operationId: addEntitiesToDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Datasets
+      summary: Remove entities from dataset
+      description: |
+        Removes one or more entities from a dataset. The entities themselves
+        are not deleted — they are only removed from this dataset. Returns
+        the number of entities removed.
+      operationId: removeEntitiesFromDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetEntityIdsRequest"
+            example:
+              entity_ids:
+                - 854198fa-f702-49db-a381-0427fa87f173
+      responses:
+        "200":
+          $ref: "#/components/responses/ManageEntitiesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/datasets/{dataset_id}/status:
+    get:
+      tags:
+        - Datasets
+      summary: Get dataset status history
+      description: |
+        Returns the full status change history for a dataset, ordered
+        chronologically from oldest to newest.
+      operationId: getDatasetStatusHistory
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DatasetStatusHistoryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/datasets/{dataset_id}/upload:
+    post:
+      tags:
+        - Datasets
+      summary: Add companies to dataset via CSV
+      description: |
+        Appends new companies to an existing dataset by uploading a CSV file.
+        Uses the same CSV format as the dataset creation endpoint.
+
+        The response omits `dataset_name` compared to the create-from-CSV
+        endpoint since the dataset already exists.
+      operationId: uploadCSVToDataset
+      parameters:
+        - $ref: "#/components/parameters/DatasetId"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The CSV file to upload.
+      responses:
+        "200":
+          $ref: "#/components/responses/UploadCsvToDatasetResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  # ── Meta ──────────────────────────────────────────────────────────────
 
   /health:
     get:
@@ -528,13 +1149,33 @@ components:
       description: |
         Number of records per page.
 
+    EntityId:
+      name: entity_id
+      in: path
+      required: true
+      description: Unique entity identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "854198fa-f702-49db-a381-0427fa87f173"
+
+    DatasetId:
+      name: dataset_id
+      in: path
+      required: true
+      description: Unique dataset identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+
   responses:
     InitializeResponse:
       description: Suggestions retrieved successfully
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/InitializeResponseDTO"
+            $ref: "#/components/schemas/InitializeResponseDto"
           example:
             query: "Series B funding rounds for SaaS startups"
             context: "Focus on funding amount and company name"
@@ -573,7 +1214,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/SubmitResponseDTO"
+            $ref: "#/components/schemas/SubmitResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
@@ -582,7 +1223,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ContinueResponseDTO"
+            $ref: "#/components/schemas/ContinueResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             previous_limit: 10
@@ -594,7 +1235,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/StatusResponseDTO"
+            $ref: "#/components/schemas/StatusResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             status: "completed"
@@ -651,7 +1292,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullJobResponseDTO"
+            $ref: "#/components/schemas/PullJobResponseDto"
           example:
             job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
             query: "Series B funding rounds for SaaS startups"
@@ -704,7 +1345,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/CreateMonitorResponseDTO"
+            $ref: "#/components/schemas/CreateMonitorResponseDto"
           example:
             monitor_id: "7f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
             status: "Monitor Created Successfully"
@@ -714,7 +1355,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/UpdateMonitorResponseDTO"
+            $ref: "#/components/schemas/UpdateMonitorResponseDto"
           example:
             monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
             status: "Monitor updated Successfully"
@@ -753,14 +1394,14 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/PullMonitorResponseDTO"
+            $ref: "#/components/schemas/PullMonitorResponseDto"
 
     ListMonitorsResponse:
       description: List of user monitors
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/ListMonitorsResponseDTO"
+            $ref: "#/components/schemas/ListMonitorsResponseDto"
           example:
             total: 3
             page: 1
@@ -779,6 +1420,157 @@ components:
                   url: "https://example.com/webhook"
                   method: "POST"
                 user_key: "***...a1b2"
+
+    CreateEntityResponse:
+      description: Entity created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateEntityResponse"
+          example:
+            id: "854198fa-f702-49db-a381-0427fa87f173"
+            status: pending
+
+    EntityResponse:
+      description: Full entity object with all attributes and metadata.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EntityResponse"
+          example:
+            id: "854198fa-f702-49db-a381-0427fa87f173"
+            entity_type: company
+            organization_id: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
+            name: NewsCatcher
+            description: AI-powered news data provider
+            additional_attributes:
+              company_attributes:
+                domain: newscatcherapi.com
+                description: Provider of news and web search APIs for developers
+                key_persons:
+                  - Artem Bugara
+                  - Maksym Sugonyaka
+                alternative_names:
+                  - NC
+                  - NewsCatcher API
+            status: ready
+            created_by_user_id: "870e258e-12ec-4a47-8656-e7a43b0265b3"
+            created_at: "2026-04-08T15:21:17.272139"
+            updated_at: "2026-04-08T15:21:18.248316"
+
+    EntityListResponse:
+      description: Paginated list of entities.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EntityListResponse"
+
+    CreateEntitiesBatchResponse:
+      description: Batch of entities created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateEntitiesBatchResponse"
+          example:
+            entities:
+              - id: "88430468-d784-485d-84d5-6964a29ccd1e"
+                status: pending
+              - id: "ad4908fe-6db5-4237-a137-68dd8fc9fedc"
+                status: pending
+            count: 2
+
+    DatasetResponse:
+      description: Full dataset object with metadata and current status.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DatasetResponse"
+          example:
+            id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+            organization_id: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
+            name: My Portfolio
+            description: Companies in our investment portfolio
+            entity_count: 4
+            latest_status: ready
+            created_by_user_id: "870e258e-12ec-4a47-8656-e7a43b0265b3"
+            created_at: "2026-04-08T15:21:36.026993"
+            updated_at: "2026-04-08T15:21:36.027001"
+
+    DatasetListResponse:
+      description: Paginated list of datasets.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DatasetListResponse"
+
+    CreateDatasetCsvResponse:
+      description: Dataset created from CSV successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateDatasetCsvResponse"
+          example:
+            dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+            dataset_name: My Portfolio
+            entities_created: 3
+            validation_report:
+              total_rows: 4
+              valid_rows: 3
+              skipped_count: 1
+              skipped_rows:
+                - row: 3
+                  reason: "missing required field: name"
+
+    UploadCsvToDatasetResponse:
+      description: Companies added to dataset from CSV successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UploadCsvToDatasetResponse"
+          example:
+            dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+            entities_created: 3
+            validation_report:
+              total_rows: 3
+              valid_rows: 3
+              skipped_count: 0
+              skipped_rows: []
+
+    ManageEntitiesResponse:
+      description: Entities added or removed successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ManageEntitiesResponse"
+          example:
+            dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+            affected_count: 1
+
+    DatasetEntityListResponse:
+      description: Paginated list of entities in a dataset.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DatasetEntityListResponse"
+
+    DatasetStatusHistoryResponse:
+      description: Dataset status change history.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DatasetStatusHistoryResponse"
+          example:
+            dataset_id: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+            history:
+              - status: pending
+                additional_information: null
+                created_at: "2026-04-08T15:21:36.066271"
+              - status: enriching
+                additional_information: null
+                created_at: "2026-04-08T15:21:36.500000"
+              - status: ready
+                additional_information: null
+                created_at: "2026-04-08T15:21:55.000000"
 
     HealthCheckResponse:
       description: API is healthy
@@ -807,7 +1599,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: "#/components/schemas/GetPlanLimitsResponseDTO"
+            $ref: "#/components/schemas/GetPlanLimitsResponseDto"
           example:
             features:
               - name: "Jobs Concurrency"
@@ -848,6 +1640,38 @@ components:
                 detail:
                   "New limit must be greater than the previous limit for this
                   job."
+
+    EntityBadRequestError:
+      description: |
+        Validation error in entity field values.
+
+        Returned when required fields are missing or field values are invalid
+        (for example, an unrecognised `entity_type` value). The response body
+        uses a `message`/`status`/`status_code` structure, distinct from the
+        standard `detail`-based error format used elsewhere in the API.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EntityValidationErrorBody"
+          examples:
+            missing_name:
+              summary: Required field missing
+              value:
+                message:
+                  "Validation Error with the following fields: [{'field':
+                  'body.name', 'message': 'field required', 'type':
+                  'value_error.missing'}]"
+                status: Bad Request
+                status_code: 400
+            invalid_entity_type:
+              summary: Invalid enum value
+              value:
+                message:
+                  'Validation Error with the following fields: [{''field'':
+                  ''body.entity_type'', ''message'': "entity_type must be one of
+                  (''company'', ''person'')", ''type'': ''value_error''}]'
+                status: Bad Request
+                status_code: 400
 
     ForbiddenError:
       description: Invalid or missing API key
@@ -960,7 +1784,9 @@ components:
         - `date`: ISO format dates (YYYY-MM-DD)
         - `option`: Enum-like fixed values (status, category)
         - `url`: Web URLs
-        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
+        - `company`: Structured company data. Returns `source_text`, `confidence`, and `metadata`. 
+
+        See [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto) data model.
 
     EnrichmentSchema:
       type: object
@@ -1025,7 +1851,7 @@ components:
               description: Confidence level for the domain URL resolution.
               example: "high"
 
-    InitializeRequestDTO:
+    InitializeRequestDto:
       type: object
       required:
         - query
@@ -1038,7 +1864,7 @@ components:
         Request to get validator, enrichment, and date range suggestions for a
         query.
 
-    InitializeResponseDTO:
+    InitializeResponseDto:
       type: object
       required:
         - query
@@ -1083,7 +1909,7 @@ components:
             - "start_date must be >= 2025-01-23, your plan limited to lookback
               365 days; we modified start_date to 2025-01-23."
 
-    SubmitRequestDTO:
+    SubmitRequestDto:
       type: object
       required:
         - query
@@ -1123,8 +1949,19 @@ components:
 
             - `base`: Full pipeline with validation and enrichment.
             - `lite`: Lightweight extraction with faster processing. Returns titles and citations only.
+        connected_dataset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            Dataset IDs to connect to this job. When provided, activates Company Search mode — the job returns only events relevant to companies in the connected datasets with each record including a `connected_entities` array scored per company.
 
-    SubmitResponseDTO:
+            The dataset must have `latest_status: ready` before the job is submitted. Submitting with a non-existent or inaccessible dataset ID returns `400`.
+          example:
+            - "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+
+    SubmitResponseDto:
       type: object
       required:
         - job_id
@@ -1137,7 +1974,7 @@ components:
             retrieve results.
           example: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
 
-    ContinueRequestDTO:
+    ContinueRequestDto:
       type: object
       required:
         - job_id
@@ -1154,7 +1991,7 @@ components:
             New record limit for continued processing. Must be greater than the previous limit. If not provided, defaults to the plan maximum.
           example: 100
 
-    ContinueResponseDTO:
+    ContinueResponseDto:
       type: object
       required:
         - job_id
@@ -1224,7 +2061,7 @@ components:
           default: false
           description: Whether this step has finished processing.
 
-    StatusResponseDTO:
+    StatusResponseDto:
       type: object
       required:
         - job_id
@@ -1313,7 +2150,7 @@ components:
           description: Masked API key that created this job.
           example: "***...a1b2"
 
-    PullJobResponseDTO:
+    PullJobResponseDto:
       type: object
       required:
         - job_id
@@ -1487,6 +2324,13 @@ components:
                 $ref: "#/components/schemas/Citation"
               description:
                 Source documents that were used to extract this record.
+            connected_entities:
+              type: array
+              items:
+                $ref: "#/components/schemas/ConnectedEntity"
+              description: |
+                Entities from the connected dataset that are relevant to this record.
+                Only present when the job was submitted with `connected_dataset_ids`.
 
     Citation:
       type: object
@@ -1574,9 +2418,10 @@ components:
               example: "2025-11-14T21:00:00Z"
       description: |
         Record with monitor-specific metadata. Used in monitor results and webhook payloads.
+
         Includes timestamps tracking when records were added and updated, and citations include job tracking.
 
-    CreateMonitorRequestDTO:
+    CreateMonitorRequestDto:
       type: object
       required:
         - reference_job_id
@@ -1597,7 +2442,7 @@ components:
             Minimum frequency depends on your plan.
           example: "every day at 12 PM UTC"
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
+          $ref: "#/components/schemas/WebhookDto"
           description:
             Optional webhook to receive notifications when jobs complete.
         limit:
@@ -1613,7 +2458,7 @@ components:
 
             If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
 
-    WebhookDTO:
+    WebhookDto:
       type: object
       required:
         - url
@@ -1643,7 +2488,7 @@ components:
           maxItems: 2
           description: Basic auth credentials [username, password].
 
-    CreateMonitorResponseDTO:
+    CreateMonitorResponseDto:
       type: object
       required:
         - status
@@ -1657,11 +2502,11 @@ components:
           description: Creation status or error message
           example: "Monitor Created Successfully"
 
-    UpdateMonitorRequestDTO:
+    UpdateMonitorRequestDto:
       type: object
       properties:
         webhook:
-          $ref: "#/components/schemas/WebhookDTO"
+          $ref: "#/components/schemas/WebhookDto"
           description: |
             Updated webhook configuration.
         limit:
@@ -1670,7 +2515,7 @@ components:
           description: |
             Updated maximum number of records per monitor run.
 
-    UpdateMonitorResponseDTO:
+    UpdateMonitorResponseDto:
       type: object
       required:
         - monitor_id
@@ -1699,7 +2544,7 @@ components:
           description: Context provided with the reference job query.
           example: "Focus on funding amount and company name"
 
-    PullMonitorResponseDTO:
+    PullMonitorResponseDto:
       type: object
       required:
         - monitor_id
@@ -1760,7 +2605,7 @@ components:
           description: Record limit applied to this monitor's jobs.
           example: 100
 
-    ListMonitorsResponseDTO:
+    ListMonitorsResponseDto:
       type: object
       required:
         - total
@@ -1788,10 +2633,10 @@ components:
         monitors:
           type: array
           items:
-            $ref: "#/components/schemas/MonitorListItemDTO"
+            $ref: "#/components/schemas/MonitorListItemDto"
           description: Array of monitor summaries.
 
-    MonitorListItemDTO:
+    MonitorListItemDto:
       type: object
       required:
         - monitor_id
@@ -1836,7 +2681,7 @@ components:
           example: "2025-10-23T14:30:00Z"
         webhook:
           oneOf:
-            - $ref: "#/components/schemas/WebhookDTO"
+            - $ref: "#/components/schemas/WebhookDto"
             - type: "null"
           description:
             Webhook configuration for this monitor, or null if not set.
@@ -1918,7 +2763,7 @@ components:
             on monitor schedule) in ISO 8601 format with UTC timezone.
           example: "2025-11-15T00:00:00Z"
 
-    EnableMonitorRequestDTO:
+    EnableMonitorRequestDto:
       type: object
       description: Optional request body for enabling a monitor.
       properties:
@@ -1930,7 +2775,712 @@ components:
 
             If false, no gap filling occurs and the first run uses the current cron window only — the last job's age does not matter.
 
-    GetPlanLimitsResponseDTO:
+    # ── Shared ────────────────────────────────────────────────────────────────
+
+    SortOrder:
+      type: string
+      enum:
+        - asc
+        - desc
+      description: |
+        Sort direction for list results.
+
+        - `asc`: ascending (oldest or smallest first)
+        - `desc`: descending (newest or largest first)
+      default: desc
+
+    # ── Entity enumerations ───────────────────────────────────────────────────
+
+    EntityStatus:
+      type: string
+      enum:
+        - pending
+        - enriching
+        - ready
+        - failed
+      description: |
+        Processing status of an entity.
+
+        - `pending`: Entity has been created and is queued for enrichment.
+        - `enriching`: Enrichment is in progress.
+        - `ready`: Enrichment complete — entity is indexed and ready for use in jobs.
+        - `failed`: Enrichment failed. The entity may still be used but matching quality may be reduced.
+
+    EntityType:
+      type: string
+      enum:
+        - company
+        - person
+      description: |
+        The type of entity.
+
+        - `company`: A company or organization (default).
+        - `person`: An individual person.
+      default: company
+
+    EntitySortBy:
+      type: string
+      enum:
+        - created_at
+        - name
+        - status
+      description: Fields available for sorting entity list results.
+      default: created_at
+
+    # ── Dataset enumerations ──────────────────────────────────────────────────
+
+    DatasetStatus:
+      type: string
+      enum:
+        - pending
+        - enriching
+        - ready
+        - failed
+      description: |
+        Processing status of a dataset.
+
+        - `pending`: Dataset created, entities queued for enrichment.
+        - `enriching`: Entities are being enriched.
+        - `ready`: All entities enriched and indexed — ready for use in jobs.
+        - `failed`: One or more entity enrichments failed.
+
+    DatasetSortBy:
+      type: string
+      enum:
+        - name
+        - created_at
+        - status
+      description: Fields available for sorting dataset list results.
+      default: created_at
+
+    # ── Error schemas ─────────────────────────────────────────────────────────
+
+    EntityValidationErrorBody:
+      type: object
+      required:
+        - message
+        - status
+        - status_code
+      description: |
+        Error body returned by entity endpoints for field-level validation
+        failures. Uses a different structure from the standard `Error` schema
+        (`{"detail": "..."}`) used elsewhere in the API.
+      properties:
+        message:
+          type: string
+          description: |
+            Human-readable description of all validation errors, including
+            field path, failure message, and error type.
+          example:
+            'Validation Error with the following fields: [{''field'':
+            ''body.entity_type'', ''message'': "entity_type must be one of
+            (''company'', ''person'')", ''type'': ''value_error''}]'
+        status:
+          type: string
+          description: HTTP status text.
+          example: Bad Request
+        status_code:
+          type: integer
+          description: HTTP status code.
+          example: 400
+
+    # ── Entity request/response schemas ──────────────────────────────────────
+
+    CompanyAttributes:
+      type: object
+      description: |
+        Identifying attributes for a company entity. All fields are optional but improve matching quality.
+      properties:
+        domain:
+          type: ["string", "null"]
+          description: |
+            Company website domain without protocol or trailing slash.
+
+            The most reliable identifier — strongly recommended when available.
+          example: newscatcherapi.com
+        description:
+          type: ["string", "null"]
+          description: Detailed description of the company used for matching.
+          example: Provider of news and web search APIs for developers
+        key_persons:
+          type: ["array", "null"]
+          items:
+            type: string
+          description: |
+            Names of key people associated with the company (founders, executives, etc.). Improves matching for articles that mention people rather than the company name.
+          example:
+            - Artem Bugara
+            - Maksym Sugonyaka
+        alternative_names:
+          type: ["array", "null"]
+          items:
+            type: string
+          description: |
+            Alternative names, abbreviations, or aliases. Helps resolve common variations of the company name.
+          example:
+            - NC
+            - NewsCatcher API
+
+    AdditionalAttributes:
+      type: object
+      description: Additional attributes for the entity, keyed by entity type.
+      properties:
+        company_attributes:
+          $ref: "#/components/schemas/CompanyAttributes"
+
+    CreateEntityRequest:
+      type: object
+      required:
+        - name
+      description: |
+        Request body for creating a single entity. Only `name` is required.
+        The more fields you provide, the better the matching quality.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description:
+            The company or person name. Required and must be non-empty.
+          example: NewsCatcher
+        entity_type:
+          $ref: "#/components/schemas/EntityType"
+        description:
+          type: string
+          description: |
+            Free-text description of the entity used for disambiguation when similar names exist.
+          example: AI-powered news data provider
+        additional_attributes:
+          $ref: "#/components/schemas/AdditionalAttributes"
+
+    UpdateEntityRequest:
+      type: object
+      description: |
+        Request body for updating an entity. All fields are optional — only fields included in the request are updated. Fields not included are left unchanged.
+
+        **Note**: When updating `additional_attributes.company_attributes`, the provided object replaces the existing company attributes in full. Include all attribute fields you want to retain.
+      properties:
+        name:
+          type: string
+          description: Updated entity name.
+          example: NewsCatcher Inc.
+        description:
+          type: string
+          description: Updated description.
+          example: Updated description
+        additional_attributes:
+          $ref: "#/components/schemas/AdditionalAttributes"
+
+    CreateEntityResponse:
+      type: object
+      required:
+        - id
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the created entity.
+          example: "854198fa-f702-49db-a381-0427fa87f173"
+        status:
+          type: string
+          description: |
+            Initial status of the entity. Always `pending` immediately after creation — enrichment happens asynchronously.
+          example: pending
+
+    EntityResponse:
+      type: object
+      required:
+        - id
+        - entity_type
+        - organization_id
+        - name
+        - status
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the entity.
+          example: "854198fa-f702-49db-a381-0427fa87f173"
+        entity_type:
+          $ref: "#/components/schemas/EntityType"
+        organization_id:
+          type: string
+          format: uuid
+          description: Organization that owns this entity.
+          example: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
+        name:
+          type: string
+          description: Entity name.
+          example: NewsCatcher
+        description:
+          type: ["string", "null"]
+          description: Free-text description.
+          example: AI-powered news data provider
+        additional_attributes:
+          $ref: "#/components/schemas/AdditionalAttributes"
+        status:
+          $ref: "#/components/schemas/EntityStatus"
+        created_by_user_id:
+          type: string
+          format: uuid
+          description: ID of the user who created this entity.
+          example: "870e258e-12ec-4a47-8656-e7a43b0265b3"
+        created_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp of when the entity was created. Returned without timezone offset (server-local time).
+          example: "2026-04-08T15:21:17.272139"
+        updated_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp of when the entity was last updated. Returned without timezone offset (server-local time).
+          example: "2026-04-08T15:21:18.248316"
+
+    CreateEntitiesBatchRequest:
+      type: object
+      required:
+        - entities
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateEntityRequest"
+          description: |
+            Array of entities to create. Each item follows the same schema
+            as single entity creation.
+          minItems: 1
+
+    CreateEntitiesBatchResponse:
+      type: object
+      required:
+        - entities
+        - count
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/CreateEntityResponse"
+          description: |
+            Array of created entity stubs in the same order as the input.
+        count:
+          type: integer
+          description: Total number of entities created.
+          example: 3
+
+    EntityListResponse:
+      type: object
+      required:
+        - entities
+        - total
+        - page
+        - page_size
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntityResponse"
+          description: Array of entity objects for this page.
+        total:
+          type: integer
+          description: Total number of entities matching the filter criteria.
+          example: 17
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of entities per page.
+          example: 100
+
+    EntitySummary:
+      type: object
+      required:
+        - id
+        - name
+        - entity_type
+        - status
+      description: |
+        Abbreviated entity object returned when listing entities within a
+        dataset. Uses a flat `attributes` key rather than the nested
+        `additional_attributes.company_attributes` structure used in
+        standalone entity endpoints.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the entity.
+          example: "854198fa-f702-49db-a381-0427fa87f173"
+        name:
+          type: string
+          description: Entity name.
+          example: NewsCatcher
+        entity_type:
+          $ref: "#/components/schemas/EntityType"
+        status:
+          $ref: "#/components/schemas/EntityStatus"
+        description:
+          type: ["string", "null"]
+          description: Free-text description.
+          example: AI-powered news data provider
+        attributes:
+          $ref: "#/components/schemas/CompanyAttributes"
+
+    # ── Dataset request/response schemas ──────────────────────────────────────
+
+    CreateDatasetRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name for the dataset.
+          example: My Portfolio
+        description:
+          type: string
+          description: Optional description.
+          example: Companies in our investment portfolio
+        entity_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            IDs of existing entities to include in the dataset. All IDs must belong to the authenticated organization. If any ID is invalid or not found, the request fails with `400`.
+          example:
+            - "854198fa-f702-49db-a381-0427fa87f173"
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    UpdateDatasetRequest:
+      type: object
+      description: |
+        Updates dataset name or description. At least one field should be
+        provided.
+      properties:
+        name:
+          type: string
+          description: Updated dataset name.
+          example: My Portfolio (updated)
+        description:
+          type: string
+          description: Updated description.
+          example: Updated description
+
+    DatasetResponse:
+      type: object
+      required:
+        - id
+        - organization_id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the dataset.
+          example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+        organization_id:
+          type: string
+          format: uuid
+          description: Organization that owns this dataset.
+          example: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
+        name:
+          type: string
+          description: Dataset name.
+          example: My Portfolio
+        description:
+          type: ["string", "null"]
+          description: Optional description.
+          example: Companies in our investment portfolio
+        entity_count:
+          type: integer
+          description: Total number of entities in this dataset.
+          default: 0
+          example: 4
+        latest_status:
+          $ref: "#/components/schemas/DatasetStatus"
+        created_by_user_id:
+          type: string
+          format: uuid
+          description: ID of the user who created this dataset.
+          example: "870e258e-12ec-4a47-8656-e7a43b0265b3"
+        created_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp of when the dataset was created. Returned without timezone offset (server-local time).
+          example: "2026-04-08T15:21:36.026993"
+        updated_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp of when the dataset was last updated. Returned without timezone offset (server-local time).
+          example: "2026-04-08T15:21:38.401148"
+
+    DatasetListResponse:
+      type: object
+      required:
+        - datasets
+        - total
+        - page
+        - page_size
+      properties:
+        datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetResponse"
+          description: Array of dataset objects for this page.
+        total:
+          type: integer
+          description: Total number of datasets matching the filter criteria.
+          example: 5
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of datasets per page.
+          example: 100
+
+    ValidationReport:
+      type: object
+      required:
+        - total_rows
+        - valid_rows
+        - skipped_count
+        - skipped_rows
+      description: Summary of CSV processing results.
+      properties:
+        total_rows:
+          type: integer
+          description: |
+            Total number of data rows in the uploaded CSV (excluding the
+            header row).
+          example: 4
+        valid_rows:
+          type: integer
+          description: Number of rows successfully processed into entities.
+          example: 3
+        skipped_count:
+          type: integer
+          description: Number of rows skipped due to validation errors.
+          example: 1
+        skipped_rows:
+          type: array
+          items:
+            $ref: "#/components/schemas/SkippedRow"
+          description: Details for each skipped row.
+
+    SkippedRow:
+      type: object
+      required:
+        - row
+        - reason
+      description: Details about a CSV row that was skipped during processing.
+      properties:
+        row:
+          type: integer
+          description: |
+            1-based row number in the CSV file (including the header row).
+
+            A value of `3` means the third line of the file (second data row).
+          example: 3
+        reason:
+          type: string
+          description: Human-readable explanation of why the row was skipped.
+          example: "missing required field: name"
+
+    CreateDatasetCsvResponse:
+      type: object
+      required:
+        - dataset_id
+        - dataset_name
+        - entities_created
+        - validation_report
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          description: Unique identifier of the created dataset.
+          example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+        dataset_name:
+          type: string
+          description: Name of the created dataset.
+          example: My Portfolio
+        entities_created:
+          type: integer
+          description: Number of entities successfully created from the CSV.
+          example: 3
+        validation_report:
+          $ref: "#/components/schemas/ValidationReport"
+
+    UploadCsvToDatasetResponse:
+      type: object
+      required:
+        - dataset_id
+        - entities_created
+        - validation_report
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          description: ID of the dataset that was updated.
+          example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+        entities_created:
+          type: integer
+          description: Number of new entities created from the CSV.
+          example: 3
+        validation_report:
+          $ref: "#/components/schemas/ValidationReport"
+
+    DatasetEntityIdsRequest:
+      type: object
+      required:
+        - entity_ids
+      properties:
+        entity_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: List of entity IDs to add or remove.
+          minItems: 1
+          example:
+            - "854198fa-f702-49db-a381-0427fa87f173"
+
+    ManageEntitiesResponse:
+      type: object
+      required:
+        - dataset_id
+        - affected_count
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          description: ID of the dataset that was modified.
+          example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+        affected_count:
+          type: integer
+          description: Number of entities that were added or removed.
+          example: 1
+
+    DatasetEntityListResponse:
+      type: object
+      required:
+        - entities
+        - total
+        - page
+        - page_size
+      properties:
+        entities:
+          type: array
+          items:
+            $ref: "#/components/schemas/EntitySummary"
+          description: Array of entity summary objects for this page.
+        total:
+          type: integer
+          description: Total number of entities in the dataset.
+          example: 4
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of entities per page.
+          example: 100
+
+    DatasetStatusHistoryResponse:
+      type: object
+      required:
+        - dataset_id
+        - history
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          description: ID of the dataset.
+          example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/DatasetStatusEntry"
+          description: Status change entries, ordered oldest to newest.
+
+    DatasetStatusEntry:
+      type: object
+      required:
+        - status
+      description: A single status change event in a dataset's history.
+      properties:
+        status:
+          $ref: "#/components/schemas/DatasetStatus"
+        additional_information:
+          type: ["object", "null"]
+          description: Additional context about the status change, if available.
+          example: null
+        created_at:
+          type: string
+          format: date-time
+          description: |
+            ISO 8601 timestamp of when this status was set. Returned without timezone offset (server-local time).
+          example: "2026-04-08T15:21:36.066271"
+
+    # ── Company Search output schema ──────────────────────────────────────────
+
+    ConnectedEntity:
+      type: object
+      required:
+        - entity_id
+        - name
+        - ed_score
+        - relation
+      description: |
+        A company entity matched to a record in a Company Search job, with
+        a relevance score and explanation.
+
+        Only entities with `ed_score` ≥ 1 appear in results. Entities scored
+        0 are filtered out before the response is returned.
+      properties:
+        entity_id:
+          type: string
+          format: uuid
+          description: Unique identifier of the matched entity.
+          example: "e1f2a3b4-c5d6-7890-abcd-ef1234567890"
+        name:
+          type: string
+          description: Name of the matched entity.
+          example: Tesla
+        ed_score:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: |
+            Relevance score indicating how directly the entity is associated
+            with this event.
+
+            | Score | Meaning |
+            |-------|---------|
+            | 10 | Direct mention, critical event (merger, CEO change, major lawsuit) |
+            | 7–9 | Major impact (earnings, product launch, senior hire) |
+            | 4–6 | Routine update (minor product news, mid-level changes) |
+            | 1–3 | Indirect mention (listed with others, stock noise) |
+          example: 8
+        relation:
+          type: string
+          maxLength: 100
+          description: |
+            Short explanation (up to 100 characters) of why this entity is
+            associated with the event.
+          example:
+            "Lucid Gravity is positioned as a direct competitor to the Tesla
+            Model X."
+
+    GetPlanLimitsResponseDto:
       type: object
       required:
         - features

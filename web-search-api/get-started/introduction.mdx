@@ -168,6 +168,22 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     Continue requests preserve all analysis, validation, and extraction logic 
     from the original job.
   </Accordion>
+
+  <Accordion title="Company search" icon="building">
+    Filter job results to a predefined list of companies and receive
+    per-company relevance scores on every record. Activate by passing
+    `connected_dataset_ids` when submitting a job.
+
+    Build a dataset of company entities, then connect it to any job:
+    - Results are filtered to events relevant to your companies
+    - Each record includes a `connected_entities` array with `entity_id`,
+      `name`, `ed_score` (1–10), and `relation` for each matched company
+
+    <Tip>
+      See [Company search](/web-search-api/guides-and-concepts/company-search)
+      for a full walkthrough.
+    </Tip>
+  </Accordion>
 </AccordionGroup>
 
 ## Endpoints
@@ -202,6 +218,33 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     | `/catchAll/monitors/pull/{monitor_id}`    | `GET `   | Get aggregated monitor results |
     | `/catchAll/monitors/{monitor_id}/enable`  | `POST`   | Enable a monitor               |
     | `/catchAll/monitors/{monitor_id}/disable` | `POST`   | Disable a monitor              |
+  </Tab>
+
+  <Tab title="Entities">
+    | Endpoint                              | Method   | Description                        |
+    | ------------------------------------- | -------- | ---------------------------------- |
+    | `/catchAll/entities`                  | `POST`   | Create a company entity            |
+    | `/catchAll/entities/batch`            | `POST`   | Create multiple entities           |
+    | `/catchAll/entities`                  | `GET`    | List entities                      |
+    | `/catchAll/entities/{entity_id}`      | `GET`    | Get entity                         |
+    | `/catchAll/entities/{entity_id}`      | `PATCH`  | Update entity                      |
+    | `/catchAll/entities/{entity_id}`      | `DELETE` | Delete entity                      |
+  </Tab>
+
+  <Tab title="Datasets">
+    | Endpoint                                        | Method   | Description                              |
+    | ----------------------------------------------- | -------- | ---------------------------------------- |
+    | `/catchAll/datasets`                            | `POST`   | Create dataset from entity IDs           |
+    | `/catchAll/datasets/upload`                     | `POST`   | Create dataset from CSV                  |
+    | `/catchAll/datasets`                            | `GET`    | List datasets                            |
+    | `/catchAll/datasets/{dataset_id}`               | `GET`    | Get dataset                              |
+    | `/catchAll/datasets/{dataset_id}`               | `PATCH`  | Update dataset name or description       |
+    | `/catchAll/datasets/{dataset_id}`               | `DELETE` | Delete dataset                           |
+    | `/catchAll/datasets/{dataset_id}/entities`      | `POST`   | Add entities to dataset                  |
+    | `/catchAll/datasets/{dataset_id}/entities`      | `DELETE` | Remove entities from dataset             |
+    | `/catchAll/datasets/{dataset_id}/entities`      | `GET`    | List entities in dataset                 |
+    | `/catchAll/datasets/{dataset_id}/status`        | `GET`    | Get dataset status history               |
+    | `/catchAll/datasets/{dataset_id}/upload`        | `POST`   | Add companies to dataset via CSV         |
   </Tab>
 
   <Tab title="Meta">

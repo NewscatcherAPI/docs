@@ -1,0 +1,758 @@
+---
+title: Company search
+sidebarTitle: Company search
+description: Track specific companies across CatchAll jobs with per-company relevance scores.
+---
+
+Company search filters CatchAll job results to a predefined list of companies
+and scores each matching record per company. Use it when you want to track a
+specific set of companies — a portfolio, a competitor list, a watchlist — rather
+than run broad queries.
+
+## How it works
+
+Company search uses three connected concepts:
+
+**Entities** are individual company definitions. Each entity stores identifying
+information — name, domain, alternative names, key persons — that the system
+uses to recognize the company in web content.
+
+**Datasets** are named collections of entities. A dataset acts as a watchlist or
+portfolio. You create it once and can reuse it across multiple jobs and monitors.
+
+**Connected jobs** are standard CatchAll jobs submitted with a
+`connected_dataset_ids` parameter. Adding this parameter activates company
+search mode; everything else about the job — query, validators, enrichments,
+date ranges — works identically to a normal job.
+
+## Create entities
+
+Matching quality depends on what you provide. `domain` is the most reliable
+signal — two companies can share a name, but not a domain.
+
+### Single entity
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "NewsCatcher",
+    "entity_type": "company",
+    "description": "AI-powered news data provider",
+    "additional_attributes": {
+      "company_attributes": {
+        "domain": "newscatcherapi.com",
+        "alternative_names": ["NC", "NewsCatcher API"],
+        "key_persons": ["Artem Bugara", "Maksym Sugonyaka"]
+      }
+    }
+  }'
+```
+
+```json JSON
+{
+  "name": "NewsCatcher",
+  "entity_type": "company",
+  "description": "AI-powered news data provider",
+  "additional_attributes": {
+    "company_attributes": {
+      "domain": "newscatcherapi.com",
+      "alternative_names": ["NC", "NewsCatcher API"],
+      "key_persons": ["Artem Bugara", "Maksym Sugonyaka"]
+    }
+  }
+}
+```
+
+```python Python
+from newscatcher_catchall import (
+    CatchAllApi,
+    AdditionalAttributes,
+    CompanyAttributes,
+)
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+entity = client.entities.create_entity(
+    name="NewsCatcher",
+    entity_type="company",
+    description="AI-powered news data provider",
+    additional_attributes=AdditionalAttributes(
+        company_attributes=CompanyAttributes(
+            domain="newscatcherapi.com",
+            alternative_names=["NC", "NewsCatcher API"],
+            key_persons=["Artem Bugara", "Maksym Sugonyaka"],
+        )
+    ),
+)
+entity_id = entity.id
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const entity = await client.entities.createEntity({
+  name: "NewsCatcher",
+  entity_type: "company",
+  description: "AI-powered news data provider",
+  additional_attributes: {
+    company_attributes: {
+      domain: "newscatcherapi.com",
+      alternative_names: ["NC", "NewsCatcher API"],
+      key_persons: ["Artem Bugara", "Maksym Sugonyaka"],
+    },
+  },
+});
+const entityId = entity.id;
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.types.*;
+import java.util.List;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+CreateEntityResponse entity = client.entities().createEntity(
+    CreateEntityRequest.builder()
+        .name("NewsCatcher")
+        .entityType(EntityType.COMPANY)
+        .description("AI-powered news data provider")
+        .additionalAttributes(AdditionalAttributes.builder()
+            .companyAttributes(CompanyAttributes.builder()
+                .domain("newscatcherapi.com")
+                .alternativeNames(List.of("NC", "NewsCatcher API"))
+                .keyPersons(List.of("Artem Bugara", "Maksym Sugonyaka"))
+                .build())
+            .build())
+        .build()
+);
+String entityId = entity.getId();
+```
+
+</CodeGroup>
+
+<Expandable title="Create entity response">
+
+```json
+{
+  "id": "854198fa-f702-49db-a381-0427fa87f173",
+  "status": "pending"
+}
+```
+
+Entities move through `pending → enriching → ready` (or `failed`) after
+creation. You don't need to wait for individual entities to be ready before
+creating a dataset — the dataset status is what matters before submitting a job.
+
+<Note>
+  External enrichment is not yet active. Entities move directly to `ready`
+  based on the fields you supply. This will change in a future release.
+</Note>
+
+</Expandable>
+
+### Batch
+
+Use batch creation when adding multiple entities at once. Each entity is
+processed independently — one failure does not affect the others.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities/batch" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entities": [
+      {
+        "name": "NewsCatcher",
+        "entity_type": "company",
+        "additional_attributes": {
+          "company_attributes": { "domain": "newscatcherapi.com" }
+        }
+      },
+      {
+        "name": "OpenAI",
+        "entity_type": "company",
+        "additional_attributes": {
+          "company_attributes": {
+            "domain": "openai.com",
+            "key_persons": ["Sam Altman"]
+          }
+        }
+      }
+    ]
+  }'
+```
+
+```json JSON
+{
+  "entities": [
+    {
+      "name": "NewsCatcher",
+      "entity_type": "company",
+      "additional_attributes": {
+        "company_attributes": { "domain": "newscatcherapi.com" }
+      }
+    },
+    {
+      "name": "OpenAI",
+      "entity_type": "company",
+      "additional_attributes": {
+        "company_attributes": {
+          "domain": "openai.com",
+          "key_persons": ["Sam Altman"]
+        }
+      }
+    }
+  ]
+}
+```
+
+```python Python
+from newscatcher_catchall import (
+    CatchAllApi,
+    AdditionalAttributes,
+    CompanyAttributes,
+    CreateEntityRequest,
+)
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+result = client.entities.create_entities_batch(
+    entities=[
+        CreateEntityRequest(
+            name="NewsCatcher",
+            entity_type="company",
+            additional_attributes=AdditionalAttributes(
+                company_attributes=CompanyAttributes(
+                    domain="newscatcherapi.com",
+                )
+            ),
+        ),
+        CreateEntityRequest(
+            name="OpenAI",
+            entity_type="company",
+            additional_attributes=AdditionalAttributes(
+                company_attributes=CompanyAttributes(
+                    domain="openai.com",
+                    key_persons=["Sam Altman"],
+                )
+            ),
+        ),
+    ],
+)
+entity_ids = [e.id for e in result.entities]
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const result = await client.entities.createEntitiesBatch({
+  entities: [
+    {
+      name: "NewsCatcher",
+      entity_type: "company",
+      additional_attributes: {
+        company_attributes: { domain: "newscatcherapi.com" },
+      },
+    },
+    {
+      name: "OpenAI",
+      entity_type: "company",
+      additional_attributes: {
+        company_attributes: {
+          domain: "openai.com",
+          key_persons: ["Sam Altman"],
+        },
+      },
+    },
+  ],
+});
+const entityIds = result.entities.map((e) => e.id);
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.entities.requests.CreateEntitiesBatchRequest;
+import com.newscatcher.catchall.types.*;
+import java.util.List;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+CreateEntitiesBatchResponse result = client.entities().createEntitiesBatch(
+    CreateEntitiesBatchRequest.builder()
+        .entities(List.of(
+            CreateEntityRequest.builder()
+                .name("NewsCatcher")
+                .entityType(EntityType.COMPANY)
+                .additionalAttributes(AdditionalAttributes.builder()
+                    .companyAttributes(CompanyAttributes.builder()
+                        .domain("newscatcherapi.com")
+                        .build())
+                    .build())
+                .build(),
+            CreateEntityRequest.builder()
+                .name("OpenAI")
+                .entityType(EntityType.COMPANY)
+                .additionalAttributes(AdditionalAttributes.builder()
+                    .companyAttributes(CompanyAttributes.builder()
+                        .domain("openai.com")
+                        .keyPersons(List.of("Sam Altman"))
+                        .build())
+                    .build())
+                .build()
+        ))
+        .build()
+);
+```
+
+</CodeGroup>
+
+<Expandable title="Create entities batch response">
+
+```json
+{
+  "entities": [
+    {
+      "id": "854198fa-f702-49db-a381-0427fa87f173",
+      "status": "pending"
+    },
+    {
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "status": "pending"
+    }
+  ],
+  "count": 2
+}
+```
+
+Results are returned in the same order as the input array.
+
+</Expandable>
+
+## Create a dataset
+
+### From entity IDs
+
+Create a dataset from existing entity IDs. All IDs must belong to your
+organization — any invalid ID returns `400`.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/datasets" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Portfolio",
+    "description": "Companies we track for partnership activity",
+    "entity_ids": [
+      "854198fa-f702-49db-a381-0427fa87f173",
+      "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+    ]
+  }'
+```
+
+```json JSON
+{
+  "name": "My Portfolio",
+  "description": "Companies we track for partnership activity",
+  "entity_ids": [
+    "854198fa-f702-49db-a381-0427fa87f173",
+    "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+  ]
+}
+```
+
+```python Python
+dataset = client.datasets.create_dataset(
+    name="My Portfolio",
+    description="Companies we track for partnership activity",
+    entity_ids=entity_ids,
+)
+dataset_id = dataset.id
+```
+
+```typescript TypeScript
+const dataset = await client.datasets.createDataset({
+  name: "My Portfolio",
+  description: "Companies we track for partnership activity",
+  entity_ids: entityIds,
+});
+const datasetId = dataset.id;
+```
+
+```java Java
+import com.newscatcher.catchall.resources.datasets.requests.CreateDatasetRequest;
+import com.newscatcher.catchall.types.DatasetResponse;
+
+DatasetResponse dataset = client.datasets().createDataset(
+    CreateDatasetRequest.builder()
+        .name("My Portfolio")
+        .description("Companies we track for partnership activity")
+        .entityIds(entityIds)
+        .build()
+);
+String datasetId = dataset.getId();
+```
+
+</CodeGroup>
+
+<Expandable title="Create dataset response">
+
+```json
+{
+  "id": "ccabb755-afc2-4047-b84c-78d1f23d49b2",
+  "organization_id": "org_6f3a2b1c",
+  "name": "My Portfolio",
+  "description": "Companies we track for partnership activity",
+  "entity_count": 2,
+  "latest_status": "pending",
+  "created_at": "2026-04-10T09:00:00Z",
+  "updated_at": "2026-04-10T09:00:00Z"
+}
+```
+
+</Expandable>
+
+### From CSV
+
+Upload a CSV to create both entities and the dataset in a single request —
+the fastest path for most use cases.
+
+The `name` column is required; all other columns are optional. Use semicolons
+to separate multiple values in `alternative_names` and `key_persons`. Rows
+with an empty `name` are skipped and reported in `validation_report`.
+
+```csv
+name,description,domain,alternative_names,key_persons
+NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
+Stripe,"Online payments platform",stripe.com,"","Patrick Collison;John Collison"
+```
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/datasets/upload" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -F "file=@companies.csv" \
+  -F "name=My Portfolio"
+```
+
+```python Python
+dataset = client.datasets.create_dataset_from_csv(
+    file=open("companies.csv", "rb"),
+    name="My Portfolio",
+)
+dataset_id = dataset.dataset_id
+```
+
+```typescript TypeScript
+import { createReadStream } from "fs";
+
+const dataset = await client.datasets.createDatasetFromCsv({
+  file: createReadStream("companies.csv"),
+  name: "My Portfolio",
+});
+const datasetId = dataset.dataset_id;
+```
+
+```java Java
+import com.newscatcher.catchall.resources.datasets.requests.CreateDatasetFromCsvRequest;
+import com.newscatcher.catchall.types.CreateDatasetCsvResponse;
+import java.io.File;
+
+CreateDatasetCsvResponse dataset = client.datasets().createDatasetFromCsv(
+    new File("companies.csv"),
+    CreateDatasetFromCsvRequest.builder()
+        .name("My Portfolio")
+        .build()
+);
+String datasetId = dataset.getDatasetId();
+```
+
+</CodeGroup>
+
+<Expandable title="Create dataset from CSV response">
+
+```json
+{
+  "dataset_id": "ccabb755-afc2-4047-b84c-78d1f23d49b2",
+  "dataset_name": "My Portfolio",
+  "entities_created": 3,
+  "validation_report": {
+    "total_rows": 3,
+    "valid_rows": 3,
+    "skipped_count": 0,
+    "skipped_rows": []
+  }
+}
+```
+
+<Note>
+  The CSV response returns `dataset_id`, not `id`. This differs from the JSON
+  API path.
+</Note>
+
+</Expandable>
+
+## Wait for the dataset to be ready
+
+Poll [`GET /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/get-dataset)
+until `latest_status` reaches `ready`. Do not submit a job before this step
+completes.
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/datasets/ccabb755-afc2-4047-b84c-78d1f23d49b2" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+import time
+
+POLL_INTERVAL = 5  # seconds
+
+while True:
+    status = client.datasets.get_dataset(dataset_id)
+    if status.latest_status == "ready":
+        break
+    if status.latest_status == "failed":
+        raise RuntimeError("Dataset processing failed")
+    time.sleep(POLL_INTERVAL)
+```
+
+```typescript TypeScript
+const POLL_INTERVAL_MS = 5000;
+
+while (true) {
+  const status = await client.datasets.getDataset({ dataset_id: datasetId });
+  if (status.latest_status === "ready") break;
+  if (status.latest_status === "failed") {
+    throw new Error("Dataset processing failed");
+  }
+  await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+}
+```
+
+```java Java
+import com.newscatcher.catchall.types.DatasetResponse;
+import com.newscatcher.catchall.types.DatasetStatus;
+import java.util.concurrent.TimeUnit;
+
+while (true) {
+    DatasetResponse status = client.datasets().getDataset(datasetId);
+    if (DatasetStatus.READY.equals(status.getLatestStatus().orElse(null))) break;
+    if (DatasetStatus.FAILED.equals(status.getLatestStatus().orElse(null))) {
+        throw new RuntimeException("Dataset processing failed");
+    }
+    TimeUnit.SECONDS.sleep(5);
+}
+```
+
+</CodeGroup>
+
+<Expandable title="Get dataset response">
+
+```json
+{
+  "id": "ccabb755-afc2-4047-b84c-78d1f23d49b2",
+  "organization_id": "org_6f3a2b1c",
+  "name": "My Portfolio",
+  "description": "Companies we track for partnership activity",
+  "entity_count": 2,
+  "latest_status": "ready",
+  "created_at": "2026-04-10T09:00:00Z",
+  "updated_at": "2026-04-10T09:00:05Z"
+}
+```
+
+</Expandable>
+
+## Submit a connected job
+
+Add `connected_dataset_ids` to a standard job submission to activate company
+search mode:
+
+<Note>
+  Only one dataset per job is supported at this time, even though
+  `connected_dataset_ids` accepts an array.
+</Note>
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "AI chip partnerships",
+    "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"]
+  }'
+```
+
+```json JSON
+{
+  "query": "AI chip partnerships",
+  "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"]
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="AI chip partnerships",
+    connected_dataset_ids=[dataset_id],
+)
+job_id = job.job_id
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "AI chip partnerships",
+  connected_dataset_ids: [datasetId],
+});
+const jobId = job.job_id;
+```
+
+```java Java
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+import java.util.List;
+
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("AI chip partnerships")
+        .connectedDatasetIds(List.of(datasetId))
+        .build()
+);
+String jobId = job.getJobId();
+```
+
+</CodeGroup>
+
+Poll [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status)
+until `status` is `completed`, then retrieve results. See
+[Jobs](/web-search-api/guides-and-concepts/jobs) for the polling pattern.
+
+## Get results
+
+Retrieve results the same way as a normal job. Each record includes a
+`connected_entities` array with one entry per matched company. Entities with
+`ed_score` of 0 are filtered out automatically and never appear.
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/pull/{job_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+results = client.jobs.get_job_results(job_id)
+
+for record in results.all_records:
+    print(record.record_title)
+    for entity in record.connected_entities:
+        print(f"  {entity.name} — score {entity.ed_score}/10")
+        print(f"  {entity.relation}")
+```
+
+```typescript TypeScript
+const results = await client.jobs.getJobResults({ job_id: jobId });
+
+for (const record of results.all_records) {
+  console.log(record.record_title);
+  for (const entity of record.connected_entities ?? []) {
+    console.log(`  ${entity.name} — score ${entity.ed_score}/10`);
+    console.log(`  ${entity.relation}`);
+  }
+}
+```
+
+```java Java
+import com.newscatcher.catchall.types.PullJobResponseDto;
+
+PullJobResponseDto results = client.jobs().getJobResults(jobId);
+
+results.getAllRecords().forEach(record -> {
+    System.out.println(record.getRecordTitle());
+    record.getConnectedEntities().ifPresent(entities ->
+        entities.forEach(entity -> {
+            System.out.printf("  %s — score %.0f/10%n",
+                entity.getName(), entity.getEdScore());
+            System.out.println("  " + entity.getRelation());
+        })
+    );
+});
+```
+
+</CodeGroup>
+
+<Expandable title="Get results response">
+
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "query": "AI chip partnerships",
+  "status": "completed",
+  "valid_records": 1,
+  "all_records": [
+    {
+      "record_id": "6417909601438475967",
+      "record_title": "NVIDIA Expands AI Infrastructure Partnership with NewsCatcher",
+      "enrichment": {
+        "partnership_type": "technology integration",
+        "deal_stage": "announced",
+        "enrichment_confidence": "high"
+      },
+      "citations": [
+        {
+          "title": "NVIDIA Announces New AI Data Partners",
+          "link": "https://example.com/nvidia-ai-partners",
+          "published_date": "2026-04-10T09:00:00Z"
+        }
+      ],
+      "connected_entities": [
+        {
+          "entity_id": "854198fa-f702-49db-a381-0427fa87f173",
+          "name": "NewsCatcher",
+          "ed_score": 9,
+          "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal"
+        }
+      ]
+    }
+  ]
+}
+```
+
+**`connected_entities` fields:**
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `entity_id` | string | UUID of the matched entity |
+| `name` | string | Entity name |
+| `ed_score` | number | Relevance score from 1 to 10 |
+| `relation` | string | How the entity relates to the record. Maximum 100 characters. |
+
+</Expandable>
+
+## See also
+
+- [Jobs](/web-search-api/guides-and-concepts/jobs)
+- [Monitors](/web-search-api/guides-and-concepts/monitors)
+- [Entities API reference](/web-search-api/api-reference/entities/create-entity)
+- [Datasets API reference](/web-search-api/api-reference/datasets/create-dataset)
