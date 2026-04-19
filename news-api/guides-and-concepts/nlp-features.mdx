@@ -9,13 +9,22 @@ News API, how to use them, and their practical applications. By leveraging
 these NLP capabilities, you can extract meaningful insights from news data,
 enhancing your analysis, research, and application development.
 
+<Warning>
+  **NLP data is available only for articles indexed from July 2023 onward.** 
+  For articles collected before July 2023, the `nlp` field is present in the 
+  response but returned as an empty object `{}`. 
+  
+  To request NLP enrichment for pre-July 2023 historical data, contact 
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
+</Warning>
+
 ## Understanding NLP layer
 
 When processing news, we summarize the article content, categorize articles by
 theme, estimate the overall tone of the writing, and identify important names
 and places mentioned in the text. As a result, we supply each processed article
 with additional NLP information that you can use when making requests via News
-API v3.
+API.
 
 The NLP layer in News API consists of the following components:
 
@@ -69,7 +78,20 @@ data:
 
 #### NLP coverage by language
 
-All articles receive NLP processing through one of two methods:
+All articles undergo NLP processing using one of two methods: native 
+(NLP is performed on the original content) or translation-based 
+(NLP is performed on English translations). 
+
+For English and Arabic articles, we perform native NLP processing on the original text. 
+
+For all other languages, we perform translation-based NLP processing: articles 
+are automatically translated into English, and NLP is then applied to the 
+translation. Results are available in NLP translation fields such as 
+`nlp.translation_ner_PER` and `nlp.summary_translated`.
+
+To learn how to access and search translation-based NLP data, see 
+[Search in translations](/news-api/how-to/search-in-translations).
+
 
 | Feature                          | Native (Original Content)          | Translation-Based (All Languages)     | Notes                                                |
 | -------------------------------- | ---------------------------------- | ------------------------------------- | ---------------------------------------------------- |
@@ -82,11 +104,7 @@ All articles receive NLP processing through one of two methods:
 | Clustering                       | All languages                      | N/A                                   | Available for all content                            |
 | Deduplication                    | All languages                      | N/A                                   | Available for all content                            |
 
-<Note>
-  **How it works**: Non-English/Arabic articles are automatically translated to English, then NLP processing is performed on the translation. Results are available in `translation_*` fields (e.g., `nlp.translation_ner_PER`, `nlp.summary_translated`). To learn how to access and search translation-based NLP data, see [Search in translations](/news-api/how-to/search-in-translations).
-</Note>
-
-For a complete list of supported languages, see
+For a complete list of supported languages, review the 
 [language codes in News API](/news-api/api-reference/enumerated-parameters#language-lang-and-not-lang).
 
 ### Code example

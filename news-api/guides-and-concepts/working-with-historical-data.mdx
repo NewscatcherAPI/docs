@@ -24,6 +24,15 @@ Key implications of this structure:
 - Queries across very long time periods (e.g., 5+ years) can cause performance
   issues.
 
+<Warning>
+  **NLP data is available only for articles indexed from July 2023 onward.** 
+  For articles collected before July 2023, the `nlp` field is present in the 
+  response but returned as an empty object `{}`. 
+  
+  To request NLP enrichment for pre-July 2023 historical data, contact 
+  [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
+</Warning>
+
 ## Technical limitations
 
 While you technically can query data across our entire historical range (2019 to
@@ -695,14 +704,15 @@ if (require.main === module) {
 
 ## Common pitfalls to avoid
 
-| Pitfall                              | Impact                                  | Solution                                                                        |
-| ------------------------------------ | --------------------------------------- | ------------------------------------------------------------------------------- |
-| Querying multiple years at once      | Slow performance, timeouts (408 errors) | Break queries into monthly chunks                                               |
-| Using overly broad search terms      | Excessive result volume                 | Refine query terms to be more specific                                          |
-| Insufficient error handling          | Failed data retrieval                   | Implement robust retry and error handling                                       |
-| Underestimating data volume          | Resource constraints                    | Use aggregation endpoint to estimate volume first                               |
-| Requesting too many results per page | Slow response times                     | Use reasonable page sizes (100-1000)                                            |
-| Improper pagination implementation   | Incomplete data retrieval               | Follow our [pagination guide](/news-api/how-to/paginate-large-datasets) |
+| Pitfall                              | Impact                                     | Solution                                                                        |
+| ------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
+| Querying multiple years at once      | Slow performance, timeouts (408 errors)    | Break queries into monthly chunks                                               |
+| Using overly broad search terms      | Excessive result volume                    | Refine query terms to be more specific                                          |
+| Insufficient error handling          | Failed data retrieval                      | Implement robust retry and error handling                                       |
+| Underestimating data volume          | Resource constraints                       | Use aggregation endpoint to estimate volume first                               |
+| Requesting too many results per page | Slow response times                        | Use reasonable page sizes (100-1000)                                            |
+| Improper pagination implementation   | Incomplete data retrieval                  | Follow our [pagination guide](/news-api/how-to/paginate-large-datasets)         |
+| Expecting NLP data before July 2023  | `nlp` field is present but returned as `{}`| Set `has_nlp=true` to filter for NLP-enriched articles only                     |
 
 ## Related resources
 
