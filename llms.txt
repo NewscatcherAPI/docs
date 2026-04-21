@@ -16,7 +16,7 @@
 
 - [Jobs](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/jobs): How CatchAll jobs work and how to move from query to results.
 - [Monitors](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
-- [Company search](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
+- [Company Watchlist](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
 
@@ -163,7 +163,7 @@ endpoint since the dataset already exists.
 ### Guides and concepts
 
 - [Advanced querying techniques](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/advanced-querying): Master advanced querying techniques to enhance the precision and relevance of your searches
-- [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles): Group similar articles together to reduce noise and gain insights
+- [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles): Group related articles together to identify trends and reduce noise in large volumes of news data.
 - [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication): Enhance search efficiency by filtering out duplicate articles.
 - [NLP features in News API](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features): Familiarize yourself with the NLP features available in News API
 - [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags): Filter and classify news articles using your organization's unique taxonomy.

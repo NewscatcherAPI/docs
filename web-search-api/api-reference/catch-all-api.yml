@@ -64,11 +64,11 @@ tags:
     description: |
       Operations to create, update, and delete company entities.
 
-      Entities are the building blocks of Company Search. Each entity represents
+      Entities are the building blocks of Company Watchlist. Each entity represents
       a company (or person) you want to track. Add identifying information such as
       domain, alternative names, and key persons to improve matching quality.
     externalDocs:
-      description: Learn about Company Search and entities
+      description: Learn about Company Watchlist and entities
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
   - name: Datasets
     description: |
@@ -76,9 +76,9 @@ tags:
 
       A dataset is a named collection of entities — think of it as a watchlist or
       portfolio. Connect a dataset to a job via `connected_dataset_ids` to activate
-      Company Search mode. Datasets can be reused across multiple jobs and monitors.
+      Company Watchlist. Datasets can be reused across multiple jobs and monitors.
     externalDocs:
-      description: Learn about datasets and Company Search
+      description: Learn about datasets and Company Watchlist
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
   - name: Meta
     description: Operations to check API health and version.
@@ -1955,7 +1955,7 @@ components:
             type: string
             format: uuid
           description: |
-            Dataset IDs to connect to this job. When provided, activates Company Search mode — the job returns only events relevant to companies in the connected datasets with each record including a `connected_entities` array scored per company.
+            Dataset IDs to connect to this job. When provided, activates Company Watchlist mode — the job returns only events relevant to companies in the connected datasets with each record including a `connected_entities` array scored per company.
 
             The dataset must have `latest_status: ready` before the job is submitted. Submitting with a non-existent or inaccessible dataset ID returns `400`.
           example:
@@ -3430,7 +3430,7 @@ components:
             ISO 8601 timestamp of when this status was set. Returned without timezone offset (server-local time).
           example: "2026-04-08T15:21:36.066271"
 
-    # ── Company Search output schema ──────────────────────────────────────────
+    # ── Company Watchlist output schema ──────────────────────────────────────────
 
     ConnectedEntity:
       type: object
@@ -3440,7 +3440,7 @@ components:
         - ed_score
         - relation
       description: |
-        A company entity matched to a record in a Company Search job, with
+        A company entity matched to a record in a Company Watchlist job, with
         a relevance score and explanation.
 
         Only entities with `ed_score` ≥ 1 appear in results. Entities scored

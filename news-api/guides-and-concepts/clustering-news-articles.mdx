@@ -1,230 +1,382 @@
 ---
 title: Clustering news articles
-description: Group similar articles together to reduce noise and gain insights
+description:
+  Group related articles together to identify trends and reduce noise in large
+  volumes of news data.
 ---
 
-## Introduction
+## Overview
 
-Imagine walking into a massive library where all the books are scattered
-randomly across the floor. Finding related information would be a nightmare,
-right? That's often what it's like when dealing with large volumes of news data.
-Enter clustering - a powerful feature in News API that acts like a team of
-lightning-fast librarians, instantly organizing articles into meaningful groups.
+Clustering groups articles by semantic similarity, not just keyword overlap.
+When you enable clustering on a
+[Search](/news-api/api-reference/search/search-articles-get) or
+[Latest Headlines](/news-api/api-reference/latest-headlines/retrieve-latest-headlines-get)
+request, the API returns articles organized into clusters — each cluster
+containing articles that cover the same story or topic.
+
+Use clustering to:
+
+- Identify how different sources cover the same story.
+- Spot emerging trends across large volumes of articles.
+- Track how a story develops over time as cluster composition changes.
+- Reduce manual organization work when processing high-volume news data.
 
 <Note>
-  Clustering is available for all languages supported by News API. This
-  allows you to group similar articles across the entire multilingual database.
+  Clustering is available for [all languages supported by News
+  API](/news-api/api-reference/enumerated-parameters#supported-language-codes).
 </Note>
 
-## What is clustering?
+## How clustering works
 
-Clustering is an advanced process that goes beyond simple keyword matching. It
-uses sophisticated language processing to understand the content and context of
-each article, grouping related pieces together even if they use different words
-to describe the same concepts.
+Clustering involves two distinct stages that happen at different points in time:
+embedding generation, which happens as part of the data processing pipeline
+before any API request, and cluster formation, which happens at query time when
+you make a request with clustering enabled.
 
-Here's what clustering does for you:
+### Embedding generation (offline)
 
-- Reveals connections between articles, helping you spot trends and patterns in
-  large volumes of news data.
-- Simplifies analysis of how different sources cover the same story.
-- Saves time by automatically organizing information into coherent groups.
-- Provides a clearer picture of the news landscape, making it easier to track
-  evolving stories and identify emerging topics.
+As part of the data processing pipeline, each article is converted into a dense
+vector — called an _embedding_ — that represents its semantic meaning. These
+embeddings are computed and stored when the article is indexed, not when you
+make a request. Articles about the same topic produce embeddings that are close
+together in vector space, even when they use different words.
 
-By leveraging clustering in News API, you transform a chaotic flood of
-information into a structured, insightful resource, enabling more efficient and
-effective news analysis.
+![Diagram showing the offline data pipeline](/images/guides/clustering/data-processing-pipeline.png)
 
-## How does it work?
+The embedding model and the fields used to generate embeddings depend on the
+article's publication date:
 
-Our clustering system uses a streamlined process to group similar articles based
-on their semantic similarity. The clustering process occurs dynamically at the
-API level, taking into account the search filters you apply. This means you get
-clusters that are tailored to your specific query, not just generic groupings.
+| Date range             | Embedding model       | Fields used                                    |
+| ---------------------- | --------------------- | ---------------------------------------------- |
+| Before 2026-01-01      | multilingual-e5-large | Configurable: `content`, `title`, or `summary` |
+| From 2026-01-01 onward | Qwen3-Embedding-0.6B  | `title` + `content` (fixed)                    |
+| Spans both periods     | —                     | Returns an error                               |
 
-### Embeddings generation
+<Warning>
+  **Clustering behavior changed on January 1, 2026.** For articles published
+  from that date onward, the system uses a new embedding model and clustering
+  algorithm. See the table above and the [parameter reference](#parameters) for
+  details.
+</Warning>
 
-The foundation of our clustering process is the creation of article embeddings.
-These embeddings capture the semantic meaning of the content - not just the
-words but the ideas behind them.
+### Cluster formation (query time)
 
-Think of these embeddings as creating a unique fingerprint for each article
-based on its content.
+When you make a request with `clustering_enabled=true`, the backend service
+retrieves the pre-computed embeddings for the articles that match your query,
+then runs the
+[Leiden graph community detection algorithm](https://en.wikipedia.org/wiki/Leiden_algorithm)
+to group them into clusters:
 
-### Similarity calculation
+1. The cosine similarity between each pair of article embeddings is calculated.
+2. Article pairs whose similarity score exceeds the `clustering_threshold` are
+   connected as edges in a similarity graph.
+3. The Leiden algorithm detects communities within that graph.
+4. Each detected community becomes a cluster with a unique `cluster_id`.
 
-When you make a request that includes clustering, we use these pre-generated
-embeddings to group similar articles:
+![Diagram showing the Leiden graph community detection process](/images/guides/clustering/leiden-graph-community-detection.png)
 
-1. We compare the embeddings of different articles using cosine similarity.
-2. This gives us a score that tells us how similar articles are in terms of
-   their content and meaning.
+The Leiden algorithm produces more stable and accurate clusters than the
+previous density-based method because it optimizes community structure globally
+rather than locally.
 
-### Cluster formation
+<Warning>
+  **Clustering does not support a date range that spans both before and after
+  January 1, 2026.** If your `from_` date is before 2026-01-01 00:00:00 and your
+  `to_` date is after, the API returns an error. The two date ranges use
+  incompatible embedding spaces. Send separate requests for each period if you
+  need data from both periods.
+</Warning>
 
-Based on the similarity scores, we form clusters:
+## Parameters
 
-1. Articles with a similarity score above our clustering threshold get grouped
-   into clusters.
-2. Each cluster gets a unique identifier, so you can easily refer to it later.
+To enable clustering and control its behavior, include the following parameters
+in your request:
 
-## How to use clustering
+<div style={{ overflowX: 'auto', margin: '1.5rem 0' }}>
+  <style>{`
+    .param-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; table-layout: fixed; }
+    .param-table th { text-align: left; padding: 10px 16px; font-weight: 600; color: #111827; border-bottom: 1px solid #e5e7eb; }
+    .param-table td { padding: 14px 16px; vertical-align: top; color: #374151; line-height: 1.6; border-bottom: 1px solid #f3f4f6; word-wrap: break-word; overflow-wrap: break-word; }
+    .param-table tr:last-child td { border-bottom: none; }
+    .param-table .col-param { width: 22% !important; min-width: 160px !important; }
+    .param-table .col-type { width: 10% !important; min-width: 70px !important; }
+    .param-table .col-default { width: 16% !important; min-width: 110px !important; }
+    .param-table .col-desc { width: 52% !important; min-width: 200px !important; }
+    .param-table code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 0.8125rem; font-family: monospace; white-space: nowrap !important; }
+  `}</style>
+  <table className="param-table">
+    <thead>
+      <tr>
+        <th className="col-param">Parameter</th>
+        <th className="col-type">Type</th>
+        <th className="col-default">Default</th>
+        <th className="col-desc">Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td className="col-param"><code>clustering_enabled</code></td>
+        <td className="col-type">boolean</td>
+        <td className="col-default"><code>false</code></td>
+        <td className="col-desc">Set to <code>true</code> to enable clustering.</td>
+      </tr>
+      <tr>
+        <td className="col-param"><code>clustering_threshold</code></td>
+        <td className="col-type">float</td>
+        <td className="col-default"><code>0.7</code></td>
+        <td className="col-desc">Minimum cosine similarity required for two articles to be placed in the same cluster. Accepts values from <code>0</code> to <code>1</code>. Higher values produce smaller, more tightly related clusters.</td>
+      </tr>
+      <tr>
+        <td className="col-param"><code>clustering_variable</code></td>
+        <td className="col-type">string</td>
+        <td className="col-default"><code>content</code></td>
+        <td className="col-desc"><strong>Deprecated from January 1, 2026 onward.</strong><br />For pre-2026 data, specifies which field is used for embeddings: <code>content</code>, <code>title</code>, or <code>summary</code>.<br />For post-2026 data, this parameter is ignored — clustering always uses <code>title</code> + <code>content</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-Clustering is only available for the
-[Search](/news-api/api-reference/search/search-articles-get) and
-[Latest Headlines](https://www.newscatcherapi.com/docs/v3/api-reference/endpoints/latest-headlines/retrieve-latest-headlines-get)
-endpoints.
+### Choosing a threshold
 
-### Enable clustering
+The `clustering_threshold` value controls the trade-off between cluster size and
+topical precision:
 
-To activate clustering and fine-tune its behavior, use the following parameters
-in your API request:
+| Value | Effect                                          |
+| ----- | ----------------------------------------------- |
+| `0.6` | Larger clusters; more topically diverse         |
+| `0.7` | Balanced cluster size and similarity (default)  |
+| `0.8` | Smaller clusters; more tightly related articles |
 
-- `clustering_enabled` (boolean): Set to `true` to enable clustering.
-- `clustering_threshold` (float): Determines how similar articles need to be to
-  end up in the same cluster. Values range from 0 to 1, with higher values
-  resulting in clusters with more similar articles. The default value is 0.6.
-- `clustering_variable` (string): Chooses which part of the article to use for
-  clustering. Options are `content` (default), `title`, or `summary`.
+## Set page size for effective clustering
 
-### Optimize clustering with page size
+Clustering operates on one page of results at a time. If related articles are
+split across multiple pages, they are clustered independently and may end up in
+separate clusters.
 
-An important consideration when using clustering is the `page_size` parameter.
-Clustering operates on one page of results at a time, affecting how articles are
-grouped. To ensure the most effective clustering:
-
-- Set `page_size` to a value greater than your expected `total_hits`.
-- This allows all relevant articles to be considered for clustering together.
+To ensure that all related articles are considered together, set `page_size` to
+a value greater than or equal to the expected number of results for your query.
 
 For example, if your query is likely to return 150 articles, set `page_size` to
-at least 150. This prevents related articles from being split across different
-pages and, thus, different clusters.
+at least `150`.
 
-### Understand API response
+## Response structure
 
-When you enable clustering, your API response will include some new elements:
+When clustering is enabled, the API response includes the following fields at
+the top level:
 
-- `clusters_count`: The total number of clusters found
-- `clusters`: An array of cluster objects, each containing:
-  - `cluster_id`: A unique identifier for the cluster
-  - `cluster_size`: The number of articles in the cluster
-  - `articles`: An array of the articles in the cluster
+- `clusters_count`: The total number of clusters found.
+- `clusters`: An array of cluster objects.
 
-### Code example
+Each cluster object contains:
 
-Here's how you might use clustering in a Python script:
+- `cluster_id`: A unique identifier for the cluster.
+- `cluster_size`: The number of articles in the cluster.
+- `articles`: An array of article objects belonging to this cluster.
+
+## Code example
+
+The following example searches for articles about renewable energy with
+clustering enabled, then prints a summary of each cluster.
 
 ```python clustering.py
-import requests
 import os
-import json
+import datetime
+from newscatcher import NewscatcherApi
 
-# Configuration
-API_KEY = "YOUR_API_KEY_HERE"  # Replace with your actual API key
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY, "Content-Type": "application/json"}
-PAYLOAD = {
-    "q": "renewable energy",
-    "lang": "en",
-    "clustering_enabled": True,
-    "clustering_variable": "content",
-    "clustering_threshold": 0.9,
-}
+client = NewscatcherApi(api_key=os.environ["NEWSCATCHER_API_KEY"])
 
-try:
-    # Fetch articles using POST method
-    response = requests.post(URL, headers=HEADERS, json=PAYLOAD)
-    response.raise_for_status()  # Check if the request was successful
+response = client.search.post(
+    q="renewable energy",
+    lang=["en"],
+    from_=datetime.datetime.fromisoformat("2026-04-01 00:00:00+00:00"),
+    clustering_enabled=True,
+    clustering_threshold=0.7,
+    page_size=200,
+)
 
-    # Print the raw JSON response
-    print(json.dumps(response.json(), indent=2))
-
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
+print(f"Found {response.clusters_count} clusters")
+for cluster in (response.clusters or []):
+    print(f"  Cluster {cluster.cluster_id}: {cluster.cluster_size} articles")
+    print(f"    First article: {cluster.articles[0].title}")
 ```
 
-In the response, you'll see how articles are grouped into clusters. Here's a
-snippet of what you might get back:
+The response groups articles into cluster objects:
 
-```json response.json
+<Expandable title="example response with clustering enabled" icon="code">
+
+```json {7-11}
 {
   "status": "ok",
-  "total_hits": 10000,
+  "total_hits": 182,
   "page": 1,
-  "total_pages": 100,
-  "page_size": 100,
-  "clusters_count": 65,
+  "total_pages": 1,
+  "page_size": 200,
+  "clusters_count": 41,
   "clusters": [
     {
       "cluster_id": "7222464423361803386",
       "cluster_size": 11,
       "articles": [
         {
-          "title": "Why Is NextEra Energy (NEE) The Best Alternative Fuel Stock To Buy Right Now?",
-          "author": "Mashaid Ahmed",
-          "published_date": "2024-08-25 17:36:01"
-          // ... other article details ...
+          "title": "Renewable Energy Investment Hits Record High in Q1",
+          "author": "Jane Smith",
+          "authors": ["Jane Smith"],
+          "published_date": "2026-04-15 17:36:01",
+          "published_date_precision": "full",
+          "link": "https://example.com/renewable-energy-record",
+          "domain_url": "example.com",
+          "name_source": "Example News",
+          "country": "US",
+          "language": "en",
+          "description": "Global investment in renewable energy reached...",
+          "content": "Full article text...",
+          "word_count": 542,
+          // ...additional article fields
+          "nlp": {
+            "theme": "Business, Energy",
+            "summary": "Article summary text...",
+            "sentiment": {
+              "title": 0.12,
+              "content": 0.34
+            }
+            // qwen_embedding omitted — 1024-float array; see Work with embeddings directly
+          }
         }
-        // ... other articles in the cluster ...
+        // ...additional articles in this cluster
       ]
     }
-    // ... other clusters ...
+    // ...additional clusters
   ]
 }
 ```
+</Expandable>
 
-This shows that the API found 65 clusters, with one cluster containing 11
-articles about NextEra Energy and alternative fuel stocks.
+## Work with embeddings directly
 
-## Use cases
+The same Qwen3 embeddings used for clustering are also available in the API
+response for you to use in your own pipelines. This is useful when the built-in
+clustering does not match your use case, or when you need to work with more
+articles than fit in a single request.
 
-Clustering can be a game-changer in various scenarios. Here are some common use
-cases:
+Common use cases include:
 
-- **Trend identification**: Quickly spot emerging trends by analyzing large
-  clusters of articles on similar topics, giving you a bird's-eye view of the
-  news landscape.
-- **Diverse perspectives analysis**: Examine how different sources cover the
-  same story within a cluster, providing a comprehensive view of news events
-  from various angles.
-- **Content organization**: Efficiently organize large volumes of news content
-  into meaningful groups, as if you had a personal librarian instantly
-  categorizing your articles.
-- **Story evolution tracking**: Follow how news stories develop over time by
-  analyzing changes in cluster composition and size, watching stories grow,
-  merge, or fade away in real-time.
-- **Enhanced search capabilities**: Improve search results by grouping related
-  articles together, allowing users to quickly find relevant information with
-  context-aware precision.
+- Semantic search over your own article corpus.
+- Recommendation systems.
+- Deduplication with custom similarity thresholds.
+- Topic visualization.
+- Domain-specific clustering algorithms.
 
-## Clustering vs deduplication
+<Note>
+  Embeddings output requires the `v3_nlp_embeddings` subscription plan. 
+  Qwen3 embeddings is only available for articles indexed from January 1,
+  2026 onward.
+</Note>
 
-While both clustering and deduplication help organize large sets of articles,
-they serve different purposes:
+To request embeddings in the response, set `include_nlp_data=True`. Each article's 
+embedding is returned in `article.nlp.qwen_embedding` as an array of 1024 floats.
 
-| Feature              | Clustering                                 | Deduplication                               |
-| -------------------- | ------------------------------------------ | ------------------------------------------- |
-| Purpose              | Groups similar articles                    | Removes nearly identical articles           |
-| Content              | Retains all articles                       | Removes duplicates                          |
-| Similarity Threshold | Generally lower, allowing broader groups   | Higher, identifying near-exact matches      |
-| Output               | Groups of related articles                 | Set of unique articles                      |
-| Use Case             | Analyzing related content, tracking trends | Eliminating redundancy, ensuring uniqueness |
+```python fetch_embeddings.py
+import os
+import datetime
+import numpy as np
+from newscatcher import NewscatcherApi
 
-Choose clustering when you want to analyze related content and track trends. Go
-for deduplication to eliminate redundancy and ensure uniqueness in your article
-set.
+client = NewscatcherApi(api_key=os.environ["NEWSCATCHER_API_KEY"])
 
-For more information on our deduplication feature, check out
+response = client.search.post(
+    q="artificial intelligence",
+    lang=["en"],
+    from_=datetime.datetime.fromisoformat("2026-01-01 00:00:00+00:00"),
+    page_size=100,
+    include_nlp_data=True,
+    has_nlp=True,
+    embeddings_output="qwen_embedding",
+)
+
+articles = response.articles or []
+
+# Build a matrix of embeddings — one row per article
+embeddings = np.array(
+    [
+        getattr(art.nlp, "qwen_embedding")
+        for art in articles
+        if art.nlp and getattr(art.nlp, "qwen_embedding", None) is not None
+    ],
+    dtype=np.float32,
+)
+
+print(f"Retrieved {len(articles)} articles")
+print(f"Embedding matrix shape: {embeddings.shape}")  # (n_articles, 1024)
+```
+
+Once you have the embedding matrix, you can use it in your own pipelines. The
+following examples use `scikit-learn`, which is not included in
+`newscatcher-sdk`. Install it separately:
+
+```bash
+pip install scikit-learn
+```
+
+<Tabs>
+  <Tab title="Semantic similarity">
+    Find articles most similar to a reference article without making additional
+    API calls:
+
+    ```python semantic_similarity.py
+    from sklearn.metrics.pairwise import cosine_similarity
+
+    # Similarity of every article against the first one
+    scores = cosine_similarity(embeddings[0:1], embeddings)[0]
+    ranked = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)
+
+    print("Most similar articles:")
+    for idx, score in ranked[1:6]:
+        print(f"  {score:.3f}  {articles[idx].title}")
+    ```
+  </Tab>
+
+  <Tab title="Custom clustering">
+    Apply any clustering algorithm that accepts dense vectors:
+
+    ```python custom_clustering.py
+    from sklearn.cluster import AgglomerativeClustering
+
+    model = AgglomerativeClustering(n_clusters=10, metric="cosine", linkage="average")
+    labels = model.fit_predict(embeddings)
+
+    for article, label in zip(articles, labels):
+        print(f"Cluster {label}: {article.title}")
+    ```
+  </Tab>
+
+  <Tab title="Dimensionality reduction">
+    Project embeddings into 2D to explore topic structure:
+
+    ```python visualize.py
+    from sklearn.decomposition import PCA
+    import matplotlib.pyplot as plt
+
+    coords = PCA(n_components=2).fit_transform(embeddings)
+    plt.scatter(coords[:, 0], coords[:, 1], alpha=0.6)
+    for i, art in enumerate(articles):
+        plt.annotate(art.title[:40], coords[i], fontsize=6)
+    plt.show()
+    ```
+  </Tab>
+</Tabs>
+
+## Clustering vs. deduplication
+
+Clustering and deduplication both help organize large sets of articles, but they
+serve different purposes:
+
+|                             | Clustering                            | Deduplication                            |
+| --------------------------- | ------------------------------------- | ---------------------------------------- |
+| **Purpose**                 | Groups related articles               | Removes near-identical articles          |
+| **Output**                  | Groups of related articles            | A set of unique articles                 |
+| **Similarity threshold**    | Lower — allows broader groupings      | Higher — identifies near-exact matches   |
+| **Effect on article count** | Retains all articles                  | Removes duplicates                       |
+| **Best for**                | Trend analysis, multi-source coverage | Removing redundancy, ensuring uniqueness |
+
+For more information, see
 [Articles deduplication](/news-api/guides-and-concepts/articles-deduplication).
-
-## Wrapping up
-
-Clustering in News API is like having a smart assistant that can quickly
-organize mountains of news data into meaningful groups. Whether you're tracking
-trends, analyzing diverse perspectives, or just trying to make sense of the news
-firehose, clustering can help you see the forest for the trees.
-
-We encourage you to try clustering in your News API queries and see how it
-can enhance your news analysis. As always, we're here to help if you have any
-questions or need assistance using this feature. Happy clustering!
