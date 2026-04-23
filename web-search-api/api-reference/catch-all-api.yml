@@ -102,6 +102,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Ownership"
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
@@ -278,6 +280,8 @@ paths:
       parameters:
         - $ref: "#/components/parameters/Page"
         - $ref: "#/components/parameters/PageSize"
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Ownership"
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
@@ -824,6 +828,7 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/SortOrder"
+        - $ref: "#/components/parameters/Ownership"
       responses:
         "200":
           $ref: "#/components/responses/DatasetListResponse"
