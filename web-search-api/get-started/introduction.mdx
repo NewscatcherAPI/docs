@@ -198,6 +198,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     | `/catchAll/submit`          | `POST`   | Create a new job                |
     | `/catchAll/continue`        | `POST`   | Continue job with higher limit  |
     | `/catchAll/jobs/user`       | `GET `   | List all jobs for your API key  |
+    | `/catchAll/jobs/{job_id}`   | `DELETE` | Delete a job                    |
     | `/catchAll/status/{job_id}` | `GET`    | Check job processing status     |
     | `/catchAll/pull/{job_id}`   | `GET`    | Retrieve job results            |
   
@@ -209,15 +210,17 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   </Tab>
 
   <Tab title="Monitors">
-    | Endpoint                                  |  Method  | Description                    |
-    | ----------------------------------------- | -------- | ------------------------------ |
-    | `/catchAll/monitors/create`               | `POST`   | Create scheduled monitor       |
-    | `/catchAll/monitors/{monitor_id}`         | `PATCH`  | Update monitor webhook         |
-    | `/catchAll/monitors`                      | `GET`    | List all monitors              |
-    | `/catchAll/monitors/{monitor_id}/jobs`    | `GET`    | List jobs for a monitor        |
-    | `/catchAll/monitors/pull/{monitor_id}`    | `GET `   | Get aggregated monitor results |
-    | `/catchAll/monitors/{monitor_id}/enable`  | `POST`   | Enable a monitor               |
-    | `/catchAll/monitors/{monitor_id}/disable` | `POST`   | Disable a monitor              |
+    | Endpoint                                    |  Method  | Description                    |
+    | ------------------------------------------- | -------- | ------------------------------ |
+    | `/catchAll/monitors/create`                 | `POST`   | Create scheduled monitor       |
+    | `/catchAll/monitors/{monitor_id}`           | `PATCH`  | Update monitor webhook         |
+    | `/catchAll/monitors/{monitor_id}`           | `DELETE` | Delete a monitor               |
+    | `/catchAll/monitors`                        | `GET`    | List all monitors              |
+    | `/catchAll/monitors/{monitor_id}/jobs`      | `GET`    | List jobs for a monitor        |
+    | `/catchAll/monitors/{monitor_id}/status`    | `GET`    | Get monitor execution history  |
+    | `/catchAll/monitors/pull/{monitor_id}`      | `GET`    | Get aggregated monitor results |
+    | `/catchAll/monitors/{monitor_id}/enable`    | `POST`   | Enable a monitor               |
+    | `/catchAll/monitors/{monitor_id}/disable`   | `POST`   | Disable a monitor              |
   </Tab>
 
   <Tab title="Entities">
