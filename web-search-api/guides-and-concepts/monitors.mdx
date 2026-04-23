@@ -21,7 +21,7 @@ Each scheduled execution:
 
 Create a successful job following the [Quickstart guide](/web-search-api/get-started/quickstart).
 
-## Create a monitor
+## Create monitor
 
 <Warning>
   Monitors require a reference job with `end_date` within the last 7 days. 
@@ -494,7 +494,7 @@ Response:
 
 ## Manage monitors
 
-### Enable a monitor
+### Enable monitor
 
 Resume execution of a disabled monitor:
 
@@ -550,7 +550,7 @@ Response:
 }
 ```
 
-### Disable a monitor
+### Disable monitor
 
 Pause execution without deleting the monitor:
 
@@ -606,10 +606,151 @@ Response:
 }
 ```
 
-<Note>
-  To delete a monitor permanently, contact support at support@newscatcherapi.com
-  with the `monitor_id`.
-</Note>
+### Delete monitor
+Permanently delete a monitor. This action cannot be undone. Deleted monitors stop 
+executing immediately and no longer appear in list results.
+
+<CodeGroup>
+
+```bash cURL
+curl -X DELETE "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+client.monitors.delete_monitor(monitor_id)
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+await client.monitors.deleteMonitor({ monitor_id: monitorId });
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+client.monitors().deleteMonitor(monitorId);
+```
+
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Monitor deleted successfully.",
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+}
+```
+
+### Get status history
+
+Get the full execution history of a monitor as a list of status entries,
+ordered from newest to oldest. Each entry records a lifecycle event — creation,
+enable/disable, a scheduled run, or a completed dump with record counts and
+webhook delivery result.
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}/status" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+history = client.monitors.get_monitor_status_history(monitor_id)
+for entry in history.statuses:
+    print(f"{entry.status}: {entry.created_at}")
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+const history = await client.monitors.getMonitorStatusHistory({
+  monitor_id: monitorId,
+});
+for (const entry of history.statuses) {
+  console.log(`${entry.status}: ${entry.created_at}`);
+}
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
+
+var history = client.monitors().getMonitorStatusHistory(monitorId);
+history.getStatuses().forEach(entry ->
+    System.out.println(entry.getStatus() + ": " + entry.getCreatedAt())
+);
+```
+
+</CodeGroup>
+
+<Expandable title="Status history response">
+
+```json
+{
+  "success": true,
+  "message": null,
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "total_statuses": 5,
+  "statuses": [
+    {
+      "status": "dump",
+      "created_at": "2026-02-05T12:04:00Z",
+      "additional_information": {
+        "nb_existing_records": 408,
+        "nb_final_records": 28
+      }
+    },
+    {
+      "status": "scheduled",
+      "created_at": "2026-02-05T12:00:00Z",
+      "additional_information": {
+        "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+        "start_date": "2026-02-04T12:00:00",
+        "end_date": "2026-02-05T12:00:00"
+      }
+    },
+    {
+      "status": "created",
+      "created_at": "2026-01-19T16:28:00Z",
+      "additional_information": null
+    }
+  ]
+}
+```
+
+</Expandable>
 
 ## Webhooks
 
