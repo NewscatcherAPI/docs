@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.4.0
+  version: 1.5.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -242,6 +242,30 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/jobs/{job_id}:
+    delete:
+      tags:
+        - Jobs
+      summary: Delete job
+      description: |
+        Soft-deletes a job. The job is flagged as deleted and no longer
+        appears in list results. The underlying data is retained.
+
+        Only the job owner can delete a job. Returns `404` if the job is not
+        found or does not belong to the authenticated user.
+
+        Deleting an already-deleted job returns `200`.
+      operationId: deleteJob
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeleteJobResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   # ── Monitors ──────────────────────────────────────────────────────────────
 
   /catchAll/monitors:
@@ -345,6 +369,30 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/{monitor_id}/status:
+    get:
+      tags:
+        - Monitors
+      summary: Get monitor status history
+      description: |
+        Returns the full execution history of a monitor as a list of status entries, ordered from newest to oldest.
+      operationId: getMonitorStatusHistory
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          $ref: "#/components/responses/MonitorStatusHistoryResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /catchAll/monitors/{monitor_id}/enable:
     post:
@@ -485,6 +533,36 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Monitors
+      summary: Delete monitor
+      description: |
+        Soft-deletes a monitor. The monitor is flagged as deleted, stops
+        executing scheduled jobs immediately, and no longer appears in list
+        results.
+
+        Only the monitor owner can delete a monitor. Returns `404` if the
+        monitor is not found or does not belong to the authenticated user.
+
+        Deleting an already-deleted monitor returns `200`.
+      operationId: deleteMonitor
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          $ref: "#/components/responses/DeleteMonitorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   # ── Entities ──────────────────────────────────────────────────────────────
 
