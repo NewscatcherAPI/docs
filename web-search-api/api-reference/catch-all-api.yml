@@ -1252,6 +1252,22 @@ components:
         format: uuid
       example: "ccabb755-afc2-4047-b84c-78d1f23d49b2"
 
+    Search:
+      name: search
+      in: query
+      required: false
+      schema:
+        type: string
+      description: Filter results by text (case-insensitive substring match).
+
+    Ownership:
+      name: ownership
+      in: query
+      required: false
+      schema:
+        $ref: "#/components/schemas/OwnershipFilter"
+      description: Filter results by ownership. Defaults to `all`.
+
   responses:
     InitializeResponse:
       description: Suggestions retrieved successfully
@@ -2871,6 +2887,21 @@ components:
         - `asc`: ascending (oldest or smallest first)
         - `desc`: descending (newest or largest first)
       default: desc
+
+    OwnershipFilter:
+      type: string
+      enum:
+        - all
+        - own
+        - shared
+      default: all
+      description: |
+        Controls which resources are returned based on ownership.
+
+        - `all`: Returns resources owned by the user and resources shared
+          with them (default, backward compatible).
+        - `own`: Returns only resources created by the authenticated user.
+        - `shared`: Returns only resources shared with the user by others.
 
     # ── Entity enumerations ───────────────────────────────────────────────────
 
