@@ -1830,8 +1830,6 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Error"
-          example:
-            detail: "Invalid API key"
 
     NotFoundError:
       description: Job/monitor not found or results not available
@@ -2326,6 +2324,11 @@ components:
           default: "base"
           description: Processing mode used for this job.
           example: "base"
+        sharing_info:
+          allOf:
+            - $ref: "#/components/schemas/SharingInfo"
+          description: |
+            Present when this job is shared with the authenticated user. Omitted when the user owns the job.
         user_key:
           type: string
           description: Masked API key that created this job.
@@ -2431,6 +2434,12 @@ components:
           default: "base"
           description: Processing mode used for this job.
           example: "base"
+        sharing_info:
+          oneOf:
+            - $ref: "#/components/schemas/SharingInfo"
+            - type: "null"
+          description: |
+            Present when the job was shared with the authenticated user by another organization member. `null` when the user owns the job.
         all_records:
           type: array
           items:
@@ -2891,6 +2900,11 @@ components:
           type: string
           description: Masked API key associated with this monitor.
           example: "***...a1b2"
+        sharing_info:
+          allOf:
+            - $ref: "#/components/schemas/SharingInfo"
+          description: |
+            Present when this monitor was shared with the authenticated user. Omitted when the user owns the monitor.
 
     WebhookPayload:
       type: object
@@ -3094,6 +3108,36 @@ components:
           with them (default, backward compatible).
         - `own`: Returns only resources created by the authenticated user.
         - `shared`: Returns only resources shared with the user by others.
+
+    SharingInfo:
+      type: object
+      description: |
+        Present on resources shared with the authenticated user by another
+        organization member. Omitted entirely on resources the user owns.
+      required:
+        - shared_at
+        - permission
+        - shared_by
+      properties:
+        shared_at:
+          type: string
+          format: date-time
+          description: When the resource was shared.
+          example: "2026-04-15T12:00:00Z"
+        permission:
+          type: string
+          enum:
+            - view
+            - edit
+            - manage
+          description: Permission level granted to the recipient.
+          example: "view"
+        shared_by:
+          type: string
+          description: |
+            Display name of the user who shared the resource (first + last
+            name). Falls back to email address, then user ID.
+          example: "John Doe"
 
     # ── Entity enumerations ───────────────────────────────────────────────────
 
