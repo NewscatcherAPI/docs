@@ -72,6 +72,7 @@
                   "web-search-api/api-reference/jobs/get-job-results",
                   "web-search-api/api-reference/jobs/continue-job",
                   "web-search-api/api-reference/jobs/list-user-jobs",
+                  "web-search-api/api-reference/jobs/delete-job",
                   "web-search-api/api-reference/jobs/company-enrichment-dto"
                 ]
               },
@@ -82,9 +83,11 @@
                   "web-search-api/api-reference/monitors/get-monitor-results",
                   "web-search-api/api-reference/monitors/list-monitors",
                   "web-search-api/api-reference/monitors/list-monitor-jobs",
+                  "web-search-api/api-reference/monitors/get-monitor-status-history",
                   "web-search-api/api-reference/monitors/enable-monitor",
                   "web-search-api/api-reference/monitors/disable-monitor",
                   "web-search-api/api-reference/monitors/update-monitor",
+                  "web-search-api/api-reference/monitors/delete-monitor",
                   "web-search-api/api-reference/monitors/webhook-payload"
                 ]
               },

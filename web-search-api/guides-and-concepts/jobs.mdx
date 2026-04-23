@@ -646,7 +646,8 @@ var results = client.jobs().getJobResults(jobId);
 
 [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
 returns all jobs created with your API key, sorted by creation date, most recent
-first. Supports pagination via `page` and `page_size` parameters.
+first. Supports pagination via `page` and `page_size`, text query filtering via
+`search`, and ownership filtering via `ownership` (`all`, `own`, `shared`).
 
 <CodeGroup>
 ```bash cURL
@@ -704,6 +705,44 @@ for (var job : jobs.getJobs()) {
 }
 ```
 </Expandable>
+
+## Delete a job
+
+[`DELETE /catchAll/jobs/{job_id}`](/web-search-api/api-reference/jobs/delete-job)
+soft-deletes a job. The job is flagged as deleted and no longer appears in list
+results. Deletion is idempotent — deleting an already-deleted job returns `200`.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://catchall.newscatcherapi.com/catchAll/jobs/{job_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+client.jobs.delete_job(job_id="5f0c9087-85cb-4917-b3c7-e5a5eff73a0c")
+```
+
+```typescript TypeScript
+await client.jobs.deleteJob({
+  job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+});
+```
+
+```java Java
+client.jobs().deleteJob("5f0c9087-85cb-4917-b3c7-e5a5eff73a0c");
+```
+
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Job deleted successfully.",
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+}
+```
 
 ## See also
 

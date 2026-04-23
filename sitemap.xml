@@ -55,6 +55,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/delete-job</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto</loc>
     </url>
     <url>
@@ -70,6 +73,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitor-jobs</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-status-history</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/enable-monitor</loc>
     </url>
     <url>
@@ -77,6 +83,9 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/delete-monitor</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload</loc>

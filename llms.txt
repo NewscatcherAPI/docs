@@ -34,6 +34,14 @@
 - [Get Job Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results): Retrieve the final results for a completed job.
 - [Continue Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job): Continue an existing job to process more records beyond the initial limit.
 - [List User Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs): Returns all jobs created by the authenticated user.
+- [Delete Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/delete-job): Soft-deletes a job. The job is flagged as deleted and no longer
+appears in list results. The underlying data is retained.
+
+Only the job owner can delete a job. Returns `404` if the job is not
+found or does not belong to the authenticated user.
+
+Deleting an already-deleted job returns `200`.
+
 - [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto): Data model for enrichment fields of type company.
 
 ### API Reference — Monitors
@@ -42,9 +50,20 @@
 - [Get Monitor Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results): Retrieve aggregated results from all jobs executed by a monitor.
 - [List Monitors](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitors): Returns all monitors created by the authenticated user.
 - [List Monitor Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitor-jobs): Return all jobs executed by a monitor.
+- [Get Monitor Status History](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-status-history): Returns the full execution history of a monitor as a list of status entries, ordered from newest to oldest.
+
 - [Enable Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/enable-monitor): Resume scheduled job execution for a monitor.
 - [Disable Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/disable-monitor): Stop scheduled job execution for a monitor.
 - [Update Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/update-monitor): Update the webhook configuration for an existing monitor.
+- [Delete Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/delete-monitor): Soft-deletes a monitor. The monitor is flagged as deleted, stops
+executing scheduled jobs immediately, and no longer appears in list
+results.
+
+Only the monitor owner can delete a monitor. Returns `404` if the
+monitor is not found or does not belong to the authenticated user.
+
+Deleting an already-deleted monitor returns `200`.
+
 - [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload): Data model for a payload sent to the webhook URL when a monitor job completes.
 
 ### API Reference — Entities
