@@ -5,6 +5,39 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.5.0" description="2026-04-22">
+## Resource management and sharing
+
+Introduces job and monitor deletion, monitor execution history, resource sharing, 
+and filtering by ownership across all list endpoints.
+
+**Features:**
+
+- **Delete jobs and monitors**: Remove jobs and monitors you no longer need.
+  Deleted resources no longer appear in list results. Deletion is idempotent —
+  deleting an already-deleted resource returns `200`.
+- **Monitor status history**: Inspect the full execution history of a monitor,
+  including per-run record counts and webhook delivery results.
+- **Resource sharing**: Jobs, monitors, and datasets shared with you by
+  organization members now appear in list responses with a `sharing_info` object
+  indicating who shared the resource, when, and with what permission level.
+- **Ownership filter**: All list endpoints for jobs, monitors, and datasets
+  support a new `ownership` parameter (`all`, `own`, `shared`) to filter results
+  by who owns or shared them. Defaults to `all` for backward compatibility.
+- **Search filter**: Filter jobs and monitors by text using the new `search`
+  parameter on list endpoints.
+
+**Endpoints:**
+
+- [`DELETE /catchAll/jobs/{job_id}`](/web-search-api/api-reference/jobs/delete-job)
+  — Delete a job.
+- [`DELETE /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/monitors/delete-monitor)
+  — Delete a monitor.
+- [`GET /catchAll/monitors/{monitor_id}/status`](/web-search-api/api-reference/monitors/get-monitor-status-history)
+  — Get monitor execution status history.
+
+</Update>
+
 <Update label="1.4.0" description="2026-04-14">
 ## Company search
 
