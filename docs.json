@@ -158,7 +158,6 @@
             "pages": [
               "news-api/get-started/introduction",
               "news-api/get-started/quickstart",
-              "news-api/get-started/libraries",
               "news-api/get-started/subscription-plans"
             ]
           },
@@ -184,7 +183,6 @@
               "news-api/how-to/search-by-entity",
               "news-api/how-to/search-by-url",
               "news-api/how-to/search-in-translations",
-              "news-api/how-to/paginate-large-datasets",
               "news-api/how-to/retrieve-more-than-10k-articles",
               "news-api/how-to/check-sources-coverage",
               "news-api/how-to/validate-queries-python-sdk"
@@ -194,8 +192,8 @@
             "group": "Troubleshooting",
             "pages": [
               "news-api/troubleshooting/error-handling",
-              "news-api/troubleshooting/request-tracing-correlation-ids",
-              "news-api/troubleshooting/report-bugs"
+              "news-api/troubleshooting/report-bugs",
+              "news-api/troubleshooting/request-tracing-correlation-ids"
             ]
           },
           {
