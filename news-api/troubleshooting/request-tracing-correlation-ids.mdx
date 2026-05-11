@@ -87,6 +87,87 @@ optimize performance by measuring exactly how long each step in processing took.
   back-and-forth and manual searching through logs.
 </Note>
 
+## How to extract correlation ID
+
+Here's how to access the `correlation-id` header in each supported language:
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"q": "bitcoin", "from_": "30d"}' \
+  -i
+
+# The -i flag includes response headers in the output.
+# Look for: correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
+```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+response = client.search.post(q="bitcoin", from_="30d")
+
+# The SDK exposes raw response headers via the underlying HTTP response.
+# Use the requests library directly to access headers:
+import requests
+
+raw = requests.post(
+    "https://v3-api.newscatcherapi.com/api/search",
+    headers={"x-api-token": "YOUR_API_KEY", "Content-Type": "application/json"},
+    json={"q": "bitcoin", "from_": "30d"},
+)
+correlation_id = raw.headers.get("correlation-id")
+print(f"Correlation ID: {correlation_id}")
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+
+// Use fetch directly to access response headers
+const response = await fetch("https://v3-api.newscatcherapi.com/api/search", {
+  method: "POST",
+  headers: {
+    "x-api-token": "YOUR_API_KEY",
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({ q: "bitcoin", from_: "30d" }),
+});
+
+const correlationId = response.headers.get("correlation-id");
+console.log(`Correlation ID: ${correlationId}`);
+```
+
+```java Java
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+HttpClient httpClient = HttpClient.newHttpClient();
+
+HttpRequest request = HttpRequest.newBuilder()
+    .uri(URI.create("https://v3-api.newscatcherapi.com/api/search"))
+    .header("x-api-token", "YOUR_API_KEY")
+    .header("Content-Type", "application/json")
+    .POST(HttpRequest.BodyPublishers.ofString("{\"q\": \"bitcoin\", \"from_\": \"30d\"}"))
+    .build();
+
+HttpResponse<String> response = httpClient.send(
+    request, HttpResponse.BodyHandlers.ofString()
+);
+
+String correlationId = response.headers().firstValue("correlation-id").orElse("not found");
+System.out.println("Correlation ID: " + correlationId);
+```
+
+</CodeGroup>
+
 ## Correlation IDs and support SLAs
 
 Providing a correlation ID when reporting issues helps meet SLA support response

@@ -1,54 +1,346 @@
 ---
-title: How to retrieve more than 10,000 articles
-sidebarTitle: Retrieve more than 10,000 articles
+title: Retrieve large datasets
+sidebarTitle: Retrieve large datasets
 description:
-  Learn how to use time-chunking methods in the Python SDK to retrieve large
-  volumes of articles
+  Retrieve all articles for a query that exceeds the 10,000 article limit
+  using time-chunking across Python, TypeScript, and Java
 ---
 
-The Newscatcher API limits results to 10,000 articles per search query. The
-Python SDK provides special methods that automatically split your search across
-multiple time periods to bypass the limit and retrieve all articles relevant to
-your query.
+News API returns up to 10,000 articles per query. For broad queries this limit
+is hit constantly — a search for "artificial intelligence" in English returns
+10,000 results even when hundreds of thousands of matching articles exist.
 
-<Note>
-  These advanced retrieval methods are available only in the Python SDK.
-</Note>
+This guide walks through the full retrieval workflow in three steps: measure
+your dataset volume, choose the right chunk size, then fetch everything. All
+three steps include code examples for Python, TypeScript, and Java.
 
-## Understanding the article limit
+## Before you begin
 
-When your query matches more than 10,000 articles, the API returns
-`"total_hits": 10000` as a hard limit, and you cannot retrieve more through
-standard pagination.
+- An active News API key
+- For Python: Python 3.10+ with 
+  [News API Python SDK](/news-api/libraries/python) installed
 
-```python
+## Retrieval workflow
+
+<Steps>
+  <Step title="Measure volume with aggregation">
+
+Before writing any retrieval logic, use
+[`/aggregation_count`](/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get)
+to understand how many articles your query actually matches and how they're
+distributed over time. This tells you which chunk size to use and whether your
+query needs narrowing.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/aggregation_count" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "artificial intelligence",
+    "lang": "en",
+    "aggregation_by": "day"
+  }'
+```
+
+```python Python
 from newscatcher import NewscatcherApi
 
 client = NewscatcherApi(api_key="YOUR_API_KEY")
 
-response = client.search.post(
-    q="technology",
-    from_="7d",
-    to="now"
+result = client.aggregation.post(
+    q="artificial intelligence",
+    lang="en",
+    aggregation_by="day",
 )
 
-print(f"Total hits: {response.total_hits}")
-print(f"Is result capped: {response.total_hits == 10000}")  # True if limit reached
+print(f"Total articles: {result.total_hits}")
+for bucket in result.aggregations[0].aggregation_count:
+    print(f"{bucket.time_frame[:10]}: {bucket.article_count:,} articles")
 ```
 
-## Using time-chunking methods
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
 
-The SDK provides two special methods to retrieve large volumes of articles:
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
 
-- `get_all_articles`
-- `get_all_headlines`
+const result = await client.aggregation.post({
+  q: "artificial intelligence",
+  lang: "en",
+  aggregationBy: "day",
+});
 
-Both methods available for synchronous and asynchronous clients. **All existing
-News API parameters are available for both methods**, giving you full control over
-filtering, sorting, and content selection while bypassing the 10,000 article
-limit.
+console.log(`Total articles: ${result.totalHits}`);
+result.aggregations?.[0].aggregationCount?.forEach((bucket) => {
+  console.log(`${bucket.timeFrame?.slice(0, 10)}: ${bucket.articleCount}`);
+});
+```
 
-### Get all articles
+```java Java
+import com.newscatcher.api.NewscatcherApiClient;
+import com.newscatcher.api.resources.aggregation.requests.PostAggregationRequest;
+
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+var result = client.aggregation().post(
+    PostAggregationRequest.builder()
+        .q("artificial intelligence")
+        .lang("en")
+        .aggregationBy("day")
+        .build()
+);
+
+System.out.println("Total articles: " + result.getTotalHits());
+result.getAggregations().get(0).getAggregationCount().forEach(bucket ->
+    System.out.println(bucket.getTimeFrame() + ": " + bucket.getArticleCount())
+);
+```
+
+</CodeGroup>
+
+The response shows total volume and the per-day distribution:
+
+```json
+{
+    "status": "ok",
+    "total_hits": 118562,
+    "page": 1,
+    "total_pages": 1186,
+    "page_size": 100,
+    "aggregations": [
+        {
+            "aggregation_count": [
+                { "time_frame": "2026-05-04 00:00:00", "article_count": 18461 },
+                { "time_frame": "2026-05-05 00:00:00", "article_count": 20725 },
+                { "time_frame": "2026-05-06 00:00:00", "article_count": 20880 },
+                { "time_frame": "2026-05-07 00:00:00", "article_count": 20973 },
+                { "time_frame": "2026-05-08 00:00:00", "article_count": 15915 },
+                { "time_frame": "2026-05-09 00:00:00", "article_count": 6708 },
+                { "time_frame": "2026-05-10 00:00:00", "article_count": 5782 },
+                { "time_frame": "2026-05-11 00:00:00", "article_count": 9118 }
+            ]
+        }
+    ]
+}
+```
+
+118,562 total articles, with 15,000–20,000 per day. Daily chunks would hit the
+10K cap every day. You need 6-hour chunks.
+
+  </Step>
+  <Step title="Choose the right chunk size">
+
+Pick a chunk size where each window returns fewer than 10,000 articles. Use the
+per-period counts from Step 1:
+
+| Articles per period | Recommended chunk size |
+|---|---|
+| More than 10,000 per hour | `"1h"` — consider narrowing the query |
+| More than 10,000 per day | `"6h"` or `"1h"` |
+| 3,000–10,000 per day | `"1d"` |
+| 1,000–3,000 per day | `"3d"` |
+| 100–1,000 per day | `"7d"` |
+| Fewer than 100 per day | `"30d"` |
+
+For the "artificial intelligence" example above: most days have 15,000–20,000
+articles, so `"6h"` is the right choice.
+  </Step>
+
+  <Step title="Retrieve all articles">
+
+With chunk size confirmed, iterate through your date range window by window,
+paginating each window fully before moving to the next.
+
+<CodeGroup>
+
+```python Python
+import time
+from newscatcher import NewscatcherApi
+from newscatcher.core import ApiError
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+def get_all_articles(query: str, from_date: str, to_date: str, chunk_hours: int) -> list:
+    from datetime import datetime, timedelta
+
+    articles = []
+    window_start = datetime.fromisoformat(from_date)
+    end = datetime.fromisoformat(to_date)
+
+    while window_start < end:
+        window_end = min(window_start + timedelta(hours=chunk_hours), end)
+
+        page = 1
+        total_pages = 1
+
+        while page <= total_pages:
+            try:
+                response = client.search.post(
+                    q=query,
+                    lang="en",
+                    from_=window_start.isoformat(),
+                    to=window_end.isoformat(),
+                    page=page,
+                    page_size=1000,
+                )
+                articles.extend(response.articles)
+                total_pages = response.total_pages
+                page += 1
+                time.sleep(0.5)
+            except ApiError as e:
+                print(f"Error on page {page}: {e}")
+                break
+
+        window_start = window_end
+
+    return articles
+
+articles = get_all_articles(
+    "artificial intelligence",
+    "2026-05-04T00:00:00",
+    "2026-05-11T00:00:00",
+    chunk_hours=6,
+)
+print(f"Retrieved {len(articles)} articles")
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+
+async function getAllArticles(
+  query: string,
+  from: Date,
+  to: Date,
+  chunkHours: number
+): Promise<object[]> {
+  const articles: object[] = [];
+  let windowStart = new Date(from);
+
+  while (windowStart < to) {
+    const windowEnd = new Date(
+      Math.min(windowStart.getTime() + chunkHours * 3600 * 1000, to.getTime())
+    );
+
+    let page = 1;
+    let totalPages = 1;
+
+    while (page <= totalPages) {
+      const response = await client.search.post({
+        q: query,
+        lang: "en",
+        from: windowStart,
+        to: windowEnd,
+        pageSize: 1000,
+        page,
+      });
+
+      articles.push(...(response.articles ?? []));
+      totalPages = response.totalPages ?? 1;
+      page++;
+    }
+
+    windowStart = windowEnd;
+  }
+
+  return articles;
+}
+
+const articles = await getAllArticles(
+  "artificial intelligence",
+  new Date("2026-05-04T00:00:00"),
+  new Date("2026-05-11T00:00:00"),
+  6,
+);
+console.log(`Retrieved ${articles.length} articles`);
+```
+
+```java Java
+import com.newscatcher.api.NewscatcherApiClient;
+import com.newscatcher.api.resources.search.requests.PostSearchRequest;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+List<Object> getAllArticles(String query, Instant from, Instant to, int chunkHours) {
+    List<Object> articles = new ArrayList<>();
+    Instant windowStart = from;
+
+    while (windowStart.isBefore(to)) {
+        Instant windowEnd = windowStart.plus(chunkHours, ChronoUnit.HOURS);
+        if (windowEnd.isAfter(to)) windowEnd = to;
+
+        int page = 1;
+        int totalPages = 1;
+
+        while (page <= totalPages) {
+            var response = client.search().post(
+                PostSearchRequest.builder()
+                    .q(query)
+                    .lang("en")
+                    .from(windowStart.toString())
+                    .to(windowEnd.toString())
+                    .pageSize(1000)
+                    .page(page)
+                    .build()
+            );
+
+            articles.addAll(response.getArticles());
+            totalPages = response.getTotalPages();
+            page++;
+        }
+
+        windowStart = windowEnd;
+    }
+
+    return articles;
+}
+```
+
+</CodeGroup>
+
+  </Step>
+</Steps>
+
+## Python SDK: automated retrieval
+
+Python SDK provides `get_all_articles` and `get_all_headlines` — methods that 
+automate the workflow. They split your date range into chunks, paginate each 
+chunk, deduplicate results, and return a combined list. You can still measure 
+volume with `/aggregation_count` to choose a proper `time_chunk_size`, but you 
+don't need to write the iteration logic.
+
+### How time-chunking works
+
+Time-chunking divides your date range into smaller intervals, makes a separate
+API call for each period, and combines the results. Each interval can return up
+to 10,000 articles.
+
+For example, with `time_chunk_size="1d"` over 5 days, the method makes 5 API
+calls — one per day — with automatic pagination, retrieving up to 50,000
+articles total.
+
+<Frame>
+  <img
+    src="/images/day_chunks.png"
+    alt="Diagram showing how time-chunking splits a date range into five daily API requests, each returning up to 10,000 articles, combined into a single deduplicated result set of up to 50,000 articles."
+  />
+</Frame>
+
+### get_all_articles
+
+Retrieves all articles matching a search query over a date range. Accepts all
+standard `/search` endpoint parameters via `**kwargs` — `lang`, `countries`,
+`sort_by`, `include_nlp_data`, and so on.
 
 <CodeGroup>
 
@@ -58,10 +350,11 @@ from newscatcher import NewscatcherApi
 client = NewscatcherApi(api_key="YOUR_API_KEY")
 
 articles = client.get_all_articles(
-    q="renewable energy",
-    from_="30d",
+    q="artificial intelligence",
+    lang="en",
+    from_="7d",
     to="now",
-    time_chunk_size="1d",
+    time_chunk_size="6h",
     max_articles=50000,
     show_progress=True,
 )
@@ -73,36 +366,44 @@ print(f"Retrieved {len(articles)} articles")
 import asyncio
 from newscatcher import AsyncNewscatcherApi
 
-async def get_articles():
+async def main():
     client = AsyncNewscatcherApi(api_key="YOUR_API_KEY")
 
     articles = await client.get_all_articles(
-        q="electric vehicles",
-        from_="30d",
+        q="artificial intelligence",
+        lang="en",
+        from_="7d",
         to="now",
-        time_chunk_size="1d",
+        time_chunk_size="6h",
         max_articles=50000,
         concurrency=3,
-        show_progress=True
+        show_progress=True,
     )
 
     print(f"Retrieved {len(articles)} articles")
 
-articles = asyncio.run(get_articles())
+asyncio.run(main())
 ```
 
 </CodeGroup>
 
-### Get all headlines
+### get_all_headlines
+
+Retrieves all latest headlines over a time range. Accepts all standard
+`/latest_headlines` endpoint parameters via `**kwargs`.
 
 <CodeGroup>
 
 ```python Synchronous
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
 headlines = client.get_all_headlines(
-    when="30d",
+    when="7d",
     time_chunk_size="1d",
     max_articles=20000,
-    show_progress=True
+    show_progress=True,
 )
 
 print(f"Retrieved {len(headlines)} headlines")
@@ -112,147 +413,104 @@ print(f"Retrieved {len(headlines)} headlines")
 import asyncio
 from newscatcher import AsyncNewscatcherApi
 
-async def get_headlines():
+async def main():
     client = AsyncNewscatcherApi(api_key="YOUR_API_KEY")
 
     headlines = await client.get_all_headlines(
-        when="30d",
+        when="7d",
         time_chunk_size="1d",
         max_articles=20000,
         concurrency=3,
-        show_progress=True
+        show_progress=True,
     )
 
     print(f"Retrieved {len(headlines)} headlines")
 
-headlines = asyncio.run(get_headlines())
+asyncio.run(main())
 ```
 
 </CodeGroup>
 
-## How time-chunking works
-
-Time-chunking divides your date range into smaller intervals, making separate
-API calls for each period and combining the results. Each interval can return up
-to 10,000 articles.
-
-For example, with `time_chunk_size="1d"` over 5 days, the method makes 5 API
-calls, one for each day, with auto pagination to potentially retrieve up to
-50,000 articles.
-
-<Frame>
-  <img
-    src="/images/day_chunks.png"
-    alt="Time-chunking diagram showing how multiple requests are combined"
-  />
-</Frame>
-
-## Choosing the right chunk size
-
-The optimal chunk size depends on how many articles your query returns:
-
-<Tabs>
-  <Tab title="Table guide">
-    | Query type | Articles per day | Recommended chunk size |
-    |------------|------------------|------------------------|
-    | Extremely broad | 10,000+ per hour | `"1h"` |
-    | Very broad | 10,000+ per day | `"6h"` |
-    | Broad | 3,000-10,000 per day | `"1d"` |
-    | Moderate | 1,000-3,000 per day | `"3d"` |
-    | Specific | 100-1,000 per day | `"7d"` |
-    | Very specific | < 100 per day | `"30d"` |
-  </Tab>
-  <Tab title="Quick test code">
-    ```python
-    response = client.search.post(
-        q="renewable energy",
-        from_="1d",
-        to="now"
-    )
-
-    print(f"Articles for one day: {response.total_hits}")
-
-    if response.total_hits == 10000:
-        response_6h = client.search.post(
-            q="renewable energy",
-            from_="6h",
-            to="now"
-        )
-        print(f"Articles for 6 hours: {response_6h.total_hits}")
-    ```
-
-  </Tab>
-</Tabs>
-
-## Method parameters
-
-<ParamField path="q" type="string" required>
-  Your search query. Supports AND, OR, NOT operators and advanced syntax.
-</ParamField>
-
-<ParamField path="from_" type="string" default="30d">
-  Starting date for `get_all_articles` (e.g., `"10d"` or `"2023-03-15"`).
-</ParamField>
-
-<ParamField path="to" type="string" default="now">
-  Ending date for `get_all_articles` defaults to current time.
-</ParamField>
-
-<ParamField path="when" type="string" default="7d">
-  Time range for `get_all_headlines` (e.g., `"1d"` or `"2023-03-15"`).
-</ParamField>
+### SDK method parameters
 
 <ParamField path="time_chunk_size" type="string" default="1h">
-  Chunk size: `"1h"`, `"6h"`, `"1d"`, `"7d"`, `"1m"`.
+  Size of each time window. Accepted values: `"1h"`, `"6h"`, `"1d"`, `"7d"`,
+  `"1m"`.
 </ParamField>
 
 <ParamField path="max_articles" type="integer" default="100000">
-  Maximum number of articles to retrieve.
+  Maximum total articles to retrieve across all chunks.
 </ParamField>
 
 <ParamField path="show_progress" type="boolean" default="false">
-  Whether to display a progress bar.
+  Display a progress bar during retrieval.
 </ParamField>
 
 <ParamField path="deduplicate" type="boolean" default="true">
-  Whether to remove duplicate articles.
+  Remove duplicate articles from the combined results.
+</ParamField>
+
+<ParamField path="validate_query" type="boolean" default="true">
+  `get_all_articles` only. Validates query syntax locally before making any API
+  calls. Set to `false` to skip.
 </ParamField>
 
 <ParamField path="concurrency" type="integer" default="3">
-  For async methods only: number of concurrent requests.
+  `AsyncNewscatcherApi` only. Number of concurrent page requests within each
+  time chunk.
 </ParamField>
 
-## Common issues and solutions
+<Note>
+  Both methods accept all other endpoint parameters via `**kwargs` and pass them 
+  to the API. For example, you can filter by language, sort by relevance, or 
+  include NLP data in results from either method — just as you would with direct 
+  API calls to `/search` or `/latest_headlines`.
+</Note>
+
+## Common issues
 
 <AccordionGroup>
-
-{" "}
-
-<Accordion title="Rate limiting errors">
-  If you hit rate limits: - Reduce concurrency (for async methods). - Add longer
-  delays between requests. - Break large requests into smaller batches.
-</Accordion>
-
-{" "}
-
-<Accordion title="Memory errors">
-  If you run out of memory: - Reduce `max_articles` parameter. - Process data in
-  smaller batches. - Save results incrementally as shown in the advanced
-  example. - Release memory with `del` and `gc.collect()`.
-</Accordion>
-
-  <Accordion title="Missing results">
-    If results are incomplete: 
-    - Check if your chunk size is appropriate.
-    - Ensure your date range is correct.
-    - Verify your query syntax is valid.
-    - Make sure you're not hitting the 10,000 limit per chunk.
+  <Accordion title="Rate limiting errors (429)">
+    For async Python, reduce `concurrency`. For manual iteration, add delays
+    between window requests. If limits are hit consistently, consider narrowing
+    your query to reduce overall volume.
   </Accordion>
-  
+
+  <Accordion title="Timeout errors (408)">
+    Your chunk size is still too large. Step down: `"1d"` → `"6h"` → `"1h"`.
+    For long historical ranges, see
+    [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data).
+  </Accordion>
+
+  <Accordion title="Memory errors">
+    Reduce `max_articles` (Python SDK), or write results to disk per window
+    rather than accumulating everything in memory.
+  </Accordion>
+
+  <Accordion title="Result counts vary between runs">
+    News sources publish continuously. Counts for recent ranges differ between
+    runs as new articles are indexed. Use a fixed `to` date for reproducible
+    datasets.
+  </Accordion>
 </AccordionGroup>
+
+## Best practices
+
+- **Measure before you iterate.** One `/aggregation_count` call tells you the
+  exact volume and distribution — it takes seconds and prevents wasted API
+  calls on a wrong chunk size.
+- **Set a fixed `to` date for reproducible jobs.** Open-ended `to="now"` means
+  results change between runs.
+- **Use `show_progress=True` during development** (Python SDK). It surfaces
+  slow chunks and stalls early.
+- **Lower `max_articles` if you don't need everything** (Python SDK). The
+  default is 100,000 — set it to your actual target to avoid unnecessary calls.
+- **Store results incrementally for large jobs.** Write to disk per window
+  rather than accumulating everything in memory.
 
 ## See also
 
-- [Advanced query syntax](/news-api/guides-and-concepts/advanced-querying)
-- [API rate limits](/news-api/api-reference/rate-limits)
-- [Python SDK](https://github.com/Newscatcher/newscatcher-python)
+- [Aggregation count endpoint](/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get)
+- [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data)
+- [Search endpoint reference](/news-api/api-reference/search/search-articles-post)
+- [Rate limits](/news-api/api-reference/rate-limits)

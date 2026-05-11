@@ -176,7 +176,6 @@ endpoint since the dataset already exists.
 
 - [Introduction to News API](https://www.newscatcherapi.com/docs/news-api/get-started/introduction): Discover NewsCatcher News API, an enterprise-level solution for large-scale news data retrieval and analysis.
 - [News API quickstart guide](https://www.newscatcherapi.com/docs/news-api/get-started/quickstart): This guide will help you make your first API call to NewsCatcher News API and start retrieving news data in just a few minutes.
-- [Libraries](https://www.newscatcherapi.com/docs/news-api/get-started/libraries): News API SDKs
 - [News API subscription plans](https://www.newscatcherapi.com/docs/news-api/get-started/subscription-plans): Select a News API plan that matches your needs
 
 ### Guides and concepts
@@ -198,16 +197,15 @@ endpoint since the dataset already exists.
 - [How to search articles by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity): Find articles mentioning specific people, organizations, locations, or other named entities
 - [How to search articles by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url): Find articles that mention specific URLs or domains using News API
 - [Search in translations](https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations): Learn how to search within translated articles and retrieve translated content from News API
-- [How to paginate large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets): Efficiently retrieve and process large volumes of news data using pagination in News API
-- [How to retrieve more than 10,000 articles](https://www.newscatcherapi.com/docs/news-api/how-to/retrieve-more-than-10k-articles): Learn how to use time-chunking methods in the Python SDK to retrieve large volumes of articles
+- [Retrieve large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/retrieve-more-than-10k-articles): Retrieve all articles for a query that exceeds the 10,000 article limit using time-chunking across Python, TypeScript, and Java
 - [How to check sources coverage](https://www.newscatcherapi.com/docs/news-api/how-to/check-sources-coverage): Learn how to verify the news sources covered by News API
 - [Validate queries with Python SDK](https://www.newscatcherapi.com/docs/news-api/how-to/validate-queries-python-sdk): Use client-side query validation to catch syntax errors before making API calls
 
 ### Troubleshooting
 
-- [Interpret and handle API errors](https://www.newscatcherapi.com/docs/news-api/troubleshooting/error-handling): Understand and resolve common API errors
-- [Request tracing with correlation IDs](https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids): Learn how to use correlation IDs to debug and troubleshoot API requests
+- [Interpret and handle API errors](https://www.newscatcherapi.com/docs/news-api/troubleshooting/error-handling): Understand and resolve common API errors in News API
 - [Report bugs](https://www.newscatcherapi.com/docs/news-api/troubleshooting/report-bugs): How to report bugs and issues with the NewsCatcher APIs
+- [Request tracing with correlation IDs](https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids): Learn how to use correlation IDs to debug and troubleshoot API requests
 
 ### API Reference
 
@@ -215,7 +213,7 @@ endpoint since the dataset already exists.
 - [Authentication](https://www.newscatcherapi.com/docs/news-api/api-reference/authentication): Learn how to authenticate your API request
 - [Rate limits and quotas](https://www.newscatcherapi.com/docs/news-api/api-reference/rate-limits): Rate limits and quota management for News API usage
 - [Errors](https://www.newscatcherapi.com/docs/news-api/api-reference/errors): Quick reference guide for common errors in News API
-- [HTTP headers](https://www.newscatcherapi.com/docs/news-api/api-reference/http-headers): Understanding request and response headers in the NewsCatcher APIs
+- [HTTP headers](https://www.newscatcherapi.com/docs/news-api/api-reference/http-headers): Request and response headers for News API
 - [Enumerated parameters](https://www.newscatcherapi.com/docs/news-api/api-reference/enumerated-parameters): Allowed values for API parameters with a fixed set of options
 
 ### API Reference — Search

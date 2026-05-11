@@ -187,9 +187,6 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/get-started/quickstart</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/get-started/libraries</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/get-started/subscription-plans</loc>
     </url>
     <url>
@@ -235,9 +232,6 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/retrieve-more-than-10k-articles</loc>
     </url>
     <url>
@@ -250,10 +244,10 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/error-handling</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/report-bugs</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/report-bugs</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/overview</loc>
