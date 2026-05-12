@@ -4,6 +4,8 @@ sidebarTitle: Quickstart
 description: Make your first News API call in under five minutes.
 ---
 
+import SearchRequestExample from "/snippets/news-api/search-request-example.mdx";
+
 This guide walks you through installing the SDK, making your first search
 request, and understanding the response.
 
@@ -50,75 +52,16 @@ Make sure you have the following:
     </dependency>
     ```
     </CodeGroup>
+  </Step>
+
+  <Step title="Make your first request">
+    Search for articles about renewable energy using the `/search` endpoint:
+    <SearchRequestExample />
 
     <Note>
       Store your API key in an environment variable rather than hardcoding it.
       The examples below use `YOUR_API_KEY` as a placeholder.
     </Note>
-  </Step>
-
-  <Step title="Make your first request">
-    Search for articles about renewable energy using the `/search` endpoint:
-
-    <CodeGroup>
-    ```bash cURL
-    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-      -H "x-api-token: YOUR_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "q": "renewable energy",
-        "lang": "en",
-        "page_size": 1
-      }'
-    ```
-
-    ```python Python
-    from newscatcher import NewscatcherApi
-
-    client = NewscatcherApi(api_key="YOUR_API_KEY")
-
-    response = client.search.post(
-        q="renewable energy",
-        lang="en",
-        page_size=1,
-    )
-
-    print(response.articles[0].title)
-    ```
-
-    ```typescript TypeScript
-    import { NewscatcherApiClient } from "newscatcher-sdk";
-
-    const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
-
-    const response = await client.search.post({
-      q: "renewable energy",
-      lang: "en",
-      pageSize: 1,
-    });
-
-    console.log(response.articles?.[0]?.title);
-    ```
-
-    ```java Java
-    import com.newscatcher.api.NewscatcherApiClient;
-    import com.newscatcher.api.resources.search.requests.PostSearchRequest;
-
-    NewscatcherApiClient client = NewscatcherApiClient.builder()
-        .apiKey("YOUR_API_KEY")
-        .build();
-
-    var response = client.search().post(
-        PostSearchRequest.builder()
-            .q("renewable energy")
-            .lang("en")
-            .pageSize(1)
-            .build()
-    );
-
-    System.out.println(response.getArticles().get(0).getTitle());
-    ```
-    </CodeGroup>
   </Step>
 
   <Step title="Review the response">

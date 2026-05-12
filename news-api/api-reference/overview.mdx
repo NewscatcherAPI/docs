@@ -4,6 +4,8 @@ sidebarTitle: Overview
 description: Base URL, authentication, request format, and endpoints for News API.
 ---
 
+import SearchRequestExample from "/snippets/news-api/search-request-example.mdx";
+
 ## Base URL
 
 ```
@@ -29,65 +31,7 @@ For implementation examples in all supported languages, see
 All endpoints support both `GET` and `POST`. When using `POST`, set 
 `Content-Type: application/json` and pass parameters in the JSON request body.
 
-<CodeGroup>
-    ```bash cURL
-    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
-      -H "x-api-token: YOUR_API_KEY" \
-      -H "Content-Type: application/json" \
-      -d '{
-        "q": "renewable energy",
-        "lang": "en",
-        "page_size": 1
-      }'
-    ```
-
-    ```python Python
-    from newscatcher import NewscatcherApi
-
-    client = NewscatcherApi(api_key="YOUR_API_KEY")
-
-    response = client.search.post(
-        q="renewable energy",
-        lang="en",
-        page_size=1,
-    )
-
-    print(response.articles[0].title)
-    ```
-
-    ```typescript TypeScript
-    import { NewscatcherApiClient } from "newscatcher-sdk";
-
-    const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
-
-    const response = await client.search.post({
-      q: "renewable energy",
-      lang: "en",
-      pageSize: 1,
-    });
-
-    console.log(response.articles?.[0]?.title);
-    ```
-
-    ```java Java
-    import com.newscatcher.api.NewscatcherApiClient;
-    import com.newscatcher.api.resources.search.requests.PostSearchRequest;
-
-    NewscatcherApiClient client = NewscatcherApiClient.builder()
-        .apiKey("YOUR_API_KEY")
-        .build();
-
-    var response = client.search().post(
-        PostSearchRequest.builder()
-            .q("renewable energy")
-            .lang("en")
-            .pageSize(1)
-            .build()
-    );
-
-    System.out.println(response.getArticles().get(0).getTitle());
-    ```
-</CodeGroup>
+<SearchRequestExample />
 
 | | GET | POST |
 |---|---|---|
