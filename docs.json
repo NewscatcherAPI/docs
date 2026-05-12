@@ -250,8 +250,8 @@
               {
                 "group": "Aggregation count",
                 "pages": [
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-get",
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-post"
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get",
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post"
                 ]
               },
               {
