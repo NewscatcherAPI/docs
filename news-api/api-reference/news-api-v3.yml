@@ -2496,7 +2496,7 @@ components:
       default: {}
       description: Natural Language Processing data for the article.
       properties:
-        summary_translated:
+        translation_summary:
           type: string
           description: |
             A brief AI-generated summary of the article's English translation.
