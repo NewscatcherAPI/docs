@@ -4,6 +4,8 @@ sidebarTitle: Build search queries
 description: Use boolean operators and proximity search to construct precise queries for News API
 ---
 
+import WarningAutomaticAndInsertion from "/snippets/news-api/warning-automatic-and-insertion.mdx";
+
 News API supports a rich query syntax in the `q` parameter: boolean operators
 (`AND`, `OR`, `NOT`), proximity search (`NEAR`), wildcards, and exact phrase
 matching. This guide shows you how to put them together and make the API call.
@@ -34,17 +36,8 @@ Make sure you have the following:
     | Exclude a term | `"Tesla NOT \"Elon Musk\""` |
     | Combine groups | `"(bitcoin OR cryptocurrency) AND (investment OR trading)"` |
     | Exact phrase | `"\"electric vehicles\" NOT Tesla"` |
-
-    <Warning>
-      Always quote multi-word terms: `"Tesla NOT \"Elon Musk\""`.
- 
-      Without quotes, the API inserts `AND` between standalone words —
-      `"AI OR artificial intelligence"` becomes
-      `"AI OR artificial AND intelligence"`, which returns a `422` (mixed
-      operators at the same level).
- 
-      To learn more, see [Automatic AND insertion](/news-api/how-to/validate-queries-python-sdk#understand-automatic-and-insertion).
-    </Warning>
+    
+    <WarningAutomaticAndInsertion />
 
     Pass your query in the `q` parameter:
 
