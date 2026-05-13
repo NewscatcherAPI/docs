@@ -2,62 +2,41 @@
 title: Working with historical data
 sidebarTitle: Working with historical data
 description:
-  Learn how to efficiently query historical data in News API while
-  maintaining performance and avoiding common pitfalls.
+  Strategies for efficiently querying large volumes of historical news data 
+  while avoiding common performance pitfalls.
 ---
 
-News API offers extensive historical news data from 2019, but retrieving
-large volumes requires an understanding of technical aspects. This guide
-explains how our data is structured and provides best practices for efficiently
-working with historical data.
+## How data is indexed
 
-## Understanding data indexing structure
-
-Our system stores data in monthly indexes. This architecture optimizes the
-search and retrieval of large volumes of news content.
-
-Key implications of this structure:
-
-- Data is organized into separate monthly indexes.
-- Queries spanning multiple months need to access multiple indexes.
-- Performance is optimal when querying within a single monthly index.
-- Queries across very long time periods (e.g., 5+ years) can cause performance
-  issues.
-
-<Warning>
-  **NLP data is available only for articles indexed from July 2023 onward.** 
-  For articles collected before July 2023, the `nlp` field is present in the 
-  response but returned as an empty object `{}`. 
-  
-  To request NLP enrichment for pre-July 2023 historical data, contact 
-  [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
-</Warning>
+News API stores data in monthly indexes, optimized for search within a single month. 
+Queries that span multiple months access multiple indexes, and performance degrades 
+proportionally with the time range — queries across 5+ years can cause significant 
+slowdowns.
 
 ## Technical limitations
 
 While you technically can query data across our entire historical range (2019 to
 present), doing so in a single request is not recommended for several reasons:
 
-<CardGroup cols={2}>
-  <Card title="Performance degradation" icon="gauge">
-    Queries spanning multiple years require searching across numerous indexes,
-    significantly increasing response time.
-  </Card>
-  <Card title="Request timeouts" icon="clock">
-    Complex queries combined with long time ranges may time out before
-    completion (default: 30 seconds).
-  </Card>
-  <Card title="Multi-index complexity" icon="server">
-    Long time ranges require coordinating searches across multiple monthly
-    indexes.
-  </Card>
-  <Card title="Limited result access" icon="database">
-    Long time range queries may miss most relevant historical data, as the API
-    limits responses to 10,000 articles per request.
-  </Card>
-</CardGroup>
+- **Performance degradation** — queries spanning multiple years search across numerous indexes, significantly increasing response time.
+- **Request timeouts** — complex queries combined with long time ranges may time out before completion (default: 30 seconds).
+- **Multi-index complexity** — long time ranges require coordinating searches across multiple monthly indexes.
+- **Limited result access** — the API limits responses to 10,000 articles per request, so long time range queries may miss the most relevant historical data.
 
-## ❌ Incorrect approach
+## NLP data availability
+
+Historical data is available from 2019 onward. NLP enrichment is available only 
+for articles indexed from July 2023 onward. For earlier articles, the `nlp` field 
+is present in responses but returned as an empty object `{}`. 
+  
+To request NLP enrichment for pre-July 2023 data, contact [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
+
+## Efficient query patterns
+
+To retrieve historical data efficiently, break your queries into time chunks
+rather than querying the full date range at once.
+
+### Incorrect approach
 
 ```
 q=financial crisis&from_=2019-01-01&to_=2025-01-01
@@ -66,10 +45,7 @@ q=financial crisis&from_=2019-01-01&to_=2025-01-01
 This query attempts to search approximately 72 monthly indexes at once, which
 may lead to poor performance or timeout errors (408 Request Timeout).
 
-## ✅ Recommended approach for historical data retrieval
-
-To retrieve historical data while maintaining performance efficiently, follow
-this systematic approach:
+### Recommended approach
 
 <Steps>
   <Step title="Estimate data volume using aggregation">
@@ -121,6 +97,25 @@ this systematic approach:
         lang: ["en"]
     });
     ```
+    ```java Java
+    import com.newscatcher.api.NewscatcherApiClient;
+    import com.newscatcher.api.resources.aggregation.requests.PostAggregationRequest;
+    import java.time.Instant;
+
+    NewscatcherApiClient client = NewscatcherApiClient.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    var response = client.aggregation().post(
+        PostAggregationRequest.builder()
+            .q("your search query")
+            .from("2020-01-01T00:00:00.000Z")
+            .to("2020-12-31T23:59:59.999Z")
+            .aggregationBy("month")
+            .lang("en")
+            .build()
+    );
+    ```
 
     </CodeGroup>
 
@@ -146,17 +141,11 @@ this systematic approach:
     }
     ```
 
-    This step helps you:
-    - Identify which time periods have the most relevant content.
-    - Determine if your query is too broad or too narrow.
-    - Plan your time-chunking retrieval strategy.
-    - Calculate if time chunks need further subdivision (if >10,000 articles per chunk).
-
   </Step>
 
   <Step title="Process data in time chunks">
-    Once you understand the data volume, retrieve articles in appropriate time chunks to avoid potential timeout issues. While longer ranges work, complex queries spanning 30+ days can cause 408 timeout errors.
-
+    Retrieve articles in monthly or weekly chunks. Complex queries spanning more 
+    than 30 days risk 408 timeout errors — if a chunk times out, subdivide it further
     <CodeGroup>
 
     ```json JSON
@@ -202,29 +191,38 @@ this systematic approach:
         page: 1
     });
     ```
+    ```java Java
+    import com.newscatcher.api.NewscatcherApiClient;
+    import com.newscatcher.api.resources.search.requests.PostSearchRequest;
+    import java.time.Instant;
+
+    NewscatcherApiClient client = NewscatcherApiClient.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    var response = client.search().post(
+        PostSearchRequest.builder()
+            .q("your search query")
+            .from("2020-01-01T00:00:00.000Z")
+            .to("2020-01-31T23:59:59.999Z")
+            .pageSize(100)
+            .page(1)
+            .build()
+    );
+    ```
 
     </CodeGroup>
-
-    For each time chunk:
-
-    1. Implement pagination to retrieve all articles for the period.
-    2. Process and store the data for that period.
-    3. Move to the next time chunk only after completely retrieving the current period's data.
-
-    <Note>
-    For detailed guidance on implementing pagination, refer to our guide on [How to paginate large datasets](/news-api/how-to/paginate-large-datasets).
-    </Note>
 
   </Step>
 </Steps>
 
-## Example: Retrieving historical data
+### Example implementation
 
 Here's a practical example showing how to retrieve a week of data using the
 recommended approach. The same logic scales to retrieve months or years by
 adjusting the date ranges and aggregation period (day/month):
 
-<Accordion title="Complete code examples">
+<Expandable title="complete implementation code">
 <CodeGroup>
 
 ```python Python
@@ -686,21 +684,12 @@ if (require.main === module) {
 
 </CodeGroup>
 
-</Accordion>
+</Expandable>
 
-## Best practices
-
-- **Use specific queries**: Narrow your search terms to reduce result volume.
-- **Prioritize recent data first**: Start with recent periods and work backward
-  if needed.
-- **Implement rate limiting**: Space out requests to avoid hitting concurrency
-  limits.
-- **Handle timeouts gracefully**: Implement retry logic with exponential
-  backoff.
-- **Monitor performance**: Track query response times and adjust your approach
-  as needed.
-- **Consider data storage**: For large historical analyses, store retrieved data
-  in a database or file system.
+<Note>
+  For detailed guidance on retrieving large datasets, see 
+  [Retrieve large datasets](/news-api/how-to/retrieve-more-than-10k-articles).
+</Note>
 
 ## Common pitfalls to avoid
 
@@ -711,12 +700,13 @@ if (require.main === module) {
 | Insufficient error handling          | Failed data retrieval                      | Implement robust retry and error handling                                       |
 | Underestimating data volume          | Resource constraints                       | Use aggregation endpoint to estimate volume first                               |
 | Requesting too many results per page | Slow response times                        | Use reasonable page sizes (100-1000)                                            |
-| Improper pagination implementation   | Incomplete data retrieval                  | Follow our [pagination guide](/news-api/how-to/paginate-large-datasets)         |
+| Improper pagination implementation   | Incomplete data retrieval                  | See [Retrieve large datasets](/news-api/how-to/retrieve-more-than-10k-articles) |
 | Expecting NLP data before July 2023  | `nlp` field is present but returned as `{}`| Set `has_nlp=true` to filter for NLP-enriched articles only                     |
+| Not prioritizing recent data         | Slower iteration when validating a new query  | Start with a recent short range to validate results before querying the full history |
+| Missing delays between requests      | `429` errors interrupting long retrieval jobs | Add a delay between requests and implement exponential backoff on `429` responses    |
 
-## Related resources
+## See also
 
 - [API Reference](/news-api/api-reference/search/search-articles-post)
-- [How to paginate large datasets](/news-api/how-to/paginate-large-datasets)
-- [How to retrieve more than 10,000 articles](/news-api/how-to/retrieve-more-than-10k-articles)
-- [Error handling](/news-api/troubleshooting/error-handling)
+- [Retrieve large datasets](/news-api/how-to/retrieve-more-than-10k-articles)
+- [Handle errors](/news-api/troubleshooting/error-handling)
