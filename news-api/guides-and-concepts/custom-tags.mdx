@@ -1,137 +1,114 @@
 ---
 title: Custom tags
-description:
-  Filter and classify news articles using your organization's unique taxonomy.
+description: Filter and classify news articles using your organization's unique taxonomy.
 sidebarTitle: Custom tags
 ---
 
-## Introduction
+Custom Tags applies your organization's taxonomy to news articles automatically,
+letting you filter and retrieve content using your own classification system
+rather than generic categories.
 
-Custom Tags in News API lets you filter and classify articles using your
-unique taxonomy. This feature adapts to your specific terminology, enabling you
-to track industry trends, monitor events, and analyze specialized topics,
-ensuring you focus on what matters most.
+<Note>
+  Each taxonomy is organization-specific and tied to your API key. Your
+  classification system is not shared with or visible to other organizations.
+</Note>
 
-## What is Custom Tags?
+## Classification pipeline
 
-Custom Tags is an advanced classification feature that applies your
-organization's unique taxonomy to news articles. It goes beyond simple keyword
-matching - it understands the context and meaning of articles and automatically
-categorizes them according to your specific classification system.
+Custom Tags uses a machine learning pipeline to classify articles against your
+taxonomy. The pipeline runs in four stages:
 
-Here's what Custom Tags can do for you:
-
-- Apply your organization's unique classification system to millions of news
-  articles.
-- Filter news content using your specific taxonomy.
-- Get articles automatically tagged according to your classification needs.
-- Access custom-tagged content through a simple API interface.
-
-## How does it work?
-
-Behind the scenes, Custom Tags uses a sophisticated machine learning pipeline to
-understand and classify news articles according to your taxonomy. Let's look at
-how we implement and maintain this system.
-
-<Steps>
-
-<Step title="Understanding taxonomy">
-
-We start with your taxonomy and tag definitions. Our engineering team works with
-you to learn about your domain specifics and collect extra context and examples.
-This research phase ensures our language models have the comprehensive
-understanding needed for accurate classification.
-
-</Step>
-
-<Step title="Initial model training">
-
-We use a large language model (LLM) to create the initial classification system
-based on your enriched taxonomy. This phase involves prompt engineering and
-fine-tuning the model on a diverse dataset of news articles to ensure it
-understands the nuances of your classification requirements and can accurately
-apply your taxonomy.
-
-</Step>
-
-<Step title="Production deployment">
-
-The solution is integrated into our NLP pipeline to classify all incoming news
-articles with your custom tags automatically. Your custom-built classification
-system is now ready and accessible via News API by your API key. All articles
-processed since implementation remain available, ensuring comprehensive
-historical coverage.
-
-</Step>
-
-<Step title="Continuous improvement">
-
-To maintain high accuracy, we continuously monitor the model's performance and
-collect feedback. Regular fine-tuning and retraining help the system stay
-current with evolving news trends and ensure consistent classification quality
-over time.
-
-</Step>
-
-</Steps>
+1. **Taxonomy ingestion** — NewsCatcher's engineering team works with you to
+   understand your domain, tag definitions, and any additional context or
+   examples needed for accurate classification.
+2. **Model training** — a large language model (LLM) is fine-tuned on your
+   enriched taxonomy using a diverse dataset of news articles, capturing the
+   nuances of your classification requirements.
+3. **Production deployment** — the classifier is integrated into the NLP
+   pipeline and applied to all incoming articles automatically. Historical
+   articles processed since implementation remain available.
+4. **Continuous improvement** — the model is monitored and retrained regularly
+   to maintain accuracy as news trends evolve.
 
 ## API integration
 
-Custom Tags are integrated into the News API and available across the
-following endpoints:
+Custom Tags is available on the following endpoints:
 
 - `/search`
 - `/latest_headlines`
 - `/authors`
 
-<Note>
-  Each taxonomy is organization-specific and protected by your API key, ensuring
-  your custom classification system remains secure and private.
-</Note>
-
 ### Request format
 
-To filter articles by your taxonomy tags, use the `custom_tags` parameter
-following this pattern:
+Use the `custom_tags` parameter to filter articles by taxonomy tag, following
+this pattern:
 
-- `"custom_tags.taxonomy": "Tag1,Tag2,Tag3"`,
+```
+custom_tags.<taxonomy>: "Tag1,Tag2,Tag3"
+```
 
-where `taxonomy` is your taxonomy name and `Tag1,Tag2,Tag3` are specific tags.
+where `<taxonomy>` is your taxonomy name and `Tag1,Tag2,Tag3` are the tags to
+filter by. For `POST` requests, you can pass tags as a comma-separated string
+or an array of strings. For `GET` requests, use a comma-separated string.
 
-To specify multiple tags:
+<CodeGroup>
 
-- For `GET` requests, use a comma-separated string.
-- For `POST` requests, use a comma-separated string or an array of strings.
-
-Examples:
-
-```python
-import requests
-
-url = "https://v3-api.newscatcherapi.com/api/search"
-headers = {
-    "x-api-token": "YOUR_API_KEY"
-}
-
-# Using a comma-separated string
-payload_string = {
-    "q": "*",
-    "custom_tags.my_taxonomy": "Tag1,Tag2,Tag3"
-}
-
-# Using an array of strings
-payload_array = {
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
     "q": "*",
     "custom_tags.my_taxonomy": ["Tag1", "Tag2", "Tag3"]
-}
-
-response = requests.post(url, json=payload_array, headers=headers)
+  }'
 ```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+response = client.search.post(
+    q="*",
+    custom_tags={"my_taxonomy": ["Tag1", "Tag2", "Tag3"]},
+)
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+
+const response = await client.search.post({
+  q: "*",
+  customTags: { myTaxonomy: ["Tag1", "Tag2", "Tag3"] },
+});
+```
+
+```java Java
+import com.newscatcher.api.NewscatcherApiClient;
+import com.newscatcher.api.resources.search.requests.PostSearchRequest;
+import java.util.List;
+import java.util.Map;
+
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+var response = client.search().post(
+    PostSearchRequest.builder()
+        .q("*")
+        .customTags(Map.of("my_taxonomy", List.of("Tag1", "Tag2", "Tag3")))
+        .build()
+);
+```
+
+</CodeGroup>
 
 ### Response format
 
-When you use Custom Tags, each article in the response includes a `custom_tags`
-field with your taxonomy's classifications:
+Each article in the response includes a `custom_tags` field containing the
+matching tags from your taxonomy:
 
 ```json
 {
@@ -149,55 +126,20 @@ field with your taxonomy's classifications:
 ```
 
 <Note>
-  The custom tags in the response are always returned as an array of strings,
-  regardless of the request format used.
+  Custom tags in responses are always returned as an array of strings,
+  regardless of the format used in the request.
 </Note>
-
-## Use cases
-
-Let's look at how different organizations might use Custom Tags:
-
-### Content classification
-
-```json
-{
-  "custom_tags.content_type": ["Analysis", "Research", "Interview"]
-}
-```
-
-This helps content teams organize articles by their format and depth.
-
-### Industry monitoring
-
-```json
-{
-  "custom_tags.industry": ["Manufacturing", "Supply Chain", "Logistics"]
-}
-```
-
-Perfect for tracking industry-specific news and developments.
 
 ## Best practices
 
-1. **Taxonomy design**
-
-   - Keep tags clear and unambiguous.
-   - Use consistent naming conventions.
-   - Consider hierarchical relationships.
-
-2. **Query optimization**
-
-   - Combine custom tags with other search parameters.
-   - Use date ranges for temporal analysis.
-   - Consider using multiple tags for comprehensive coverage.
-
-3. **Integration tips**
-
-   - Start with broader queries.
-   - Use exact tag names (they're case-sensitive).
-   - Test different tag combinations.
+- Use exact tag names — tag matching is case-sensitive.
+- Keep tag names unambiguous and consistent across your taxonomy to reduce
+  misclassification.
+- Combine `custom_tags` with other parameters such as `q`, `lang`, and
+  `from_` to narrow results before applying tag filters.
+- Test with broader tag sets first, then narrow based on result quality.
 
 ## See also
 
 - [NLP features](/news-api/guides-and-concepts/nlp-features)
-- [API Reference](/news-api/api-reference/search/search-articles-get)
+- [Search endpoint reference](/news-api/api-reference/search/search-articles-post)

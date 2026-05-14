@@ -1,0 +1,10 @@
+<Warning>
+  Always quote multi-word terms: `"Tesla NOT \"Elon Musk\""`.
+
+  Without quotes, the API inserts `AND` between standalone words —
+  `"AI OR artificial intelligence"` becomes
+  `"AI OR artificial AND intelligence"`, which returns a `422` (mixed
+  operators at the same level).
+
+  See [Automatic AND insertion](/news-api/how-to/validate-queries-python-sdk#understand-automatic-and-insertion).
+</Warning>

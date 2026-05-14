@@ -6,8 +6,6 @@ description: Allowed values for API parameters with a fixed set of options
 ## Language (`lang` and `not_lang`)
 
 The `lang` and `not_lang` parameters accept two-letter ISO 639-1 language codes.
-You can use these parameters to include or exclude articles in specific
-languages.
 
 ### Commonly used language codes
 
@@ -68,8 +66,7 @@ POST requests:
 ## Country (`country` and `not_country`)
 
 The `country` and `not_country` parameters accept two-letter ISO 3166-1 alpha-2
-country codes. You can use these parameters to include or exclude articles from
-specific countries.
+country codes.
 
 ### Commonly used country codes
 
@@ -165,16 +162,3 @@ POST requests:
     "news_type": ["Tech News and Updates", "Sports News and Blogs"]
   }
   ```
-
-## Additional notes
-
-- For GET requests, when specifying multiple values for a parameter, use a
-  comma-separated string.
-- For POST requests, you can specify multiple values using a comma-separated
-  string or an array of strings.
-- Parameter values are case-sensitive. Always use the exact spelling and
-  capitalization as listed in this document.
-- For parameters not listed in this document, refer to the specific endpoint
-  documentation in the API Reference.
-- The maximum number of values that can be specified for each parameter may be
-  limited. Refer to the API documentation for specific limits.

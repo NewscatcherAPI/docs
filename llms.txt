@@ -174,31 +174,30 @@ endpoint since the dataset already exists.
 
 ### Get started
 
-- [Introduction to News API](https://www.newscatcherapi.com/docs/news-api/get-started/introduction): Discover NewsCatcher News API, an enterprise-level solution for large-scale news data retrieval and analysis.
-- [News API quickstart guide](https://www.newscatcherapi.com/docs/news-api/get-started/quickstart): This guide will help you make your first API call to NewsCatcher News API and start retrieving news data in just a few minutes.
-- [News API subscription plans](https://www.newscatcherapi.com/docs/news-api/get-started/subscription-plans): Select a News API plan that matches your needs
+- [Introduction to News API](https://www.newscatcherapi.com/docs/news-api/get-started/introduction): Programmatic access to a continuously updated index of news articles from sources worldwide.
+- [Quickstart](https://www.newscatcherapi.com/docs/news-api/get-started/quickstart): Make your first News API call in under five minutes.
+- [News API subscription plans](https://www.newscatcherapi.com/docs/news-api/get-started/subscription-plans): Select a News API plan that matches your needs.
 
 ### Guides and concepts
 
-- [Advanced querying techniques](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/advanced-querying): Master advanced querying techniques to enhance the precision and relevance of your searches
+- [Advanced querying techniques](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/advanced-querying): Query syntax reference for the News API q parameter.
 - [Clustering news articles](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/clustering-news-articles): Group related articles together to identify trends and reduce noise in large volumes of news data.
-- [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication): Enhance search efficiency by filtering out duplicate articles.
-- [NLP features in News API](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features): Familiarize yourself with the NLP features available in News API
+- [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication): How News API identifies and filters near-identical articles, and how to use deduplication in your queries.
+- [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features): NLP fields available on indexed articles and how to use them in News API requests.
 - [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags): Filter and classify news articles using your organization's unique taxonomy.
 - [Entity disambiguation](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/entity-disambiguation): Cut through the clutter with precision - ensure every article pinpoints the exact company or individual you're tracking.
-- [Breaking news (beta)](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/breaking-news): Learn about breaking news detection and how to access emerging stories through the News API
+- [Breaking news](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/breaking-news): Discover emerging stories with significant coverage traction using the breaking news endpoint.
 - [Robots.txt compliance](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/robots-txt-compliance): Understand robots.txt compliance fields and parameters in News API to build applications that respect publisher permissions.
-- [Working with historical data](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/working-with-historical-data): Learn how to efficiently query historical data in News API while maintaining performance and avoiding common pitfalls.
+- [Working with historical data](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/working-with-historical-data): Strategies for efficiently querying large volumes of historical news data while avoiding common performance pitfalls.
 
 ### How to
 
-- [How to use boolean operators](https://www.newscatcherapi.com/docs/news-api/how-to/use-boolean-operators): Refine queries with AND, OR, and NOT
-- [Proximity search with NEAR](https://www.newscatcherapi.com/docs/news-api/how-to/search-with-near): Find articles with related terms in close proximity
-- [How to search articles by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity): Find articles mentioning specific people, organizations, locations, or other named entities
-- [How to search articles by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url): Find articles that mention specific URLs or domains using News API
-- [Search in translations](https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations): Learn how to search within translated articles and retrieve translated content from News API
+- [Build search queries](https://www.newscatcherapi.com/docs/news-api/how-to/build-search-queries): Use boolean operators and proximity search to construct precise queries for News API
+- [How to search articles by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity): Find articles mentioning specific people, organizations, locations, or other named entities.
+- [How to search articles by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url): Find articles that mention specific URLs or domains using News API.
+- [Search in translations](https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations): Search across language barriers using English keywords and entity names
 - [Retrieve large datasets](https://www.newscatcherapi.com/docs/news-api/how-to/retrieve-more-than-10k-articles): Retrieve all articles for a query that exceeds the 10,000 article limit using time-chunking across Python, TypeScript, and Java
-- [How to check sources coverage](https://www.newscatcherapi.com/docs/news-api/how-to/check-sources-coverage): Learn how to verify the news sources covered by News API
+- [Check sources coverage](https://www.newscatcherapi.com/docs/news-api/how-to/check-sources-coverage): Query the sources index to verify coverage and identify uncovered sources.
 - [Validate queries with Python SDK](https://www.newscatcherapi.com/docs/news-api/how-to/validate-queries-python-sdk): Use client-side query validation to catch syntax errors before making API calls
 
 ### Troubleshooting
@@ -209,8 +208,8 @@ endpoint since the dataset already exists.
 
 ### API Reference
 
-- [News API overview](https://www.newscatcherapi.com/docs/news-api/api-reference/overview): Technical reference for News API endpoints, authentication, and data structures.
-- [Authentication](https://www.newscatcherapi.com/docs/news-api/api-reference/authentication): Learn how to authenticate your API request
+- [API reference overview](https://www.newscatcherapi.com/docs/news-api/api-reference/overview): Base URL, authentication, request format, and endpoints for News API.
+- [Authentication](https://www.newscatcherapi.com/docs/news-api/api-reference/authentication): How to authenticate requests to News API.
 - [Rate limits and quotas](https://www.newscatcherapi.com/docs/news-api/api-reference/rate-limits): Rate limits and quota management for News API usage
 - [Errors](https://www.newscatcherapi.com/docs/news-api/api-reference/errors): Quick reference guide for common errors in News API
 - [HTTP headers](https://www.newscatcherapi.com/docs/news-api/api-reference/http-headers): Request and response headers for News API
@@ -248,8 +247,8 @@ endpoint since the dataset already exists.
 
 ### API Reference — Aggregation count
 
-- [Get Aggregation Count By Interval Get (GET)](https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get): Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
-- [Get Aggregation Count By Interval Post (POST)](https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-post): Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
+- [Get Aggregation Count By Interval Get (GET)](https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get): Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
+- [Get Aggregation Count By Interval Post (POST)](https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post): Retrieves the count of articles aggregated by day or hour based on various search criteria, such as keyword, language, country, and source.
 
 ### API Reference — Subscription
 

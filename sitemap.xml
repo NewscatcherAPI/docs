@@ -217,10 +217,7 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/working-with-historical-data</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/use-boolean-operators</loc>
-    </url>
-    <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-with-near</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/build-search-queries</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity</loc>
@@ -304,10 +301,10 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/sources/retrieve-sources-post</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-post</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/subscription/retrieve-subscription-plan-information-get</loc>

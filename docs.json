@@ -178,8 +178,7 @@
           {
             "group": "How to",
             "pages": [
-              "news-api/how-to/use-boolean-operators",
-              "news-api/how-to/search-with-near",
+              "news-api/how-to/build-search-queries",
               "news-api/how-to/search-by-entity",
               "news-api/how-to/search-by-url",
               "news-api/how-to/search-in-translations",
@@ -250,8 +249,8 @@
               {
                 "group": "Aggregation count",
                 "pages": [
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-get",
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-post"
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get",
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post"
                 ]
               },
               {

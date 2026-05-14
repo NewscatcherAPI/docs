@@ -1,0 +1,225 @@
+---
+title: Build search queries
+sidebarTitle: Build search queries
+description: Use boolean operators and proximity search to construct precise queries for News API
+---
+
+import WarningAutomaticAndInsertion from "/snippets/news-api/warning-automatic-and-insertion.mdx";
+
+News API supports a rich query syntax in the `q` parameter: boolean operators
+(`AND`, `OR`, `NOT`), proximity search (`NEAR`), wildcards, and exact phrase
+matching. This guide shows you how to put them together and make the API call.
+
+For the full syntax reference, see
+[Advanced querying](/news-api/guides-and-concepts/advanced-querying).
+
+## Before you begin
+
+Make sure you have the following:
+
+- An active News API key
+- The [Newscatcher SDK](/news-api/libraries/python) installed for your language,
+  or cURL for quick testing
+
+## Steps
+
+<Steps>
+  <Step title="Build a boolean query">
+    Use `AND`, `OR`, and `NOT` to combine terms. Use parentheses to control
+    evaluation order. The `q` parameter is a string — examples below show the
+    exact value you pass:
+
+    | Goal | Query string |
+    |---|---|
+    | Both terms present | `"bitcoin AND blockchain"` |
+    | Either term | `"bitcoin OR cryptocurrency"` |
+    | Exclude a term | `"Tesla NOT \"Elon Musk\""` |
+    | Combine groups | `"(bitcoin OR cryptocurrency) AND (investment OR trading)"` |
+    | Exact phrase | `"\"electric vehicles\" NOT Tesla"` |
+    
+    <WarningAutomaticAndInsertion />
+
+    Pass your query in the `q` parameter:
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+      -H "x-api-token: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "q": "(bitcoin OR cryptocurrency) AND (investment OR trading)"
+      }'
+    ```
+
+    ```python Python
+    from newscatcher import NewscatcherApi
+
+    client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+    response = client.search.post(
+        q="(bitcoin OR cryptocurrency) AND (investment OR trading)"
+    )
+
+    for article in response.articles:
+        print(article.title)
+    ```
+
+    ```typescript TypeScript
+    import { NewscatcherApiClient } from "newscatcher-sdk";
+
+    const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const response = await client.search.post({
+      q: "(bitcoin OR cryptocurrency) AND (investment OR trading)"
+    });
+
+    response.articles?.forEach((article) => console.log(article.title));
+    ```
+
+    ```java Java
+    import com.newscatcher.api.NewscatcherApiClient;
+    import com.newscatcher.api.resources.search.requests.PostSearchRequest;
+
+    NewscatcherApiClient client = NewscatcherApiClient.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    var response = client.search().post(
+        PostSearchRequest.builder()
+            .q("(bitcoin OR cryptocurrency) AND (investment OR trading)")
+            .build()
+    );
+
+    response.getArticles().forEach(a -> System.out.println(a.getTitle()));
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Build a proximity query">
+    The `NEAR` operator finds articles where two terms appear within a specified
+    number of words of each other. Use it when you need terms to be discussed in
+    the same context, not just anywhere in the article.
+
+    Syntax:
+
+    ```
+    NEAR("phrase_A", "phrase_B", distance, in_order)
+    ```
+
+    | Parameter | Description |
+    |---|---|
+    | `phrase_A`, `phrase_B` | Terms to find near each other (max 4 words each) |
+    | `distance` | Maximum words between the phrases (max 100) |
+    | `in_order` | Optional. If `true`, `phrase_B` must follow `phrase_A` (default: `false`) |
+
+    <CodeGroup>
+
+    ```bash cURL
+    curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+      -H "x-api-token: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "q": "NEAR(\"climate change\", \"renewable energy\", 15)"
+      }'
+    ```
+
+    ```python Python
+    from newscatcher import NewscatcherApi
+
+    client = NewscatcherApi(api_key="YOUR_API_KEY")
+
+    response = client.search.post(
+        q='NEAR("climate change", "renewable energy", 15)'
+    )
+
+    for article in response.articles:
+        print(article.title)
+    ```
+
+    ```typescript TypeScript
+    import { NewscatcherApiClient } from "newscatcher-sdk";
+
+    const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const response = await client.search.post({
+      q: 'NEAR("climate change", "renewable energy", 15)'
+    });
+
+    response.articles?.forEach((article) => console.log(article.title));
+    ```
+
+    ```java Java
+    import com.newscatcher.api.NewscatcherApiClient;
+    import com.newscatcher.api.resources.search.requests.PostSearchRequest;
+
+    NewscatcherApiClient client = NewscatcherApiClient.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    var response = client.search().post(
+        PostSearchRequest.builder()
+            .q("NEAR(\"climate change\", \"renewable energy\", 15)")
+            .build()
+    );
+
+    response.getArticles().forEach(a -> System.out.println(a.getTitle()));
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Validate your query">
+    If you're using the Python SDK, run `validate_query()` before making the API
+    call. It catches syntax errors locally without consuming an API call:
+
+    ```python
+    from newscatcher import NewscatcherApi
+
+    client = NewscatcherApi(api_key="YOUR_API_KEY")
+    query = 'NEAR("climate change", "renewable energy", 15)'
+    is_valid, error = client.validate_query(query)
+
+    if not is_valid:
+        print(f"Fix before sending: {error}")
+    else:
+        response = client.search.post(q=query)
+    ```
+
+    Validation is especially useful for LLM-generated queries and user input.
+    See [Validate queries with Python SDK](/news-api/how-to/validate-queries-python-sdk)
+    for bulk validation and the full rules reference.
+  </Step>
+
+  <Step title="Refine your results">
+    Check `total_hits` and `user_input` in the response to understand what the
+    API matched and how it interpreted your query:
+
+    ```json
+    {
+      "status": "ok",
+      "total_hits": 635,
+      "page": 1,
+      "total_pages": 7,
+      "page_size": 100,
+      "articles": [...],
+      "user_input": {
+        "q": "NEAR(\"climate change\", \"renewable energy\", 15)"
+      }
+    }
+    ```
+
+    If results are off, try the following:
+
+    - **Too broad** — add `AND` terms or narrow with `NOT`, or reduce the `NEAR` distance
+    - **Too few** — broaden with `OR`, increase the `NEAR` distance, or use wildcards (`technolog*`)
+    - **Wrong interpretation** — check `user_input.q` to see how the API parsed your query
+  </Step>
+</Steps>
+
+## See also
+
+- [Advanced querying](/news-api/guides-and-concepts/advanced-querying)
+- [Validate queries with Python SDK](/news-api/how-to/validate-queries-python-sdk)
+- [Search by entity](/news-api/how-to/search-by-entity)

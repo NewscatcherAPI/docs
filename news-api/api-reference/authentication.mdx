@@ -1,207 +1,43 @@
 ---
 title: Authentication
-description: Learn how to authenticate your API request
+sidebarTitle: Authentication
+description: How to authenticate requests to News API.
 ---
 
-To use News API, you must authenticate your requests using an API key. This
-guide explains how to include your API key in your requests.
+import SearchRequestExample from "/snippets/news-api/search-request-example.mdx";
 
-## API key
+News API uses API key authentication. Include your API key in the `x-api-token`
+header on every request:
 
-Your API key is a unique identifier that authenticates your requests to the
-NewsCatcher News API. Include this key in the `x-api-token` HTTP header for each
-request you make to the API.
-
-## How to authenticate
-
-To authenticate your requests follow this steps:
-
-1. Obtain your API key from your account manager.
-2. Include your API key in the `x-api-token` header of the request.
-
-Here are the examples of how to use the API key in your requests for differnt
-programming languages:
-
-<CodeGroup>
-
-```bash cURL
-curl -X GET "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence" \
-  -H "x-api-token: YOUR_API_KEY_HERE"
+```http
+x-api-token: YOUR_API_KEY
 ```
 
-```python Python
-import requests
-import json
+An invalid or missing key returns a `401 Unauthorized` response. See
+[Errors](/news-api/api-reference/errors) for details.
 
-API_KEY = "YOUR_API_KEY_HERE"
-URL = "https://v3-api.newscatcherapi.com/api/search"
-HEADERS = {"x-api-token": API_KEY}
+## Authentication example
 
-PAYLOAD = {
-    "q": "artificial intelligence"
-}
-
-try:
-    response = requests.get(URL, headers=HEADERS, params=PAYLOAD)
-    response.raise_for_status()
-    print(json.dumps(response.json(), indent=2))
-except requests.exceptions.RequestException as e:
-    print(f"Failed to fetch articles: {e}")
-```
-
-```javascript Node.js
-const axios = require("axios");
-
-const API_KEY = "YOUR_API_KEY_HERE";
-const URL = "https://v3-api.newscatcherapi.com/api/search";
-
-const params = {
-  q: "artificial intelligence",
-};
-
-axios
-  .get(URL, {
-    headers: { "x-api-token": API_KEY },
-    params: params,
-  })
-  .then((response) => {
-    console.log(JSON.stringify(response.data, null, 2));
-  })
-  .catch((error) => {
-    console.error(`Failed to fetch articles: ${error.message}`);
-  });
-```
-
-```typescript TypeScript
-import axios, { AxiosResponse } from "axios";
-
-const API_KEY: string = "YOUR_API_KEY_HERE";
-const URL: string = "https://v3-api.newscatcherapi.com/api/search";
-
-const params = {
-  q: "artificial intelligence",
-};
-
-axios
-  .get(URL, {
-    headers: { "x-api-token": API_KEY },
-    params: params,
-  })
-  .then((response: AxiosResponse) => {
-    console.log(JSON.stringify(response.data, null, 2));
-  })
-  .catch((error) => {
-    console.error(`Failed to fetch articles: ${error.message}`);
-  });
-```
-
-```go Go
-package main
-
-import (
-  "fmt"
-  "io/ioutil"
-  "log"
-  "net/http"
-)
-
-func main() {
-  apiKey := "YOUR_API_KEY_HERE"
-  url := "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence"
-
-  req, err := http.NewRequest("GET", url, nil)
-  if err != nil {
-    log.Fatalf("Failed to create request: %v", err)
-  }
-
-  req.Header.Set("x-api-token", apiKey)
-
-  client := &http.Client{}
-  resp, err := client.Do(req)
-  if err != nil {
-    log.Fatalf("Failed to fetch articles: %v", err)
-  }
-  defer resp.Body.Close()
-
-  body, err := ioutil.ReadAll(resp.Body)
-  if err != nil {
-    log.Fatalf("Failed to read response body: %v", err)
-  }
-
-  fmt.Println(string(body))
-}
-```
-
-```php PHP
-<?php
-
-$apiKey = "YOUR_API_KEY_HERE";
-$url = "https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence";
-
-$ch = curl_init();
-
-curl_setopt($ch, CURLOPT_URL, $url);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($ch, CURLOPT_HTTPHEADER, [
-    "x-api-token: $apiKey"
-]);
-
-$response = curl_exec($ch);
-
-if ($response === false) {
-    echo "Failed to fetch articles: " . curl_error($ch);
-} else {
-    echo json_encode(json_decode($response), JSON_PRETTY_PRINT);
-}
-
-curl_close($ch);
-?>
-```
-
-```ruby Ruby
-require 'net/http'
-require 'uri'
-require 'json'
-
-api_key = 'YOUR_API_KEY_HERE'
-url = URI('https://v3-api.newscatcherapi.com/api/search?q=artificial%20intelligence')
-
-http = Net::HTTP.new(url.host, url.port)
-http.use_ssl = true
-
-request = Net::HTTP::Get.new(url)
-request['x-api-token'] = api_key
-
-begin
-  response = http.request(request)
-  puts JSON.pretty_generate(JSON.parse(response.body))
-rescue StandardError => e
-  puts "Failed to fetch articles: #{e.message}"
-end
-```
-
-</CodeGroup>
-
-Replace `YOUR_API_KEY_HERE` with your actual API key in these examples.
+<SearchRequestExample />
 
 ## Security best practices
 
-<Warning>
-  Don't share your API key publicly or include it in client-side code.
-</Warning>
+Follow these practices to keep your API key secure:
 
-<Tip>
-  Store your API key in environment variables or secure key management systems.
-</Tip>
+- Never expose your API key in client-side code, public repositories, or
+  anywhere accessible to unauthorized parties.
+- Store your API key in environment variables or a secrets manager, not in
+  source code.
+- Rotate your API key periodically.
+- Monitor your usage to detect unauthorized access early.
+- If you suspect your key has been compromised, contact
+  [support](https://support-sign-in.newscatcherapi.com/) immediately to have it
+  revoked and replaced.
 
-<Tip>Rotate your API key periodically for enhanced security.</Tip>
+## See also
 
-<Warning>
-  If you suspect your API key has been compromised, contact our support team
-  immediately to have it revoked and replaced.
-</Warning>
+For related topics, see the following resources:
 
-<Note>
-  Remember, your API key is tied to your specific plan and usage limits. Protect
-  it to prevent unauthorized use and potential overage charges.
-</Note>
+- [HTTP headers](/news-api/api-reference/http-headers)
+- [Rate limits](/news-api/api-reference/rate-limits)
+- [Subscription plans](/news-api/get-started/subscription-plans)
