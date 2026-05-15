@@ -205,9 +205,6 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/entity-disambiguation</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/breaking-news</loc>
     </url>
     <url>
@@ -218,6 +215,9 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/build-search-queries</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/filter-by-date</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity</loc>

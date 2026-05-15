@@ -185,7 +185,6 @@ endpoint since the dataset already exists.
 - [Articles deduplication](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/articles-deduplication): How News API identifies and filters near-identical articles, and how to use deduplication in your queries.
 - [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features): NLP fields available on indexed articles and how to use them in News API requests.
 - [Custom tags](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags): Filter and classify news articles using your organization's unique taxonomy.
-- [Entity disambiguation](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/entity-disambiguation): Cut through the clutter with precision - ensure every article pinpoints the exact company or individual you're tracking.
 - [Breaking news](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/breaking-news): Discover emerging stories with significant coverage traction using the breaking news endpoint.
 - [Robots.txt compliance](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/robots-txt-compliance): Understand robots.txt compliance fields and parameters in News API to build applications that respect publisher permissions.
 - [Working with historical data](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/working-with-historical-data): Strategies for efficiently querying large volumes of historical news data while avoiding common performance pitfalls.
@@ -193,6 +192,7 @@ endpoint since the dataset already exists.
 ### How to
 
 - [Build search queries](https://www.newscatcherapi.com/docs/news-api/how-to/build-search-queries): Use boolean operators and proximity search to construct precise queries for News API
+- [Filter by date](https://www.newscatcherapi.com/docs/news-api/how-to/filter-by-date): Control which articles the API returns using publication date, parse date, and date precision filters.
 - [How to search articles by entity](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity): Find articles mentioning specific people, organizations, locations, or other named entities.
 - [How to search articles by URL](https://www.newscatcherapi.com/docs/news-api/how-to/search-by-url): Find articles that mention specific URLs or domains using News API.
 - [Search in translations](https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations): Search across language barriers using English keywords and entity names
