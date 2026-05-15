@@ -179,6 +179,7 @@
             "group": "How to",
             "pages": [
               "news-api/how-to/build-search-queries",
+              "news-api/how-to/filter-by-date",
               "news-api/how-to/search-by-entity",
               "news-api/how-to/search-by-url",
               "news-api/how-to/search-in-translations",
