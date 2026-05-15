@@ -187,9 +187,6 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/get-started/quickstart</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/get-started/libraries</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/get-started/subscription-plans</loc>
     </url>
     <url>
@@ -208,9 +205,6 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/custom-tags</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/entity-disambiguation</loc>
-    </url>
-    <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/breaking-news</loc>
     </url>
     <url>
@@ -220,10 +214,10 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/working-with-historical-data</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/use-boolean-operators</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/build-search-queries</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-with-near</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/filter-by-date</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-by-entity</loc>
@@ -233,9 +227,6 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/search-in-translations</loc>
-    </url>
-    <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/how-to/paginate-large-datasets</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/how-to/retrieve-more-than-10k-articles</loc>
@@ -250,10 +241,10 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/error-handling</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/report-bugs</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/report-bugs</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/troubleshooting/request-tracing-correlation-ids</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/overview</loc>
@@ -310,10 +301,10 @@
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/sources/retrieve-sources-post</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-get</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation/get-aggregation-count-by-interval-post</loc>
+        <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/news-api/api-reference/subscription/retrieve-subscription-plan-information-get</loc>

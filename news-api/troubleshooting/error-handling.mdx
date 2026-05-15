@@ -1,21 +1,28 @@
 ---
 title: Interpret and handle API errors
 sidebarTitle: Error handling
-description: Understand and resolve common API errors
+description: Understand and resolve common API errors in News API
 ---
 
 This guide explains how to interpret and resolve common errors you may encounter
-while using the NewsCatcher News API. Understanding these errors can help you
-troubleshoot issues effectively and improve your integration with our API.
+while using News API. For a quick reference of all error codes, see
+[Errors](/news-api/api-reference/errors).
 
 ## Error response structure
 
-When an error occurs, the API returns a standard error response with the
-following structure:
+When an error occurs, the API returns a JSON object with three fields:
 
-- `message`: A detailed description of the error.
-- `status_code`: The HTTP status code of the error.
-- `status`: A short description of the status code.
+<ResponseField name="message" type="string" required>
+  Human-readable description of the error.
+</ResponseField>
+
+<ResponseField name="status_code" type="integer" required>
+  HTTP status code.
+</ResponseField>
+
+<ResponseField name="status" type="string" required>
+  Short label corresponding to the status code.
+</ResponseField>
 
 **Example:**
 
@@ -29,213 +36,186 @@ following structure:
 
 ## Common errors and solutions
 
-Below are some common errors you might encounter and how to resolve them.
+<AccordionGroup>
+  <Accordion title="401 Unauthorized">
+    Authentication failed, usually due to an invalid or missing API key.
 
-### 401 Unauthorized
+    **Example:**
 
-Authentication failed, usually due to an invalid or missing API key.
+    ```json
+    {
+      "message": "Invalid api key: INVALID_API_KEY",
+      "status_code": 401,
+      "status": "Unauthorized"
+    }
+    ```
 
-**Example:**
+    **Solution:**
 
-```json
-{
-  "message": "Invalid api key: INVALID_API_KEY",
-  "status_code": 401,
-  "status": "Unauthorized"
-}
-```
+    1. Verify that you are using the correct API key.
+    2. Ensure the API key is passed in the `x-api-token` header, not `x-api-key`.
+    3. Check your API key status by calling the `/subscription` endpoint.
+  </Accordion>
 
-**Solution:**
+  <Accordion title="403 Forbidden">
+    The request is valid, but the server refuses to process it. Common causes:
+    the requested resource requires permissions your plan doesn't include, a
+    parameter isn't available on your plan, or the date range exceeds your plan's
+    allowed history period.
 
-1. Verify that you are using the correct API key.
-2. Ensure you include the API key in the `x-api-token` header of your request.
-3. Check the status of your API key by requesting the `/subscription` endpoint.
+    **Example:**
 
-### 403 Forbidden
+    ```json
+    {
+      "message": "Your plan request date range cannot be greater than 400 days",
+      "status_code": 403,
+      "status": "Forbidden"
+    }
+    ```
 
-The request is valid, but the server refuses action. This may occur if you lack
-the necessary permissions for a resource, use parameters that do not exist or
-are not allowed for your plan, or if the specified date range exceeds your
-plan's allowed history period.
+    **Solution:**
 
-**Example:**
+    1. Verify your plan includes the parameters and features you're using.
+    2. Check for typos in parameter names.
+    3. Ensure your date range stays within your plan's history limit.
+    4. If you believe you should have access, [contact support](https://support.newscatcherapi.com).
+  </Accordion>
 
-```json
-{
-  "message": "Your plan request date range cannot be greater than 400 days",
-  "status_code": 403,
-  "status": "Forbidden"
-}
-```
+  <Accordion title="408 Request timeout">
+    The server couldn't complete the request within the 30-second timeout.
+    Most commonly caused by complex queries over long time ranges that span
+    multiple monthly indexes.
 
-**Solution:**
+    **Example:**
 
-1. Ensure your account has the necessary permissions for the requested
-   operation.
-2. Review your parameters and verify they are allowed under your subscription
-   plan.
-3. Check for any typos in the parameter names.
-4. Ensure the date range specified in your request does not exceed the allowed
-   history period for your plan.
-5. If you believe you should have access,
-   [contact support](https://support-sign-in.newscatcherapi.com/) to review your
-   account permissions.
+    ```json
+    {
+      "message": "Request timed out after 30 seconds",
+      "status_code": 408,
+      "status": "Request timeout"
+    }
+    ```
 
-### 408 Request timeout
+    **Solution:**
 
-The server could not complete the request within the default timeout of 30
-seconds. This is commonly caused by complex queries over long time ranges that
-require searching across multiple monthly indexes.
+    1. Break the query into smaller time chunks — monthly ranges work best.
+    2. Reduce nested boolean logic and NEAR operators in a single query.
+    3. Lower `page_size` (try 100 instead of 1000 for complex queries).
+    4. Implement retry logic with exponential backoff.
 
-**Example:**
+    For historical data queries specifically, see
+    [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data).
+  </Accordion>
 
-```json
-{
-  "message": "Request timed out after 30 seconds",
-  "status_code": 408,
-  "status": "Request timeout"
-}
-```
+  <Accordion title="422 Validation error">
+    The server understood the request but can't process it due to invalid input.
 
-**Solution:**
+    **Example:**
 
-1. **Reduce time ranges**: Break queries into smaller time chunks (ideally
-   monthly) instead of searching across multiple years.
-2. **Simplify complex queries**: Reduce the number of NEAR operators, boolean
-   logic, and nested conditions in a single query.
-3. **Use smaller page sizes**: Consider reducing `page_size` from 1000 to 100
-   for complex queries.
-4. **Check network connection**: Ensure your network connection is stable and
-   fast enough.
-5. **Implement retry logic**: Use exponential backoff to handle temporary
-   issues.
+    ```json
+    {
+      "message": "Invalid date format",
+      "status_code": 422,
+      "status": "Validation error"
+    }
+    ```
 
-When working with historical data, see the
-[guide](/news-api/guides-and-concepts/working-with-historical-data) for
-detailed best practices.
+    **Solution:**
 
-### 422 Validation error
+    1. Check all parameter names, formats, and values against the
+       [API Reference](/news-api/api-reference/search/search-articles-post).
+    2. Ensure `from_` is earlier than `to_`.
+    3. Verify date strings follow the expected format.
+  </Accordion>
 
-The server understands the content type of the request but is unable to process
-the instructions contained in it due to invalid input.
+  <Accordion title="429 Too many requests">
+    You've exceeded the rate limit for concurrent API requests.
 
-**Example:**
+    **Example:**
 
-```json
-{
-  "message": "Invalid date format",
-  "status_code": 422,
-  "status": "Validation error"
-}
-```
+    ```json
+    {
+      "message": "Max API requests concurrency reached",
+      "status_code": 429,
+      "status": "Too many requests"
+    }
+    ```
 
-**Solution:**
+    **Solution:**
 
-1. Check the format and values of your request payload.
-2. Ensure that all required fields are present and correctly formatted.
-3. Follow the specific validation rules, such as ensuring the `from_` date is
-   not greater than the `to_` date, and check for correct parameter formats as
-   described in the documentation.
+    1. Add delays between requests or implement a request queue.
+    2. Use exponential backoff when retrying.
+    3. Check your plan's concurrency limits in
+       [Subscription plans](/news-api/get-started/subscription-plans).
+  </Accordion>
 
-### 429 Too many requests
+  <Accordion title="499 Unknown status code">
+    A non-standard code for client-side errors that don't fit standard HTTP
+    status codes. Typically indicates a missing required field or malformed
+    parameter.
 
-You have exceeded the rate limit for API requests.
+    **Example:**
 
-**Example:**
+    ```json
+    {
+      "message": "str field required",
+      "status_code": 499,
+      "status": "Unknown status code"
+    }
+    ```
 
-```json
-{
-  "message": "Max API requests concurrency reached",
-  "status_code": 429,
-  "status": "Too many requests"
-}
-```
+    **Solution:**
 
-**Solution:**
+    1. Check your request payload for missing required fields.
+    2. Verify all parameter types match the API specification.
+    3. Review the [API Reference](/news-api/api-reference/search/search-articles-post)
+       for the correct request format.
+  </Accordion>
 
-1. Implement request throttling in your application to stay within rate limits.
-2. Use exponential backoff strategies when retrying requests.
-3. If you consistently hit rate limits, consider upgrading your plan to a higher
-   limit.
+  <Accordion title="500 Internal server error">
+    An unexpected server-side condition. Can also be triggered by a malformed
+    request payload — the API returns a generic 500 rather than a validation
+    error for certain malformed inputs.
 
-### 499 Unknown status code
+    <Note>
+      This error often doesn't return a JSON response body. You may see a generic
+      error page or a connection error instead.
+    </Note>
 
-A non-standard HTTP status code used for various client-side errors that do not
-fit into standard HTTP status codes.
+    **Solution:**
 
-**Example:**
-
-```json
-{
-  "message": "str field required",
-  "status_code": 499,
-  "status": "Unknown status code"
-}
-```
-
-**Solution:**
-
-1. Check your request payload for missing required fields.
-2. Ensure all parameters are correctly formatted and of the expected type.
-3. Review the [API documentation](/news-api/api-reference/search/search-articles-post) for the correct format.
-
-### 500 Internal server error
-
-The server encountered an unexpected condition that prevented it from fulfilling
-the request. This is typically a server-side issue but could also result from a
-malformed or broken payload on the client side.
-
-**Example:**
-
-This error often does not return a JSON response; you might see a generic error
-page or a connection error.
-
-**Solution:**
-
-1. Wait a few minutes and try your request again.
-2. Check the [NewsCatcher status page](https://status.newscatcherapi.com/) for
-   any ongoing issues.
-3. Validate your payload before making the API request.
-4. If the problem continues and no known issues are reported,
-   [contact support](https://support-sign-in.newscatcherapi.com/) with details
-   of your request.
+    1. Validate your JSON payload before sending — check for syntax errors like
+       missing brackets or trailing commas.
+    2. Wait a few minutes and retry.
+    3. Check the [NewsCatcher status page](https://status.newscatcherapi.com/) for
+       any known incidents.
+    4. If the problem persists, [contact support](https://support.newscatcherapi.com)
+       with your request details and correlation ID.
+  </Accordion>
+</AccordionGroup>
 
 ## Troubleshooting with correlation IDs
 
-All API responses include a `correlation-id` in the response headers. When
-reporting errors or contacting support, always include this ID to help us
-quickly identify and resolve your issue.
+Every API response includes a `correlation-id` header. Always include it when 
+contacting support — it helps us locate your exact request in the logs.
 
 ```http
 correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
 ```
 
-<Info>
-  For details on using correlation IDs for effective debugging, see our [Request
-  Tracing
-  guide](/news-api/troubleshooting/request-tracing-correlation-ids).
-</Info>
+For a full guide on extracting and using correlation IDs, see
+[Request tracing with correlation IDs](/news-api/troubleshooting/request-tracing-correlation-ids).
 
 ## Best practices
 
-- **Check the status code and error message:** Always inspect the status code
-  and error message in the API response to understand the nature of the error.
-- **Implement error handling logic:** Use try-catch blocks or equivalent
-  mechanisms in your code to manage errors gracefully and log them for future
-  analysis.
-- **Use retry mechanisms with backoff:** For transient errors like `429` (Too
-  many requests) or `503` (Service unavailable), implement retries with
-  exponential backoff to avoid overwhelming the server.
-- **Validate input data:** Ensure your data is correct and adheres to the API's
-  expected formats before making requests to reduce errors.
-- **Monitor usage and error logs:** Regularly check your API usage and error
-  logs to identify and address recurring issues or patterns.
-- **Follow security best practices:** Protect your API key, validate user
-  inputs, and monitor for any unauthorized usage to prevent security issues.
+- **Inspect the status code first.** The code narrows the problem space before you read the message.
+- **Implement structured error handling.** Use try-catch blocks and log both the status code and message for every failed request.
+- **Use exponential backoff for transient errors.** Apply it to `429` and `408` — not to `401`, `403`, or `422`, which indicate problems that won't resolve on retry.
+- **Validate before sending.** Check parameter formats, required fields, and date ranges client-side to avoid round-trips on predictable errors.
+- **Protect your API key.** Store it in environment variables, not in source code.
 
-## Additional resources
+## See also
 
-- [API Reference](/news-api/api-reference/search/search-articles-post)
-- [Rate limits and quotas](/news-api/api-reference/rate-limits)
-- [NewsCatcher status page](https://status.newscatcherapi.com)
-- [How to report bugs](/news-api/troubleshooting/report-bugs)
+- [Error codes](/news-api/api-reference/errors)
+- [Rate limits](/news-api/api-reference/rate-limits)
+- [Request tracing with correlation IDs](/news-api/troubleshooting/request-tracing-correlation-ids)

@@ -158,7 +158,6 @@
             "pages": [
               "news-api/get-started/introduction",
               "news-api/get-started/quickstart",
-              "news-api/get-started/libraries",
               "news-api/get-started/subscription-plans"
             ]
           },
@@ -170,7 +169,6 @@
               "news-api/guides-and-concepts/articles-deduplication",
               "news-api/guides-and-concepts/nlp-features",
               "news-api/guides-and-concepts/custom-tags",
-              "news-api/guides-and-concepts/entity-disambiguation",
               "news-api/guides-and-concepts/breaking-news",
               "news-api/guides-and-concepts/robots-txt-compliance",
               "news-api/guides-and-concepts/working-with-historical-data"
@@ -179,12 +177,11 @@
           {
             "group": "How to",
             "pages": [
-              "news-api/how-to/use-boolean-operators",
-              "news-api/how-to/search-with-near",
+              "news-api/how-to/build-search-queries",
+              "news-api/how-to/filter-by-date",
               "news-api/how-to/search-by-entity",
               "news-api/how-to/search-by-url",
               "news-api/how-to/search-in-translations",
-              "news-api/how-to/paginate-large-datasets",
               "news-api/how-to/retrieve-more-than-10k-articles",
               "news-api/how-to/check-sources-coverage",
               "news-api/how-to/validate-queries-python-sdk"
@@ -194,8 +191,8 @@
             "group": "Troubleshooting",
             "pages": [
               "news-api/troubleshooting/error-handling",
-              "news-api/troubleshooting/request-tracing-correlation-ids",
-              "news-api/troubleshooting/report-bugs"
+              "news-api/troubleshooting/report-bugs",
+              "news-api/troubleshooting/request-tracing-correlation-ids"
             ]
           },
           {
@@ -252,8 +249,8 @@
               {
                 "group": "Aggregation count",
                 "pages": [
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-get",
-                  "news-api/api-reference/aggregation/get-aggregation-count-by-interval-post"
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-get",
+                  "news-api/api-reference/aggregation-count/get-aggregation-count-by-interval-post"
                 ]
               },
               {

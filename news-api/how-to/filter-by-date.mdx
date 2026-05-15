@@ -1,0 +1,254 @@
+---
+title: Filter by date
+sidebarTitle: Filter by date
+description: >-
+  Control which articles the API returns using publication date, parse date,
+  and date precision filters.
+---
+
+News API gives you five parameters for date-based filtering. By default, all
+date filters apply to the article's publication date. To filter by the date
+NewsCatcher indexed the article instead, set `by_parse_date=true`.
+
+## Set a date range
+
+Use `from_` and `to_` to retrieve articles published within a specific window.
+Both parameters accept ISO 8601 dates, plain English expressions like
+`7 days ago`, and duration shorthands like `30d` or `24h`.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "climate change",
+    "from_": "7d",
+    "to_": "now"
+  }'
+```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+response = client.search.post(
+    q="climate change",
+    from_="7d",
+    to_="now"
+)
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+const response = await client.search.post({
+  q: "climate change",
+  from_: "7d",
+  to_: "now"
+});
+```
+
+```java Java
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+PostSearchResponse response = client.search().post(
+    PostSearchRequest.builder()
+        .q("climate change")
+        .from_("7d")
+        .to_("now")
+        .build()
+);
+```
+
+</CodeGroup>
+
+## Filter by recency
+
+Use `when` with `/latest_headlines` to retrieve articles published within a
+rolling time window — for example, the last 24 hours or the last 7 days.
+
+<Warning>
+  `when` is exclusive to `/latest_headlines`. The search endpoints use
+  `from_`/`to_` instead — the two approaches are not interchangeable.
+</Warning>
+
+<CodeGroup>
+
+```bash cURL
+curl "https://v3-api.newscatcherapi.com/api/latest_headlines?when=24h&lang=en" \
+  -H "x-api-token: YOUR_API_KEY"
+```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+response = client.latest_headlines.get(
+    when="24h"
+)
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+const response = await client.latestHeadlines.get({
+  when: "24h"
+});
+```
+
+```java Java
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+GetLatestHeadlinesResponse response = client.latestHeadlines().get(
+    GetLatestHeadlinesRequest.builder()
+        .when("24h")
+        .build()
+);
+```
+
+</CodeGroup>
+
+## Use parse date
+
+Use `by_parse_date=true` when you need to filter by the date NewsCatcher
+indexed the article rather than its publication date. This is useful when you
+need to:
+
+- Track articles ingested in a specific time window regardless of when they
+  were published.
+- Build incremental pipelines by storing the `parse_date` of the most recent
+  article from each request and using it as `from_` in the next request,
+  avoiding gaps or overlaps.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "electric vehicles",
+    "from_": "7d",
+    "to_": "now",
+    "by_parse_date": true
+  }'
+```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+response = client.search.post(
+    q="electric vehicles",
+    from_="7d",
+    to_="now",
+    by_parse_date=True,
+)
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+const response = await client.search.post({
+  q: "electric vehicles",
+  from_: "7d",
+  to_: "now",
+  byParseDate: true,
+});
+```
+
+```java Java
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+PostSearchResponse response = client.search().post(
+    PostSearchRequest.builder()
+        .q("electric vehicles")
+        .from_("7d")
+        .to_("now")
+        .byParseDate(true)
+        .build()
+);
+```
+
+</CodeGroup>
+
+## Filter by date precision
+
+The `published_date_precision` parameter filters articles by the precision of 
+their publication dates. Accepted values:
+
+- `full`: Use when an exact timestamp with a timezone is required, such as for 
+timeline analysis or time-series aggregation.
+- `timezone unknown`: Use when time-of-day precision is sufficient and 
+timezone-aware comparison isn't needed.
+- `date`: Use when only the publication day matters and the exact time is not 
+required.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://v3-api.newscatcherapi.com/api/search" \
+  -H "x-api-token: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "q": "earnings report",
+    "from_": "2024-01-01",
+    "to_": "2024-03-31",
+    "published_date_precision": "full"
+  }'
+```
+
+```python Python
+from newscatcher import NewscatcherApi
+
+client = NewscatcherApi(api_key="YOUR_API_KEY")
+response = client.search.post(
+    q="earnings report",
+    from_="2024-01-01",
+    to_="2024-03-31",
+    published_date_precision="full",
+)
+```
+
+```typescript TypeScript
+import { NewscatcherApiClient } from "newscatcher-sdk";
+
+const client = new NewscatcherApiClient({ apiKey: "YOUR_API_KEY" });
+const response = await client.search.post({
+  q: "earnings report",
+  from_: "2024-01-01",
+  to_: "2024-03-31",
+  publishedDatePrecision: "full",
+});
+```
+
+```java Java
+NewscatcherApiClient client = NewscatcherApiClient.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+PostSearchResponse response = client.search().post(
+    PostSearchRequest.builder()
+        .q("earnings report")
+        .from_("2024-01-01")
+        .to_("2024-03-31")
+        .publishedDatePrecision("full")
+        .build()
+);
+```
+
+</CodeGroup>
+
+## See also
+
+- [Search endpoint reference](/news-api/api-reference/search/search-articles-post)
+- [Latest headlines endpoint reference](/news-api/api-reference/latest-headlines/retrieve-latest-headlines-post)
+- [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data)
+- [Retrieve large datasets](/news-api/how-to/retrieve-more-than-10k-articles)

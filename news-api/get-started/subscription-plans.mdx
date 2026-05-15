@@ -1,126 +1,103 @@
 ---
 title: News API subscription plans
 sidebarTitle: Subscription plans
-description: Select a News API plan that matches your needs
+description: Select a News API plan that matches your needs.
 ---
 
 <Note>
   Each plan includes support for multiple languages, advanced querying
-  capabilities, and comprehensive metadata. Plans differ in their specialized
-  features and processing capabilities.
+  capabilities, and comprehensive metadata. Plans differ in their NLP
+  processing capabilities and available features.
 </Note>
 
 ## Available plans
 
 <Tabs>
- <Tab title="NLP" icon="brain">
-   **Plan ID**: `v3_nlp`
+  <Tab title="NLP" icon="brain">
+    **Plan ID**: `v3_nlp`
 
-Core features plus natural language processing capabilities for original content
-and English translations.
+    Core features plus natural language processing for original content and
+    English translations.
 
-**Core features:**
+    <Check>Retrieve up to 1,000 articles per request</Check>
+    <Check>Filter by article type (headline, opinion, paid content)</Check>
+    <Check>URL and domain link filtering</Check>
+    <Check>Access predefined top sources by country</Check>
+    <Check>Filter by news domain type and source metadata</Check>
+    <Check>Filter by robots.txt compliance</Check>
+    <Check>Access historical data since 2019</Check>
+    <Check>Categorize content across 16 themes (Business, Tech, Politics, and more)</Check>
+    <Check>Detect named entities (PER, ORG, LOC, MISC)</Check>
+    <Check>Analyze sentiment in titles and content on a `-1.0` to `1.0` scale</Check>
+    <Check>Get AI-generated article summaries</Check>
+    <Check>Enable article clustering and deduplication</Check>
+    <Check>Access English translations of non-English content with full NLP processing</Check>
 
-- Retrieve up to 1,000 articles per request
-- Filter by article type (headline, opinion, paid content)
-- URL and domain link filtering
-- Access predefined top sources by country
-- Filter by news domain type and source metadata
-- Filter by robots.txt compliance to ensure publisher permissions
-- Access historical data since 2019
+    <Note>
+      NLP features apply to articles indexed from July 2023 onward. Historical
+      articles from 2019 to June 2023 include core metadata only. NLP
+      enrichment for that period is available upon request — contact
+      [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
+    </Note>
+  </Tab>
 
-**NLP features:**
+  <Tab title="IPTC Tags" icon="tags">
+    **Plan ID**: `v3_nlp_iptc_tags`
 
-- Categorize content across 17 themes (`Business`, `Tech`, `Politics`, and more)
-- Detect named entities (`PER`, `ORG`, `LOC`, `MISC`)
-- Analyze sentiment in titles and content on a `-1.0` to `1.0` scale
-- Get AI-generated article summaries
-- Enable article clustering with customizable thresholds
-- Use content deduplication
-- Access English translations of non-English content
-- Full NLP processing on translations: All NLP features (sentiment,
-  entities, summaries) work on English translations of foreign content
+    All NLP plan features plus standardized content categorization.
 
-<Note>
-  **NLP features apply to articles indexed from July 2023 onward**. Historical
-  articles from 2019 to June 2023 include core metadata only. NLP enrichment
-  for that period is available upon request — contact
-  [support@newscatcherapi.com](mailto:support@newscatcherapi.com) to discuss
-  your needs.
-</Note>
+    <Check>Access all NLP plan features</Check>
+    <Check>Use IPTC media topic tags for standardized news categorization</Check>
+    <Check>Access IAB content categories for digital advertising</Check>
+    <Check>Filter by hierarchical topic structures</Check>
+  </Tab>
 
- </Tab>
- <Tab title="IPTC Tags" icon="tags">
-   **Plan ID**: `v3_nlp_iptc_tags`
+  <Tab title="Embeddings" icon="vector-square">
+    **Plan ID**: `v3_nlp_embeddings`
 
-All NLP plan features plus standardized content categorization:
+    All IPTC Tags plan features plus pre-computed vector embeddings.
 
-- Use `IPTC` media topic tags for standardized news categorization
-- Access `IAB` content categories for digital advertising
-- Enable hierarchical topic structures
-- Implement industry-standard content taxonomy
-- Enhanced content targeting capabilities
+    <Check>Access all IPTC Tags plan features</Check>
+    <Check>Access pre-computed 1024-dimensional vector embeddings per article</Check>
+    <Check>Build semantic search and similarity analysis pipelines</Check>
+    <Check>Create custom clustering and recommendation systems</Check>
 
- </Tab>
- <Tab title="Embeddings" icon="vector-square">
-   **Plan ID**: `v3_nlp_embeddings`
-
-All IPTC Tags plan features plus pre-calculated vector embeddings:
-
-- Access 1024-dimensional vector embeddings via `nlp.new_embeddings` field
-- Embeddings generated using `multilingual-e5-large` model
-- Use embedding data to build semantic search and similarity analysis
-- Create custom content clustering and recommendation systems
-
- </Tab>
+    For embedding model details, see
+    [Clustering news articles](/news-api/guides-and-concepts/clustering-news-articles).
+  </Tab>
 </Tabs>
 
-<Warning>
-  To ensure uninterrupted service, implement appropriate rate limiting in your
-  application based on your plan's specifications.
-</Warning>
+## Technical specifications
 
-## Custom solutions
-
-Beyond our standard plans, we offer specialized enterprise solutions:
-
-<Columns cols={2}>
-  <Card title="Events Intelligence" icon="calendar-check">
-    Track and analyze events across multiple sources with standardized
-    participant and location data
-  </Card>
-  <Card title="Entity Resolution" icon="users">
-    Resolve unique identifiers for similarly-named companies and individuals
-    with precise entity matching
-  </Card>
-  <Card title="Custom Tags" icon="tag">
-    Implement organization-specific taxonomy for content classification
-  </Card>
-  <Card title="Insights Engine" icon="lightbulb">
-    Identify market opportunities through tracking product releases and industry
-    trends
-  </Card>
-</Columns>
-
-## Next steps
-
-1. Review feature documentation:
-   - [NLP features](/news-api/guides-and-concepts/nlp-features)
-   - [Search in translations](/news-api/how-to/search-in-translations)
-   - [Working with historical data](/news-api/guides-and-concepts/working-with-historical-data)
-2. Explore the [API Reference](/news-api/api-reference/search/search-articles-post)
-3. [Book a demo](https://www.newscatcherapi.com/book-a-demo).
+| Feature | NLP | IPTC Tags | Embeddings |
+|---|---|---|---|
+| **Core features** | | | |
+| Article metadata | ✓ | ✓ | ✓ |
+| Article type filtering | ✓ | ✓ | ✓ |
+| Historical data since 2019 | ✓ | ✓ | ✓ |
+| Robots.txt compliance filtering | ✓ | ✓ | ✓ |
+| **NLP features** | | | |
+| Theme classification | ✓ | ✓ | ✓ |
+| Named entity recognition | ✓ | ✓ | ✓ |
+| Sentiment analysis | ✓ | ✓ | ✓ |
+| AI-generated summaries | ✓ | ✓ | ✓ |
+| Clustering and deduplication | ✓ | ✓ | ✓ |
+| **Translation features** | | | |
+| English translations | ✓ | ✓ | ✓ |
+| NLP on translations | ✓ | ✓ | ✓ |
+| **Content tags** | | | |
+| IPTC tags | — | ✓ | ✓ |
+| IAB tags | — | ✓ | ✓ |
+| **Embeddings** | | | |
+| Vector embeddings | — | — | ✓ |
 
 ## Support
 
-Need help selecting a plan? Contact our team:
+For plan selection and pricing, contact our team:
 
-- For pricing and sales:
-  [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
-- For technical questions:
-  [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
+- For pricing and sales: [sales@newscatcherapi.com](mailto:sales@newscatcherapi.com)
+- For technical questions: [support@newscatcherapi.com](mailto:support@newscatcherapi.com)
 
 <Tip>
-  All plans include a free trial period. Contact our sales team to discuss your
-  specific needs and try out the features.
+  [Book a demo](https://www.newscatcherapi.com/book-a-demo) to get started.
 </Tip>

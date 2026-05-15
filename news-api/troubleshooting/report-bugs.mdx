@@ -7,29 +7,29 @@ description: How to report bugs and issues with the NewsCatcher APIs
 This guide explains how to effectively report bugs and issues with the
 NewsCatcher APIs to ensure quick resolution and improve your experience.
 
-## Before reporting
+## Before you report
 
-Before submitting a bug report, please take these steps to ensure efficient
+Before submitting a bug report, take the following steps to ensure efficient
 resolution:
 
-1. **Check documentation**: Review the [API Reference](/news-api/api-reference/search/search-articles-post) to
-   verify you're using parameters correctly and that you understand expected
-   behaviors.
+- **Check documentation**: Review the [API Reference](/news-api/api-reference/search/search-articles-post) to
+  verify you're using parameters correctly and that you understand expected
+  behaviors.
 
-2. **Verify API usage**: Double-check that you're using the correct headers,
-   parameters, and payload formats according to our documentation.
+- **Verify API usage**: Double-check that you're using the correct headers,
+  parameters, and payload formats according to our documentation.
 
-3. **Check status page**: Visit our
-   [status page](https://status.newscatcherapi.com) to see if there are any
-   known issues or maintenance activities affecting the service.
+- **Check status page**: Visit our
+  [status page](https://status.newscatcherapi.com) to see if there are any
+  known issues or maintenance activities affecting the service.
 
-4. **Try our debugging tools**: Use our
-   [Postman collections](https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview)
-   or the API playground in our documentation to verify if the issue can be
-   reproduced with different tools.
+- **Try our debugging tools**: Use our
+  [Postman collections](https://www.postman.com/newscatcherapi/newscatcher-public-workspace/overview)
+  or the API playground in our documentation to verify if the issue can be
+  reproduced with different tools.
 
-5. **Examine your code**: Double-check your implementation to ensure the issue
-   isn't in your integration code.
+- **Examine your code**: Double-check your implementation to ensure the issue
+  isn't in your integration code.
 
 <Tip>
   Many reported "bugs" turn out to be integration issues that can be resolved
@@ -45,7 +45,7 @@ You can report bugs through the following official channels:
   <Card
     title="Customer Portal"
     icon="ticket"
-    href="https://support.newscatcherapi.com/customer-portal"
+    href="https://support.newscatcherapi.com"
   >
     Our preferred channel for bug reports with structured templates and ticket
     tracking
@@ -64,7 +64,7 @@ You can report bugs through the following official channels:
   <Card
     title="GitHub Issues"
     icon="github"
-    href="https://github.com/Newscatcher"
+    href="https://github.com/Newscatcher/newscatcher-python/issues"
   >
     Review the current issues and open a new one if needed (for SDK-related bugs
     only)
@@ -82,78 +82,82 @@ You can report bugs through the following official channels:
 When reporting a bug, include the following information to help us identify and
 fix the issue quickly:
 
-### 1. Include the correlation ID
+<Steps>
+  <Step title="Include the correlation ID">
+    <Info>
+      Every API response includes a unique `correlation-id` in the headers. This ID
+      is essential for us to trace your request through our system.
+    </Info>
 
-<Info>
-  Every API response includes a unique `correlation-id` in the headers. This ID
-  is essential for us to trace your request through our system.
-</Info>
+    Here's how to find it:
 
-Here's how to find it:
+    <CodeGroup>
 
-<CodeGroup>
+      ```bash Terminal
+      curl -i https://v3-api.newscatcherapi.com/api/search
+      # Look for: correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
+      ```
 
-    ```bash Terminal
-    curl -i https://api.newscatcherapi.com/v3/search
-    # Look for: correlation-id: 2697cebe-6f5c-46e0-9b99-81e8abe55522
-    ```
+      ```javascript JavaScript
+      // After making a request
+      console.log(response.headers.get("correlation-id"));
+      ```
 
-    ```javascript JavaScript
-    // After making a request
-    console.log(response.headers.get("correlation-id"));
-    ```
+      ```python Python
+      # After making a request
+      print(response.headers['correlation-id'])
+      ```
 
-    ```python Python
-    # After making a request
-    print(response.headers['correlation-id'])
-    ```
+    </CodeGroup>
+  </Step>
 
-</CodeGroup>
+  <Step title="Describe what happened vs. what you expected">
+    Include a brief description of the following:
 
-### 2. What happened vs. what you expected
+    - What you were trying to do
+    - What actually happened
+    - What you expected to happen instead
+  </Step>
 
-Briefly describe:
+  <Step title="Provide request and response details">
+    Provide the following information to reproduce the issue:
 
-- What you were trying to do
-- What actually happened
-- What you expected to happen instead
+    - API endpoint and method (`GET`/`POST`)
+    - Request parameters or payload
+    - Error message and status code
+  </Step>
+</Steps>
 
-### 3. Request and response details
+### Report template
 
-Provide information to reporoduce the issue:
+Use this template when filing your report. It covers everything from the steps above.
 
-- API endpoint and method (`GET`/`POST`)
-- Request parameters or payload
-- Error message and status code
+<Expandable title="the bug report template">
+  ```text
+  ## Bug description
+  [Brief description of the issue]
 
-### 4. Bug report template
+  ## Correlation ID
+  correlation-id: [ID from response headers]
 
-For convenience, you can use our template when reporting bugs:
+  ## Request details
+  - Endpoint: [for example, /v3/search]
+  - Method: [GET/POST]
+  - Parameters/Body: [Key details]
 
-```
-## Bug Description
-[Brief description of the issue]
+  ## Response
+  - Status Code: [for example, 500]
+  - Error Message: [If applicable]
 
-## Correlation ID
-correlation-id: [ID from response headers]
+  ## Expected behavior
+  [What you expected to happen]
 
-## Request Details
-- Endpoint: [e.g., /v3/search]
-- Method: [GET/POST]
-- Parameters/Body: [Key details]
+  ## Environment
+  - Language/SDK: [for example, Python 3.9, newscatcher-python 1.2.0]
+  ```
 
-## Response
-- Status Code: [e.g., 500]
-- Error Message: [If applicable]
-
-## Expected Behavior
-[What you expected to happen]
-
-## Environment
-- Language/SDK: [e.g., Python 3.9, newscatcher-python 1.2.0]
-```
-
-<Tip>If possible, attach relevant screenshots that show the issue.</Tip>
+  <Tip>If possible, attach relevant screenshots that show the issue.</Tip>
+</Expandable>
 
 ## Common issues and solutions
 
@@ -208,7 +212,7 @@ If you receive a `500 Internal Server Error`, check your request payload:
   JSON before sending.
 </Info>
 
-## What happens after you report a bug?
+## Bug report lifecycle
 
 1. **Ticket creation**: Your report is converted into a ticket in our internal
    tracking system.
@@ -219,29 +223,18 @@ If you receive a `500 Internal Server Error`, check your request payload:
 3. **Investigation**: Our engineering team uses the correlation ID to trace the
    issue through our logs and systems.
 
-4. **Status updates**: We'll keep you informed about the progress of your bug
+4. **Status updates**: We keep you informed about the progress of your bug
    report through the same channel you used to report it.
 
-5. **Resolution**: Once resolved, we'll provide you with details about the fix
-   and when you can expect it to be deployed.
+5. **Resolution**: Once resolved, we provide details about the fix and when
+   you can expect it to be deployed.
 
 ## Issue priority and response times
 
-When you report a bug, our support team evaluates its priority based on urgency
-and impact. Knowing these levels helps you set expectations for response and
+Priority is determined by two factors: urgency (how quickly the issue affects 
+your operations) and impact (the scope and severity of the effect on service 
+functionality). Knowing these levels helps you set expectations for response and
 resolution times.
-
-### How we determine priority
-
-<CardGroup cols={2}>
-  <Card title="Urgency" icon="fire">
-    How quickly the issue needs to be addressed based on its effect on your
-    operations
-  </Card>
-  <Card title="Impact" icon="chart-network">
-    The scope and severity of the issue on the service functionality
-  </Card>
-</CardGroup>
 
 ### Priority levels
 
@@ -252,15 +245,15 @@ resolution times.
 | Priority 3 | Moderate issue with acceptable workarounds available                       | 12 hours             | 5 business days        |
 | Priority 4 | Minor issue with minimal impact                                            | 1 business day       | Planned                |
 
-<Info>
+<Warning>
   Priority 1 issues should be reported by phone in addition to creating a ticket
   to ensure immediate attention. Standard support hours are 8am–5pm on business
   days in your principal location.
-</Info>
+</Warning>
 
-When reporting a bug, you can suggest a priority level based on the criteria
-above, but the final determination will be made by our support team based on
-technical assessment.
+When reporting a bug, you can suggest a priority level based on the criteria 
+above, but our support team makes the final determination after a technical 
+assessment.
 
 ## Debugging tools
 
@@ -293,7 +286,7 @@ We provide several tools to help you debug issues before reporting them:
   </Card>
 </CardGroup>
 
-## Related resources
+## See also
 
 - [Error handling](/news-api/troubleshooting/error-handling)
 - [Request tracing with correlation IDs](/news-api/troubleshooting/request-tracing-correlation-ids)
