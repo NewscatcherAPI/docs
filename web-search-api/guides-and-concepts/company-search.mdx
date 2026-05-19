@@ -432,9 +432,9 @@ String datasetId = dataset.getId();
 Upload a CSV to create both entities and the dataset in a single request —
 the fastest path for most use cases.
 
-The `name` column is required; all other columns are optional. Use semicolons
-to separate multiple values in `alternative_names` and `key_persons`. Rows
-with an empty `name` are skipped and reported in `validation_report`.
+The `name` and `domain` columns are required; all other columns are optional. 
+Use semicolons to separate multiple values in `alternative_names` and `key_persons`. 
+Rows with an empty `name` are skipped and reported in `validation_report`.
 
 ```csv
 name,description,domain,alternative_names,key_persons
@@ -729,8 +729,21 @@ results.getAllRecords().forEach(record -> {
         {
           "entity_id": "854198fa-f702-49db-a381-0427fa87f173",
           "name": "NewsCatcher",
+          "type": "company",
           "ed_score": 9,
-          "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal"
+          "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal",
+          "company": {
+            "domain": "newscatcherapi.com",
+            "description": "AI-powered news data provider",
+            "alternative_names": [
+              "NC",
+              "NewsCatcher API"
+            ],
+            "key_persons": [
+              "Artem Bugara",
+              "Maksym Sugonyaka"
+            ]
+          }
         }
       ]
     }

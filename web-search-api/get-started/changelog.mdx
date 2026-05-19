@@ -5,6 +5,37 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.5.3" description="2026-05-11">
+## ED score filtering, entity attributes, and monitor timezone
+
+Refines Company Watchlist with relevance threshold control and richer entity 
+data in results; adds timezone support for monitor scheduling.
+
+**Features:**
+
+- **ED score filtering**: Submit jobs with `ed_score_min` to exclude connected 
+  entities below a relevance threshold. Only records where at least one entity 
+  meets the minimum score are returned.
+- **Entity attributes in results**: Each matched entity in `connected_entities`
+  now includes a `type` field and a `company` object with domain, alternative
+  names, and key persons.
+- **Monitor timezone**: Set an explicit IANA timezone on monitor creation with
+  the new `timezone` parameter. Used as the fallback when the schedule string
+  does not include one. Defaults to `"UTC"`.
+
+**Changed:**
+
+- [`POST /catchAll/datasets/{dataset_id}/entities/list`](/web-search-api/api-reference/datasets/list-entities-in-dataset)
+  replaces `GET /catchAll/datasets/{dataset_id}/entities` for listing entities.
+  Pagination and filter parameters are now accepted in the request body.
+- [`POST /catchAll/datasets/upload`](/web-search-api/api-reference/datasets/create-dataset-from-csv)
+  and
+  [`POST /catchAll/datasets/{dataset_id}/upload`](/web-search-api/api-reference/datasets/upload-csv-to-dataset)
+  now require a `domain` column. A missing column header returns `422`. Rows
+  where `domain` is empty are skipped and reported in `validation_report`.
+
+</Update>
+
 <Update label="1.5.0" description="2026-04-22">
 ## Resource management and sharing
 
