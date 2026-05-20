@@ -5,6 +5,45 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.6.0" description="2026-05-XX">
+## Projects
+
+Introduces Projects — a way to organize and share jobs, monitors, and datasets
+by use case, team, or client.
+
+**Features:**
+
+- **Projects**: Create named containers for related resources. Assign resources
+  to a project at creation time via the `project_id` field, or post-hoc using
+  the project resources endpoints.
+- **Project filtering**: Filter jobs, monitors, and datasets by project using
+  the `project_id` query parameter on all list endpoints.
+- **Project overview**: Get a status breakdown of all resources in a project
+  without fetching the full resource list.
+
+**Endpoints:**
+
+- [`GET /catchAll/projects`](/web-search-api/api-reference/projects/list-projects)
+  — List projects.
+- [`POST /catchAll/projects`](/web-search-api/api-reference/projects/create-project)
+  — Create a project.
+- [`GET /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/get-project)
+  — Get a project.
+- [`PATCH /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/update-project)
+  — Update a project.
+- [`DELETE /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/delete-project)
+  — Delete a project.
+- [`GET /catchAll/projects/{project_id}/overview`](/web-search-api/api-reference/projects/get-project-overview)
+  — Get resource counts by type and status.
+- [`GET /catchAll/projects/{project_id}/resources`](/web-search-api/api-reference/projects/list-resources)
+  — List resources in a project.
+- [`POST /catchAll/projects/{project_id}/resources`](/web-search-api/api-reference/projects/add-resource)
+  — Add a resource to a project.
+- [`DELETE /catchAll/projects/{project_id}/resources/{resource_type}/{resource_id}`](/web-search-api/api-reference/projects/remove-resource)
+  — Remove a resource from a project.
+
+</Update>
+
 <Update label="1.5.3" description="2026-05-11">
 ## ED score filtering, entity attributes, and monitor timezone
 
