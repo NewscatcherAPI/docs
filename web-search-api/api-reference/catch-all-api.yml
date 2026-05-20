@@ -433,7 +433,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Whether the operation succeeded.
+                    description: True if the operation succeeded; false otherwise.
                     example: true
                   message:
                     type: string
@@ -479,7 +479,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Whether the operation succeeded.
+                    description: True if the operation succeeded; false otherwise.
                     example: true
                   message:
                     type: string
@@ -2158,7 +2158,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the delete operation succeeded.
+          description: True if the delete operation succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
@@ -2212,7 +2212,7 @@ components:
         completed:
           type: boolean
           default: false
-          description: Whether this step has finished processing.
+          description: True if this step has finished processing; false otherwise.
 
     StatusResponseDto:
       type: object
@@ -2711,7 +2711,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the delete operation succeeded.
+          description: True if the delete operation succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
@@ -2851,7 +2851,7 @@ components:
           example: "Series B funding rounds for SaaS startups"
         enabled:
           type: boolean
-          description: Whether the monitor is currently active.
+          description: True if the monitor is currently active; false otherwise.
           example: true
         schedule:
           type: string
@@ -3028,7 +3028,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the request succeeded.
+          description: True if the request succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
