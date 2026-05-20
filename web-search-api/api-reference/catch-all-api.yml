@@ -1242,6 +1242,36 @@ components:
       schema:
         $ref: "#/components/schemas/OwnershipFilter"
 
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: Unique project identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ProjectIdQuery:
+      name: project_id
+      in: query
+      required: false
+      description: Filter results to resources belonging to this project.
+      schema:
+        type: string
+        format: uuid
+      example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    DeleteResources:
+      name: delete_resources
+      in: query
+      required: false
+      description: |
+        If true, permanently deletes all resources (jobs, monitors, datasets) assigned to the project. If false, the project is deleted and its resources are unassigned but not deleted.
+      schema:
+        type: boolean
+        default: false
+
   responses:
     InitializeResponse:
       description: Suggestions retrieved successfully
