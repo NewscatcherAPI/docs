@@ -114,6 +114,7 @@ paths:
         - $ref: "#/components/parameters/PageSize"
         - $ref: "#/components/parameters/Search"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
@@ -289,6 +290,7 @@ paths:
         - $ref: "#/components/parameters/PageSize"
         - $ref: "#/components/parameters/Search"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
@@ -831,6 +833,7 @@ paths:
           schema:
             $ref: "#/components/schemas/SortOrder"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/DatasetListResponse"
@@ -2469,6 +2472,12 @@ components:
 
             Only valid when `connected_dataset_ids` is set; otherwise ignored. Records where no connected entity meets the threshold are excluded entirely.
           example: 3
+        project_id:
+          type: string
+          format: uuid
+          description: |
+            Project to assign this job to. The job appears in the project's resource list immediately after submission.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
 
     SubmitResponseDto:
       type: object
@@ -3004,6 +3013,12 @@ components:
             If true, fills the data gap between the reference job's `end_date` and the first scheduled run. The reference job's `end_date` must be within the last 7 days. 
 
             If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
+        project_id:
+          type: string
+          format: uuid
+          description: |
+            Project to assign this monitor to. The monitor appears in the project's resource list after creation.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
 
     WebhookDto:
       type: object
