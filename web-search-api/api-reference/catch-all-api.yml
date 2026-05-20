@@ -1773,6 +1773,123 @@ components:
                 value: 200000
                 current_usage: 0
 
+    # ── Project responses ────────────────────────────────────────────────
+
+    CreateProjectResponseDto:
+      description: Project created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateProjectResponseDto"
+          example:
+            success: true
+            message: "Project created successfully."
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            name: "AI M&A Tracking"
+
+    ProjectResponseDto:
+      description: Project details.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectResponseDto"
+          example:
+            success: true
+            message: "OK"
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            name: "AI M&A Tracking"
+            description: "Tracks AI-related M&A activity for our investment team."
+            resources_count: 4
+            created_at: "2026-05-20T14:31:35Z"
+            updated_at: "2026-05-20T14:31:35Z"
+
+    UpdateProjectResponseDto:
+      description: Project updated successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateProjectResponseDto"
+          example:
+            success: true
+            message: "Project updated successfully."
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ListProjectsResponse:
+      description: Paginated list of projects.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectListResponseDto"
+          example:
+            total: 2
+            page: 1
+            page_size: 100
+            total_pages: 1
+            projects:
+              - project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+                name: "AI M&A Tracking"
+                description: "Tracks AI-related M&A activity."
+                resources_count: 4
+                created_at: "2026-05-20T14:31:35Z"
+                updated_at: "2026-05-20T14:31:35Z"
+
+    ProjectOverviewResponseDto:
+      description: Resource counts for the project, grouped by type and status.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectOverviewResponseDto"
+          example:
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            overview:
+              jobs: {}
+              monitors: {}
+              datasets:
+                total: 2
+              monitor_groups:
+                total: 0
+
+    AddResourceResponseDto:
+      description: Resource added to the project, or already present.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AddResourceResponseDto"
+          example:
+            success: true
+            message: "Resource added to project."
+            already_exists: false
+
+    ListProjectResourcesResponse:
+      description: Paginated list of resources assigned to the project.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectResourceListResponseDto"
+          example:
+            total: 1
+            page: 1
+            page_size: 100
+            total_pages: 1
+            resources:
+              - resource_type: "job"
+                resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+                name: "Series B fintech funding rounds"
+                created_at: "2026-05-20T14:31:37Z"
+                metadata: {}
+
+    RemoveResourceResponseDto:
+      description: Resource removed from the project.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RemoveResourceResponseDto"
+          example:
+            success: true
+            message: "Resource removed from project."
+
+    # ── Common error responses ─────────────────────────────────────────────
+
     BadRequestError:
       description: |
         Bad request - invalid parameters or constraint violations.
@@ -3885,7 +4002,366 @@ components:
           description: |
             The stored attributes for this entity. Present only when attributes exist in the database. 
             
-            The field name matches the value of `type` — for example, `"company"` type entities have a `company` field.
+            The field name matches the value of `type` — for example, `"company"` type entities have a `company`  field.
+
+# ── Project schemas ───────────────────────────────────────────────────
+
+    ProjectResourceType:
+      type: string
+      enum:
+        - job
+        - monitor
+        - dataset
+        - monitor_group
+      description: |
+        Resource type for project association.
+
+        - `job`: A processing job created via `POST /catchAll/submit`.
+        - `monitor`: A scheduled monitor created via `POST /catchAll/monitors/create`.
+        - `dataset`: An entity dataset created via `POST /catchAll/datasets`.
+        - `monitor_group`: A group of monitors (reserved for future use).
+
+    CreateProjectRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name for the project.
+          example: "AI M&A Tracking"
+        description:
+          type: string
+          description: Optional description.
+          example: "Tracks AI-related M&A activity for our investment team."
+
+    UpdateProjectRequestDto:
+      type: object
+      description: Updates one or more fields of an existing project. At least one field must be provided.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: New name for the project.
+          example: "AI M&A Tracking (Q2)"
+        description:
+          type: string
+          description: New description for the project.
+          example: "Updated scope to include private equity."
+
+    AddResourceRequestDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/ProjectResourceType"
+        resource_id:
+          type: string
+          format: uuid
+          description: ID of the resource to add.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+
+    CreateProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+        - name
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Project created successfully."
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Name of the created project.
+          example: "AI M&A Tracking"
+
+    ProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+        - name
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "OK"
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Project name.
+          example: "AI M&A Tracking"
+        description:
+          type: ["string", "null"]
+          description: Project description.
+          example: "Tracks AI-related M&A activity for our investment team."
+        resources_count:
+          type: integer
+          description: Number of resources assigned to this project.
+          example: 4
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          description: Project creation timestamp.
+          example: "2026-05-20T14:31:35Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+          example: "2026-05-20T14:31:35Z"
+
+    UpdateProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Project updated successfully."
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ProjectSummaryDto:
+      type: object
+      description: Abbreviated project object returned in list responses.
+      required:
+        - project_id
+        - name
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Project name.
+          example: "AI M&A Tracking"
+        description:
+          type: ["string", "null"]
+          description: Project description.
+          example: "Tracks AI-related M&A activity for our investment team."
+        resources_count:
+          type: integer
+          description: Number of resources assigned to this project.
+          example: 4
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          description: Project creation timestamp.
+          example: "2026-05-20T14:31:35Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+          example: "2026-05-20T14:31:35Z"
+
+    ProjectListResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - projects
+      properties:
+        total:
+          type: integer
+          description: Total number of projects matching the filter criteria.
+          example: 2
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of projects per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages.
+          example: 1
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectSummaryDto"
+          description: Projects on this page.
+
+    ProjectOverviewCountsDto:
+      type: object
+      description: |
+        Status breakdown for a single resource type.
+
+        For `jobs` and `monitors`: keys are status values (for example,
+        `completed`, `failed`) and values are integer counts. Returns `{}`
+        when no resources of that type are assigned.
+
+        For `datasets` and `monitor_groups`: contains a single `total` field.
+      additionalProperties: true
+
+    ProjectOverviewResponseDto:
+      type: object
+      required:
+        - project_id
+        - overview
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        overview:
+          type: object
+          description: Resource counts grouped by type.
+          required:
+            - jobs
+            - monitors
+            - datasets
+            - monitor_groups
+          properties:
+            jobs:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            monitors:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            datasets:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            monitor_groups:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+
+    ProjectResourceDto:
+      type: object
+      description: A resource assigned to a project.
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/ProjectResourceType"
+        resource_id:
+          type: string
+          format: uuid
+          description: Resource identifier.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+        name:
+          type: string
+          description: |
+            Resource display name. For jobs, this is the original query
+            string. For monitors and datasets, this is the resource name.
+          example: "Series B fintech funding rounds"
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp.
+          example: "2026-05-20T14:31:37Z"
+        metadata:
+          type: object
+          description: Additional resource-specific metadata. Reserved for future use.
+          additionalProperties: true
+          example: {}
+
+    ProjectResourceListResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - resources
+      properties:
+        total:
+          type: integer
+          description: Total number of resources assigned to the project.
+          example: 1
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of resources per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages.
+          example: 1
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectResourceDto"
+          description: Resources on this page.
+
+    AddResourceResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Resource added to project."
+        already_exists:
+          type: boolean
+          description: |
+            True if the resource was already assigned to this project; false
+            otherwise. The operation is idempotent — returns `200` in either
+            case.
+          example: false
+
+    RemoveResourceResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Resource removed from project."
 
     GetPlanLimitsResponseDto:
       type: object
