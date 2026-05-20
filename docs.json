@@ -119,6 +119,20 @@
                 ]
               },
               {
+                "group": "Projects",
+                "pages": [
+                  "web-search-api/api-reference/projects/list-projects",
+                  "web-search-api/api-reference/projects/create-project",
+                  "web-search-api/api-reference/projects/get-project",
+                  "web-search-api/api-reference/projects/update-project",
+                  "web-search-api/api-reference/projects/delete-project",
+                  "web-search-api/api-reference/projects/get-project-overview",
+                  "web-search-api/api-reference/projects/list-resources",
+                  "web-search-api/api-reference/projects/add-resource",
+                  "web-search-api/api-reference/projects/remove-resource"
+                ]
+              },
+              {
                 "group": "Meta",
                 "pages": [
                   "web-search-api/api-reference/meta/health",
