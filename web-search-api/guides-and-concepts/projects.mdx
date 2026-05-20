@@ -1,0 +1,204 @@
+---
+title: Projects
+sidebarTitle: Projects
+description: Organize jobs, monitors, and datasets into named groups for easier management and sharing.
+---
+
+A project is a named container for jobs, monitors, and datasets. Use projects
+to separate work by use case, team, or client — and to share that work with
+teammates across your organization.
+
+## How it works
+
+Resources can be assigned to a project in two ways:
+
+- **At creation time** — include `project_id` in the request body of any
+  create endpoint for jobs, monitors, or datasets.
+- **Post-hoc** — use the [Add resource](/web-search-api/api-reference/projects/add-resource)
+  endpoint to assign any existing resource by type and ID.
+
+Each resource belongs to at most one project. Entities cannot be assigned to
+projects — they are shared across the entire organization.
+
+## Create a project
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/projects" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "AI M&A Tracking",
+    "description": "Tracks AI-related M&A activity for our investment team."
+  }'
+```
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+project = client.projects.create_project(
+    name="AI M&A Tracking",
+    description="Tracks AI-related M&A activity for our investment team.",
+)
+project_id = project.project_id
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const project = await client.projects.createProject({
+  name: "AI M&A Tracking",
+  description: "Tracks AI-related M&A activity for our investment team.",
+});
+const projectId = project.project_id;
+```
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.projects.requests.CreateProjectRequestDto;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+var project = client.projects().createProject(
+    CreateProjectRequestDto.builder()
+        .name("AI M&A Tracking")
+        .description("Tracks AI-related M&A activity for our investment team.")
+        .build()
+);
+String projectId = project.getProjectId();
+```
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Project created successfully.",
+  "project_id": "60a85db4-78ec-4b78-876a-bc7d9cdadd04",
+  "name": "AI M&A Tracking"
+}
+```
+
+## Assign resources
+
+Pass `project_id` in the request body at creation time:
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "AI acquisitions and mergers Q2 2026",
+    "project_id": "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+  }'
+```
+
+To add an existing resource post-hoc:
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04/resources" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resource_type": "job",
+    "resource_id": "48421e16-1f50-4048-b62c-d3bc0789d30d"
+  }'
+```
+
+## Filter by project
+
+All list endpoints accept a `project_id` query parameter to return only
+resources belonging to a specific project:
+
+<Tabs>
+  <Tab title="Jobs">
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/jobs/user?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Monitors">
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/monitors?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Datasets">
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/datasets?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+## Get a project overview
+
+Returns resource counts grouped by type and status — useful for dashboards
+without fetching full resource lists:
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04/overview" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```json
+{
+  "project_id": "60a85db4-78ec-4b78-876a-bc7d9cdadd04",
+  "overview": {
+    "jobs": {
+      "completed": 12,
+      "failed": 1,
+      "analyzing": 2
+    },
+    "monitors": {
+      "completed": 3
+    },
+    "datasets": {
+      "total": 2
+    },
+    "monitor_groups": {
+      "total": 0
+    }
+  }
+}
+```
+
+For `jobs` and `monitors`, keys are status values with integer counts. For
+`datasets` and `monitor_groups`, only a `total` count is returned.
+
+## Delete a project
+
+By default, deleting a project unassigns its resources — they continue to exist
+without a project association. Set `delete_resources=true` to permanently delete
+all assigned resources along with the project.
+
+<Tabs>
+  <Tab title="Unassign resources (default)">
+    ```bash
+    curl -X DELETE "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Delete project and resources">
+    ```bash
+    curl -X DELETE "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04?delete_resources=true" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>
+  `delete_resources=true` permanently deletes all jobs, monitors, and datasets
+  assigned to the project. This operation cannot be undone.
+</Warning>
+
+## See also
+
+- [Projects API reference](/web-search-api/api-reference/projects/create-project)
+- [Jobs](/web-search-api/guides-and-concepts/jobs)
+- [Monitors](/web-search-api/guides-and-concepts/monitors)
+- [Company search](/web-search-api/guides-and-concepts/company-search)
