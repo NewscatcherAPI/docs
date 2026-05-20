@@ -1131,6 +1131,226 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+# ── Projects ──────────────────────────────────────────────────────────
+
+  /catchAll/projects:
+    post:
+      tags:
+        - Projects
+      summary: Create project
+      description: Creates a new project.
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequestDto"
+            example:
+              name: "AI M&A Tracking"
+              description: "Tracks AI-related M&A activity for our investment team."
+      responses:
+        "201":
+          $ref: "#/components/responses/CreateProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Projects
+      summary: List projects
+      description: Returns all projects visible to the authenticated user.
+      operationId: listProjects
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by project name (case-insensitive substring match).
+          example: "M&A"
+        - $ref: "#/components/parameters/Ownership"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProjectsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/projects/{project_id}:
+    get:
+      tags:
+        - Projects
+      summary: Get project
+      description: Returns a single project by ID.
+      operationId: getProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Projects
+      summary: Update project
+      description: Updates the name or description of an existing project.
+      operationId: updateProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequestDto"
+            example:
+              name: "AI M&A Tracking (Q2 2026)"
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Projects
+      summary: Delete project
+      description: |
+        Deletes a project. By default, assigned resources are unassigned but not deleted. 
+      operationId: deleteProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/DeleteResources"
+      responses:
+        "204":
+          description: Project deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/projects/{project_id}/overview:
+    get:
+      tags:
+        - Projects
+      summary: Get project overview
+      description: |
+        Returns resource counts for a project, grouped by type and status.
+
+        For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets` and `monitor_groups`, only a `total` count is returned.
+      operationId: getProjectOverview
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProjectOverviewResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/projects/{project_id}/resources:
+    post:
+      tags:
+        - Projects
+      summary: Add resource to project
+      description: |
+        Assigns an existing resource to a project.
+
+        The operation is idempotent — if the resource is already assigned, the response is `200` with `already_exists: true`.
+      operationId: addResourceToProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddResourceRequestDto"
+            example:
+              resource_type: "job"
+              resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      responses:
+        "200":
+          $ref: "#/components/responses/AddResourceResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Projects
+      summary: List project resources
+      description: Returns all resources assigned to a project, with optional filtering by type.
+      operationId: listProjectResources
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: resource_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProjectResourceType"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProjectResourcesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/projects/{project_id}/resources/{resource_type}/{resource_id}:
+    delete:
+      tags:
+        - Projects
+      summary: Remove resource from project
+      description: |
+        Removes a resource from a project. The resource itself is not
+        deleted — it becomes unassigned and continues to exist.
+      operationId: removeResourceFromProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: resource_type
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ProjectResourceType"
+        - name: resource_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the resource to remove.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      responses:
+        "200":
+          $ref: "#/components/responses/RemoveResourceResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   # ── Meta ──────────────────────────────────────────────────────────────
 
   /health:
@@ -1775,7 +1995,7 @@ components:
 
     # ── Project responses ────────────────────────────────────────────────
 
-    CreateProjectResponseDto:
+    CreateProjectResponse:
       description: Project created successfully.
       content:
         application/json:
@@ -1787,7 +2007,7 @@ components:
             project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
             name: "AI M&A Tracking"
 
-    ProjectResponseDto:
+    ProjectResponse:
       description: Project details.
       content:
         application/json:
@@ -1803,7 +2023,7 @@ components:
             created_at: "2026-05-20T14:31:35Z"
             updated_at: "2026-05-20T14:31:35Z"
 
-    UpdateProjectResponseDto:
+    UpdateProjectResponse:
       description: Project updated successfully.
       content:
         application/json:
@@ -1833,7 +2053,7 @@ components:
                 created_at: "2026-05-20T14:31:35Z"
                 updated_at: "2026-05-20T14:31:35Z"
 
-    ProjectOverviewResponseDto:
+    ProjectOverviewResponse:
       description: Resource counts for the project, grouped by type and status.
       content:
         application/json:
@@ -1849,7 +2069,7 @@ components:
               monitor_groups:
                 total: 0
 
-    AddResourceResponseDto:
+    AddResourceResponse:
       description: Resource added to the project, or already present.
       content:
         application/json:
@@ -1878,7 +2098,7 @@ components:
                 created_at: "2026-05-20T14:31:37Z"
                 metadata: {}
 
-    RemoveResourceResponseDto:
+    RemoveResourceResponse:
       description: Resource removed from the project.
       content:
         application/json:
@@ -4015,12 +4235,6 @@ components:
         - monitor_group
       description: |
         Resource type for project association.
-
-        - `job`: A processing job created via `POST /catchAll/submit`.
-        - `monitor`: A scheduled monitor created via `POST /catchAll/monitors/create`.
-        - `dataset`: An entity dataset created via `POST /catchAll/datasets`.
-        - `monitor_group`: A group of monitors (reserved for future use).
-
     CreateProjectRequestDto:
       type: object
       required:
@@ -4227,12 +4441,6 @@ components:
       type: object
       description: |
         Status breakdown for a single resource type.
-
-        For `jobs` and `monitors`: keys are status values (for example,
-        `completed`, `failed`) and values are integer counts. Returns `{}`
-        when no resources of that type are assigned.
-
-        For `datasets` and `monitor_groups`: contains a single `total` field.
       additionalProperties: true
 
     ProjectOverviewResponseDto:
@@ -4291,7 +4499,7 @@ components:
           example: "2026-05-20T14:31:37Z"
         metadata:
           type: object
-          description: Additional resource-specific metadata. Reserved for future use.
+          description: Additional resource-specific metadata.
           additionalProperties: true
           example: {}
 
