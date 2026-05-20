@@ -17,6 +17,7 @@
 - [Jobs](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/jobs): How CatchAll jobs work and how to move from query to results.
 - [Monitors](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
 - [Company Watchlist](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
+- [Projects](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects): Organize jobs, monitors, and datasets into named groups for easier management and sharing.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
 
@@ -130,6 +131,27 @@ undone.
 - [Upload Csv To Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset): Appends new companies to an existing dataset by uploading a CSV file. Uses the same CSV format as the dataset creation endpoint.
 
 The response omits `dataset_name` compared to the create-from-CSV endpoint since the dataset already exists.
+
+
+### API Reference — Projects
+
+- [List Projects](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-projects): Returns all projects visible to the authenticated user.
+- [Create Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/create-project): Creates a new project.
+- [Get Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project): Returns a single project by ID.
+- [Update Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/update-project): Updates the name or description of an existing project.
+- [Delete Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/delete-project): Deletes a project. By default, assigned resources are unassigned but not deleted. 
+
+- [Get Project Overview](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project-overview): Returns resource counts for a project, grouped by type and status.
+
+For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets` and `monitor_groups`, only a `total` count is returned.
+
+- [List Resources](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-resources): Returns all resources assigned to a project, with optional filtering by type.
+- [Add Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/add-resource): Assigns an existing resource to a project.
+
+The operation is idempotent — if the resource is already assigned, the response is `200` with `already_exists: true`.
+
+- [Remove Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/remove-resource): Removes a resource from a project. The resource itself is not
+deleted — it becomes unassigned and continues to exist.
 
 
 ### API Reference — Meta

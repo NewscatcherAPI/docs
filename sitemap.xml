@@ -22,6 +22,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth</loc>
     </url>
     <url>
@@ -140,6 +143,33 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-projects</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/create-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/update-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/delete-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project-overview</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-resources</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/add-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/remove-resource</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/health</loc>
