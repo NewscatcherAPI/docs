@@ -80,6 +80,16 @@ tags:
     externalDocs:
       description: Learn about datasets and Company Watchlist
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
+  - name: Projects
+    description: |
+      Operations to create, organize, and manage projects.
+
+      A project is a named container for jobs, monitors, and datasets. Group
+      related resources by use case, team, or client, and share them with
+      teammates. Resources can be assigned at creation time or post-hoc.
+    externalDocs:
+      description: Learn about projects and resource organization
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects
   - name: Meta
     description: Operations to check API health and version.
 
