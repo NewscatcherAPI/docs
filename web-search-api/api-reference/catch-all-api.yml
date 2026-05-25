@@ -1270,11 +1270,9 @@ paths:
     post:
       tags:
         - Projects
-      summary: Add resource to project
+      summary: Add resources to project
       description: |
-        Assigns an existing resource to a project.
-
-        The operation is idempotent — if the resource is already assigned, the response is `200` with `already_exists: true`.
+        Assigns one or more existing resources to a project in a single request.
       operationId: addResourceToProject
       parameters:
         - $ref: "#/components/parameters/ProjectId"
@@ -1285,17 +1283,20 @@ paths:
             schema:
               $ref: "#/components/schemas/AddResourceRequestDto"
             example:
-              resource_type: "job"
-              resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+              resources:
+                - resource_type: "job"
+                  resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
       responses:
         "200":
           $ref: "#/components/responses/AddResourceResponse"
+        "201":
+          $ref: "#/components/responses/AddResourceResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
           $ref: "#/components/responses/NotFoundError"
-        "422":
-          $ref: "#/components/responses/ValidationError"
 
     get:
       tags:
@@ -2073,15 +2074,21 @@ components:
                 total: 0
 
     AddResourceResponse:
-      description: Resource added to the project, or already present.
+      description: |
+        One or more resources added to the project (`201`), or all were already present (`200`).
       content:
         application/json:
           schema:
             $ref: "#/components/schemas/AddResourceResponseDto"
           example:
             success: true
-            message: "Resource added to project."
-            already_exists: false
+            message: "Resources added to project."
+            results:
+              - resource_type: "job"
+                resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+                success: true
+                message: "Resource added to project."
+                already_exists: false
 
     ListProjectResourcesResponse:
       description: Paginated list of resources assigned to the project.
@@ -4282,6 +4289,18 @@ components:
     AddResourceRequestDto:
       type: object
       required:
+        - resources
+      properties:
+        resources:
+          type: array
+          minItems: 1
+          description: Resources to assign to the project.
+          items:
+            $ref: "#/components/schemas/ResourceItemDto"
+
+    ResourceItemDto:
+      type: object
+      required:
         - resource_type
         - resource_id
       properties:
@@ -4554,21 +4573,51 @@ components:
       required:
         - success
         - message
+        - results
       properties:
         success:
           type: boolean
-          description: True if the operation succeeded; false otherwise.
+          description: True if the overall operation succeeded.
           example: true
         message:
           type: string
-          description: Human-readable result message.
+          description: Top-level result message.
+          example: "Resources added to project."
+        results:
+          type: array
+          description: Per-resource outcome, one entry per submitted resource.
+          items:
+            $ref: "#/components/schemas/ResourceResultDto"
+
+    ResourceResultDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+        - success
+        - message
+      properties:
+        resource_type:
+          type: string
+          description: Type of the resource.
+          example: "job"
+        resource_id:
+          type: string
+          format: uuid
+          description: Resource identifier.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+        success:
+          type: boolean
+          description: True if this resource was processed successfully.
+          example: true
+        message:
+          type: string
+          description: Per-resource result message.
           example: "Resource added to project."
         already_exists:
           type: boolean
-          description: |
-            True if the resource was already assigned to this project; false
-            otherwise. The operation is idempotent — returns `200` in either
-            case.
+          description: True if the resource is already assigned to this project.
+          default: false
           example: false
 
     RemoveResourceResponseDto:
