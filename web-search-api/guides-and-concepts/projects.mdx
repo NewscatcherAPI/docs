@@ -14,8 +14,8 @@ Resources can be assigned to a project in two ways:
 
 - **At creation time** — include `project_id` in the request body of any
   create endpoint for jobs, monitors, or datasets.
-- **Post-hoc** — use the [Add resource](/web-search-api/api-reference/projects/add-resource)
-  endpoint to assign any existing resource by type and ID.
+- **Post-hoc** — use the [Add resources](/web-search-api/api-reference/projects/add-resource)
+  endpoint to assign one or more existing resources by type and ID.
 
 Each resource belongs to at most one project. Entities cannot be assigned to
 projects — they are shared across the entire organization.
@@ -104,8 +104,12 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78e
   -H "x-api-key: YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "resource_type": "job",
-    "resource_id": "48421e16-1f50-4048-b62c-d3bc0789d30d"
+    "resources": [
+      {
+        "resource_type": "job",
+        "resource_id": "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      }
+    ]
   }'
 ```
 
