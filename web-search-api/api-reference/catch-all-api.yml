@@ -898,6 +898,51 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/webhook-history:
+    get:
+      tags:
+        - Webhooks
+      summary: Get delivery history
+      description: |
+        Returns a paginated delivery log for a given resource, ordered by timestamp descending. 
+        
+        Each record shows the webhook dispatched, the HTTP status code returned, delivery outcome, and any error or warning messages. Use this to debug failed deliveries or audit dispatch activity.
+      operationId: getWebhookDeliveryHistory
+      parameters:
+        - name: resource_type
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the resource to retrieve delivery history for.
+        - name: resource_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identifier of the resource to retrieve delivery history for.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 500
+          description: Number of records per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryHistoryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   # ── Entities ──────────────────────────────────────────────────────────────
 
   /catchAll/entities:
