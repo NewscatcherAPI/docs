@@ -2912,6 +2912,25 @@ components:
         - `too_short`: Query is too short to resolve meaningful search intent.
         - `too_long`: Query is excessively long and may confuse the pipeline.
 
+    Suggestion:
+      type: object
+      description: Actionable recommendation for improving a query.
+      required:
+        - issue
+        - message
+      properties:
+        issue:
+          $ref: "#/components/schemas/IssueType"
+          description: The issue this suggestion addresses.
+        message:
+          type: string
+          description: Specific guidance for improving the query.
+          example: "Add a target sector or geography to narrow the results."
+        example:
+          type: string
+          description: Revised query demonstrating the suggested improvement.
+          example: "Series A fundraising for AI startups in healthcare"
+
     InitializeRequestDto:
       type: object
       required:
