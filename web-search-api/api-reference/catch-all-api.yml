@@ -3109,10 +3109,21 @@ components:
 
         - `generic`: Sends the raw result payload to any HTTPS endpoint.
         - `slack`: Sends a formatted Slack Block Kit message. URL must start with `https://hooks.slack.com/`.
-        - `teams`: Sends a formatted Microsoft Teams Adaptive Card. URL hostname must match `*.webhook.office.com` or `*.webhook.office365.com`.
-        - `custom`: Custom payload transformation. Not yet available.
+        - `teams`: Sends a formatted Microsoft Teams Adaptive Card. URL hostname must match `*webhook.office.com` or `*.webhook.office365.com`.
+        - `custom`: Sends a transformed payload using the configuration in `formatter_config`. Requires `formatter_config` to be set.
 
         When `type` is omitted, it is auto-detected from the URL.
+
+    DeliveryMode:
+      type: string
+      enum:
+        - full
+        - per_record
+      description: |
+        Delivery mode for webhook payloads.
+
+        - `full`: Sends all records in a single request on each trigger.
+        - `per_record`: Sends one request per record. For large result sets, this may generate many requests.
 
     CreateMonitorResponseDto:
       type: object
