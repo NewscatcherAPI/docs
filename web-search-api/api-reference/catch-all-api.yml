@@ -3846,6 +3846,47 @@ components:
           description: Non-fatal warning, such as payload truncation notices. Null when no warnings occurred.
           example: null
 
+    DeliveryHistoryResponseDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+        - total
+        - page
+        - page_size
+        - total_pages
+        - items
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the queried resource.
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the queried resource.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        total:
+          type: integer
+          description: Total number of delivery records for this resource.
+          example: 42
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of records per page.
+          example: 50
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryHistoryItemDto"
+          description: Delivery records on this page, ordered by timestamp descending.
+
     BearerAuthDto:
       type: object
       required:
