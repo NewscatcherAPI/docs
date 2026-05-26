@@ -2887,6 +2887,31 @@ components:
         - `needs_work`: Query has issues that may reduce result quality. Review `suggestions` for improvements.
         - `critical`: Query is unlikely to produce useful results as written. Address all `issues` before submitting.
 
+    IssueType:
+      type: string
+      enum:
+        - missing_event_type
+        - too_vague
+        - too_specific
+        - wrong_timeframe
+        - static_content
+        - article_request
+        - multiple_event_types
+        - too_short
+        - too_long
+      description: |
+        Category of a query issue identified during validation.
+
+        - `missing_event_type`: Query does not specify a type of event to find.
+        - `too_vague`: Query lacks sufficient focus to return targeted results.
+        - `too_specific`: Query is overly constrained and may return no results.
+        - `wrong_timeframe`: Requested timeframe exceeds the 30-day maximum window or references a historical period outside the supported range.
+        - `static_content`: Query targets static or reference content such as specifications, how-to guides, or historical data rather than events.
+        - `article_request`: Query requests articles or news content rather than describing an event to search for.
+        - `multiple_event_types`: Query mixes unrelated event types; results may be unfocused.
+        - `too_short`: Query is too short to resolve meaningful search intent.
+        - `too_long`: Query is excessively long and may confuse the pipeline.
+
     InitializeRequestDto:
       type: object
       required:
