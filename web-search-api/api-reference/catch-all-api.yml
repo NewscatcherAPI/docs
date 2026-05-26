@@ -3201,6 +3201,77 @@ components:
           description: Basic auth password.
           example: "pass"
 
+    WebhookResponseDto:
+      type: object
+      required:
+        - id
+        - name
+        - url
+        - type
+        - delivery_mode
+        - method
+        - is_active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Webhook identifier.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        name:
+          type: string
+          description: Human-readable label for this webhook.
+          example: "Layoffs Alert"
+        url:
+          type: string
+          format: uri
+          description: Destination URL that receives the payload.
+          example: "https://hooks.slack.com/services/T000/B000/xxxx"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom HTTP headers forwarded with each delivery.
+          example:
+            Authorization: "Bearer token123"
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Query parameters appended to the webhook URL.
+          example: {}
+        formatter_config:
+          type: ["object", "null"]
+          description: Custom payload transformation configuration. Used only when `type` is `custom`.
+          example: null
+        is_active:
+          type: boolean
+          description: True if the webhook is active; false otherwise.
+          example: true
+        organization_id:
+          type: string
+          description: Organization that owns this webhook.
+          example: "org-uuid-here"
+        created_by_user_id:
+          type: string
+          description: ID of the user who created this webhook.
+          example: "user-uuid-here"
+        created_at:
+          type: string
+          format: date-time
+          description: Webhook creation timestamp in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+
     CreateMonitorResponseDto:
       type: object
       required:
