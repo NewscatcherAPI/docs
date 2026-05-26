@@ -2931,6 +2931,18 @@ components:
           description: Revised query demonstrating the suggested improvement.
           example: "Series A fundraising for AI startups in healthcare"
 
+    ValidateQueryRequestDto:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Plain text query to validate.
+          example: "Series B funding rounds for SaaS startups"
+      example:
+        query: "Series B funding rounds for SaaS startups"
+
     InitializeRequestDto:
       type: object
       required:
@@ -2941,8 +2953,7 @@ components:
         context:
           $ref: "#/components/schemas/Context"
       description:
-        Request to get validator, enrichment, and date range suggestions for a
-        query.
+        Request to get validator, enrichment, and date range suggestions for a query.
 
     InitializeResponseDto:
       type: object
