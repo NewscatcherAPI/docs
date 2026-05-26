@@ -3525,6 +3525,39 @@ components:
           description: ID of the resource to assign.
           example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
+    WebhookResourceMappingResponseDto:
+      type: object
+      required:
+        - id
+        - webhook_id
+        - resource_type
+        - resource_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Mapping identifier.
+          example: "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+        webhook_id:
+          type: string
+          format: uuid
+          description: Webhook identifier.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        resource_type:
+          type: string
+          description: Type of the assigned resource.
+          example: "monitor"
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the assigned resource.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        assigned_at:
+          type: string
+          format: date-time
+          description: Timestamp when the resource was assigned in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+
     CreateMonitorResponseDto:
       type: object
       required:
