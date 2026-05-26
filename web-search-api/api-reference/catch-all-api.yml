@@ -3339,6 +3339,60 @@ components:
         type: "slack"
         delivery_mode: "full"
 
+    CreateWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the webhook was created; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook created successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The created webhook object.
+
+    GetWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook retrieved successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The retrieved webhook object.
+
+    UpdateWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the webhook was updated; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook updated successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The updated webhook object.
+
     CreateMonitorResponseDto:
       type: object
       required:
