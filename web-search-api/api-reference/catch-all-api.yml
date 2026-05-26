@@ -3510,6 +3510,21 @@ components:
           description: Response body returned by the webhook endpoint. Type varies by target.
           example: "ok"
 
+    AssignWebhookResourceRequestDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of resource to assign.
+        resource_id:
+          type: string
+          format: uuid
+          description: ID of the resource to assign.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
     CreateMonitorResponseDto:
       type: object
       required:
