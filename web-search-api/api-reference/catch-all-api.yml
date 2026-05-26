@@ -2994,6 +2994,15 @@ components:
           description: |
             Project to assign this job to. The job appears in the project's resource list immediately after submission.
           example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            IDs of webhooks to notify when the job completes. Maximum 5 per job.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
     SubmitResponseDto:
       type: object
