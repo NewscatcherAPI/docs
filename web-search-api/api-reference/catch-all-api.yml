@@ -3143,6 +3143,64 @@ components:
         - monitor_group
       description: Resource types that can be assigned to a webhook.
 
+      BearerAuthDto:
+      type: object
+      required:
+        - type
+        - token
+      properties:
+        type:
+          type: string
+          enum:
+            - bearer
+          description: Authentication type.
+        token:
+          type: string
+          description: Bearer token sent in the `Authorization` header.
+          example: "my-secret-token"
+
+    ApiKeyAuthDto:
+      type: object
+      required:
+        - type
+        - header
+        - value
+      properties:
+        type:
+          type: string
+          enum:
+            - api_key
+          description: Authentication type.
+        header:
+          type: string
+          description: HTTP header name for the API key.
+          example: "x-api-key"
+        value:
+          type: string
+          description: API key value.
+          example: "sk-abc123"
+
+    BasicAuthDto:
+      type: object
+      required:
+        - type
+        - username
+        - password
+      properties:
+        type:
+          type: string
+          enum:
+            - basic
+          description: Authentication type.
+        username:
+          type: string
+          description: Basic auth username.
+          example: "user"
+        password:
+          type: string
+          description: Basic auth password.
+          example: "pass"
+
     CreateMonitorResponseDto:
       type: object
       required:
