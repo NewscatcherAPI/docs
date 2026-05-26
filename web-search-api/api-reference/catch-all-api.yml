@@ -743,6 +743,76 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/webhooks/{webhook_id}/resources:
+    post:
+      tags:
+        - Webhooks
+      summary: Assign resource to webhook
+      description: |
+        Attaches a job, monitor, or monitor group to the webhook. When the
+        resource completes, the webhook receives a delivery.
+
+        A single webhook can be assigned to multiple resources. Each resource
+        can have up to 5 webhooks assigned.
+      operationId: assignWebhookResource
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignWebhookResourceRequestDto"
+            example:
+              resource_type: "monitor"
+              resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+      responses:
+        "200":
+          $ref: "#/components/responses/AssignWebhookResourceResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Webhooks
+      summary: List webhook resources
+      description: |
+        Returns a paginated list of resources currently assigned to this webhook.
+      operationId: listWebhookResources
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+        - name: resource_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/MappableResourceType"
+          description: Filter assignments by resource type.
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of assignments per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/ListWebhookResourcesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   # ── Entities ──────────────────────────────────────────────────────────────
 
   /catchAll/entities:
