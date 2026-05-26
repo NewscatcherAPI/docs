@@ -3781,6 +3781,13 @@ components:
         - monitor_group
       description: Resource types that can be assigned to a webhook.
 
+    DeliveryStatus:
+      type: string
+      enum:
+        - SUCCESS
+        - FAILED
+      description: Outcome of a webhook delivery attempt.
+
     BearerAuthDto:
       type: object
       required:
