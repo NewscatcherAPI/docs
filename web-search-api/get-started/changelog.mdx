@@ -6,21 +6,26 @@ rss: true
 ---
 
 <Update label="1.6.0" description="2026-05-XX">
-## Centralized webhooks
+## Centralized webhooks, query validation, and projects
 
-Replaces per-monitor inline webhook configuration with a reusable, 
-resource-agnostic webhook system.
+Introduces centralized webhook management to replace per-monitor inline
+configuration, a pre-submission query validation endpoint, and projects for
+organizing and sharing resources.
+
+### Centralized webhooks
+
+Replaces the `webhook` inline field on monitor creation and update with a
+reusable, resource-agnostic webhook system.
 
 **Features:**
 
 - **Webhook management**: Create named webhook endpoints at the organization
   level and reuse them across any number of jobs or monitors.
 - **Flexible assignment**: Pass `webhook_ids` at job or monitor creation time,
-  or assign webhooks to existing resources using the assignment endpoints.
-  Each resource supports up to 5 webhooks.
+  or assign webhooks after creation. Each resource supports up to 5 webhooks.
 - **Delivery modes**: `full` sends all records in a single request per trigger.
   `per_record` sends one request per record.
-- **Authentication**: Bearer token, API key header, and basic auth are forwarded
+- **Authentication**: Bearer token, API key header, and basic auth forwarded
   with each delivery request.
 - **Platform-formatted payloads**: `slack` and `teams` types send pre-formatted
   Slack Block Kit and Microsoft Teams Adaptive Card payloads automatically.
@@ -50,20 +55,29 @@ resource-agnostic webhook system.
 - [`GET /catchAll/resources/{resource_type}/{resource_id}/webhooks`](/web-search-api/api-reference/webhooks/list-resource-webhooks)
   — List webhooks assigned to a resource.
 
-## Projects
+### Query validation
 
-Introduces Projects — a way to organize and share jobs, monitors, and datasets
-by use case, team, or client.
+Adds a pre-submission endpoint that checks whether a query is well-formed
+before creating a job.
+
+**New endpoint:**
+
+- [`POST /catchAll/validate`](/web-search-api/api-reference/jobs/validate-query)
+  — Validate a query before submission.
+
+### Projects
+
+Organizes jobs, monitors, and datasets into named containers that can be
+shared with teammates.
 
 **Features:**
 
-- **Projects**: Create named containers for related resources. Assign resources
-  to a project at creation time via the `project_id` field, or post-hoc using
-  the project resources endpoints.
+- **Resource grouping**: Assign resources to a project at creation time via
+  `project_id`, or post-hoc using the project resources endpoints.
 - **Project filtering**: Filter jobs, monitors, and datasets by project using
   the `project_id` query parameter on all list endpoints.
-- **Project overview**: Get a status breakdown of all resources in a project
-  without fetching the full resource list.
+- **Project overview**: Get a resource status breakdown without fetching the
+  full resource list.
 
 **Endpoints:**
 
