@@ -793,7 +793,6 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/MappableResourceType"
-          description: Filter assignments by resource type.
         - $ref: "#/components/parameters/Page"
         - name: page_size
           in: query
@@ -1805,7 +1804,6 @@ components:
       name: resource_type
       in: path
       required: true
-      description: Type of the resource.
       schema:
         $ref: "#/components/schemas/MappableResourceType"
 
@@ -2875,6 +2873,19 @@ components:
               enum: ["low", "medium", "high", null]
               description: Confidence level for the domain URL resolution.
               example: "high"
+
+    QueryStatus:
+      type: string
+      enum:
+        - good
+        - needs_work
+        - critical
+      description: |
+        Quality level assigned to a query by the validation endpoint.
+
+        - `good`: Query is well-formed and likely to produce relevant results.
+        - `needs_work`: Query has issues that may reduce result quality. Review `suggestions` for improvements.
+        - `critical`: Query is unlikely to produce useful results as written. Address all `issues` before submitting.
 
     InitializeRequestDto:
       type: object
