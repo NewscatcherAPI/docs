@@ -609,7 +609,7 @@ paths:
               $ref: "#/components/schemas/CreateWebhookRequestDto"
             example:
               name: "Layoffs Alert"
-              url: "https://hooks.slack.com/services/T000/B000/xxxx"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
               type: "slack"
               delivery_mode: "full"
       responses:
@@ -2334,7 +2334,7 @@ components:
             webhook:
               id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
               name: "Layoffs Alert"
-              url: "https://hooks.slack.com/services/T000/B000/xxxx"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
               type: "slack"
               delivery_mode: "full"
               method: "POST"
@@ -2359,7 +2359,7 @@ components:
             webhook:
               id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
               name: "Layoffs Alert"
-              url: "https://hooks.slack.com/services/T000/B000/xxxx"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
               type: "slack"
               delivery_mode: "full"
               method: "POST"
@@ -2411,7 +2411,7 @@ components:
             webhooks:
               - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
                 name: "Layoffs Alert"
-                url: "https://hooks.slack.com/services/T000/B000/xxxx"
+                url: "https://hooks.slack.com/services/T000/B000/xxx"
                 type: "slack"
                 delivery_mode: "full"
                 method: "POST"
@@ -2500,7 +2500,7 @@ components:
             webhooks:
               - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
                 name: "Layoffs Alert"
-                url: "https://hooks.slack.com/services/T000/B000/xxxx"
+                url: "https://hooks.slack.com/services/T000/B000/xxx"
                 type: "slack"
                 delivery_mode: "full"
                 method: "POST"
@@ -3541,14 +3541,6 @@ components:
             Maximum 5 per monitor.
           example:
             - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
-        webhook:
-          deprecated: true
-          description: |
-            **Deprecated.** Use `webhook_ids` instead.
-
-            Inline webhook configuration kept for backward compatibility. Do not use both `webhook` and `webhook_ids` in the same request.
-          allOf:
-            - $ref: "#/components/schemas/WebhookDto"
         limit:
           type: integer
           minimum: 10
@@ -3726,7 +3718,7 @@ components:
           type: string
           format: uri
           description: Destination URL that receives the payload.
-          example: "https://hooks.slack.com/services/T000/B000/xxxx"
+          example: "https://hooks.slack.com/services/T000/B000/xxx"
         type:
           $ref: "#/components/schemas/WebhookType"
         delivery_mode:
@@ -3796,7 +3788,7 @@ components:
             - `custom`: Any valid HTTPS domain.
 
             When `type` is omitted, it is auto-detected from the URL.
-          example: "https://hooks.slack.com/services/T000/B000/xxxx"
+          example: "https://hooks.slack.com/services/T000/B000/xxx"
         type:
           $ref: "#/components/schemas/WebhookType"
         delivery_mode:
@@ -3836,7 +3828,7 @@ components:
           description: Custom payload transformation configuration. Required only when `type` is `custom`.
       example:
         name: "Layoffs Alert"
-        url: "https://hooks.slack.com/services/T000/B000/xxxx"
+        url: "https://hooks.slack.com/services/T000/B000/xxx"
         type: "slack"
         delivery_mode: "full"
 
@@ -4144,12 +4136,6 @@ components:
           type: integer
           minimum: 10
           description: Updated maximum number of records per monitor run.
-        webhook:
-          deprecated: true
-          description: |
-            **Deprecated.** Use `webhook_ids` instead.
-
-            Inline webhook configuration kept for backward compatibility. Do not use both `webhook` and `webhook_ids` in the same request.
 
     UpdateMonitorResponseDto:
       type: object
