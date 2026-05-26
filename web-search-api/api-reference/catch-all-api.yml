@@ -3393,6 +3393,58 @@ components:
           $ref: "#/components/schemas/WebhookResponseDto"
           description: The updated webhook object.
 
+    UpdateWebhookRequestDto:
+      type: object
+      description: All fields are optional. Only supplied fields are updated.
+      properties:
+        name:
+          type: string
+          description: Updated webhook name.
+          example: "Layoffs Alert (EU)"
+        url:
+          type: string
+          format: uri
+          description: Updated destination URL. Must use HTTPS. Type-specific URL rules apply.
+          example: "https://hooks.slack.com/services/T000/B111/yyyy"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Updated HTTP headers. Replaces existing headers entirely.
+          example:
+            Authorization: "Bearer new-token"
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Updated query parameters. Replaces existing params entirely.
+          example: {}
+        auth:
+          oneOf:
+            - $ref: "#/components/schemas/BearerAuthDto"
+            - $ref: "#/components/schemas/ApiKeyAuthDto"
+            - $ref: "#/components/schemas/BasicAuthDto"
+          discriminator:
+            propertyName: type
+            mapping:
+              bearer: "#/components/schemas/BearerAuthDto"
+              api_key: "#/components/schemas/ApiKeyAuthDto"
+              basic: "#/components/schemas/BasicAuthDto"
+          description: Updated authentication configuration. Replaces existing auth entirely.
+        formatter_config:
+          type: ["object", "null"]
+          description: Updated formatter configuration.
+        is_active:
+          type: boolean
+          description: Set to `false` to disable delivery without deleting the webhook.
+          example: false
+
     CreateMonitorResponseDto:
       type: object
       required:
