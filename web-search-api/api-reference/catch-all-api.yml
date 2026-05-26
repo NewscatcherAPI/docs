@@ -2943,6 +2943,45 @@ components:
       example:
         query: "Series B funding rounds for SaaS startups"
 
+    ValidateQueryResponseDto:
+      type: object
+      description: Query quality assessment returned by the validate endpoint.
+      required:
+        - status
+        - title
+        - confidence
+      properties:
+        status:
+          $ref: "#/components/schemas/QueryStatus"
+          description: Overall quality level of the query.
+        title:
+          type: string
+          description: Short headline summarising the assessment.
+          example: "Specific event type clear"
+        description:
+          type: string
+          description: Plain-language explanation of the assessment result.
+          example: "Clear event type and focus; no timeframe needed for a default recent search."
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueType"
+          description: Issues identified in the query. Empty when `status` is `good`.
+          example: []
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Suggestion"
+          description: |
+            Actionable recommendations for each identified issue. Empty when `status` is `good`. Each suggestion corresponds to one entry in `issues`.
+          example: []
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for this assessment.
+          example: 0.98
+
     InitializeRequestDto:
       type: object
       required:
