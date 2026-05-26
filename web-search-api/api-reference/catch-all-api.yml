@@ -3135,7 +3135,7 @@ components:
         - DELETE
       description: HTTP method used for webhook delivery.
 
-      MappableResourceType:
+    MappableResourceType:
       type: string
       enum:
         - job
@@ -3143,7 +3143,7 @@ components:
         - monitor_group
       description: Resource types that can be assigned to a webhook.
 
-      BearerAuthDto:
+    BearerAuthDto:
       type: object
       required:
         - type
@@ -3271,6 +3271,73 @@ components:
           format: date-time
           description: Timestamp of the last update in ISO 8601 format with UTC timezone.
           example: "2026-05-18T10:00:00Z"
+
+    CreateWebhookRequestDto:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: Human-readable label for this webhook.
+          example: "Layoffs Alert"
+        url:
+          type: string
+          format: uri
+          description: |
+            Destination URL that receives the payload. Must use HTTPS. IP addresses are not accepted.
+
+            Type-specific URL requirements:
+            - `slack`: Must start with `https://hooks.slack.com/`.
+            - `teams`: Hostname must match `*.webhook.office.com` or `*.webhook.office365.com`.
+            - `generic`: Any valid HTTPS domain.
+            - `custom`: Any valid HTTPS domain.
+
+            When `type` is omitted, it is auto-detected from the URL.
+          example: "https://hooks.slack.com/services/T000/B000/xxxx"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom HTTP headers forwarded with each delivery.
+          default: {}
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Query parameters appended to the webhook URL.
+          default: {}
+        auth:
+          oneOf:
+            - $ref: "#/components/schemas/BearerAuthDto"
+            - $ref: "#/components/schemas/ApiKeyAuthDto"
+            - $ref: "#/components/schemas/BasicAuthDto"
+          discriminator:
+            propertyName: type
+            mapping:
+              bearer: "#/components/schemas/BearerAuthDto"
+              api_key: "#/components/schemas/ApiKeyAuthDto"
+              basic: "#/components/schemas/BasicAuthDto"
+          description: |
+            Authentication forwarded with each delivery. Supported types:
+            - `bearer`: Adds an `Authorization: Bearer <token>` header.
+            - `api_key`: Adds a custom header with the specified name and value.
+            - `basic`: Adds an `Authorization: Basic <credentials>` header.
+        formatter_config:
+          type: ["object", "null"]
+          description: Custom payload transformation configuration. Required only when `type` is `custom`.
+      example:
+        name: "Layoffs Alert"
+        url: "https://hooks.slack.com/services/T000/B000/xxxx"
+        type: "slack"
+        delivery_mode: "full"
 
     CreateMonitorResponseDto:
       type: object
