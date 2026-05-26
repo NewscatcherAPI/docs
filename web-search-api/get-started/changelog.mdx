@@ -6,6 +6,50 @@ rss: true
 ---
 
 <Update label="1.6.0" description="2026-05-XX">
+## Centralized webhooks
+
+Replaces per-monitor inline webhook configuration with a reusable, 
+resource-agnostic webhook system.
+
+**Features:**
+
+- **Webhook management**: Create named webhook endpoints at the organization
+  level and reuse them across any number of jobs or monitors.
+- **Flexible assignment**: Pass `webhook_ids` at job or monitor creation time,
+  or assign webhooks to existing resources using the assignment endpoints.
+  Each resource supports up to 5 webhooks.
+- **Delivery modes**: `full` sends all records in a single request per trigger.
+  `per_record` sends one request per record.
+- **Authentication**: Bearer token, API key header, and basic auth are forwarded
+  with each delivery request.
+- **Platform-formatted payloads**: `slack` and `teams` types send pre-formatted
+  Slack Block Kit and Microsoft Teams Adaptive Card payloads automatically.
+- **Test delivery**: Verify endpoint reachability and authentication before
+  attaching a webhook to a live resource.
+
+**New endpoints:**
+
+- [`POST /catchAll/webhooks`](/web-search-api/api-reference/webhooks/create-webhook)
+  — Create a webhook.
+- [`GET /catchAll/webhooks`](/web-search-api/api-reference/webhooks/list-webhooks)
+  — List webhooks.
+- [`GET /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/get-webhook)
+  — Get a webhook.
+- [`PATCH /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/update-webhook)
+  — Update a webhook.
+- [`DELETE /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/delete-webhook)
+  — Delete a webhook.
+- [`POST /catchAll/webhooks/{webhook_id}/test`](/web-search-api/api-reference/webhooks/test-webhook)
+  — Test webhook delivery.
+- [`POST /catchAll/webhooks/{webhook_id}/resources`](/web-search-api/api-reference/webhooks/assign-resource)
+  — Assign a resource to a webhook.
+- [`GET /catchAll/webhooks/{webhook_id}/resources`](/web-search-api/api-reference/webhooks/list-webhook-resources)
+  — List resources assigned to a webhook.
+- [`DELETE /catchAll/webhooks/{webhook_id}/resources/{resource_type}/{resource_id}`](/web-search-api/api-reference/webhooks/remove-resource)
+  — Remove a resource from a webhook.
+- [`GET /catchAll/resources/{resource_type}/{resource_id}/webhooks`](/web-search-api/api-reference/webhooks/list-resource-webhooks)
+  — List webhooks assigned to a resource.
+
 ## Projects
 
 Introduces Projects — a way to organize and share jobs, monitors, and datasets
