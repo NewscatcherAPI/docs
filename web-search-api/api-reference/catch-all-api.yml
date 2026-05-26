@@ -1507,7 +1507,7 @@ components:
       schema:
         type: boolean
         default: false
-        
+
     WebhookId:
       name: webhook_id
       in: path
@@ -3096,6 +3096,23 @@ components:
           minItems: 2
           maxItems: 2
           description: Basic auth credentials [username, password].
+
+    WebhookType:
+      type: string
+      enum:
+        - generic
+        - slack
+        - teams
+        - custom
+      description: |
+        Webhook target type.
+
+        - `generic`: Sends the raw result payload to any HTTPS endpoint.
+        - `slack`: Sends a formatted Slack Block Kit message. URL must start with `https://hooks.slack.com/`.
+        - `teams`: Sends a formatted Microsoft Teams Adaptive Card. URL hostname must match `*.webhook.office.com` or `*.webhook.office365.com`.
+        - `custom`: Custom payload transformation. Not yet available.
+
+        When `type` is omitted, it is auto-detected from the URL.
 
     CreateMonitorResponseDto:
       type: object
