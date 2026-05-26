@@ -3476,6 +3476,40 @@ components:
             $ref: "#/components/schemas/WebhookResponseDto"
           description: Webhooks on this page.
 
+    TestWebhookRequestDto:
+      type: object
+      properties:
+        payload:
+          type: object
+          description: |
+            Custom payload to send in the test request. If omitted, a synthetic
+            test payload is sent.
+          example:
+            test: true
+            message: "CatchAll webhook test"
+
+    TestWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the test delivery received a 2xx response; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Test delivery succeeded."
+        http_status_code:
+          type: integer
+          description: HTTP status code returned by the webhook endpoint.
+          example: 200
+        response_body:
+          description: Response body returned by the webhook endpoint. Type varies by target.
+          example: "ok"
+
     CreateMonitorResponseDto:
       type: object
       required:
