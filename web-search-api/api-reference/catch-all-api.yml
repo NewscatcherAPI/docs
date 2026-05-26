@@ -3788,6 +3788,64 @@ components:
         - FAILED
       description: Outcome of a webhook delivery attempt.
 
+    DeliveryHistoryItemDto:
+      type: object
+      required:
+        - id
+        - webhook_id
+        - resource_type
+        - resource_id
+        - status_code
+        - attempt_number
+        - timestamp
+        - delivery_status
+      properties:
+        id:
+          type: integer
+          description: Delivery record identifier.
+          example: 42
+        webhook_id:
+          type: string
+          format: uuid
+          description: Identifier of the webhook that was dispatched.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the resource that triggered the delivery.
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the resource that triggered the delivery.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        additional_info:
+          type: object
+          description: Extra context about the triggering event, such as job query or monitor schedule.
+          example: {}
+        status_code:
+          type: integer
+          description: HTTP response code returned by the webhook endpoint.
+          example: 200
+        attempt_number:
+          type: integer
+          description: Delivery attempt number. 1 indicates the first attempt.
+          example: 1
+        timestamp:
+          type: string
+          format: date-time
+          description: Time of the delivery attempt in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+        delivery_status:
+          $ref: "#/components/schemas/DeliveryStatus"
+          description: Outcome of this delivery attempt.
+        error_message:
+          type: ["string", "null"]
+          description: Error detail when `delivery_status` is `FAILED`. Null on success.
+          example: null
+        warning_message:
+          type: ["string", "null"]
+          description: Non-fatal warning, such as payload truncation notices. Null when no warnings occurred.
+          example: null
+
     BearerAuthDto:
       type: object
       required:
