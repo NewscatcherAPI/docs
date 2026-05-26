@@ -140,6 +140,32 @@ paths:
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
+  /catchAll/validate:
+    post:
+      tags:
+        - Jobs
+      summary: Validate query
+      description: |
+        Checks whether a query is well-formed and likely to produce good results before submitting a job.
+
+        Returns a quality assessment with a status level, identified issues, and actionable suggestions.
+      operationId: validateQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateQueryRequestDto"
+            example:
+              query: "Series B funding rounds for SaaS startups"
+      responses:
+        "200":
+          $ref: "#/components/responses/ValidateQueryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   /catchAll/initialize:
     post:
       tags:
@@ -1831,7 +1857,7 @@ components:
             issues: []
             suggestions: []
             confidence: 0.98
-            
+
     InitializeResponse:
       description: Suggestions retrieved successfully
       content:
