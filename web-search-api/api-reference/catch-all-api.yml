@@ -542,11 +542,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateMonitorRequestDto"
             example:
-              webhook:
-                url: "https://new-endpoint.com/webhook"
-                method: "POST"
-                headers:
-                  Authorization: "Bearer new_token_xyz"
+              webhook_ids:
+                - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       responses:
         "200":
           $ref: "#/components/responses/UpdateMonitorResponse"
@@ -4116,15 +4113,27 @@ components:
     UpdateMonitorRequestDto:
       type: object
       properties:
-        webhook:
-          $ref: "#/components/schemas/WebhookDto"
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
           description: |
-            Updated webhook configuration.
+            Updated list of centralized webhook IDs for this monitor. 
+            
+            Replaces all existing webhook assignments. Pass an empty array `[]` to clear all assignments. Omit to leave existing assignments unchanged.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         limit:
           type: integer
           minimum: 10
+          description: Updated maximum number of records per monitor run.
+        webhook:
+          deprecated: true
           description: |
-            Updated maximum number of records per monitor run.
+            **Deprecated.** Use `webhook_ids` instead.
+
+            Inline webhook configuration kept for backward compatibility. Do not use both `webhook` and `webhook_ids` in the same request.
 
     UpdateMonitorResponseDto:
       type: object
