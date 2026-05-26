@@ -1507,6 +1507,34 @@ components:
       schema:
         type: boolean
         default: false
+        
+    WebhookId:
+      name: webhook_id
+      in: path
+      required: true
+      description: Unique webhook identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    WebhookResourceType:
+      name: resource_type
+      in: path
+      required: true
+      description: Type of the resource.
+      schema:
+        $ref: "#/components/schemas/MappableResourceType"
+
+    WebhookResourceId:
+      name: resource_id
+      in: path
+      required: true
+      description: Unique resource identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
   responses:
     InitializeResponse:
