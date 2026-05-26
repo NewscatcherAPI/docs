@@ -105,6 +105,7 @@
                   "web-search-api/api-reference/webhooks/list-webhook-resources",
                   "web-search-api/api-reference/webhooks/remove-resource",
                   "web-search-api/api-reference/webhooks/list-resource-webhooks",
+                  "web-search-api/api-reference/webhooks/get-delivery-history",
                   "web-search-api/api-reference/webhooks/webhook-payload"
                 ]
               },
