@@ -88,8 +88,23 @@
                   "web-search-api/api-reference/monitors/enable-monitor",
                   "web-search-api/api-reference/monitors/disable-monitor",
                   "web-search-api/api-reference/monitors/update-monitor",
-                  "web-search-api/api-reference/monitors/delete-monitor",
-                  "web-search-api/api-reference/monitors/webhook-payload"
+                  "web-search-api/api-reference/monitors/delete-monitor"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "web-search-api/api-reference/webhooks/create-webhook",
+                  "web-search-api/api-reference/webhooks/list-webhooks",
+                  "web-search-api/api-reference/webhooks/get-webhook",
+                  "web-search-api/api-reference/webhooks/update-webhook",
+                  "web-search-api/api-reference/webhooks/delete-webhook",
+                  "web-search-api/api-reference/webhooks/test-webhook",
+                  "web-search-api/api-reference/webhooks/assign-resource",
+                  "web-search-api/api-reference/webhooks/list-webhook-resources",
+                  "web-search-api/api-reference/webhooks/remove-resource",
+                  "web-search-api/api-reference/webhooks/list-resource-webhooks",
+                  "web-search-api/api-reference/webhooks/webhook-payload"
                 ]
               },
               {
