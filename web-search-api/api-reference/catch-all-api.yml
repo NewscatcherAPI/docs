@@ -3135,6 +3135,14 @@ components:
         - DELETE
       description: HTTP method used for webhook delivery.
 
+      MappableResourceType:
+      type: string
+      enum:
+        - job
+        - monitor
+        - monitor_group
+      description: Resource types that can be assigned to a webhook.
+
     CreateMonitorResponseDto:
       type: object
       required:
