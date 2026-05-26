@@ -60,6 +60,18 @@ tags:
         Automate recurring queries with scheduled jobs and webhook
         notifications.
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors
+  - name: Webhooks
+    description: |
+      Operations to create and manage reusable webhook endpoints.
+
+      A webhook is a named HTTP endpoint that receives a POST notification
+      when a job or monitor completes. Create webhooks once at the organization
+      level and attach them to any number of jobs or monitors via `webhook_ids`.
+      Supports Slack, Microsoft Teams, and generic HTTP targets with configurable
+      delivery modes, authentication, and headers.
+    externalDocs:
+      description: Learn about centralized webhooks and notification setup
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/webhooks
   - name: Entities
     description: |
       Operations to create, update, and delete company entities.
