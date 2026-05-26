@@ -711,6 +711,38 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /catchAll/webhooks/{webhook_id}/test:
+    post:
+      tags:
+        - Webhooks
+      summary: Test webhook delivery
+      description: |
+        Sends a test HTTP request to the webhook URL using the webhook's configured method, headers, and auth. Returns the response from the target endpoint.
+
+        Use this to verify URL reachability and authentication before attaching the webhook to a live job or monitor.
+      operationId: testWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestWebhookRequestDto"
+            example:
+              payload:
+                test: true
+                message: "CatchAll webhook test"
+      responses:
+        "200":
+          $ref: "#/components/responses/TestWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   # ── Entities ──────────────────────────────────────────────────────────────
 
   /catchAll/entities:
