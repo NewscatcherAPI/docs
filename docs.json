@@ -67,6 +67,7 @@
               {
                 "group": "Jobs",
                 "pages": [
+                  "web-search-api/api-reference/jobs/validate-query",
                   "web-search-api/api-reference/jobs/initialize-job",
                   "web-search-api/api-reference/jobs/create-job",
                   "web-search-api/api-reference/jobs/get-job-status",
