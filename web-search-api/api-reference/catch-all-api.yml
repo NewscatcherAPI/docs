@@ -3558,6 +3558,28 @@ components:
           description: Timestamp when the resource was assigned in ISO 8601 format with UTC timezone.
           example: "2026-05-18T10:00:00Z"
 
+    AssignWebhookResourceResponseDto:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Resource assigned to webhook."
+        already_existed:
+          type: boolean
+          description: True if the assignment already existed before this request.
+          default: false
+          example: false
+        mapping:
+          $ref: "#/components/schemas/WebhookResourceMappingResponseDto"
+          description: The created or existing resource mapping.
+
     CreateMonitorResponseDto:
       type: object
       required:
