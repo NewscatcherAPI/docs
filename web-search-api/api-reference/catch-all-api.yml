@@ -330,11 +330,8 @@ paths:
               timezone: "UTC"
               backfill: true
               limit: 10
-              webhook:
-                url: "https://your-endpoint.com/webhook"
-                method: "POST"
-                headers:
-                  Authorization: "Bearer your_token_here"
+              webhook_ids:
+                - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
@@ -3519,10 +3516,26 @@ components:
             If the schedule includes a timezone abbreviation (for example, `"every day at 9am EST"`), the parsed timezone takes priority and this value is ignored. 
           example: "America/New_York"
           default: "UTC"
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            IDs of centralized webhooks to notify on each run completion.
+            Passing IDs here is equivalent to calling
+            `POST /catchAll/webhooks/{webhook_id}/resources` for each ID after creation.
+            Maximum 5 per monitor.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         webhook:
-          $ref: "#/components/schemas/WebhookDto"
-          description:
-            Optional webhook to receive notifications when jobs complete.
+          deprecated: true
+          description: |
+            **Deprecated.** Use `webhook_ids` instead.
+
+            Inline webhook configuration kept for backward compatibility. Do not use both `webhook` and `webhook_ids` in the same request.
+          allOf:
+            - $ref: "#/components/schemas/WebhookDto"
         limit:
           type: integer
           minimum: 10
