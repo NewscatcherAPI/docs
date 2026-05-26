@@ -31,6 +31,8 @@ reusable, resource-agnostic webhook system.
   Slack Block Kit and Microsoft Teams Adaptive Card payloads automatically.
 - **Test delivery**: Verify endpoint reachability and authentication before
   attaching a webhook to a live resource.
+- **Delivery history**: Inspect per-dispatch outcomes, HTTP status codes, and 
+  error messages for any job or monitor.
 
 **New endpoints:**
 
@@ -54,6 +56,8 @@ reusable, resource-agnostic webhook system.
   — Remove a resource from a webhook.
 - [`GET /catchAll/resources/{resource_type}/{resource_id}/webhooks`](/web-search-api/api-reference/webhooks/list-resource-webhooks)
   — List webhooks assigned to a resource.
+- [`GET /catchAll/webhook-history`](/web-search-api/api-reference/webhooks/get-delivery-history)
+  — Get webhook delivery history for a resource.
 
 ### Query validation
 
