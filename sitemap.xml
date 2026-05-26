@@ -40,6 +40,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/validate-query</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job</loc>
     </url>
     <url>
@@ -91,7 +94,40 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/delete-monitor</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/create-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhooks</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/update-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/delete-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/test-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/assign-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhook-resources</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/remove-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-resource-webhooks</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-delivery-history</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/list-entities</loc>

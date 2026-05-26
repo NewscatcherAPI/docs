@@ -29,6 +29,10 @@
 
 ### API Reference — Jobs
 
+- [Validate Query](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/validate-query): Checks whether a query is well-formed and likely to produce good results before submitting a job.
+
+Returns a quality assessment with a status level, identified issues, and actionable suggestions.
+
 - [Initialize Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job): Get suggested validators, enrichments, and date ranges for a query.
 - [Create Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job): Submit a query to create a new processing job.
 - [Get Job Status](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status): Retrieve the current processing status of a job.
@@ -63,7 +67,42 @@ monitor is not found or does not belong to the authenticated user.
 
 Deleting an already-deleted monitor returns `200`.
 
-- [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload): Data model for a payload sent to the webhook URL when a monitor job completes.
+
+### API Reference — Webhooks
+
+- [Create Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/create-webhook): Creates a new webhook endpoint for the organization.
+
+- [List Webhooks](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhooks): Returns a paginated list of webhooks belonging to the organization.
+- [Get Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-webhook): Returns the full configuration of a single webhook by ID.
+- [Update Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/update-webhook): Updates one or more fields of an existing webhook.
+
+- [Delete Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/delete-webhook): Permanently deletes a webhook and removes all resource assignments. 
+
+Assigned jobs and monitors no longer trigger delivery to this webhook. This operation cannot be undone.
+
+- [Test Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/test-webhook): Sends a test HTTP request to the webhook URL using the webhook's configured method, headers, and auth. Returns the response from the target endpoint.
+
+Use this to verify URL reachability and authentication before attaching the webhook to a live job or monitor.
+
+- [Assign Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/assign-resource): Attaches a job, monitor, or monitor group to the webhook. When the
+resource completes, the webhook receives a delivery.
+
+A single webhook can be assigned to multiple resources. Each resource
+can have up to 5 webhooks assigned.
+
+- [List Webhook Resources](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhook-resources): Returns a paginated list of resources currently assigned to this webhook.
+
+- [Remove Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/remove-resource): Detaches a resource from this webhook. Completions of the resource no longer trigger delivery to this webhook.
+
+The webhook and the resource itself are not deleted.
+
+- [List Resource Webhooks](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-resource-webhooks): Returns all webhooks currently assigned to the given resource.
+
+- [Get Delivery History](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-delivery-history): Returns a paginated delivery log for a given resource, ordered by timestamp descending. 
+
+Each record shows the webhook dispatched, the HTTP status code returned, delivery outcome, and any error or warning messages. Use this to debug failed deliveries or audit dispatch activity.
+
+- [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload): Data model for the payload delivered to a webhook when a monitor job completes.
 
 ### API Reference — Entities
 
