@@ -3580,6 +3580,37 @@ components:
           $ref: "#/components/schemas/WebhookResourceMappingResponseDto"
           description: The created or existing resource mapping.
 
+    ListWebhookResourcesResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - resources
+      properties:
+        total:
+          type: integer
+          description: Total number of resource mappings for this webhook.
+          example: 2
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of mappings per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookResourceMappingResponseDto"
+          description: Resource mappings on this page.
+
     CreateMonitorResponseDto:
       type: object
       required:
