@@ -813,6 +813,28 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/webhooks/{webhook_id}/resources/{resource_type}/{resource_id}:
+    delete:
+      tags:
+        - Webhooks
+      summary: Remove resource from webhook
+      description: |
+        Detaches a resource from this webhook. Completions of the resource no longer trigger delivery to this webhook.
+
+        The webhook and the resource itself are not deleted.
+      operationId: removeWebhookResource
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+        - $ref: "#/components/parameters/WebhookResourceType"
+        - $ref: "#/components/parameters/WebhookResourceId"
+      responses:
+        "204":
+          description: Resource removed from webhook. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   # ── Entities ──────────────────────────────────────────────────────────────
 
   /catchAll/entities:
