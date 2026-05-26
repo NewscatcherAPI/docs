@@ -645,6 +645,72 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+  /catchAll/webhooks/{webhook_id}:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhook
+      description: Returns the full configuration of a single webhook by ID.
+      operationId: getWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    patch:
+      tags:
+        - Webhooks
+      summary: Update webhook
+      description: |
+        Updates one or more fields of an existing webhook.
+      operationId: updateWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWebhookRequestDto"
+            example:
+              name: "Layoffs Alert (EU)"
+              is_active: false
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete webhook
+      description: |
+        Permanently deletes a webhook and removes all resource assignments. 
+        
+        Assigned jobs and monitors no longer trigger delivery to this webhook. This operation cannot be undone.
+      operationId: deleteWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      responses:
+        "204":
+          description: Webhook deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   # ── Entities ──────────────────────────────────────────────────────────────
 
   /catchAll/entities:
