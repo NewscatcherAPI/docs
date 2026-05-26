@@ -1818,6 +1818,20 @@ components:
       example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
 
   responses:
+    ValidateQueryResponse:
+      description: Query validation result.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidateQueryResponseDto"
+          example:
+            status: "good"
+            title: "Specific event type clear"
+            description: "Clear event type and focus; no timeframe needed for a default recent search."
+            issues: []
+            suggestions: []
+            confidence: 0.98
+            
     InitializeResponse:
       description: Suggestions retrieved successfully
       content:
