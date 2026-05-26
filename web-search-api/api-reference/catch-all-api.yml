@@ -3124,6 +3124,16 @@ components:
 
         - `full`: Sends all records in a single request on each trigger.
         - `per_record`: Sends one request per record. For large result sets, this may generate many requests.
+   
+    HttpMethod:
+      type: string
+      enum:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      description: HTTP method used for webhook delivery.
 
     CreateMonitorResponseDto:
       type: object
