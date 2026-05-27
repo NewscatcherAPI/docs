@@ -1,0 +1,438 @@
+---
+title: Set up webhooks
+sidebarTitle: Set up webhooks
+description: Create and manage webhooks to receive real-time notifications when jobs and monitors complete.
+---
+
+This guide covers how to create, test, and update a webhook, attach it to a job 
+or monitor, and troubleshoot delivery issues.
+
+## Before you begin
+
+- You have a CatchAll API key.
+- You have a publicly accessible HTTPS endpoint ready to receive POST requests,
+  or use [webhook.site](https://webhook.site) for testing.
+
+## Create webhook
+
+A webhook is created independently of any job or monitor. Once created, you
+attach it to one or more resources.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Layoffs Alert",
+    "url": "https://your-endpoint.com/catchall",
+    "type": "generic",
+    "delivery_mode": "full"
+  }'
+```
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+webhook = client.webhooks.create_webhook(
+    name="Layoffs Alert",
+    url="https://your-endpoint.com/catchall",
+    type="generic",
+    delivery_mode="full",
+)
+print(f"Webhook created: {webhook.webhook.id}")
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const response = await client.webhooks.createWebhook({
+  name: "Layoffs Alert",
+  url: "https://your-endpoint.com/catchall",
+  type: "generic",
+  delivery_mode: "full",
+});
+console.log(`Webhook created: ${response.webhook.id}`);
+```
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.webhooks.requests.CreateWebhookRequestDto;
+import com.newscatcher.catchall.types.WebhookType;
+import com.newscatcher.catchall.types.DeliveryMode;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+var response = client.webhooks().createWebhook(
+    CreateWebhookRequestDto.builder()
+        .name("Layoffs Alert")
+        .url("https://your-endpoint.com/catchall")
+        .type(WebhookType.GENERIC)
+        .deliveryMode(DeliveryMode.FULL)
+        .build()
+);
+System.out.println("Webhook created: " + response.getWebhook().getId());
+```
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Webhook created successfully.",
+  "webhook": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Layoffs Alert",
+    "url": "https://your-endpoint.com/catchall",
+    "type": "generic",
+    "delivery_mode": "full",
+    "method": "POST",
+    "is_active": true
+  }
+}
+```
+
+Save the `webhook.id` — you use it to attach the webhook to resources.
+
+For supported values of `type`, `delivery_mode`, and `auth`, see 
+[Create webhook API reference](/web-search-api/api-reference/webhooks/create-webhook).
+
+## Test before attaching
+
+Before attaching a webhook to a live resource, verify that your endpoint is
+reachable and auth is configured correctly:
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks/{webhook_id}/test" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{}'
+```
+```python Python
+result = client.webhooks.test_webhook(webhook_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890")
+print(f"Status: {result.http_status_code}, Success: {result.success}")
+```
+```typescript TypeScript
+const result = await client.webhooks.testWebhook({
+  webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+});
+console.log(`Status: ${result.http_status_code}, Success: ${result.success}`);
+```
+```java Java
+var result = client.webhooks().testWebhook("a1b2c3d4-e5f6-7890-abcd-ef1234567890");
+System.out.println("Status: " + result.getHttpStatusCode() + ", Success: " + result.getSuccess());
+```
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "success": true,
+  "message": "Test delivery succeeded.",
+  "http_status_code": 200,
+  "response_body": "ok"
+}
+```
+
+If `success` is `false`, check `http_status_code` and `response_body` to
+diagnose the issue before proceeding.
+
+## Attach webhook to job or monitor
+
+You can attach a webhook to a job or monitor at creation time, or assign it to 
+an existing resource afterward.
+
+### At creation time
+
+Pass `webhook_ids` when submitting a job or creating a monitor:
+
+<CodeGroup>
+```bash cURL — job
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Tech layoffs in the US",
+    "webhook_ids": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+  }'
+```
+```bash cURL — monitor
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "reference_job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+    "schedule": "every day at 9 AM UTC",
+    "webhook_ids": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
+  }'
+```
+```python Python
+# Attach to a job at submission
+job = client.jobs.submit_job(
+    query="Tech layoffs in the US",
+    webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+)
+
+# Attach to a monitor at creation
+monitor = client.monitors.create_monitor(
+    reference_job_id="5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+    schedule="every day at 9 AM UTC",
+    webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+)
+```
+```typescript TypeScript
+// Attach to a job at submission
+const job = await client.jobs.submitJob({
+  query: "Tech layoffs in the US",
+  webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+});
+
+// Attach to a monitor at creation
+const monitor = await client.monitors.createMonitor({
+  reference_job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  schedule: "every day at 9 AM UTC",
+  webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+});
+```
+```java Java
+// Attach to a job at submission
+var job = client.jobs().submitJob(
+    SubmitRequestDto.builder()
+        .query("Tech layoffs in the US")
+        .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
+        .build()
+);
+
+// Attach to a monitor at creation
+var monitor = client.monitors().createMonitor(
+    CreateMonitorRequestDto.builder()
+        .referenceJobId("5f0c9087-85cb-4917-b3c7-e5a5eff73a0c")
+        .schedule("every day at 9 AM UTC")
+        .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
+        .build()
+);
+```
+</CodeGroup>
+
+### After creation
+
+Assign a webhook to an existing resource using the assignment endpoint:
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks/{webhook_id}/resources" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "resource_type": "monitor",
+    "resource_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+  }'
+```
+```python Python
+client.webhooks.assign_webhook_resource(
+    webhook_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    resource_type="monitor",
+    resource_id="3fec5b07-8786-46d7-9486-d43ff67eccd4",
+)
+```
+```typescript TypeScript
+await client.webhooks.assignWebhookResource({
+  webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  resource_type: "monitor",
+  resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+});
+```
+```java Java
+client.webhooks().assignWebhookResource(
+    "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    AssignWebhookResourceRequestDto.builder()
+        .resourceType(MappableResourceType.MONITOR)
+        .resourceId("3fec5b07-8786-46d7-9486-d43ff67eccd4")
+        .build()
+);
+```
+</CodeGroup>
+
+<Note>
+  Each resource supports up to 5 webhooks. Each webhook can be assigned to
+  multiple resources.
+</Note>
+
+## Update webhook
+
+Update any field on an existing webhook. Only supplied fields are changed:
+
+<CodeGroup>
+```bash cURL
+curl -X PATCH "https://catchall.newscatcherapi.com/catchAll/webhooks/{webhook_id}" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "url": "https://new-endpoint.com/catchall",
+    "auth": {
+      "type": "bearer",
+      "token": "NEW_TOKEN"
+    }
+  }'
+```
+```python Python
+client.webhooks.update_webhook(
+    webhook_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    url="https://new-endpoint.com/catchall",
+    auth={"type": "bearer", "token": "NEW_TOKEN"},
+)
+```
+```typescript TypeScript
+await client.webhooks.updateWebhook({
+  webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  url: "https://new-endpoint.com/catchall",
+  auth: { type: "bearer", token: "NEW_TOKEN" },
+});
+```
+```java Java
+client.webhooks().updateWebhook(
+    "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    UpdateWebhookRequestDto.builder()
+        .url("https://new-endpoint.com/catchall")
+        .auth(BearerAuthDto.builder()
+            .type("bearer")
+            .token("NEW_TOKEN")
+            .build())
+        .build()
+);
+```
+</CodeGroup>
+
+To pause deliveries without deleting the webhook, set `is_active` to `false`.
+
+## Handle deliveries
+
+Your endpoint must meet the following requirements and handle incoming requests 
+reliably.
+
+### Endpoint requirements
+
+Your endpoint must:
+
+1. **Return a 2xx status code** within 5 seconds.
+2. **Be publicly accessible** — localhost and private network addresses are not supported.
+3. **Use HTTPS** — HTTP endpoints are not accepted.
+4. **Accept POST requests** with a JSON body.
+
+### Return 200 immediately
+
+Return `200` before processing to avoid timeouts. Process the payload
+asynchronously:
+
+<Tabs>
+  <Tab title="Python">
+    ```python
+    from flask import Flask, request, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/catchall/webhook", methods=["POST"])
+    def handle_webhook():
+        payload = request.json
+        # Return 200 immediately, then process
+        process_async(payload)
+        return jsonify({"status": "received"}), 200
+
+    def process_async(payload):
+        # Your processing logic here
+        pass
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```typescript
+    import express from "express";
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/catchall/webhook", (req, res) => {
+      const payload = req.body;
+      // Return 200 immediately, then process
+      res.status(200).json({ status: "received" });
+      processAsync(payload);
+    });
+
+    async function processAsync(payload: any) {
+      // Your processing logic here
+    }
+    ```
+  </Tab>
+  <Tab title="Java">
+    ```java
+    @RestController
+    public class WebhookController {
+
+        @PostMapping("/catchall/webhook")
+        public ResponseEntity<Map<String, String>> handleWebhook(
+            @RequestBody Map<String, Object> payload
+        ) {
+            // Return 200 immediately, then process
+            CompletableFuture.runAsync(() -> processAsync(payload));
+            return ResponseEntity.ok(Map.of("status", "received"));
+        }
+
+        private void processAsync(Map<String, Object> payload) {
+            // Your processing logic here
+        }
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Debug deliveries
+
+Use the delivery history endpoint to inspect past dispatch outcomes:
+
+<CodeGroup>
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/webhook-history?resource_type=monitor&resource_id={monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+```python Python
+history = client.webhooks.get_webhook_delivery_history(
+    resource_type="monitor",
+    resource_id="3fec5b07-8786-46d7-9486-d43ff67eccd4",
+)
+for item in history.items:
+    print(f"{item.timestamp} — {item.delivery_status} ({item.status_code})")
+```
+```typescript TypeScript
+const history = await client.webhooks.getWebhookDeliveryHistory({
+  resource_type: "monitor",
+  resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+});
+for (const item of history.items) {
+  console.log(`${item.timestamp} — ${item.delivery_status} (${item.status_code})`);
+}
+```
+```java Java
+var history = client.webhooks().getWebhookDeliveryHistory(
+    MappableResourceType.MONITOR,
+    "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+);
+for (var item : history.getItems()) {
+    System.out.println(item.getTimestamp() + " — " + item.getDeliveryStatus()
+        + " (" + item.getStatusCode() + ")");
+}
+```
+</CodeGroup>
+
+Each record shows the HTTP status code returned by your endpoint, the delivery
+outcome (`SUCCESS` or `FAILED`), and any error or warning messages.
+
+## See also
+
+- [Webhook payload](/web-search-api/api-reference/webhooks/webhook-payload)
+- [Webhooks API reference](/web-search-api/api-reference/webhooks/create-webhook)
+- [Configure monitors](/web-search-api/how-to/configure-monitors)

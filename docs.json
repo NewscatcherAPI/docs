@@ -57,6 +57,7 @@
             "group": "How to",
             "pages": [
               "web-search-api/how-to/write-effective-queries",
+              "web-search-api/how-to/set-up-webhooks",
               "web-search-api/how-to/configure-monitors",
               "web-search-api/how-to/troubleshoot-monitors"
             ]
