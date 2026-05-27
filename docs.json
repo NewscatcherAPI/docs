@@ -48,6 +48,7 @@
               "web-search-api/guides-and-concepts/jobs",
               "web-search-api/guides-and-concepts/monitors",
               "web-search-api/guides-and-concepts/company-search",
+              "web-search-api/guides-and-concepts/projects",
               "web-search-api/guides-and-concepts/index-and-search-depth",
               "web-search-api/guides-and-concepts/dynamic-schemas"
             ]
@@ -56,6 +57,7 @@
             "group": "How to",
             "pages": [
               "web-search-api/how-to/write-effective-queries",
+              "web-search-api/how-to/set-up-webhooks",
               "web-search-api/how-to/configure-monitors",
               "web-search-api/how-to/troubleshoot-monitors"
             ]
@@ -66,6 +68,7 @@
               {
                 "group": "Jobs",
                 "pages": [
+                  "web-search-api/api-reference/jobs/validate-query",
                   "web-search-api/api-reference/jobs/initialize-job",
                   "web-search-api/api-reference/jobs/create-job",
                   "web-search-api/api-reference/jobs/get-job-status",
@@ -87,8 +90,24 @@
                   "web-search-api/api-reference/monitors/enable-monitor",
                   "web-search-api/api-reference/monitors/disable-monitor",
                   "web-search-api/api-reference/monitors/update-monitor",
-                  "web-search-api/api-reference/monitors/delete-monitor",
-                  "web-search-api/api-reference/monitors/webhook-payload"
+                  "web-search-api/api-reference/monitors/delete-monitor"
+                ]
+              },
+              {
+                "group": "Webhooks",
+                "pages": [
+                  "web-search-api/api-reference/webhooks/create-webhook",
+                  "web-search-api/api-reference/webhooks/list-webhooks",
+                  "web-search-api/api-reference/webhooks/get-webhook",
+                  "web-search-api/api-reference/webhooks/update-webhook",
+                  "web-search-api/api-reference/webhooks/delete-webhook",
+                  "web-search-api/api-reference/webhooks/test-webhook",
+                  "web-search-api/api-reference/webhooks/assign-resource",
+                  "web-search-api/api-reference/webhooks/list-webhook-resources",
+                  "web-search-api/api-reference/webhooks/remove-resource",
+                  "web-search-api/api-reference/webhooks/list-resource-webhooks",
+                  "web-search-api/api-reference/webhooks/get-delivery-history",
+                  "web-search-api/api-reference/webhooks/webhook-payload"
                 ]
               },
               {
@@ -116,6 +135,20 @@
                   "web-search-api/api-reference/datasets/remove-entities-from-dataset",
                   "web-search-api/api-reference/datasets/get-dataset-status-history",
                   "web-search-api/api-reference/datasets/upload-csv-to-dataset"
+                ]
+              },
+              {
+                "group": "Projects",
+                "pages": [
+                  "web-search-api/api-reference/projects/list-projects",
+                  "web-search-api/api-reference/projects/create-project",
+                  "web-search-api/api-reference/projects/get-project",
+                  "web-search-api/api-reference/projects/update-project",
+                  "web-search-api/api-reference/projects/delete-project",
+                  "web-search-api/api-reference/projects/get-project-overview",
+                  "web-search-api/api-reference/projects/list-resources",
+                  "web-search-api/api-reference/projects/add-resource",
+                  "web-search-api/api-reference/projects/remove-resource"
                 ]
               },
               {

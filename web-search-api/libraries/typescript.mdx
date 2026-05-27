@@ -389,11 +389,7 @@ Automate recurring queries with scheduled execution.
     const monitor = await client.monitors.createMonitor({
       reference_job_id: jobId,
       schedule: "every day at 12 PM UTC",
-      webhook: {
-        url: "https://your-endpoint.com/webhook",
-        method: "POST",
-        headers: { Authorization: "Bearer YOUR_TOKEN" },
-      },
+      webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
     });
     console.log(`Monitor created: ${monitor.monitor_id}`);
     ```
@@ -410,11 +406,8 @@ Automate recurring queries with scheduled execution.
     ```typescript
     const updated = await client.monitors.updateMonitor({
       monitor_id: monitor.monitor_id,
-      webhook: {
-        url: "https://new-endpoint.com/webhook",
-        method: "POST",
-        headers: { Authorization: "Bearer NEW_TOKEN" },
-      },
+      webhook_ids: ["b2c3d4e5-f6a7-8901-bcde-f12345678901"],
+      limit: 100,
     });
     console.log(`Monitor updated: ${updated.status}`);
     ```
@@ -486,11 +479,7 @@ try {
   const monitor = await client.monitors.createMonitor({
     reference_job_id: jobId,
     schedule: "every day at 12 PM UTC",
-    webhook: {
-      url: "https://your-endpoint.com/webhook",
-      method: "POST",
-      headers: { Authorization: "Bearer YOUR_TOKEN" },
-    },
+    webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
   });
   const monitorId = monitor.monitor_id;
   console.log(`Monitor created: ${monitorId}`);
@@ -498,10 +487,8 @@ try {
   // Update webhook
   await client.monitors.updateMonitor({
     monitor_id: monitorId,
-    webhook: {
-      url: "https://new-endpoint.com/webhook",
-      method: "POST",
-    },
+    webhook_ids: ["b2c3d4e5-f6a7-8901-bcde-f12345678901"],
+    limit: 100,
   });
 
   // List all monitors
@@ -542,9 +529,9 @@ try {
 ```
 </Accordion>
 
-## Company search
+## Company watchlist
 
-Company search lets you track specific companies across jobs. Create entities,
+Company watchlist lets you track specific companies across jobs. Create entities,
 group them into a dataset, then connect the dataset to any job to get per-company
 relevance scores in results.
 

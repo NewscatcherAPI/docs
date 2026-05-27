@@ -194,6 +194,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
   <Tab title="Jobs">
     | Endpoint                    |  Method  | Description                     |
     | --------------------------- | -------- | ------------------------------- |
+    | `/catchAll/validate`        | `POST`   | Validate a query before submission              |
     | `/catchAll/initialize`      | `POST`   | Get validator, enrichment, and date suggestions |
     | `/catchAll/submit`          | `POST`   | Create a new job                |
     | `/catchAll/continue`        | `POST`   | Continue job with higher limit  |
@@ -213,7 +214,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     | Endpoint                                    |  Method  | Description                    |
     | ------------------------------------------- | -------- | ------------------------------ |
     | `/catchAll/monitors/create`                 | `POST`   | Create scheduled monitor       |
-    | `/catchAll/monitors/{monitor_id}`           | `PATCH`  | Update monitor webhook         |
+    | `/catchAll/monitors/{monitor_id}`           | `PATCH`  | Update monitor                 |
     | `/catchAll/monitors/{monitor_id}`           | `DELETE` | Delete a monitor               |
     | `/catchAll/monitors`                        | `GET`    | List all monitors              |
     | `/catchAll/monitors/{monitor_id}/jobs`      | `GET`    | List jobs for a monitor        |
@@ -221,6 +222,22 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     | `/catchAll/monitors/pull/{monitor_id}`      | `GET`    | Get aggregated monitor results |
     | `/catchAll/monitors/{monitor_id}/enable`    | `POST`   | Enable a monitor               |
     | `/catchAll/monitors/{monitor_id}/disable`   | `POST`   | Disable a monitor              |
+  </Tab>
+
+  <Tab title="Webhooks">
+    | Endpoint                                                                          | Method   | Description                              |
+    | --------------------------------------------------------------------------------- | -------- | ---------------------------------------- |
+    | `/catchAll/webhooks`                                                              | `POST`   | Create a webhook                         |
+    | `/catchAll/webhooks`                                                              | `GET`    | List webhooks                            |
+    | `/catchAll/webhooks/{webhook_id}`                                                 | `GET`    | Get a webhook                            |
+    | `/catchAll/webhooks/{webhook_id}`                                                 | `PATCH`  | Update a webhook                         |
+    | `/catchAll/webhooks/{webhook_id}`                                                 | `DELETE` | Delete a webhook                         |
+    | `/catchAll/webhooks/{webhook_id}/test`                                            | `POST`   | Test webhook delivery                    |
+    | `/catchAll/webhooks/{webhook_id}/resources`                                       | `POST`   | Assign a resource to a webhook           |
+    | `/catchAll/webhooks/{webhook_id}/resources`                                       | `GET`    | List resources assigned to a webhook     |
+    | `/catchAll/webhooks/{webhook_id}/resources/{resource_type}/{resource_id}`         | `DELETE` | Remove a resource from a webhook         |
+    | `/catchAll/resources/{resource_type}/{resource_id}/webhooks`                      | `GET`    | List webhooks assigned to a resource     |
+    | `/catchAll/webhook-history`                                                       | `GET`    | Get webhook delivery history             |
   </Tab>
 
   <Tab title="Entities">
@@ -248,6 +265,20 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     | `/catchAll/datasets/{dataset_id}/entities/list` | `POST`    | List entities in dataset                 |
     | `/catchAll/datasets/{dataset_id}/status`        | `GET`    | Get dataset status history               |
     | `/catchAll/datasets/{dataset_id}/upload`        | `POST`   | Add companies to dataset via CSV         |
+  </Tab>
+
+  <Tab title="Projects">
+    | Endpoint                                                                      | Method   | Description                              |
+    | ----------------------------------------------------------------------------- | -------- | ---------------------------------------- |
+    | `/catchAll/projects`                                                          | `POST`   | Create a project                         |
+    | `/catchAll/projects`                                                          | `GET`    | List projects                            |
+    | `/catchAll/projects/{project_id}`                                             | `GET`    | Get a project                            |
+    | `/catchAll/projects/{project_id}`                                             | `PATCH`  | Update a project                         |
+    | `/catchAll/projects/{project_id}`                                             | `DELETE` | Delete a project                         |
+    | `/catchAll/projects/{project_id}/overview`                                    | `GET`    | Get resource counts by type and status   |
+    | `/catchAll/projects/{project_id}/resources`                                   | `POST`   | Add resources to a project               |
+    | `/catchAll/projects/{project_id}/resources`                                   | `GET`    | List resources in a project              |
+    | `/catchAll/projects/{project_id}/resources/{resource_type}/{resource_id}`     | `DELETE` | Remove a resource from a project         |
   </Tab>
 
   <Tab title="Meta">

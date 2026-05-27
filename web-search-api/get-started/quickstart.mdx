@@ -41,7 +41,7 @@ Before you begin, make sure you meet these prerequisites:
 
     ```bash Java (Gradle)
     dependencies {
-        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:1.1.2'
+        implementation 'com.newscatcherapi:newscatcher-catchall-sdk:3.0.0'
     }
     ```
 
@@ -49,7 +49,7 @@ Before you begin, make sure you meet these prerequisites:
     <dependency>
         <groupId>com.newscatcherapi</groupId>
         <artifactId>newscatcher-catchall-sdk</artifactId>
-        <version>1.1.2</version>
+        <version>3.0.0</version>
     </dependency>
     ```
     </CodeGroup>
@@ -111,7 +111,7 @@ Before you begin, make sure you meet these prerequisites:
     // Create a job
     const job = await client.jobs.createJob({
       query: "AI company acquisitions",
-      context: "Focus on deal size and acquiring company details"
+      context: "Focus on deal size and acquiring company details",
       start_date: "2025-12-03T19:00:40Z",
       end_date: "2025-12-08T19:00:40Z",
       limit: 10

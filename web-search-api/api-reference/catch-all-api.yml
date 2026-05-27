@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.5.3
+  version: 1.6.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -21,6 +21,13 @@ info:
     1. Create successful job via /catchAll/submit
     2. Create monitor via /catchAll/monitors/create with schedule
     3. Retrieve aggregated results via /catchAll/monitors/pull/{monitor_id}
+
+    ### Webhook workflow
+
+    1. Create a webhook via `POST /catchAll/webhooks`
+    2. Attach it to a job or monitor via `POST /catchAll/webhooks/{webhook_id}/resources`,
+       or pass `webhook_ids` at job or monitor creation time
+    3. Receive HTTP notifications at the configured URL when each job completes
 
     ### Company search workflow
 
@@ -60,6 +67,18 @@ tags:
         Automate recurring queries with scheduled jobs and webhook
         notifications.
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors
+  - name: Webhooks
+    description: |
+      Operations to create and manage reusable webhook endpoints.
+
+      A webhook is a named HTTP endpoint that receives a POST notification
+      when a job or monitor completes. Create webhooks once at the organization
+      level and attach them to any number of jobs or monitors via `webhook_ids`.
+      Supports Slack, Microsoft Teams, and generic HTTP targets with configurable
+      delivery modes, authentication, and headers.
+    externalDocs:
+      description: Learn about centralized webhooks and notification setup
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/webhooks
   - name: Entities
     description: |
       Operations to create, update, and delete company entities.
@@ -80,6 +99,16 @@ tags:
     externalDocs:
       description: Learn about datasets and Company Watchlist
       url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search
+  - name: Projects
+    description: |
+      Operations to create, organize, and manage projects.
+
+      A project is a named container for jobs, monitors, and datasets. Group
+      related resources by use case, team, or client, and share them with
+      teammates. Resources can be assigned at creation time or post-hoc.
+    externalDocs:
+      description: Learn about projects and resource organization
+      url: https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects
   - name: Meta
     description: Operations to check API health and version.
 
@@ -104,11 +133,38 @@ paths:
         - $ref: "#/components/parameters/PageSize"
         - $ref: "#/components/parameters/Search"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+
+  /catchAll/validate:
+    post:
+      tags:
+        - Jobs
+      summary: Validate query
+      description: |
+        Checks whether a query is well-formed and likely to produce good results before submitting a job.
+
+        Returns a quality assessment with a status level, identified issues, and actionable suggestions.
+      operationId: validateQuery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ValidateQueryRequestDto"
+            example:
+              query: "Series B funding rounds for SaaS startups"
+      responses:
+        "200":
+          $ref: "#/components/responses/ValidateQueryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   /catchAll/initialize:
     post:
@@ -279,6 +335,7 @@ paths:
         - $ref: "#/components/parameters/PageSize"
         - $ref: "#/components/parameters/Search"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
@@ -306,11 +363,8 @@ paths:
               timezone: "UTC"
               backfill: true
               limit: 10
-              webhook:
-                url: "https://your-endpoint.com/webhook"
-                method: "POST"
-                headers:
-                  Authorization: "Bearer your_token_here"
+              webhook_ids:
+                - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
@@ -433,7 +487,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Whether the operation succeeded.
+                    description: True if the operation succeeded; false otherwise.
                     example: true
                   message:
                     type: string
@@ -479,7 +533,7 @@ paths:
                 properties:
                   success:
                     type: boolean
-                    description: Whether the operation succeeded.
+                    description: True if the operation succeeded; false otherwise.
                     example: true
                   message:
                     type: string
@@ -521,11 +575,8 @@ paths:
             schema:
               $ref: "#/components/schemas/UpdateMonitorRequestDto"
             example:
-              webhook:
-                url: "https://new-endpoint.com/webhook"
-                method: "POST"
-                headers:
-                  Authorization: "Bearer new_token_xyz"
+              webhook_ids:
+                - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       responses:
         "200":
           $ref: "#/components/responses/UpdateMonitorResponse"
@@ -565,6 +616,332 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  # ── Webhooks ──────────────────────────────────────────────────────────────
+
+  /catchAll/webhooks:
+    post:
+      tags:
+        - Webhooks
+      summary: Create webhook
+      description: |
+        Creates a new webhook endpoint for the organization.
+      operationId: createWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWebhookRequestDto"
+            example:
+              name: "Layoffs Alert"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
+              type: "slack"
+              delivery_mode: "full"
+      responses:
+        "201":
+          $ref: "#/components/responses/CreateWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Webhooks
+      summary: List webhooks
+      description: Returns a paginated list of webhooks belonging to the organization.
+      operationId: listWebhooks
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of webhooks per page.
+        - $ref: "#/components/parameters/Search"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListWebhooksResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/webhooks/{webhook_id}:
+    get:
+      tags:
+        - Webhooks
+      summary: Get webhook
+      description: Returns the full configuration of a single webhook by ID.
+      operationId: getWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      responses:
+        "200":
+          $ref: "#/components/responses/GetWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    patch:
+      tags:
+        - Webhooks
+      summary: Update webhook
+      description: |
+        Updates one or more fields of an existing webhook.
+      operationId: updateWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWebhookRequestDto"
+            example:
+              name: "Layoffs Alert (EU)"
+              is_active: false
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Webhooks
+      summary: Delete webhook
+      description: |
+        Permanently deletes a webhook and removes all resource assignments. 
+        
+        Assigned jobs and monitors no longer trigger delivery to this webhook. This operation cannot be undone.
+      operationId: deleteWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      responses:
+        "204":
+          description: Webhook deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/webhooks/{webhook_id}/test:
+    post:
+      tags:
+        - Webhooks
+      summary: Test webhook delivery
+      description: |
+        Sends a test HTTP request to the webhook URL using the webhook's configured method, headers, and auth. Returns the response from the target endpoint.
+
+        Use this to verify URL reachability and authentication before attaching the webhook to a live job or monitor.
+      operationId: testWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestWebhookRequestDto"
+            example:
+              payload:
+                test: true
+                message: "CatchAll webhook test"
+      responses:
+        "200":
+          $ref: "#/components/responses/TestWebhookResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/webhooks/{webhook_id}/resources:
+    post:
+      tags:
+        - Webhooks
+      summary: Assign resource to webhook
+      description: |
+        Attaches a job, monitor, or monitor group to the webhook. When the
+        resource completes, the webhook receives a delivery.
+
+        A single webhook can be assigned to multiple resources. Each resource
+        can have up to 5 webhooks assigned.
+      operationId: assignWebhookResource
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AssignWebhookResourceRequestDto"
+            example:
+              resource_type: "monitor"
+              resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+      responses:
+        "200":
+          $ref: "#/components/responses/AssignWebhookResourceResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Webhooks
+      summary: List webhook resources
+      description: |
+        Returns a paginated list of resources currently assigned to this webhook.
+      operationId: listWebhookResources
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+        - name: resource_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/MappableResourceType"
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of assignments per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/ListWebhookResourcesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/webhooks/{webhook_id}/resources/{resource_type}/{resource_id}:
+    delete:
+      tags:
+        - Webhooks
+      summary: Remove resource from webhook
+      description: |
+        Detaches a resource from this webhook. Completions of the resource no longer trigger delivery to this webhook.
+
+        The webhook and the resource itself are not deleted.
+      operationId: removeWebhookResource
+      parameters:
+        - $ref: "#/components/parameters/WebhookId"
+        - $ref: "#/components/parameters/WebhookResourceType"
+        - $ref: "#/components/parameters/WebhookResourceId"
+      responses:
+        "204":
+          description: Resource removed from webhook. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/resources/{resource_type}/{resource_id}/webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: List webhooks for resource
+      description: |
+        Returns all webhooks currently assigned to the given resource.
+      operationId: listWebhooksForResource
+      parameters:
+        - $ref: "#/components/parameters/WebhookResourceType"
+        - $ref: "#/components/parameters/WebhookResourceId"
+        - name: is_active
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Filter by active status. Omit to return webhooks regardless of status.
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of webhooks per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/ListResourceWebhooksResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/webhook-history:
+    get:
+      tags:
+        - Webhooks
+      summary: Get delivery history
+      description: |
+        Returns a paginated delivery log for a given resource, ordered by timestamp descending. 
+        
+        Each record shows the webhook dispatched, the HTTP status code returned, delivery outcome, and any error or warning messages. Use this to debug failed deliveries or audit dispatch activity.
+      operationId: getWebhookDeliveryHistory
+      parameters:
+        - name: resource_type
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the resource to retrieve delivery history for.
+        - name: resource_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identifier of the resource to retrieve delivery history for.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+            minimum: 1
+            maximum: 500
+          description: Number of records per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryHistoryResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
 
   # ── Entities ──────────────────────────────────────────────────────────────
 
@@ -821,6 +1198,7 @@ paths:
           schema:
             $ref: "#/components/schemas/SortOrder"
         - $ref: "#/components/parameters/Ownership"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/DatasetListResponse"
@@ -1121,6 +1499,227 @@ paths:
         "422":
           $ref: "#/components/responses/ValidationError"
 
+# ── Projects ──────────────────────────────────────────────────────────
+
+  /catchAll/projects:
+    post:
+      tags:
+        - Projects
+      summary: Create project
+      description: Creates a new project.
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequestDto"
+            example:
+              name: "AI M&A Tracking"
+              description: "Tracks AI-related M&A activity for our investment team."
+      responses:
+        "201":
+          $ref: "#/components/responses/CreateProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    get:
+      tags:
+        - Projects
+      summary: List projects
+      description: Returns all projects visible to the authenticated user.
+      operationId: listProjects
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by project name (case-insensitive substring match).
+          example: "M&A"
+        - $ref: "#/components/parameters/Ownership"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProjectsResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/projects/{project_id}:
+    get:
+      tags:
+        - Projects
+      summary: Get project
+      description: Returns a single project by ID.
+      operationId: getProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    patch:
+      tags:
+        - Projects
+      summary: Update project
+      description: Updates the name or description of an existing project.
+      operationId: updateProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProjectRequestDto"
+            example:
+              name: "AI M&A Tracking (Q2 2026)"
+      responses:
+        "200":
+          $ref: "#/components/responses/UpdateProjectResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+    delete:
+      tags:
+        - Projects
+      summary: Delete project
+      description: |
+        Deletes a project. By default, assigned resources are unassigned but not deleted. 
+      operationId: deleteProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - $ref: "#/components/parameters/DeleteResources"
+      responses:
+        "204":
+          description: Project deleted successfully. No response body.
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/projects/{project_id}/overview:
+    get:
+      tags:
+        - Projects
+      summary: Get project overview
+      description: |
+        Returns resource counts for a project, grouped by type and status.
+
+        For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets` and `monitor_groups`, only a `total` count is returned.
+      operationId: getProjectOverview
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      responses:
+        "200":
+          $ref: "#/components/responses/ProjectOverviewResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/projects/{project_id}/resources:
+    post:
+      tags:
+        - Projects
+      summary: Add resources to project
+      description: |
+        Assigns one or more existing resources to a project in a single request.
+      operationId: addResourceToProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddResourceRequestDto"
+            example:
+              resources:
+                - resource_type: "job"
+                  resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      responses:
+        "200":
+          $ref: "#/components/responses/AddResourceResponse"
+        "201":
+          $ref: "#/components/responses/AddResourceResponse"
+        "400":
+          $ref: "#/components/responses/BadRequestError"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
+    get:
+      tags:
+        - Projects
+      summary: List project resources
+      description: Returns all resources assigned to a project, with optional filtering by type.
+      operationId: listProjectResources
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: resource_type
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ProjectResourceType"
+        - $ref: "#/components/parameters/Page"
+        - $ref: "#/components/parameters/PageSize"
+      responses:
+        "200":
+          $ref: "#/components/responses/ListProjectResourcesResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/projects/{project_id}/resources/{resource_type}/{resource_id}:
+    delete:
+      tags:
+        - Projects
+      summary: Remove resource from project
+      description: |
+        Removes a resource from a project. The resource itself is not
+        deleted — it becomes unassigned and continues to exist.
+      operationId: removeResourceFromProject
+      parameters:
+        - $ref: "#/components/parameters/ProjectId"
+        - name: resource_type
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ProjectResourceType"
+        - name: resource_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID of the resource to remove.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      responses:
+        "200":
+          $ref: "#/components/responses/RemoveResourceResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   # ── Meta ──────────────────────────────────────────────────────────────
 
   /health:
@@ -1232,7 +1831,78 @@ components:
       schema:
         $ref: "#/components/schemas/OwnershipFilter"
 
+    ProjectId:
+      name: project_id
+      in: path
+      required: true
+      description: Unique project identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ProjectIdQuery:
+      name: project_id
+      in: query
+      required: false
+      description: Filter results to resources belonging to this project.
+      schema:
+        type: string
+        format: uuid
+      example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    DeleteResources:
+      name: delete_resources
+      in: query
+      required: false
+      description: |
+        If true, permanently deletes all resources (jobs, monitors, datasets) assigned to the project. If false, the project is deleted and its resources are unassigned but not deleted.
+      schema:
+        type: boolean
+        default: false
+
+    WebhookId:
+      name: webhook_id
+      in: path
+      required: true
+      description: Unique webhook identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    WebhookResourceType:
+      name: resource_type
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/MappableResourceType"
+
+    WebhookResourceId:
+      name: resource_id
+      in: path
+      required: true
+      description: Unique resource identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
   responses:
+    ValidateQueryResponse:
+      description: Query validation result.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ValidateQueryResponseDto"
+          example:
+            status: "good"
+            title: "Specific event type clear"
+            description: "Clear event type and focus; no timeframe needed for a default recent search."
+            issues: []
+            suggestions: []
+            confidence: 0.98
+
     InitializeResponse:
       description: Suggestions retrieved successfully
       content:
@@ -1733,6 +2403,359 @@ components:
                 value: 200000
                 current_usage: 0
 
+    # ── Webhook responses ────────────────────────────────────────────────
+
+    CreateWebhookResponse:
+      description: Webhook created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateWebhookResponseDto"
+          example:
+            success: true
+            message: "Webhook created successfully."
+            webhook:
+              id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              name: "Layoffs Alert"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
+              type: "slack"
+              delivery_mode: "full"
+              method: "POST"
+              headers: {}
+              params: {}
+              formatter_config: null
+              is_active: true
+              organization_id: "org-uuid-here"
+              created_by_user_id: "user-uuid-here"
+              created_at: "2026-05-18T10:00:00Z"
+              updated_at: "2026-05-18T10:00:00Z"
+
+    GetWebhookResponse:
+      description: Webhook retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/GetWebhookResponseDto"
+          example:
+            success: true
+            message: "Webhook retrieved successfully."
+            webhook:
+              id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              name: "Layoffs Alert"
+              url: "https://hooks.slack.com/services/T000/B000/xxx"
+              type: "slack"
+              delivery_mode: "full"
+              method: "POST"
+              headers: {}
+              params: {}
+              formatter_config: null
+              is_active: true
+              organization_id: "org-uuid-here"
+              created_by_user_id: "user-uuid-here"
+              created_at: "2026-05-18T10:00:00Z"
+              updated_at: "2026-05-18T10:00:00Z"
+
+    UpdateWebhookResponse:
+      description: Webhook updated successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateWebhookResponseDto"
+          example:
+            success: true
+            message: "Webhook updated successfully."
+            webhook:
+              id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              name: "Layoffs Alert (EU)"
+              url: "https://hooks.slack.com/services/T000/B111/yyyy"
+              type: "slack"
+              delivery_mode: "full"
+              method: "POST"
+              headers: {}
+              params: {}
+              formatter_config: null
+              is_active: true
+              organization_id: "org-uuid-here"
+              created_by_user_id: "user-uuid-here"
+              created_at: "2026-05-18T10:00:00Z"
+              updated_at: "2026-05-19T08:30:00Z"
+
+    ListWebhooksResponse:
+      description: Webhooks retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListWebhooksResponseDto"
+          example:
+            total: 2
+            page: 1
+            page_size: 100
+            total_pages: 1
+            webhooks:
+              - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                name: "Layoffs Alert"
+                url: "https://hooks.slack.com/services/T000/B000/xxx"
+                type: "slack"
+                delivery_mode: "full"
+                method: "POST"
+                headers: {}
+                params: {}
+                formatter_config: null
+                is_active: true
+                organization_id: "org-uuid-here"
+                created_by_user_id: "user-uuid-here"
+                created_at: "2026-05-18T10:00:00Z"
+                updated_at: "2026-05-18T10:00:00Z"
+              - id: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+                name: "M&A Tracker"
+                url: "https://my-service.example.com/catchall-hook"
+                type: "generic"
+                delivery_mode: "per_record"
+                method: "POST"
+                headers:
+                  Authorization: "Bearer token123"
+                params: {}
+                formatter_config: null
+                is_active: true
+                organization_id: "org-uuid-here"
+                created_by_user_id: "user-uuid-here"
+                created_at: "2026-05-19T09:00:00Z"
+                updated_at: "2026-05-19T09:00:00Z"
+
+    TestWebhookResponse:
+      description: Test delivery attempted. Check `success` and `http_status_code` for the outcome.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TestWebhookResponseDto"
+          example:
+            success: true
+            message: "Test delivery succeeded."
+            http_status_code: 200
+            response_body: "ok"
+
+    AssignWebhookResourceResponse:
+      description: Resource assigned to webhook.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AssignWebhookResourceResponseDto"
+          example:
+            success: true
+            message: "Resource assigned to webhook."
+            already_existed: false
+            mapping:
+              id: "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+              webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              resource_type: "monitor"
+              resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+              assigned_at: "2026-05-18T10:00:00Z"
+
+    ListWebhookResourcesResponse:
+      description: Webhook resource assignments retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListWebhookResourcesResponseDto"
+          example:
+            total: 1
+            page: 1
+            page_size: 100
+            total_pages: 1
+            resources:
+              - id: "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+                webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                resource_type: "monitor"
+                resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+                assigned_at: "2026-05-18T10:00:00Z"
+
+    ListResourceWebhooksResponse:
+      description: Webhooks for resource retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListWebhooksResponseDto"
+          example:
+            total: 1
+            page: 1
+            page_size: 100
+            total_pages: 1
+            webhooks:
+              - id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                name: "Layoffs Alert"
+                url: "https://hooks.slack.com/services/T000/B000/xxx"
+                type: "slack"
+                delivery_mode: "full"
+                method: "POST"
+                headers: {}
+                params: {}
+                formatter_config: null
+                is_active: true
+                organization_id: "org-uuid-here"
+                created_by_user_id: "user-uuid-here"
+                created_at: "2026-05-18T10:00:00Z"
+                updated_at: "2026-05-18T10:00:00Z"
+
+    DeliveryHistoryResponse:
+      description: Webhook delivery history retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryHistoryResponseDto"
+          example:
+            resource_type: "monitor"
+            resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+            total: 2
+            page: 1
+            page_size: 50
+            total_pages: 1
+            items:
+              - id: 42
+                webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                resource_type: "monitor"
+                resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+                additional_info: {}
+                status_code: 200
+                attempt_number: 1
+                timestamp: "2026-05-18T10:00:00Z"
+                delivery_status: "SUCCESS"
+                error_message: null
+                warning_message: null
+              - id: 41
+                webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                resource_type: "monitor"
+                resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+                additional_info: {}
+                status_code: 503
+                attempt_number: 1
+                timestamp: "2026-05-17T10:00:00Z"
+                delivery_status: "FAILED"
+                error_message: "Service unavailable"
+                warning_message: null
+
+    # ── Project responses ────────────────────────────────────────────────
+
+    CreateProjectResponse:
+      description: Project created successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateProjectResponseDto"
+          example:
+            success: true
+            message: "Project created successfully."
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            name: "AI M&A Tracking"
+
+    ProjectResponse:
+      description: Project details.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectResponseDto"
+          example:
+            success: true
+            message: "OK"
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            name: "AI M&A Tracking"
+            description: "Tracks AI-related M&A activity for our investment team."
+            resources_count: 4
+            created_at: "2026-05-20T14:31:35Z"
+            updated_at: "2026-05-20T14:31:35Z"
+
+    UpdateProjectResponse:
+      description: Project updated successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/UpdateProjectResponseDto"
+          example:
+            success: true
+            message: "Project updated successfully."
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ListProjectsResponse:
+      description: Paginated list of projects.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectListResponseDto"
+          example:
+            total: 2
+            page: 1
+            page_size: 100
+            total_pages: 1
+            projects:
+              - project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+                name: "AI M&A Tracking"
+                description: "Tracks AI-related M&A activity."
+                resources_count: 4
+                created_at: "2026-05-20T14:31:35Z"
+                updated_at: "2026-05-20T14:31:35Z"
+
+    ProjectOverviewResponse:
+      description: Resource counts for the project, grouped by type and status.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectOverviewResponseDto"
+          example:
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            overview:
+              jobs: {}
+              monitors: {}
+              datasets:
+                total: 2
+              monitor_groups:
+                total: 0
+
+    AddResourceResponse:
+      description: |
+        One or more resources added to the project (`201`), or all were already present (`200`).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AddResourceResponseDto"
+          example:
+            success: true
+            message: "Resources added to project."
+            results:
+              - resource_type: "job"
+                resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+                success: true
+                message: "Resource added to project."
+                already_exists: false
+
+    ListProjectResourcesResponse:
+      description: Paginated list of resources assigned to the project.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ProjectResourceListResponseDto"
+          example:
+            total: 1
+            page: 1
+            page_size: 100
+            total_pages: 1
+            resources:
+              - resource_type: "job"
+                resource_id: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+                name: "Series B fintech funding rounds"
+                created_at: "2026-05-20T14:31:37Z"
+                metadata: {}
+
+    RemoveResourceResponse:
+      description: Resource removed from the project.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/RemoveResourceResponseDto"
+          example:
+            success: true
+            message: "Resource removed from project."
+
+    # ── Common error responses ─────────────────────────────────────────────
+
     BadRequestError:
       description: |
         Bad request - invalid parameters or constraint violations.
@@ -1973,6 +2996,114 @@ components:
               description: Confidence level for the domain URL resolution.
               example: "high"
 
+    QueryStatus:
+      type: string
+      enum:
+        - good
+        - needs_work
+        - critical
+      description: |
+        Quality level assigned to a query by the validation endpoint.
+
+        - `good`: Query is well-formed and likely to produce relevant results.
+        - `needs_work`: Query has issues that may reduce result quality. Review `suggestions` for improvements.
+        - `critical`: Query is unlikely to produce useful results as written. Address all `issues` before submitting.
+
+    IssueType:
+      type: string
+      enum:
+        - missing_event_type
+        - too_vague
+        - too_specific
+        - wrong_timeframe
+        - static_content
+        - article_request
+        - multiple_event_types
+        - too_short
+        - too_long
+      description: |
+        Category of a query issue identified during validation.
+
+        - `missing_event_type`: Query does not specify a type of event to find.
+        - `too_vague`: Query lacks sufficient focus to return targeted results.
+        - `too_specific`: Query is overly constrained and may return no results.
+        - `wrong_timeframe`: Requested timeframe exceeds the 30-day maximum window or references a historical period outside the supported range.
+        - `static_content`: Query targets static or reference content such as specifications, how-to guides, or historical data rather than events.
+        - `article_request`: Query requests articles or news content rather than describing an event to search for.
+        - `multiple_event_types`: Query mixes unrelated event types; results may be unfocused.
+        - `too_short`: Query is too short to resolve meaningful search intent.
+        - `too_long`: Query is excessively long and may confuse the pipeline.
+
+    Suggestion:
+      type: object
+      description: Actionable recommendation for improving a query.
+      required:
+        - issue
+        - message
+      properties:
+        issue:
+          $ref: "#/components/schemas/IssueType"
+          description: The issue this suggestion addresses.
+        message:
+          type: string
+          description: Specific guidance for improving the query.
+          example: "Add a target sector or geography to narrow the results."
+        example:
+          type: string
+          description: Revised query demonstrating the suggested improvement.
+          example: "Series A fundraising for AI startups in healthcare"
+
+    ValidateQueryRequestDto:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: Plain text query to validate.
+          example: "Series B funding rounds for SaaS startups"
+      example:
+        query: "Series B funding rounds for SaaS startups"
+
+    ValidateQueryResponseDto:
+      type: object
+      description: Query quality assessment returned by the validate endpoint.
+      required:
+        - status
+        - title
+        - confidence
+      properties:
+        status:
+          $ref: "#/components/schemas/QueryStatus"
+          description: Overall quality level of the query.
+        title:
+          type: string
+          description: Short headline summarising the assessment.
+          example: "Specific event type clear"
+        description:
+          type: string
+          description: Plain-language explanation of the assessment result.
+          example: "Clear event type and focus; no timeframe needed for a default recent search."
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/IssueType"
+          description: Issues identified in the query. Empty when `status` is `good`.
+          example: []
+        suggestions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Suggestion"
+          description: |
+            Actionable recommendations for each identified issue. Empty when `status` is `good`. Each suggestion corresponds to one entry in `issues`.
+          example: []
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence score for this assessment.
+          example: 0.98
+
     InitializeRequestDto:
       type: object
       required:
@@ -1983,8 +3114,7 @@ components:
         context:
           $ref: "#/components/schemas/Context"
       description:
-        Request to get validator, enrichment, and date range suggestions for a
-        query.
+        Request to get validator, enrichment, and date range suggestions for a query.
 
     InitializeResponseDto:
       type: object
@@ -2092,6 +3222,21 @@ components:
 
             Only valid when `connected_dataset_ids` is set; otherwise ignored. Records where no connected entity meets the threshold are excluded entirely.
           example: 3
+        project_id:
+          type: string
+          format: uuid
+          description: |
+            Project to assign this job to. The job appears in the project's resource list immediately after submission.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            IDs of webhooks to notify when the job completes. Maximum 5 per job.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
     SubmitResponseDto:
       type: object
@@ -2158,7 +3303,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the delete operation succeeded.
+          description: True if the delete operation succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
@@ -2212,7 +3357,7 @@ components:
         completed:
           type: boolean
           default: false
-          description: Whether this step has finished processing.
+          description: True if this step has finished processing; false otherwise.
 
     StatusResponseDto:
       type: object
@@ -2611,10 +3756,18 @@ components:
             If the schedule includes a timezone abbreviation (for example, `"every day at 9am EST"`), the parsed timezone takes priority and this value is ignored. 
           example: "America/New_York"
           default: "UTC"
-        webhook:
-          $ref: "#/components/schemas/WebhookDto"
-          description:
-            Optional webhook to receive notifications when jobs complete.
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: |
+            IDs of centralized webhooks to notify on each run completion.
+            Passing IDs here is equivalent to calling
+            `POST /catchAll/webhooks/{webhook_id}/resources` for each ID after creation.
+            Maximum 5 per monitor.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         limit:
           type: integer
           minimum: 10
@@ -2627,6 +3780,12 @@ components:
             If true, fills the data gap between the reference job's `end_date` and the first scheduled run. The reference job's `end_date` must be within the last 7 days. 
 
             If false, no gap filling occurs and the first run uses the current cron window only — the reference job's age does not matter.
+        project_id:
+          type: string
+          format: uuid
+          description: |
+            Project to assign this monitor to. The monitor appears in the project's resource list after creation.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
 
     WebhookDto:
       type: object
@@ -2658,6 +3817,626 @@ components:
           maxItems: 2
           description: Basic auth credentials [username, password].
 
+    WebhookType:
+      type: string
+      enum:
+        - generic
+        - slack
+        - teams
+        - custom
+      description: |
+        Webhook target type.
+
+        - `generic`: Sends the raw result payload to any HTTPS endpoint.
+        - `slack`: Sends a formatted Slack Block Kit message. URL must start with `https://hooks.slack.com/`.
+        - `teams`: Sends a formatted Microsoft Teams Adaptive Card. URL hostname must match `*webhook.office.com` or `*.webhook.office365.com`.
+        - `custom`: Sends a transformed payload using the configuration in `formatter_config`. Requires `formatter_config` to be set.
+
+        When `type` is omitted, it is auto-detected from the URL.
+
+    DeliveryMode:
+      type: string
+      enum:
+        - full
+        - per_record
+      description: |
+        Delivery mode for webhook payloads.
+
+        - `full`: Sends all records in a single request on each trigger.
+        - `per_record`: Sends one request per record. For large result sets, this may generate many requests.
+   
+    HttpMethod:
+      type: string
+      enum:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+      description: HTTP method used for webhook delivery.
+
+    MappableResourceType:
+      type: string
+      enum:
+        - job
+        - monitor
+        - monitor_group
+      description: Resource types that can be assigned to a webhook.
+
+    DeliveryStatus:
+      type: string
+      enum:
+        - SUCCESS
+        - FAILED
+      description: Outcome of a webhook delivery attempt.
+
+    DeliveryHistoryItemDto:
+      type: object
+      required:
+        - id
+        - webhook_id
+        - resource_type
+        - resource_id
+        - status_code
+        - attempt_number
+        - timestamp
+        - delivery_status
+      properties:
+        id:
+          type: integer
+          description: Delivery record identifier.
+          example: 42
+        webhook_id:
+          type: string
+          format: uuid
+          description: Identifier of the webhook that was dispatched.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the resource that triggered the delivery.
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the resource that triggered the delivery.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        additional_info:
+          type: object
+          description: Extra context about the triggering event, such as job query or monitor schedule.
+          example: {}
+        status_code:
+          type: integer
+          description: HTTP response code returned by the webhook endpoint.
+          example: 200
+        attempt_number:
+          type: integer
+          description: Delivery attempt number. 1 indicates the first attempt.
+          example: 1
+        timestamp:
+          type: string
+          format: date-time
+          description: Time of the delivery attempt in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+        delivery_status:
+          $ref: "#/components/schemas/DeliveryStatus"
+          description: Outcome of this delivery attempt.
+        error_message:
+          type: ["string", "null"]
+          description: Error detail when `delivery_status` is `FAILED`. Null on success.
+          example: null
+        warning_message:
+          type: ["string", "null"]
+          description: Non-fatal warning, such as payload truncation notices. Null when no warnings occurred.
+          example: null
+
+    DeliveryHistoryResponseDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+        - total
+        - page
+        - page_size
+        - total_pages
+        - items
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of the queried resource.
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the queried resource.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        total:
+          type: integer
+          description: Total number of delivery records for this resource.
+          example: 42
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of records per page.
+          example: 50
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryHistoryItemDto"
+          description: Delivery records on this page, ordered by timestamp descending.
+
+    BearerAuthDto:
+      type: object
+      required:
+        - type
+        - token
+      properties:
+        type:
+          type: string
+          enum:
+            - bearer
+          description: Authentication type.
+        token:
+          type: string
+          description: Bearer token sent in the `Authorization` header.
+          example: "my-secret-token"
+
+    ApiKeyAuthDto:
+      type: object
+      required:
+        - type
+        - header
+        - value
+      properties:
+        type:
+          type: string
+          enum:
+            - api_key
+          description: Authentication type.
+        header:
+          type: string
+          description: HTTP header name for the API key.
+          example: "x-api-key"
+        value:
+          type: string
+          description: API key value.
+          example: "sk-abc123"
+
+    BasicAuthDto:
+      type: object
+      required:
+        - type
+        - username
+        - password
+      properties:
+        type:
+          type: string
+          enum:
+            - basic
+          description: Authentication type.
+        username:
+          type: string
+          description: Basic auth username.
+          example: "user"
+        password:
+          type: string
+          description: Basic auth password.
+          example: "pass"
+
+    WebhookResponseDto:
+      type: object
+      required:
+        - id
+        - name
+        - url
+        - type
+        - delivery_mode
+        - method
+        - is_active
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Webhook identifier.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        name:
+          type: string
+          description: Human-readable label for this webhook.
+          example: "Layoffs Alert"
+        url:
+          type: string
+          format: uri
+          description: Destination URL that receives the payload.
+          example: "https://hooks.slack.com/services/T000/B000/xxx"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom HTTP headers forwarded with each delivery.
+          example:
+            Authorization: "Bearer token123"
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Query parameters appended to the webhook URL.
+          example: {}
+        formatter_config:
+          type: ["object", "null"]
+          description: Custom payload transformation configuration. Used only when `type` is `custom`.
+          example: null
+        is_active:
+          type: boolean
+          description: True if the webhook is active; false otherwise.
+          example: true
+        organization_id:
+          type: string
+          description: Organization that owns this webhook.
+          example: "org-uuid-here"
+        created_by_user_id:
+          type: string
+          description: ID of the user who created this webhook.
+          example: "user-uuid-here"
+        created_at:
+          type: string
+          format: date-time
+          description: Webhook creation timestamp in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+
+    CreateWebhookRequestDto:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+          description: Human-readable label for this webhook.
+          example: "Layoffs Alert"
+        url:
+          type: string
+          format: uri
+          description: |
+            Destination URL that receives the payload. Must use HTTPS. IP addresses are not accepted.
+
+            Type-specific URL requirements:
+            - `slack`: Must start with `https://hooks.slack.com/`.
+            - `teams`: Hostname must match `*.webhook.office.com` or `*.webhook.office365.com`.
+            - `generic`: Any valid HTTPS domain.
+            - `custom`: Any valid HTTPS domain.
+
+            When `type` is omitted, it is auto-detected from the URL.
+          example: "https://hooks.slack.com/services/T000/B000/xxx"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom HTTP headers forwarded with each delivery.
+          default: {}
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Query parameters appended to the webhook URL.
+          default: {}
+        auth:
+          oneOf:
+            - $ref: "#/components/schemas/BearerAuthDto"
+            - $ref: "#/components/schemas/ApiKeyAuthDto"
+            - $ref: "#/components/schemas/BasicAuthDto"
+          discriminator:
+            propertyName: type
+            mapping:
+              bearer: "#/components/schemas/BearerAuthDto"
+              api_key: "#/components/schemas/ApiKeyAuthDto"
+              basic: "#/components/schemas/BasicAuthDto"
+          description: |
+            Authentication forwarded with each delivery. Supported types:
+            - `bearer`: Adds an `Authorization: Bearer <token>` header.
+            - `api_key`: Adds a custom header with the specified name and value.
+            - `basic`: Adds an `Authorization: Basic <credentials>` header.
+        formatter_config:
+          type: ["object", "null"]
+          description: Custom payload transformation configuration. Required only when `type` is `custom`.
+      example:
+        name: "Layoffs Alert"
+        url: "https://hooks.slack.com/services/T000/B000/xxx"
+        type: "slack"
+        delivery_mode: "full"
+
+    CreateWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the webhook was created; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook created successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The created webhook object.
+
+    GetWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook retrieved successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The retrieved webhook object.
+
+    UpdateWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the webhook was updated; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Webhook updated successfully."
+        webhook:
+          $ref: "#/components/schemas/WebhookResponseDto"
+          description: The updated webhook object.
+
+    UpdateWebhookRequestDto:
+      type: object
+      description: All fields are optional. Only supplied fields are updated.
+      properties:
+        name:
+          type: string
+          description: Updated webhook name.
+          example: "Layoffs Alert (EU)"
+        url:
+          type: string
+          format: uri
+          description: Updated destination URL. Must use HTTPS. Type-specific URL rules apply.
+          example: "https://hooks.slack.com/services/T000/B111/yyyy"
+        type:
+          $ref: "#/components/schemas/WebhookType"
+        delivery_mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        method:
+          $ref: "#/components/schemas/HttpMethod"
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Updated HTTP headers. Replaces existing headers entirely.
+          example:
+            Authorization: "Bearer new-token"
+        params:
+          type: object
+          additionalProperties:
+            type: string
+          description: Updated query parameters. Replaces existing params entirely.
+          example: {}
+        auth:
+          oneOf:
+            - $ref: "#/components/schemas/BearerAuthDto"
+            - $ref: "#/components/schemas/ApiKeyAuthDto"
+            - $ref: "#/components/schemas/BasicAuthDto"
+          discriminator:
+            propertyName: type
+            mapping:
+              bearer: "#/components/schemas/BearerAuthDto"
+              api_key: "#/components/schemas/ApiKeyAuthDto"
+              basic: "#/components/schemas/BasicAuthDto"
+          description: Updated authentication configuration. Replaces existing auth entirely.
+        formatter_config:
+          type: ["object", "null"]
+          description: Updated formatter configuration.
+        is_active:
+          type: boolean
+          description: Set to `false` to disable delivery without deleting the webhook.
+          example: false
+
+    ListWebhooksResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - webhooks
+      properties:
+        total:
+          type: integer
+          description: Total number of webhooks in the organization.
+          example: 3
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of webhooks per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
+        webhooks:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookResponseDto"
+          description: Webhooks on this page.
+
+    TestWebhookRequestDto:
+      type: object
+      properties:
+        payload:
+          type: object
+          description: |
+            Custom payload to send in the test request. If omitted, a synthetic
+            test payload is sent.
+          example:
+            test: true
+            message: "CatchAll webhook test"
+
+    TestWebhookResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the test delivery received a 2xx response; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Test delivery succeeded."
+        http_status_code:
+          type: integer
+          description: HTTP status code returned by the webhook endpoint.
+          example: 200
+        response_body:
+          description: Response body returned by the webhook endpoint. Type varies by target.
+          example: "ok"
+
+    AssignWebhookResourceRequestDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/MappableResourceType"
+          description: Type of resource to assign.
+        resource_id:
+          type: string
+          format: uuid
+          description: ID of the resource to assign.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+
+    WebhookResourceMappingResponseDto:
+      type: object
+      required:
+        - id
+        - webhook_id
+        - resource_type
+        - resource_id
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Mapping identifier.
+          example: "f1e2d3c4-b5a6-7890-abcd-ef1234567890"
+        webhook_id:
+          type: string
+          format: uuid
+          description: Webhook identifier.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        resource_type:
+          type: string
+          description: Type of the assigned resource.
+          example: "monitor"
+        resource_id:
+          type: string
+          format: uuid
+          description: Identifier of the assigned resource.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+        assigned_at:
+          type: string
+          format: date-time
+          description: Timestamp when the resource was assigned in ISO 8601 format with UTC timezone.
+          example: "2026-05-18T10:00:00Z"
+
+    AssignWebhookResourceResponseDto:
+      type: object
+      required:
+        - success
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Resource assigned to webhook."
+        already_existed:
+          type: boolean
+          description: True if the assignment already existed before this request.
+          default: false
+          example: false
+        mapping:
+          $ref: "#/components/schemas/WebhookResourceMappingResponseDto"
+          description: The created or existing resource mapping.
+
+    ListWebhookResourcesResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - resources
+      properties:
+        total:
+          type: integer
+          description: Total number of resource mappings for this webhook.
+          example: 2
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of mappings per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages available.
+          example: 1
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/WebhookResourceMappingResponseDto"
+          description: Resource mappings on this page.
+
     CreateMonitorResponseDto:
       type: object
       required:
@@ -2675,15 +4454,21 @@ components:
     UpdateMonitorRequestDto:
       type: object
       properties:
-        webhook:
-          $ref: "#/components/schemas/WebhookDto"
+        webhook_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
           description: |
-            Updated webhook configuration.
+            Updated list of centralized webhook IDs for this monitor. 
+            
+            Replaces all existing webhook assignments. Pass an empty array `[]` to clear all assignments. Omit to leave existing assignments unchanged.
+          example:
+            - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         limit:
           type: integer
           minimum: 10
-          description: |
-            Updated maximum number of records per monitor run.
+          description: Updated maximum number of records per monitor run.
 
     UpdateMonitorResponseDto:
       type: object
@@ -2711,7 +4496,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the delete operation succeeded.
+          description: True if the delete operation succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
@@ -2851,7 +4636,7 @@ components:
           example: "Series B funding rounds for SaaS startups"
         enabled:
           type: boolean
-          description: Whether the monitor is currently active.
+          description: True if the monitor is currently active; false otherwise.
           example: true
         schedule:
           type: string
@@ -3028,7 +4813,7 @@ components:
       properties:
         success:
           type: boolean
-          description: Whether the request succeeded.
+          description: True if the request succeeded; false otherwise.
           example: true
         message:
           type: ["string", "null"]
@@ -3845,7 +5630,396 @@ components:
           description: |
             The stored attributes for this entity. Present only when attributes exist in the database. 
             
-            The field name matches the value of `type` — for example, `"company"` type entities have a `company` field.
+            The field name matches the value of `type` — for example, `"company"` type entities have a `company`  field.
+
+# ── Project schemas ───────────────────────────────────────────────────
+
+    ProjectResourceType:
+      type: string
+      enum:
+        - job
+        - monitor
+        - dataset
+        - monitor_group
+      description: |
+        Resource type for project association.
+    CreateProjectRequestDto:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Name for the project.
+          example: "AI M&A Tracking"
+        description:
+          type: string
+          description: Optional description.
+          example: "Tracks AI-related M&A activity for our investment team."
+
+    UpdateProjectRequestDto:
+      type: object
+      description: Updates one or more fields of an existing project. At least one field must be provided.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: New name for the project.
+          example: "AI M&A Tracking (Q2)"
+        description:
+          type: string
+          description: New description for the project.
+          example: "Updated scope to include private equity."
+
+    AddResourceRequestDto:
+      type: object
+      required:
+        - resources
+      properties:
+        resources:
+          type: array
+          minItems: 1
+          description: Resources to assign to the project.
+          items:
+            $ref: "#/components/schemas/ResourceItemDto"
+
+    ResourceItemDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/ProjectResourceType"
+        resource_id:
+          type: string
+          format: uuid
+          description: ID of the resource to add.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+
+    CreateProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+        - name
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Project created successfully."
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Name of the created project.
+          example: "AI M&A Tracking"
+
+    ProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+        - name
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "OK"
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Project name.
+          example: "AI M&A Tracking"
+        description:
+          type: ["string", "null"]
+          description: Project description.
+          example: "Tracks AI-related M&A activity for our investment team."
+        resources_count:
+          type: integer
+          description: Number of resources assigned to this project.
+          example: 4
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          description: Project creation timestamp.
+          example: "2026-05-20T14:31:35Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+          example: "2026-05-20T14:31:35Z"
+
+    UpdateProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - project_id
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Project updated successfully."
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    ProjectSummaryDto:
+      type: object
+      description: Abbreviated project object returned in list responses.
+      required:
+        - project_id
+        - name
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        name:
+          type: string
+          description: Project name.
+          example: "AI M&A Tracking"
+        description:
+          type: ["string", "null"]
+          description: Project description.
+          example: "Tracks AI-related M&A activity for our investment team."
+        resources_count:
+          type: integer
+          description: Number of resources assigned to this project.
+          example: 4
+          default: 0
+        created_at:
+          type: string
+          format: date-time
+          description: Project creation timestamp.
+          example: "2026-05-20T14:31:35Z"
+        updated_at:
+          type: string
+          format: date-time
+          description: Timestamp of the last update.
+          example: "2026-05-20T14:31:35Z"
+
+    ProjectListResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - projects
+      properties:
+        total:
+          type: integer
+          description: Total number of projects matching the filter criteria.
+          example: 2
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of projects per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages.
+          example: 1
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectSummaryDto"
+          description: Projects on this page.
+
+    ProjectOverviewCountsDto:
+      type: object
+      description: |
+        Status breakdown for a single resource type.
+      additionalProperties: true
+
+    ProjectOverviewResponseDto:
+      type: object
+      required:
+        - project_id
+        - overview
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          description: Project identifier.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        overview:
+          type: object
+          description: Resource counts grouped by type.
+          required:
+            - jobs
+            - monitors
+            - datasets
+            - monitor_groups
+          properties:
+            jobs:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            monitors:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            datasets:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            monitor_groups:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+
+    ProjectResourceDto:
+      type: object
+      description: A resource assigned to a project.
+      required:
+        - resource_type
+        - resource_id
+      properties:
+        resource_type:
+          $ref: "#/components/schemas/ProjectResourceType"
+        resource_id:
+          type: string
+          format: uuid
+          description: Resource identifier.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+        name:
+          type: string
+          description: |
+            Resource display name. For jobs, this is the original query
+            string. For monitors and datasets, this is the resource name.
+          example: "Series B fintech funding rounds"
+        created_at:
+          type: string
+          format: date-time
+          description: Resource creation timestamp.
+          example: "2026-05-20T14:31:37Z"
+        metadata:
+          type: object
+          description: Additional resource-specific metadata.
+          additionalProperties: true
+          example: {}
+
+    ProjectResourceListResponseDto:
+      type: object
+      required:
+        - total
+        - page
+        - page_size
+        - total_pages
+        - resources
+      properties:
+        total:
+          type: integer
+          description: Total number of resources assigned to the project.
+          example: 1
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of resources per page.
+          example: 100
+        total_pages:
+          type: integer
+          description: Total number of pages.
+          example: 1
+        resources:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectResourceDto"
+          description: Resources on this page.
+
+    AddResourceResponseDto:
+      type: object
+      required:
+        - success
+        - message
+        - results
+      properties:
+        success:
+          type: boolean
+          description: True if the overall operation succeeded.
+          example: true
+        message:
+          type: string
+          description: Top-level result message.
+          example: "Resources added to project."
+        results:
+          type: array
+          description: Per-resource outcome, one entry per submitted resource.
+          items:
+            $ref: "#/components/schemas/ResourceResultDto"
+
+    ResourceResultDto:
+      type: object
+      required:
+        - resource_type
+        - resource_id
+        - success
+        - message
+      properties:
+        resource_type:
+          type: string
+          description: Type of the resource.
+          example: "job"
+        resource_id:
+          type: string
+          format: uuid
+          description: Resource identifier.
+          example: "48421e16-1f50-4048-b62c-d3bc0789d30d"
+        success:
+          type: boolean
+          description: True if this resource was processed successfully.
+          example: true
+        message:
+          type: string
+          description: Per-resource result message.
+          example: "Resource added to project."
+        already_exists:
+          type: boolean
+          description: True if the resource is already assigned to this project.
+          default: false
+          example: false
+
+    RemoveResourceResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Resource removed from project."
 
     GetPlanLimitsResponseDto:
       type: object

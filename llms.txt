@@ -17,16 +17,22 @@
 - [Jobs](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/jobs): How CatchAll jobs work and how to move from query to results.
 - [Monitors](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
 - [Company Watchlist](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
+- [Projects](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects): Organize jobs, monitors, and datasets into named groups for easier management and sharing.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
 
 ### How to
 
 - [Write effective queries](https://www.newscatcherapi.com/docs/web-search-api/how-to/write-effective-queries): Construct queries that produce high-quality event records.
+- [Set up webhooks](https://www.newscatcherapi.com/docs/web-search-api/how-to/set-up-webhooks): Create and manage webhooks to receive real-time notifications when jobs and monitors complete.
 - [Configure monitors](https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors): Configure reliable, efficient monitors and optimize performance.
 - [Troubleshoot monitors](https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors): Diagnose and fix common monitor issues.
 
 ### API Reference — Jobs
+
+- [Validate Query](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/validate-query): Checks whether a query is well-formed and likely to produce good results before submitting a job.
+
+Returns a quality assessment with a status level, identified issues, and actionable suggestions.
 
 - [Initialize Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job): Get suggested validators, enrichments, and date ranges for a query.
 - [Create Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job): Submit a query to create a new processing job.
@@ -62,7 +68,42 @@ monitor is not found or does not belong to the authenticated user.
 
 Deleting an already-deleted monitor returns `200`.
 
-- [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload): Data model for a payload sent to the webhook URL when a monitor job completes.
+
+### API Reference — Webhooks
+
+- [Create Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/create-webhook): Creates a new webhook endpoint for the organization.
+
+- [List Webhooks](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhooks): Returns a paginated list of webhooks belonging to the organization.
+- [Get Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-webhook): Returns the full configuration of a single webhook by ID.
+- [Update Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/update-webhook): Updates one or more fields of an existing webhook.
+
+- [Delete Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/delete-webhook): Permanently deletes a webhook and removes all resource assignments. 
+
+Assigned jobs and monitors no longer trigger delivery to this webhook. This operation cannot be undone.
+
+- [Test Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/test-webhook): Sends a test HTTP request to the webhook URL using the webhook's configured method, headers, and auth. Returns the response from the target endpoint.
+
+Use this to verify URL reachability and authentication before attaching the webhook to a live job or monitor.
+
+- [Assign Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/assign-resource): Attaches a job, monitor, or monitor group to the webhook. When the
+resource completes, the webhook receives a delivery.
+
+A single webhook can be assigned to multiple resources. Each resource
+can have up to 5 webhooks assigned.
+
+- [List Webhook Resources](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhook-resources): Returns a paginated list of resources currently assigned to this webhook.
+
+- [Remove Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/remove-resource): Detaches a resource from this webhook. Completions of the resource no longer trigger delivery to this webhook.
+
+The webhook and the resource itself are not deleted.
+
+- [List Resource Webhooks](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-resource-webhooks): Returns all webhooks currently assigned to the given resource.
+
+- [Get Delivery History](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-delivery-history): Returns a paginated delivery log for a given resource, ordered by timestamp descending. 
+
+Each record shows the webhook dispatched, the HTTP status code returned, delivery outcome, and any error or warning messages. Use this to debug failed deliveries or audit dispatch activity.
+
+- [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload): Data model for the payload delivered to a webhook when a monitor job completes.
 
 ### API Reference — Entities
 
@@ -130,6 +171,25 @@ undone.
 - [Upload Csv To Dataset](https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset): Appends new companies to an existing dataset by uploading a CSV file. Uses the same CSV format as the dataset creation endpoint.
 
 The response omits `dataset_name` compared to the create-from-CSV endpoint since the dataset already exists.
+
+
+### API Reference — Projects
+
+- [List Projects](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-projects): Returns all projects visible to the authenticated user.
+- [Create Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/create-project): Creates a new project.
+- [Get Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project): Returns a single project by ID.
+- [Update Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/update-project): Updates the name or description of an existing project.
+- [Delete Project](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/delete-project): Deletes a project. By default, assigned resources are unassigned but not deleted. 
+
+- [Get Project Overview](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project-overview): Returns resource counts for a project, grouped by type and status.
+
+For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets` and `monitor_groups`, only a `total` count is returned.
+
+- [List Resources](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-resources): Returns all resources assigned to a project, with optional filtering by type.
+- [Add Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/add-resource): Assigns one or more existing resources to a project in a single request.
+
+- [Remove Resource](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/remove-resource): Removes a resource from a project. The resource itself is not
+deleted — it becomes unassigned and continues to exist.
 
 
 ### API Reference — Meta

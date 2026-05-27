@@ -22,6 +22,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth</loc>
     </url>
     <url>
@@ -31,10 +34,16 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/write-effective-queries</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/set-up-webhooks</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/validate-query</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/initialize-job</loc>
@@ -88,7 +97,40 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/delete-monitor</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/webhook-payload</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/create-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhooks</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/update-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/delete-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/test-webhook</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/assign-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-webhook-resources</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/remove-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/list-resource-webhooks</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-delivery-history</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/list-entities</loc>
@@ -140,6 +182,33 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/datasets/upload-csv-to-dataset</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-projects</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/create-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/update-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/delete-project</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/get-project-overview</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/list-resources</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/add-resource</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/remove-resource</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/meta/health</loc>
