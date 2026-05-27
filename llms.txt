@@ -24,6 +24,7 @@
 ### How to
 
 - [Write effective queries](https://www.newscatcherapi.com/docs/web-search-api/how-to/write-effective-queries): Construct queries that produce high-quality event records.
+- [Set up webhooks](https://www.newscatcherapi.com/docs/web-search-api/how-to/set-up-webhooks): Create and manage webhooks to receive real-time notifications when jobs and monitors complete.
 - [Configure monitors](https://www.newscatcherapi.com/docs/web-search-api/how-to/configure-monitors): Configure reliable, efficient monitors and optimize performance.
 - [Troubleshoot monitors](https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors): Diagnose and fix common monitor issues.
 
