@@ -369,11 +369,7 @@ Automate recurring queries with scheduled execution.
     monitor = client.monitors.create_monitor(
         reference_job_id=job_id,
         schedule="every day at 12 PM UTC",
-        webhook={
-            "url": "https://your-endpoint.com/webhook",
-            "method": "POST",
-            "headers": {"Authorization": "Bearer YOUR_TOKEN"},
-        },
+        webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
     )
     print(f"Monitor created: {monitor.monitor_id}")
     ```
@@ -390,11 +386,8 @@ Automate recurring queries with scheduled execution.
     ```python
     updated = client.monitors.update_monitor(
         monitor_id=monitor.monitor_id,
-        webhook={
-            "url": "https://new-endpoint.com/webhook",
-            "method": "POST",
-            "headers": {"Authorization": "Bearer NEW_TOKEN"},
-        },
+        webhook_ids=["b2c3d4e5-f6a7-8901-bcde-f12345678901"],
+        limit=100,
     )
     print(f"Monitor updated: {updated.status}")
     ```
@@ -464,11 +457,7 @@ try:
     monitor = client.monitors.create_monitor(
         reference_job_id=job_id,
         schedule="every day at 12 PM UTC",
-        webhook={
-            "url": "https://your-endpoint.com/webhook",
-            "method": "POST",
-            "headers": {"Authorization": "Bearer YOUR_TOKEN"},
-        },
+        webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
     )
     monitor_id = monitor.monitor_id
     print(f"Monitor created: {monitor_id}")
@@ -476,10 +465,8 @@ try:
     # Update webhook
     client.monitors.update_monitor(
         monitor_id=monitor_id,
-        webhook={
-            "url": "https://new-endpoint.com/webhook",
-            "method": "POST",
-        },
+        webhook_ids=["b2c3d4e5-f6a7-8901-bcde-f12345678901"],
+        limit=100,
     )
 
     # List all monitors
@@ -514,9 +501,9 @@ except ApiError as e:
 ```
 </Accordion>
 
-## Company search
+## Company watchlist
 
-Company search lets you track specific companies across jobs. Create entities,
+Company watchlist lets you track specific companies across jobs. Create entities,
 group them into a dataset, then connect the dataset to any job to get per-company
 relevance scores in results.
 
