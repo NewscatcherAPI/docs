@@ -471,11 +471,7 @@ Automate recurring queries with scheduled execution.
         CreateMonitorRequestDto.builder()
             .referenceJobId(jobId)
             .schedule("every day at 12 PM UTC")
-            .webhook(WebhookDto.builder()
-                .url("https://your-endpoint.com/webhook")
-                .method(WebhookDtoMethod.POST)
-                .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
-                .build())
+            .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
             .build()
     );
     System.out.println("Monitor created: " + monitor.getMonitorId().orElse("N/A"));
@@ -499,11 +495,8 @@ Automate recurring queries with scheduled execution.
     UpdateMonitorResponseDto updated = client.monitors().updateMonitor(
         monitorId,
         UpdateMonitorRequestDto.builder()
-            .webhook(WebhookDto.builder()
-                .url("https://new-endpoint.com/webhook")
-                .method(WebhookDtoMethod.POST)
-                .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
-                .build())
+            .webhookIds(List.of("b2c3d4e5-f6a7-8901-bcde-f12345678901"))
+            .limit(100)
             .build()
     );
     System.out.println("Monitor updated: " + updated.getStatus());
@@ -605,11 +598,7 @@ public class MonitorExample {
                 CreateMonitorRequestDto.builder()
                     .referenceJobId(jobId)
                     .schedule("every day at 12 PM UTC")
-                    .webhook(WebhookDto.builder()
-                        .url("https://your-endpoint.com/webhook")
-                        .method(WebhookDtoMethod.POST)
-                        .headers(Map.of("Authorization", "Bearer YOUR_TOKEN"))
-                        .build())
+                    .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
                     .build()
             );
             String monitorId = monitor.getMonitorId().orElseThrow();
@@ -619,10 +608,8 @@ public class MonitorExample {
             client.monitors().updateMonitor(
                 monitorId,
                 UpdateMonitorRequestDto.builder()
-                    .webhook(WebhookDto.builder()
-                        .url("https://new-endpoint.com/webhook")
-                        .method(WebhookDtoMethod.POST)
-                        .build())
+                    .webhookIds(List.of("b2c3d4e5-f6a7-8901-bcde-f12345678901"))
+                    .limit(100)
                     .build()
             );
 
@@ -668,9 +655,9 @@ public class MonitorExample {
 ```
 </Accordion>
 
-## Company search
+## Company watchlist
 
-Company search lets you track specific companies across jobs. Create entities,
+Company watchlist lets you track specific companies across jobs. Create entities,
 group them into a dataset, then connect the dataset to any job to get per-company
 relevance scores in results.
 
