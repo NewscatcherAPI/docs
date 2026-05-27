@@ -10,14 +10,14 @@ notifications when new results are available.
 
 ## How it works
 
-Each scheduled execution:
+Each scheduled execution does the following:
 
 - Creates a new job with its own `job_id`.
 - Uses a rolling date window based on schedule frequency.
 - Applies the reference job's validators, extractors, and schema.
 - Deduplicates records across all runs and merges the results.
 
-## Before you start
+## Before you begin
 
 Create a successful job following the [Quickstart guide](/web-search-api/get-started/quickstart).
 
@@ -40,10 +40,7 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
   -d '{
     "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
     "schedule": "every day at 12 PM UTC",
-    "webhook": {
-      "url": "https://your-endpoint.com/catchall",
-      "method": "POST"
-    }
+    "webhook_ids": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
   }'
 ```
 
@@ -51,10 +48,7 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
 {
   "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
   "schedule": "every day at 12 PM UTC",
-  "webhook": {
-    "url": "https://your-endpoint.com/catchall",
-    "method": "POST"
-  }
+  "webhook_ids": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"]
 }
 ```
 
@@ -67,10 +61,7 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 monitor = client.monitors.create_monitor(
     reference_job_id="295b95d8-6041-4f4b-b132-9f009fc6af70",
     schedule="every day at 12 PM UTC",
-    webhook={
-        "url": "https://your-endpoint.com/catchall",
-        "method": "POST"
-    }
+    webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
 )
 
 monitor_id = monitor.monitor_id
@@ -85,10 +76,7 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const monitor = await client.monitors.createMonitor({
   reference_job_id: "295b95d8-6041-4f4b-b132-9f009fc6af70",
   schedule: "every day at 12 PM UTC",
-  webhook: {
-    url: "https://your-endpoint.com/catchall",
-    method: "POST",
-  },
+  webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
 });
 
 const monitorId = monitor.monitor_id;
@@ -108,10 +96,7 @@ var monitor = client.monitors().createMonitor(
     CreateMonitorRequestDto.builder()
         .referenceJobId("295b95d8-6041-4f4b-b132-9f009fc6af70")
         .schedule("every day at 12 PM UTC")
-        .webhook(WebhookDto.builder()
-            .url("https://your-endpoint.com/catchall")
-            .method("POST")
-            .build())
+        .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
         .build()
 );
 
@@ -130,101 +115,14 @@ Response:
 ```
 
 <Note>
-  The `webhook` parameter is optional. For webhook payload structure and
-  authentication options, see the [Webhooks](#webhooks) section.
-</Note>
-
-### Update monitor webhook
-
-Modify webhook configuration for an existing monitor without recreating it:
-
-<CodeGroup>
-```bash cURL
-curl -X PATCH "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}" \
-  -H "x-api-key: YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "webhook": {
-      "url": "https://new-endpoint.com/webhook",
-      "method": "POST",
-      "headers": {"Authorization": "Bearer NEW_TOKEN"}
-    }
-  }'
-```
-```python Python
-from newscatcher_catchall import CatchAllApi
-
-client = CatchAllApi(api_key="YOUR_API_KEY")
-monitor_id = "3fec5b07-8786-46d7-9486-d43ff67eccd4"
-
-# Update webhook configuration
-client.monitors.update_monitor(
-    monitor_id=monitor_id,
-    webhook={
-        "url": "https://new-endpoint.com/webhook",
-        "method": "POST",
-        "headers": {"Authorization": "Bearer NEW_TOKEN"}
-    }
-)
-```
-```typescript TypeScript
-import { CatchAllApiClient } from "newscatcher-catchall-sdk";
-
-const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
-const monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
-
-// Update webhook configuration
-await client.monitors.updateMonitor({
-  monitor_id: monitorId,
-  webhook: {
-    url: "https://new-endpoint.com/webhook",
-    method: "POST",
-    headers: { Authorization: "Bearer NEW_TOKEN" }
-  }
-});
-```
-```java Java
-import com.newscatcher.catchall.CatchAllApi;
-import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
-import com.newscatcher.catchall.types.WebhookDto;
-import java.util.Map;
-
-CatchAllApi client = CatchAllApi.builder()
-    .apiKey("YOUR_API_KEY")
-    .build();
-
-String monitorId = "3fec5b07-8786-46d7-9486-d43ff67eccd4";
-
-// Update webhook configuration
-client.monitors().updateMonitor(
-    monitorId,
-    UpdateMonitorRequestDto.builder()
-        .webhook(WebhookDto.builder()
-            .url("https://new-endpoint.com/webhook")
-            .method("POST")
-            .headers(Map.of("Authorization", "Bearer NEW_TOKEN"))
-            .build())
-        .build()
-);
-```
-
-</CodeGroup>
-
-Response:
-
-```json
-{
-  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
-  "status": "Monitor updated Successfully"
-}
-```
-
-<Note>
-  **Schedule and reference job cannot be modified.** To change the query or schedule, 
-  create a new monitor.
+  Webhooks are configured separately and attached via `webhook_ids`. For 
+  instructions, see [Set up webhooks](/web-search-api/how-to/set-up-webhooks).
 </Note>
 
 ## Retrieve results
+
+Use these endpoints to list monitors, inspect execution history, and pull 
+aggregated records.
 
 ### List monitors
 
@@ -494,6 +392,80 @@ Response:
 
 ## Manage monitors
 
+Use these endpoints to update webhook assignments, pause, resume, or delete a 
+monitor, and inspect its execution history.
+
+### Update monitor
+
+Update webhook assignments or the record limit for an existing monitor. Pass a 
+new list of webhook IDs to replace existing assignments. Pass an empty array to 
+clear all assignments:
+
+<CodeGroup>
+```bash cURL
+curl -X PATCH "https://catchall.newscatcherapi.com/catchAll/monitors/{monitor_id}" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "webhook_ids": ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    "limit": 100
+  }'
+```
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+client.monitors.update_monitor(
+    monitor_id="3fec5b07-8786-46d7-9486-d43ff67eccd4",
+    webhook_ids=["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+    limit=100
+)
+```
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+await client.monitors.updateMonitor({
+  monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  webhook_ids: ["a1b2c3d4-e5f6-7890-abcd-ef1234567890"],
+  limit: 100
+});
+```
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.resources.monitors.requests.UpdateMonitorRequestDto;
+import java.util.List;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+client.monitors().updateMonitor(
+    "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+    UpdateMonitorRequestDto.builder()
+        .webhookIds(List.of("a1b2c3d4-e5f6-7890-abcd-ef1234567890"))
+        .limit(100)
+        .build()
+);
+```
+</CodeGroup>
+
+Response:
+
+```json
+{
+  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  "status": "Monitor updated Successfully"
+}
+```
+
+<Note>
+  Schedule and reference job cannot be modified. To change the query or schedule, 
+  create a new monitor.
+</Note>
+
 ### Enable monitor
 
 Resume execution of a disabled monitor:
@@ -752,125 +724,9 @@ history.getStatuses().forEach(entry ->
 
 </Expandable>
 
-## Webhooks
-
-To get HTTP notifications for completed monitor jobs, add a `webhook` when 
-creating the monitor (see [Create a monitor](#create-a-monitor)). You can update 
-the webhook at any time using [update monitor webhook](#update-monitor-webhook) 
-without recreating the monitor.
-
-### Webhook payload
-
-<Expandable title="full payload structure">
-
-When a monitor job completes, your endpoint receives:
-
-```json
-{
-  "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
-  "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
-  "latest_job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced",
-  "records_count": 2,
-  "jobs_processed": 3,
-  "updated_at": "2025-11-07T11:25:33.877039",
-  "cron_expression": "*/5 * * * *",
-  "timezone": "UTC",
-  "records": [
-    {
-      "record_id": "-39216465981207817",
-      "record_title": "Homeplus Seeks Buyer, Receives LOI from AI Firm Harex Infotech",
-      "added_on": "2025-11-07T11:25:33Z",
-      "enrichment": {
-        "schema_based_summary": "Harex Infotech acquired Homeplus Co. for null on null",
-        "acquisition_date": null,
-        "deal_type": "acquisition",
-        "deal_status": "in talks",
-        "confidence": "high",
-        "acquired_company": "Homeplus Co.",
-        "acquiring_company": "Harex Infotech"
-      },
-      "citations": [
-        {
-          "title": "Court extends Homeplus' rehabilitation plan submission deadline",
-          "link": "https://n.news.naver.com/mnews/article/009/0005586304",
-          "published_date": "2025-11-07T11:21:21Z",
-          "job_id": "e2dd78b0-3189-48f3-9011-eef0ecd9aced",
-          "added_on": "2025-11-07T11:25:33Z"
-        }
-      ]
-    }
-  ]
-}
-```
-
-**Key fields:**
-
-- `latest_job_id`: Use to retrieve full job results via
-  `/catchAll/pull/{job_id}`
-- `records_count`: Number of new records in this execution (after deduplication)
-- `jobs_processed`: Total number of jobs executed by this monitor
-- `records`: Array of new records from the latest job
-- `records[].added_on`: Timestamp when this record was first collected
-- `records[].citations[].added_on`: Timestamp when this citation was added
-
-<Note>
-  Webhooks fire on every job completion, even when `records_count` is 0 (no new
-  events after deduplication).
-</Note>
-
-</Expandable>
-
-### Authentication
-
-<Expandable title="authentication examples">
-
-**Bearer token:**
-
-```json
-{
-  "webhook": {
-    "url": "https://api.example.com/catchall",
-    "method": "POST",
-    "headers": {
-      "Authorization": "Bearer YOUR_TOKEN",
-      "Content-Type": "application/json"
-    }
-  }
-}
-```
-
-**Basic authentication:**
-
-```json
-{
-  "webhook": {
-    "url": "https://your-endpoint.com/webhook",
-    "method": "POST",
-    "auth": ["username", "password"]
-  }
-}
-```
-
-**Custom headers:**
-
-```json
-{
-  "webhook": {
-    "url": "https://your-endpoint.com/webhook",
-    "method": "POST",
-    "headers": {
-      "X-Custom-Header": "value",
-      "X-API-Key": "your-key",
-      "Content-Type": "application/json"
-    }
-  }
-}
-```
-
-</Expandable>
-
 ## See also
 
-- [API reference](/web-search-api/api-reference/monitors/create-monitor)
+- [Set up webhooks](/web-search-api/how-to/set-up-webhooks)
 - [Configure monitors](/web-search-api/how-to/configure-monitors)
-- [Troubleshoot monitors](/web-search-api/how-to/troubleshoot-monitors)
+- [Webhook payload](/web-search-api/api-reference/webhooks/webhook-payload)
+- [API reference](/web-search-api/api-reference/monitors/create-monitor)
