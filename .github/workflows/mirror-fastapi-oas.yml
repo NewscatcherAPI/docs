@@ -1,0 +1,75 @@
+# .github/workflows/mirror-fastapi-oas.yml
+
+name: Mirror FastAPI OAS
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+
+    env:
+      OAS_URL: https://catchall.newscatcherapi.com/openapi.json
+      STORED_PATH: web-search-api/api-reference/fastapi-openapi.yml
+      TMP_JSON: /tmp/fastapi-openapi-latest.json
+      TMP_YAML: /tmp/fastapi-openapi-latest.yml
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch live OAS
+        run: curl -f -s "$OAS_URL" -o "$TMP_JSON"
+
+      - name: Convert JSON to YAML
+        run: |
+          python3 - <<'EOF'
+          import json, yaml, os
+
+          with open(os.environ["TMP_JSON"]) as f:
+              data = json.load(f)
+
+          with open(os.environ["TMP_YAML"], "w") as f:
+              yaml.dump(data, f, allow_unicode=True, default_flow_style=False, sort_keys=False)
+          EOF
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if [ -f "$STORED_PATH" ] && diff -q "$STORED_PATH" "$TMP_YAML" > /dev/null 2>&1; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected."
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open PR if changed
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="chore/mirror-fastapi-oas-$(date +%Y%m%d-%H%M)"
+
+          cp "$TMP_YAML" "$STORED_PATH"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add "$STORED_PATH"
+          git commit -m "chore: sync FastAPI OAS snapshot $(date +%Y-%m-%d)"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "chore: sync FastAPI OAS snapshot $(date +%Y-%m-%d)" \
+            --body "Automated sync of \`$STORED_PATH\` from \`$OAS_URL\`.
+
+          **Review checklist:**
+          - [ ] Diff looks expected — no accidental drops of descriptions or schema renames
+          - [ ] If new endpoints appear, note them (MDX pages will be needed — handled in Stage 2)
+          - [ ] If anything looks wrong, close this PR and fix it in the FastAPI service" \
+            --base main \
+            --head "$BRANCH"
