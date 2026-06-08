@@ -1,148 +1,350 @@
 ---
-title: CatchAll API SKILL
-sidebarTitle: API SKILL
+title: CatchAll Skills
+sidebarTitle: Skills
 description:
-  Use the CatchAll API SKILL to teach any AI agent how to search, validate, and
-  extract structured data from the web.
+  Give any AI agent specialized, task-specific capabilities for web data
+  extraction — from general-purpose search to competitive intelligence,
+  funding, and M&A tracking.
 ---
 
-The CatchAll API SKILL is a structured prompt file that teaches an AI agent how
-to use the CatchAll API. It contains the complete API workflow —
-authentication, endpoints, query construction, polling, and result formatting —
-so the agent can make API calls directly without additional tooling. For
-Claude-specific setup with MCP, see the
-[Claude integration](/web-search-api/integrations/claude) page.
+CatchAll Skills are Markdown instruction files that give an AI agent a
+specialized capability on top of the CatchAll API or CatchAll MCP server. Each
+skill knows how to write the right queries, which validators to apply, and how
+to format output for its specific use case — with no extra coding or middleware
+required.
+
+Skills are **platform-agnostic**: they work with Claude (claude.ai, Claude
+Desktop, Claude Code), OpenAI Assistants, LangChain agents, and any agent
+runtime that supports Markdown-based instructions.
 
 ## How it works
 
-The API SKILL file is a Markdown document that an agent reads as instructions. When
-the agent has code execution capabilities (shell commands, HTTP requests, or SDK
-calls), it uses the API SKILL to construct and send API requests on its own. No
-connector, plugin, or middleware is required.
+A skill file is a Markdown document the agent reads as instructions. When the
+agent is connected to the [CatchAll MCP server](/web-search-api/integrations/mcp)
+(the preferred path for MCP-based skills), it uses the skill to decide which
+MCP tool to call, how to construct queries, and how to present results — no
+additional tooling required.
 
 <Frame>
-  <img src="/images/integrations/skill-architecture.png" alt="Diagram showing an AI agent with code execution reading SKILL.md and calling the CatchAll API server directly over HTTPS." />
+  <img src="/images/integrations/skill-architecture.png" alt="Diagram showing an AI agent reading a SKILL.md file and calling the CatchAll MCP server, which routes requests to the CatchAll API." />
 </Frame>
 
-The API SKILL is **platform-agnostic**. It works with any agent runtime that
-supports Markdown-based instructions and can execute HTTP requests, including
-Claude (claude.ai, Claude Desktop, Claude Code), OpenAI Assistants, LangChain
-agents, and custom agent frameworks.
+Most skills in this repository use the **MCP interface**: the agent calls the
+CatchAll MCP server via MCP tools, and the skill provides the judgment layer —
+query construction rules, validator patterns, enrichment schemas, and output
+formatting. For Claude-specific MCP setup, see the
+[Claude integration](/web-search-api/integrations/claude) page.
 
 ## Before you start
 
-- CatchAll API key from
+- A **CatchAll API key** from
   [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
-- An AI agent with code execution capabilities (for example, Claude with
-  computer use, an OpenAI Assistant with Code Interpreter, or a custom agent with
-  HTTP access)
+- The **CatchAll MCP server** connected to your agent — see the
+  [MCP integration](/web-search-api/integrations/mcp) page for setup
+  instructions
+- An AI agent with Markdown instruction support (Claude, an OpenAI Assistant,
+  a LangChain agent, or any custom runtime with a configurable system prompt)
 
-## API SKILL contents
+## Set up
 
-The API SKILL archive contains:
+How you load a skill depends on your agent platform. The core requirement is
+the same: the agent must be able to read the skill's `SKILL.md` and its
+reference files, and have access to your API key.
+
+<Tabs>
+  <Tab title="Claude">
+    **Claude Code and Claude Desktop** — copy the skill folder into your
+    project's `.claude/skills/` directory, or reference the folder path
+    directly when starting a conversation.
+
+    ```bash
+    # Clone the repository
+    git clone https://github.com/Newscatcher/newscatcher-catchall-integrations.git
+
+    # Copy your chosen skill into your project
+    cp -r newscatcher-catchall-integrations/skills/fundraising .claude/skills/
+    ```
+
+    **Claude.ai** — zip the skill folder and upload it via the Skills feature
+    at [claude.ai/customize/skills](https://claude.ai/customize/skills).
+
+    ```bash
+    # Create a zip from the skill folder
+    cd newscatcher-catchall-integrations/skills
+    zip -r fundraising-catchall.zip fundraising/
+    ```
+
+    Upload the `.zip` via **+** → **Upload a skill** on the Skills page.
+
+    <Tip>
+      All MCP-based skills require the CatchAll MCP server to be connected.
+      Add it from [platform.newscatcherapi.com](https://platform.newscatcherapi.com)
+      or follow the [MCP integration](/web-search-api/integrations/mcp) setup
+      guide before activating a skill.
+    </Tip>
+  </Tab>
+
+  <Tab title="Python agent (any LLM)">
+    Load `SKILL.md` as the system prompt in your agent framework, then
+    configure the CatchAll MCP server or REST API as a tool.
+
+    ```python
+    from pathlib import Path
+
+    skill_prompt = Path("skills/fundraising/SKILL.md").read_text()
+
+    # Use as system prompt with any LLM SDK
+    messages = [
+        {"role": "system", "content": skill_prompt},
+        {"role": "user", "content": "Find AI startups that raised seed funding in Europe last 30 days"}
+    ]
+    ```
+
+    <Warning>
+      The agent needs access to the CatchAll MCP server or REST API. MCP-based
+      skills call tools like `submit_query`, `get_job_status`, and
+      `pull_results` — make sure those are exposed as callable tools in your
+      agent setup.
+    </Warning>
+  </Tab>
+</Tabs>
+
+---
+
+## Skills
+
+Browse the available skills below. Each one is a self-contained folder in the
+[integrations repository](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills).
+
+---
+
+### General Use Case
+
+The foundation skill for the full CatchAll platform surface. Use it for any
+task not covered by a dedicated skill — or when the user needs direct control
+over validators, enrichments, watchlists, webhooks, or delivery setup.
+
+**Main use case:** Search, extract, and monitor any real-world event or fact
+from the web — jobs, recurring monitors, Slack alerts, company watchlists, and
+more — without writing a single API call.
+
+**Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
+[`skills/general-use-case`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/general-use-case)
 
 <Tree>
-  <Tree.Folder name="CatchAll-SKILL" defaultOpen>
+  <Tree.Folder name="general-use-case" defaultOpen>
     <Tree.File name="SKILL.md" />
-
     <Tree.Folder name="references" defaultOpen>
       <Tree.File name="VALIDATORS.md" />
-
-      <Tree.File name="ENRICHMENT-TYPES.md" />
-
       <Tree.File name="MONITOR-SCHEDULING.md" />
-
-      <Tree.File name="openapi-spec.json" />
-    </Tree.Folder>
-
-    <Tree.Folder name="assets" defaultOpen>
-      <Tree.File name="example-submit.json" />
-
-      <Tree.File name="example_pull_response.json" />
     </Tree.Folder>
   </Tree.Folder>
 </Tree>
 
 | File | Purpose |
 |---|---|
-| `SKILL.md` | Main prompt: authentication, job workflow (submit → poll → pull), monitor workflow, result presentation rules, and edge case handling |
-| `references/VALIDATORS.md` | Guidance on writing effective validators, including cost control, the validators-vs-date-range distinction, and common validator patterns |
-| `references/ENRICHMENT-TYPES.md` | Available enrichment types (`text`, `number`, `date`, `option`, `url`, `company`) with real-world examples |
-| `references/MONITOR-SCHEDULING.md` | Natural language schedule formats and webhook configuration |
-| `references/openapi-spec.json` | Full OpenAPI 3.0 specification for the CatchAll API |
-| `assets/example-submit.json` | Minimal example submit request body (query and limit) |
-| `assets/example_pull_response.json` | Example pull response with clustered results |
+| `SKILL.md` | Core skill: query construction rules, full MCP tool reference (jobs, monitors, webhooks, datasets, entities, projects), job modes (`base` / `lite`), limit vs. page_size distinction, watchlist mode end-to-end workflow, full automation sequence, edge case handling |
+| `references/VALIDATORS.md` | How to write effective boolean filters, cost control, the validators-vs-date-range distinction, and common validator patterns |
+| `references/MONITOR-SCHEDULING.md` | Natural language schedule formats, timezone handling, and webhook configuration examples for recurring monitors |
 
-## Set up
+**Example prompts**
 
-How you load the API SKILL depends on your agent platform. The core requirement
-is the same everywhere: the agent must be able to read `SKILL.md` and its
-reference files, and have access to your API key.
+> Find EU regulatory fines on Big Tech companies in the last 30 days, limit 20.
 
-<Tabs>
-  <Tab title="Claude (claude.ai)">
-    Claude supports SKILL files natively through the Skills feature.
+> Set up a weekly Slack alert every Monday at 9 AM UTC for new AI model
+> releases.
 
-    <Steps>
-      <Step title="Download the API SKILL archive">
-        Download [CatchAll-SKILL.zip](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/CatchAll-SKILL.zip) from the integrations repository.
-      </Step>
-      <Step title="Upload as a skill">
-        Go to [claude.ai/customize/skills](https://claude.ai/customize/skills). Click **+**, select **Upload a skill**, and choose `CatchAll-SKILL.zip`.
+> Track these 10 competitors and alert me whenever any of them raises funding.
 
-        Claude installs the API SKILL and applies it to all your conversations and projects.
-      </Step>
-      <Step title="Set your API key">
-        When you run your first query, the API SKILL instructs Claude to make API calls with an `X-API-Key` header. Provide your API key when prompted, or set it as an environment variable in your project.
-      </Step>
-    </Steps>
+> How many credits do I have left?
 
-    <Tip>
-      When the API SKILL is active, Claude uses its code execution environment to
-      call the CatchAll API directly over HTTPS. No MCP connector is needed for
-      this path.
-    </Tip>
-  </Tab>
+---
 
-  <Tab title="Python agent (any LLM)">
-    Load `SKILL.md` as the system prompt in your agent framework.
+### Competitor Snapshot
 
-    ```python
-    from pathlib import Path
+Produces a structured digest of a competitor's recent moves across the
+categories competitive intelligence teams actually use: product launches,
+pricing changes, leadership moves, customer wins, partnerships, M&A activity,
+and financial signals. Works on a single competitor or a watchlist of up to
+100 companies.
 
-    skill_prompt = Path("CatchAll-SKILL/SKILL.md").read_text()
+**Main use case:** Get a complete, structured picture of what a named company
+— or a list of companies — has been doing recently, across seven intelligence
+categories, without manually scanning dozens of sources.
 
-    # Use as system prompt with any LLM SDK
-    messages = [
-        {"role": "system", "content": skill_prompt},
-        {"role": "user", "content": "Find fintech funding rounds in the last 7 days, limit 10"}
-    ]
-    ```
-  <Warning>
-    The agent needs a tool or function that can execute HTTP requests. The
-    API SKILL contains the base URL `https://catchall.newscatcherapi.com`,
-    required header `X-API-Key`, and request formats for each endpoint.
-   </Warning> 
-  </Tab>
-</Tabs>
+**Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
+[`skills/competitor-snapshot`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/competitor-snapshot)
 
-## Example prompts
+<Tree>
+  <Tree.Folder name="competitor-snapshot" defaultOpen>
+    <Tree.File name="SKILL.md" />
+    <Tree.Folder name="references" defaultOpen>
+      <Tree.File name="1-QUERY-REVIEW.md" />
+      <Tree.File name="2-JOB-LIFECYCLE.md" />
+      <Tree.File name="3-OUTPUT-ARTIFACTS.md" />
+      <Tree.File name="4-NEXT-STEPS.md" />
+      <Tree.File name="COMPANY-WATCHLIST.md" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
 
-Describe your research task in natural language. The agent submits the job,
-tracks progress, and returns structured results.
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Core skill: seven intelligence buckets with their enrichment schemas, watchlist execution path, single-competitor and multi-competitor output templates, "events worth watching" cross-bucket section |
+| `references/1-QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
+| `references/2-JOB-LIFECYCLE.md` | Polling rules, progress table format, concurrency scheduling (wave cadence), completion detection, 90-minute run cap |
+| `references/3-OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx workbook, JSON, and CSV schemas, table conventions, zero-event patterns |
+| `references/4-NEXT-STEPS.md` | Footer links and follow-up actions rendered at the end of every snapshot |
+| `references/COMPANY-WATCHLIST.md` | Full watchlist mechanics: CSV build, domain handling, dataset upload, connected submit, result attribution by `ed_score` |
 
-> Find Series B fintech funding rounds announced in the last 7 days, limit 10.
+**Example prompts**
 
-> Search for AI chip export restrictions in the last 30 days and summarize the
-> key regulatory actions.
+> Snapshot Atlassian over the last 30 days.
 
-> Find pharma acquisitions over $1B this month, then create a table sorted by
-> deal value.
+> What's Salesforce been up to this month?
 
-<Tip>
-  Include a date range and a record limit in your prompt to control scope and
-  cost. For example: "in the last 14 days, limit 20".
-</Tip>
+> Give me a competitive brief on Notion, Linear, and Jira for the last 14 days.
+
+> Track these 20 competitors for the past month. [attach CSV]
+
+---
+
+### Fundraising
+
+Finds confirmed funding announcements — pre-seed through Series C and beyond
+— across any geography, stage, and industry vertical. Returns structured event
+records, not raw links or article summaries.
+
+**Main use case:** Build prospect lists, track deal flow, or monitor market
+activity around funding rounds — driven by structured event extraction, not
+keyword search.
+
+**Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
+[`skills/fundraising`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/fundraising)
+
+<Tree>
+  <Tree.Folder name="fundraising" defaultOpen>
+    <Tree.File name="SKILL.md" />
+    <Tree.Folder name="references" defaultOpen>
+      <Tree.File name="JOB-LIFECYCLE.md" />
+      <Tree.File name="OUTPUT-ARTIFACTS.md" />
+      <Tree.File name="NEXT-STEPS.md" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Core skill: funding query formula, 4 standard validators, full enrichment schema (company name, round, amount split into value/currency/display, investors, location, industry, product description), extraction rules, limit heuristics |
+| `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
+| `references/OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx, JSON, and CSV schemas, chat table column order |
+| `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every run |
+
+**Example prompts**
+
+> Series B raises in Austin last 30 days.
+
+> Which AI startups raised seed funding in Europe this month?
+
+> Find all funding rounds over $50M in the US in the last 30 days.
+
+> Who got funded in fintech globally last 2 weeks?
+
+---
+
+### Mergers & Acquisitions
+
+Finds confirmed M&A deals — acquisitions, mergers, asset purchases, and
+acqui-hires — across any geography and industry. Returns structured event
+records with deal type, both parties, deal value where disclosed, and deal
+status.
+
+**Main use case:** Track deal activity for competitive intelligence, GTM
+targeting of recently-acquired companies, or ongoing market monitoring — all
+from a single natural language query.
+
+**Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
+[`skills/mergers-and-acquisitions`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/mergers-and-acquisitions)
+
+<Tree>
+  <Tree.Folder name="mergers-and-acquisitions" defaultOpen>
+    <Tree.File name="SKILL.md" />
+    <Tree.Folder name="references" defaultOpen>
+      <Tree.File name="JOB-LIFECYCLE.md" />
+      <Tree.File name="OUTPUT-ARTIFACTS.md" />
+      <Tree.File name="NEXT-STEPS.md" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Core skill: M&A query formula, 5 standard validators, full enrichment schema (acquirer, target, deal value split into value/currency/display, deal type normalized and display, deal status, deal rationale), extraction rules, acquirer type taxonomy (`big_tech`, `strategic`, `financial`, `other`) |
+| `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
+| `references/OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx, JSON, and CSV schemas, chat table column order |
+| `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every run |
+
+**Example prompts**
+
+> AI companies acquired in the US last 30 days.
+
+> Fintech mergers announced in Europe this month.
+
+> Which healthtech startups were acquired in the last 14 days?
+
+> PE acquisitions in enterprise SaaS globally last 30 days.
+
+---
+
+### VC Pack
+
+Combines funding and M&A activity into a single interactive dashboard for a
+given market segment. Runs two parallel CatchAll jobs — one for funding rounds,
+one for acquisitions — and renders them together with aggregated KPIs, deal
+stage breakdowns, sub-sector distribution, and live FX conversion.
+
+**Main use case:** Get a complete capital flow view of a market in one run —
+where money is entering (funding) and where ownership is consolidating (M&A)
+— without manually combining two separate reports.
+
+**Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
+[`skills/vc-pack`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/vc-pack)
+
+<Tree>
+  <Tree.Folder name="vc-pack" defaultOpen>
+    <Tree.File name="SKILL.md" />
+    <Tree.Folder name="assets" defaultOpen>
+      <Tree.File name="render.py" />
+      <Tree.File name="dashboard.html" />
+    </Tree.Folder>
+    <Tree.Folder name="references" defaultOpen>
+      <Tree.File name="EXTRACTION.md" />
+      <Tree.File name="JOB-LIFECYCLE.md" />
+      <Tree.File name="NEXT-STEPS.md" />
+    </Tree.Folder>
+  </Tree.Folder>
+</Tree>
+
+| File | Purpose |
+|---|---|
+| `SKILL.md` | Core skill: two-feed parallel submit, polling both jobs to completion, three-tier dashboard rendering (inline widget, file delivery, or markdown fallback), partial-render flow when one feed is slow |
+| `assets/render.py` | Dashboard generator: aggregates both feeds, converts currencies via live FX, computes KPIs and deal stage breakdowns, produces the HTML dashboard and xlsx/JSON/CSV downloads |
+| `assets/dashboard.html` | HTML template used by `render.py` |
+| `references/EXTRACTION.md` | Query formulas, validators, and full enrichment schemas for both the funding and M&A feeds |
+| `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
+| `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every dashboard |
+
+**Example prompts**
+
+> VC pack for fintech last 30 days.
+
+> Funding and M&A in cybersecurity US last 2 weeks.
+
+> Capital activity in healthcare AI this month.
+
+> Where is money moving in climate tech globally?
+
+---
 
 ## See also
 
@@ -169,10 +371,10 @@ tracks progress, and returns structured results.
     MCP server setup and Python agent examples for Claude
   </Card>
   <Card
-    title="SKILL source"
+    title="Skills source"
     icon="github"
-    href="https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/Claude/CatchAll-SKILL"
+    href="https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills"
   >
-    SKILL.md and reference files on GitHub
+    All skills and reference files on GitHub
   </Card>
 </CardGroup>
