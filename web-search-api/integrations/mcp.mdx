@@ -20,19 +20,17 @@ projects.
 
 ## Authentication
 
-The MCP server resolves your API key from the first matching source in this
-order:
+The MCP server resolves your API key from multiple sources:
 
-1. `api_key` parameter passed directly in a tool call
-2. `x-api-key` HTTP request header — **recommended** for all client
+1. `x-api-key` HTTP request header — **recommended** for all client
    configurations
-3. `Authorization: Bearer <key>` HTTP request header
-4. `?apiKey=YOUR_KEY` URL query parameter — used by Claude.ai because its
+2. `?apiKey=YOUR_KEY` URL query parameter — used by Claude.ai because its
    connector UI does not support custom request headers
-5. `CATCHALL_API_KEY` environment variable on the server host
+3. `Authorization: Bearer <key>` HTTP request header
+4. `CATCHALL_API_KEY` environment variable on the server host
 
-Most client configurations use option 2 (the `x-api-key` header). Claude.ai
-uses option 4 (the `apiKey` query parameter) automatically. The tools
+Most client configurations use option 1 (the `x-api-key` header). Claude.ai
+uses option 2 (the `apiKey` query parameter) automatically. The tools
 `check_health` and `get_version` do not require authentication.
 
 To rotate your key, update your client configuration with the new key and
