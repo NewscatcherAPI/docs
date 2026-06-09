@@ -208,8 +208,8 @@ deleted — it becomes unassigned and continues to exist.
 ### Integrations
 
 - [CatchAll MCP server](https://www.newscatcherapi.com/docs/web-search-api/integrations/mcp): Connect CatchAll to any MCP-compatible client for structured web research.
+- [CatchAll Skills](https://www.newscatcherapi.com/docs/web-search-api/integrations/skill): Give any AI agent specialized, task-specific capabilities for web data extraction — from general-purpose search to competitive intelligence, funding, and M&A tracking.
 - [Claude integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/claude): Use CatchAll in Claude with MCP for chat-based research or the Python SDK for programmatic workflows.
-- [CatchAll API SKILL](https://www.newscatcherapi.com/docs/web-search-api/integrations/skill): Use the CatchAll API SKILL to teach any AI agent how to search, validate, and extract structured data from the web.
 - [LangChain integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/langchain): Use CatchAll with LangChain for AI-powered web research
 - [Make.com Integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/make): Use CatchAll in your Make.com scenarios
 - [n8n Integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/n8n): Use CatchAll in your n8n automations

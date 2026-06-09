@@ -232,10 +232,10 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/mcp</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/claude</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/skill</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/skill</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/claude</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/integrations/langchain</loc>
