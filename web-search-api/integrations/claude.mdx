@@ -14,9 +14,10 @@ CatchAll integrates with Claude through two paths:
 - **Python agent**: Uses the Anthropic SDK to run CatchAll queries
   programmatically in an agentic loop.
 
-You can also use the
-[CatchAll API SKILL](/web-search-api/integrations/skill) alongside either path
-to improve query quality and result presentation.
+You can also load a
+[CatchAll Skill](/web-search-api/integrations/skill) alongside either path to
+give Claude query-writing rules, validator patterns, and output templates for
+specific use cases — without any extra configuration.
 
 ## Before you start
 
@@ -137,10 +138,25 @@ The MCP server authenticates with the CatchAll API and exposes tools in Claude.
 
 ## Available tools
 
-The MCP server exposes tools for jobs (initialize, submit, poll, pull results,
-continue) and monitors (create, update, list, enable, disable, pull results).
-For the full tool reference, see
+The MCP server exposes multiple tools across six categories: **Jobs** (validate,
+initialize, submit, poll, pull results, continue, list, delete), **Monitors**
+(create, update, list, poll results, get status history, enable, disable,
+delete), **Webhooks** (create, test, assign to resources, inspect delivery
+history), **Datasets & Entities** (build company watchlists, attach them to
+jobs for company-scoped results), **Projects** (group related resources and
+share them with teammates), and **Meta** (health, version, plan limits).
+
+For the full tool reference with parameter details, see
 [MCP server > Available tools](/web-search-api/integrations/mcp#available-tools).
+
+<Tip>
+  Pair the MCP connection with a [CatchAll Skill](/web-search-api/integrations/skill)
+  to give Claude domain-specific query rules and output templates on top of the
+  raw MCP tools — for example, the Fundraising skill knows which validators and
+  enrichments to apply to a funding query, and the Competitor Snapshot skill
+  runs seven parallel intelligence queries and formats the results into a
+  structured digest.
+</Tip>
 
 ## Python agent
 
@@ -163,13 +179,13 @@ export ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
 ### Basic agent example
 
 The agent uses hardcoded tool definitions and a standard agentic loop: submit,
-wait, pull with polling.
+wait, poll for status, pull results.
 
 ```python
 client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
 
 response = client.messages.create(
-    model="claude-sonnet-4-20250514",
+    model="claude-sonnet-4-6",
     max_tokens=4096,
     tools=TOOLS,  # Hardcoded tool definitions in claude_agent_example.py
     messages=[
@@ -181,15 +197,21 @@ response = client.messages.create(
 For the complete implementation, including polling and result handling, see the
 [agent example on GitHub](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_example.py).
 
+A skill-based variant is also available — it loads a CatchAll Skill as the
+system prompt so Claude automatically follows the skill's query-writing rules
+without hardcoded tool logic. See
+[`claude_agent_skill_example.py`](https://github.com/Newscatcher/newscatcher-catchall-integrations/blob/main/Claude/Claude%20Agent/claude_agent_skill_example.py)
+on GitHub.
+
 ## See also
 
 <CardGroup cols={2}>
   <Card
-    title="CatchAll API SKILL"
-    icon="book-open"
+    title="CatchAll Skills"
+    icon="bolt"
     href="/web-search-api/integrations/skill"
   >
-    Platform-agnostic API SKILL setup for any AI agent
+    Specialized skills for competitive intelligence, funding, M&A, and more
   </Card>
   <Card title="MCP server" icon="plug" href="/web-search-api/integrations/mcp">
     Server architecture, authentication, and tool definitions
