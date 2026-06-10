@@ -1,0 +1,172 @@
+# Reference GitHub Actions workflow for updating CatchAll API docs.
+# Copy this to .github/workflows/update-docs.yml in the docs repo.
+#
+# AGENT.md and LESSONS.md are pulled from a GitLab repository (ai-configs)
+# using the GitLab Files API and a personal access token.
+#
+# The new OpenAPI spec (fastapi-openapi.yml) is expected to already be
+# committed to the docs repo — the mirror-fastapi-oas.yml workflow does this.
+# Run that workflow first, then trigger this one.
+#
+# Flow:
+#   1. mirror-fastapi-oas.yml  →  commits new fastapi-openapi.yml
+#   2. this workflow           →  diffs specs, updates docs, opens PR
+
+name: Update CatchAll API Docs
+
+on:
+  workflow_dispatch:
+    inputs:
+      notion_url:
+        description: "Notion changelog URL (e.g. https://app.notion.com/p/newscatcherapi/1-6-2-...)"
+        required: true
+        type: string
+      release_version:
+        description: "New API version (e.g. 1.6.2)"
+        required: true
+        type: string
+      release_date:
+        description: "Release date (YYYY-MM-DD)"
+        required: true
+        type: string
+      new_spec_path:
+        description: "Path to new OpenAPI spec in repo (relative to repo root)"
+        required: false
+        default: "web-search-api/api-reference/fastapi-openapi.yml"
+        type: string
+      target_branch:
+        description: "Existing branch to commit docs changes onto (from mirror-fastapi-oas run). Leave empty to create a new branch."
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      GITLAB_PROJECT: ${{ secrets.GITLAB_PROJECT }}
+      GITLAB_BRANCH: "main"
+      GITLAB_BASE: "https://gitlab.com/api/v4/projects"
+
+    steps:
+      - name: Checkout docs repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up git identity
+        run: |
+          git config user.name "docs-update-bot"
+          git config user.email "bot@newscatcherapi.com"
+
+      # Fetch AGENT.md and LESSONS.md from GitLab using the Files API.
+      # GITLAB_PAT must be a GitLab personal access token with read_repository scope.
+      - name: Fetch AGENT.md and LESSONS.md from GitLab
+        env:
+          GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+        run: |
+          mkdir -p /tmp/agents/update-mintify-docs
+
+          FILES=(
+            "agents%2Fupdate-mintify-docs%2FAGENT.md:/tmp/agents/update-mintify-docs/AGENT.md"
+            "agents%2Fupdate-mintify-docs%2FLESSONS.md:/tmp/agents/update-mintify-docs/LESSONS.md"
+          )
+
+          for entry in "${FILES[@]}"; do
+            ENCODED_PATH="${entry%%:*}"
+            LOCAL_PATH="${entry##*:}"
+            URL="${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/${ENCODED_PATH}/raw?ref=${GITLAB_BRANCH}"
+
+            echo "Fetching ${ENCODED_PATH}..."
+            curl -sf -H "PRIVATE-TOKEN: $GITLAB_PAT" "$URL" -o "$LOCAL_PATH"
+          done
+
+          echo "--- AGENT.md preview (first 5 lines) ---"
+          head -5 /tmp/agents/update-mintify-docs/AGENT.md
+
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+
+      - name: Run docs update agent
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          NOTION_API_TOKEN: ${{ secrets.NOTION_API_TOKEN }}
+          NOTION_URL: ${{ inputs.notion_url }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          RELEASE_DATE: ${{ inputs.release_date }}
+          NEW_SPEC_PATH: ${{ inputs.new_spec_path }}
+          TARGET_SPEC_PATH: "web-search-api/api-reference/catch-all-api.yml"
+          TARGET_BRANCH: ${{ inputs.target_branch }}
+          DOCS_REPO_PATH: ${{ github.workspace }}
+          LESSONS_PATH: "/tmp/agents/update-mintify-docs/LESSONS.md"
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          claude \
+            --print \
+            --dangerously-skip-permissions \
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" \
+            --max-turns 50 \
+            "Read and execute the agent instructions at /tmp/agents/update-mintify-docs/AGENT.md.
+             All required environment variables are already set.
+             Working directory is the docs repo root: $DOCS_REPO_PATH"
+
+      # If the agent updated LESSONS.md, push it back to GitLab via the Files API.
+      # Requires GITLAB_PAT to have write_repository scope.
+      - name: Push updated LESSONS.md back to GitLab
+        if: always()
+        env:
+          GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+        run: |
+          ORIGINAL="/tmp/agents/update-mintify-docs/LESSONS.md.original"
+
+          # Re-fetch the original to compare
+          curl -sf \
+            -H "PRIVATE-TOKEN: $GITLAB_PAT" \
+            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs%2FLESSONS.md/raw?ref=${GITLAB_BRANCH}" \
+            -o "$ORIGINAL"
+
+          if diff -q "$ORIGINAL" /tmp/agents/update-mintify-docs/LESSONS.md > /dev/null 2>&1; then
+            echo "LESSONS.md unchanged — nothing to push"
+            exit 0
+          fi
+
+          echo "LESSONS.md was updated — pushing back to GitLab"
+
+          # Base64-encode the updated content (GitLab API requires it)
+          CONTENT=$(base64 -w 0 /tmp/agents/update-mintify-docs/LESSONS.md)
+
+          curl -sf -X PUT \
+            -H "PRIVATE-TOKEN: $GITLAB_PAT" \
+            -H "Content-Type: application/json" \
+            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs%2FLESSONS.md" \
+            -d "{
+              \"branch\": \"${GITLAB_BRANCH}\",
+              \"encoding\": \"base64\",
+              \"content\": \"${CONTENT}\",
+              \"commit_message\": \"docs-agent: update LESSONS.md after v${{ inputs.release_version }} run\"
+            }"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Required secrets (set in the docs repo → Settings → Secrets and variables):
+#
+#   ANTHROPIC_API_KEY   — Anthropic API key (console.anthropic.com)
+#   NOTION_API_TOKEN    — Notion integration token (notion.so/my-integrations)
+#   GITLAB_PAT          — GitLab personal access token
+#                           read_repository  (to fetch AGENT.md / LESSONS.md)
+#                           write_repository (to push updated LESSONS.md back)
+#   GITLAB_PROJECT      — URL-encoded GitLab namespace/project
+#                           e.g. "newscatcherapi%2Fai-configs"
+#
+# GITHUB_TOKEN is provided automatically — no secret needed.
+#
+# Before first use:
+#   1. Set GITLAB_PROJECT in the env block above (URL-encoded namespace/project)
+#   2. Add the three secrets above
+#   3. Run mirror-fastapi-oas.yml first to update fastapi-openapi.yml
+#   4. Then trigger this workflow with the Notion URL, version, and date
+# ─────────────────────────────────────────────────────────────────────────────

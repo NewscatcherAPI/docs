@@ -73,3 +73,12 @@ jobs:
           - [ ] If anything looks wrong, close this PR and fix it in the FastAPI service" \
             --base main \
             --head "$BRANCH"
+
+          # Print branch name to the job summary for easy copy-paste into update-docs.yml
+          echo "## Spec updated — next step" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Trigger **Update CatchAll API Docs** with:" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Input | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| \`target_branch\` | \`$BRANCH\` |" >> "$GITHUB_STEP_SUMMARY"
