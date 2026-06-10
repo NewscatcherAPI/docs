@@ -5,6 +5,71 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.6.1" description="2026-06-09">
+## Company Watchlist improvements and performance fixes
+
+Adds two new Company Watchlist controls — association-type filtering and
+all-news queries — along with performance improvements and API quality fixes.
+
+### Association type filtering
+
+When submitting a job connected to a dataset (watchlist), you can now set
+`ed_association_type` to control how strictly tracked entities must relate to
+each returned event.
+
+- **`event_associated`** — only returns events where a tracked entity is the
+  primary actor (e.g., the company that raised funding, was acquired, or
+  announced layoffs). Passing references are excluded.
+- **`mention`** — returns any event where a tracked entity appears, whether as
+  a primary actor or a passing reference.
+
+When omitted, no association-type filter is applied.
+
+Each matched entity in results includes an `association_type` field indicating
+how it relates to that specific record.
+
+**New parameter:**
+
+- `ed_association_type` on
+  [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job)
+  — Filter connected-entity results by association type. Requires
+  `connected_dataset_ids`.
+
+### All-news watchlist queries
+
+You can now submit a connected job without specifying a topic query. Set
+`fetch_all_watchlist_news: true` to retrieve all news for the entities in your
+connected watchlist — no topic required. Wildcard queries (`*`) and generic
+phrases like "all news" also trigger this behavior.
+
+Monitors created from an all-news job preserve the behavior: each recurring run
+collects all news for the connected watchlist, not topic-restricted results.
+
+`fetch_all_watchlist_news` without `connected_dataset_ids` returns a validation
+error.
+
+**New parameters:**
+
+- `fetch_all_watchlist_news` on
+  [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job)
+  — When `true`, retrieves all news for connected watchlist entities without
+  topic filtering. Requires `connected_dataset_ids`.
+- `fetch_all_watchlist_news` on
+  [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job)
+  — Preview validators and enrichments for an all-news watchlist query. Also
+  accepts `connected_dataset_ids`.
+
+### Fixes and improvements
+
+- **Performance**: Faster percolation queries, reduced Elasticsearch pressure,
+  and lower HTTP client concurrency for more stable throughput under load.
+- **API correctness**: Schema type cleanup and enum-based job-status retrieval.
+  Improved OpenAPI spec to enable automated SDK generation.
+- **Project deletion**: Better notification handling and improved response
+  structure when deleting a project with resources.
+
+</Update>
+
 <Update label="1.6.0" description="2026-05-26">
 ## Centralized webhooks, query validation, and projects
 

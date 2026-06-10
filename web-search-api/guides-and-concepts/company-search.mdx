@@ -647,6 +647,139 @@ Poll [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-jo
 until `status` is `completed`, then retrieve results. See
 [Jobs](/web-search-api/guides-and-concepts/jobs) for the polling pattern.
 
+## Filter by association type
+
+When a job is connected to a dataset, you can control how strictly entities must
+relate to each result by setting `ed_association_type`.
+
+| Value | Behavior |
+|---|---|
+| `event_associated` | Only returns events where a tracked entity is the primary actor — the company that raised funding, was acquired, announced layoffs, etc. Passing references are excluded. |
+| `mention` | Returns any event where a tracked entity appears, whether as a primary actor or a passing reference. |
+
+When omitted, no association-type filter is applied and all matching records are
+returned regardless of how the entity relates to the event.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "AI fundraising rounds",
+    "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"],
+    "ed_association_type": "event_associated"
+  }'
+```
+
+```json JSON
+{
+  "query": "AI fundraising rounds",
+  "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"],
+  "ed_association_type": "event_associated"
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="AI fundraising rounds",
+    connected_dataset_ids=[dataset_id],
+    ed_association_type="event_associated",
+)
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "AI fundraising rounds",
+  connected_dataset_ids: [datasetId],
+  ed_association_type: "event_associated",
+});
+```
+
+```java Java
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("AI fundraising rounds")
+        .connectedDatasetIds(List.of(datasetId))
+        .edAssociationType(EntityAssociationType.EVENT_ASSOCIATED)
+        .build()
+);
+```
+
+</CodeGroup>
+
+Each matched entity in the results includes an `association_type` field
+(`event_associated` or `mention`) indicating how it relates to that specific
+record.
+
+## Get all news for a watchlist
+
+To retrieve all news about your tracked companies without filtering by a
+specific topic, set `fetch_all_watchlist_news: true`. Use this when you want a
+broad news feed for a portfolio or competitor set rather than a targeted event
+search.
+
+Wildcard queries (`*`) and generic phrases like "all news" also trigger this
+behavior automatically.
+
+<Note>
+  `fetch_all_watchlist_news` requires `connected_dataset_ids` to be set.
+  Sending it without a connected watchlist returns a validation error.
+</Note>
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "all news",
+    "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"],
+    "fetch_all_watchlist_news": true
+  }'
+```
+
+```json JSON
+{
+  "query": "all news",
+  "connected_dataset_ids": ["ccabb755-afc2-4047-b84c-78d1f23d49b2"],
+  "fetch_all_watchlist_news": true
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="all news",
+    connected_dataset_ids=[dataset_id],
+    fetch_all_watchlist_news=True,
+)
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "all news",
+  connected_dataset_ids: [datasetId],
+  fetch_all_watchlist_news: true,
+});
+```
+
+```java Java
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("all news")
+        .connectedDatasetIds(List.of(datasetId))
+        .fetchAllWatchlistNews(true)
+        .build()
+);
+```
+
+</CodeGroup>
+
+Monitors created from an all-news job preserve this behavior — each recurring
+run collects all news for the connected watchlist, not topic-restricted results.
+
 ## Get results
 
 Retrieve results the same way as a normal job. Each record includes a
@@ -731,6 +864,7 @@ results.getAllRecords().forEach(record -> {
           "name": "NewsCatcher",
           "type": "company",
           "ed_score": 9,
+          "association_type": "event_associated",
           "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal",
           "company": {
             "domain": "newscatcherapi.com",
@@ -757,8 +891,11 @@ results.getAllRecords().forEach(record -> {
 | --- | --- | --- |
 | `entity_id` | string | UUID of the matched entity |
 | `name` | string | Entity name |
+| `type` | string | Entity type, e.g. `company` |
 | `ed_score` | number | Relevance score from 1 to 10 |
-| `relation` | string | How the entity relates to the record. Maximum 100 characters. |
+| `association_type` | string | How the entity relates to the event: `event_associated` (primary actor) or `mention` (passing reference) |
+| `relation` | string | Sentence describing how this entity relates to the record. Maximum 100 characters. |
+| `company` | object | Company-specific attributes (domain, alternative names, key persons). Present when `type == "company"`. |
 
 </Expandable>
 
