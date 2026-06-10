@@ -1604,8 +1604,8 @@ paths:
         - $ref: "#/components/parameters/ProjectId"
         - $ref: "#/components/parameters/DeleteResources"
       responses:
-        "204":
-          description: Project deleted successfully. No response body.
+        "200":
+          $ref: "#/components/responses/DeleteProjectResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -2673,6 +2673,21 @@ components:
             success: true
             message: "Project updated successfully."
             project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    DeleteProjectResponse:
+      description: Project deleted successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeleteProjectResponseDto"
+          example:
+            success: true
+            message: "Project deleted successfully."
+            project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+            deleted_resources:
+              jobs: 3
+              monitors: 1
+              datasets: 2
 
     ListProjectsResponse:
       description: Paginated list of projects.
@@ -5295,6 +5310,11 @@ components:
           example:
             - "854198fa-f702-49db-a381-0427fa87f173"
             - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        project_id:
+          type: string
+          format: uuid
+          description: Project to assign this dataset to.
+          example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
 
     UpdateDatasetRequest:
       type: object
@@ -5831,6 +5851,35 @@ components:
           format: uuid
           description: Project identifier.
           example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+
+    DeleteProjectResponseDto:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: True if the operation succeeded; false otherwise.
+          example: true
+        message:
+          type: string
+          description: Human-readable result message.
+          example: "Project deleted successfully."
+        project_id:
+          type: string
+          format: uuid
+          description: ID of the deleted project.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+        deleted_resources:
+          type: object
+          additionalProperties:
+            type: integer
+          description: Count of deleted resources grouped by type (e.g. `jobs`, `monitors`, `datasets`). Only present when `delete_resources=true` was passed.
+          example:
+            jobs: 3
+            monitors: 1
+            datasets: 2
 
     ProjectSummaryDto:
       type: object
