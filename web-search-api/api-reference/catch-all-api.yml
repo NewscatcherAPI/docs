@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.6.0
+  version: 1.6.1
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -3113,6 +3113,18 @@ components:
           $ref: "#/components/schemas/Query"
         context:
           $ref: "#/components/schemas/Context"
+        connected_dataset_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Optional list of watchlist dataset IDs connected to this job.
+        fetch_all_watchlist_news:
+          type: boolean
+          default: false
+          description: |
+            When true, returns generic news validators and enrichments suitable for
+            watchlist-based article collection instead of query-specific fields.
       description:
         Request to get validator, enrichment, and date range suggestions for a query.
 
@@ -3237,6 +3249,20 @@ components:
             IDs of webhooks to notify when the job completes. Maximum 5 per job.
           example:
             - "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        fetch_all_watchlist_news:
+          type: boolean
+          default: false
+          description: |
+            When true, retrieves all news for connected Company Watchlist entities
+            without topic filtering. Requires connected_dataset_ids to be set.
+        ed_association_type:
+          allOf:
+            - $ref: "#/components/schemas/EntityAssociationType"
+          description: |
+            Filter events by entity association type. `event_associated` keeps only
+            events where the entity is a direct actor. `mention` keeps only events
+            where the entity is merely referenced. Only relevant when
+            connected_dataset_ids is set.
 
     SubmitResponseDto:
       type: object
@@ -5576,6 +5602,17 @@ components:
 
     # ── Company Watchlist output schema ──────────────────────────────────────────
 
+    EntityAssociationType:
+      type: string
+      enum:
+        - mention
+        - event_associated
+      description: |
+        How an entity relates to an event.
+
+        - `event_associated`: The entity is a direct actor in the event (primary subject).
+        - `mention`: The entity is merely referenced in passing.
+
     ConnectedEntity:
       type: object
       required:
@@ -5619,6 +5656,11 @@ components:
             Short explanation (up to 100 characters) of why this entity is associated with the event.
           example:
             "Lucid Gravity is positioned as a direct competitor to the Tesla Model X."
+        association_type:
+          type: string
+          description: |
+            How the entity relates to the event: `event_associated` if the entity is a direct actor, `mention` if merely referenced.
+          example: "event_associated"
         type:
           type: string
           description: |
