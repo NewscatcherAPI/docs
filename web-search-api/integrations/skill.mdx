@@ -62,7 +62,7 @@ reference files, and have access to your API key.
     git clone https://github.com/Newscatcher/newscatcher-catchall-integrations.git
 
     # Copy your chosen skill into your project
-    cp -r newscatcher-catchall-integrations/skills/fundraising .claude/skills/
+    cp -r newscatcher-catchall-integrations/skills/fundraising-catchall .claude/skills/
     ```
 
     **Claude.ai** — zip the skill folder and upload it via the Skills feature
@@ -71,7 +71,7 @@ reference files, and have access to your API key.
     ```bash
     # Create a zip from the skill folder
     cd newscatcher-catchall-integrations/skills
-    zip -r fundraising-catchall.zip fundraising/
+    zip -r fundraising-catchall.zip fundraising-catchall/
     ```
 
     Upload the `.zip` via **+** → **Upload a skill** on the Skills page.
@@ -91,7 +91,7 @@ reference files, and have access to your API key.
     ```python
     from pathlib import Path
 
-    skill_prompt = Path("skills/fundraising/SKILL.md").read_text()
+    skill_prompt = Path("skills/fundraising-catchall/SKILL.md").read_text()
 
     # Use as system prompt with any LLM SDK
     messages = [
@@ -173,16 +173,17 @@ and financial signals. Works on a single competitor or a watchlist of up to
 categories, without manually scanning dozens of sources.
 
 **Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
-[`skills/competitor-snapshot`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/competitor-snapshot)
+[`skills/competitor-snapshot-catchall`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/competitor-snapshot-catchall)
 
 <Tree>
-  <Tree.Folder name="competitor-snapshot" defaultOpen>
+  <Tree.Folder name="competitor-snapshot-catchall" defaultOpen>
     <Tree.File name="SKILL.md" />
     <Tree.Folder name="references" defaultOpen>
-      <Tree.File name="1-QUERY-REVIEW.md" />
-      <Tree.File name="2-JOB-LIFECYCLE.md" />
-      <Tree.File name="3-OUTPUT-ARTIFACTS.md" />
-      <Tree.File name="4-NEXT-STEPS.md" />
+      <Tree.File name="QUERY-REVIEW.md" />
+      <Tree.File name="JOB-LIFECYCLE.md" />
+      <Tree.File name="OUTPUT-REPORT.md" />
+      <Tree.File name="NEXT-STEPS.md" />
+      <Tree.File name="CONCURRENCY.md" />
       <Tree.File name="COMPANY-WATCHLIST.md" />
     </Tree.Folder>
   </Tree.Folder>
@@ -191,10 +192,11 @@ categories, without manually scanning dozens of sources.
 | File | Purpose |
 |---|---|
 | `SKILL.md` | Core skill: seven intelligence buckets with their enrichment schemas, watchlist execution path, single-competitor and multi-competitor output templates, "events worth watching" cross-bucket section |
-| `references/1-QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
-| `references/2-JOB-LIFECYCLE.md` | Polling rules, progress table format, concurrency scheduling (wave cadence), completion detection, 90-minute run cap |
-| `references/3-OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx workbook, JSON, and CSV schemas, table conventions, zero-event patterns |
-| `references/4-NEXT-STEPS.md` | Footer links and follow-up actions rendered at the end of every snapshot |
+| `references/QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
+| `references/JOB-LIFECYCLE.md` | Polling rules, progress table format, completion detection, 90-minute run cap |
+| `references/OUTPUT-REPORT.md` | Output file contracts: xlsx workbook, JSON, and CSV schemas, table conventions, zero-event patterns |
+| `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered at the end of every snapshot |
+| `references/CONCURRENCY.md` | Concurrency wave cadence for submitting multiple jobs in parallel |
 | `references/COMPANY-WATCHLIST.md` | Full watchlist mechanics: CSV build, domain handling, dataset upload, connected submit, result attribution by `ed_score` |
 
 **Example prompts**
@@ -217,15 +219,20 @@ activity around funding rounds — driven by structured event extraction, not
 keyword search.
 
 **Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
-[`skills/fundraising`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/fundraising)
+[`skills/fundraising-catchall`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/fundraising-catchall)
 
 <Tree>
-  <Tree.Folder name="fundraising" defaultOpen>
+  <Tree.Folder name="fundraising-catchall" defaultOpen>
     <Tree.File name="SKILL.md" />
     <Tree.Folder name="references" defaultOpen>
       <Tree.File name="JOB-LIFECYCLE.md" />
       <Tree.File name="OUTPUT-ARTIFACTS.md" />
+      <Tree.File name="OUTPUT-LIST.md" />
+      <Tree.File name="QUERY-REVIEW.md" />
       <Tree.File name="NEXT-STEPS.md" />
+    </Tree.Folder>
+    <Tree.Folder name="scripts" defaultOpen>
+      <Tree.File name="build_downloads.py" />
     </Tree.Folder>
   </Tree.Folder>
 </Tree>
@@ -235,7 +242,10 @@ keyword search.
 | `SKILL.md` | Core skill: funding query formula, 4 standard validators, full enrichment schema (company name, round, amount split into value/currency/display, investors, location, industry, product description), extraction rules, limit heuristics |
 | `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
 | `references/OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx, JSON, and CSV schemas, chat table column order |
+| `references/OUTPUT-LIST.md` | Column definitions and field vocabulary for the output list |
+| `references/QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
 | `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every run |
+| `scripts/build_downloads.py` | Generates xlsx, JSON, and CSV download files from job results |
 
 **Example prompts**
 
@@ -261,15 +271,20 @@ targeting of recently-acquired companies, or ongoing market monitoring — all
 from a single natural language query.
 
 **Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
-[`skills/mergers-and-acquisitions`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/mergers-and-acquisitions)
+[`skills/m&a-catchall`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/m%26a-catchall)
 
 <Tree>
-  <Tree.Folder name="mergers-and-acquisitions" defaultOpen>
+  <Tree.Folder name="m&a-catchall" defaultOpen>
     <Tree.File name="SKILL.md" />
     <Tree.Folder name="references" defaultOpen>
       <Tree.File name="JOB-LIFECYCLE.md" />
       <Tree.File name="OUTPUT-ARTIFACTS.md" />
+      <Tree.File name="OUTPUT-LIST.md" />
+      <Tree.File name="QUERY-REVIEW.md" />
       <Tree.File name="NEXT-STEPS.md" />
+    </Tree.Folder>
+    <Tree.Folder name="scripts" defaultOpen>
+      <Tree.File name="build_downloads.py" />
     </Tree.Folder>
   </Tree.Folder>
 </Tree>
@@ -279,7 +294,10 @@ from a single natural language query.
 | `SKILL.md` | Core skill: M&A query formula, 5 standard validators, full enrichment schema (acquirer, target, deal value split into value/currency/display, deal type normalized and display, deal status, deal rationale), extraction rules, acquirer type taxonomy (`big_tech`, `strategic`, `financial`, `other`) |
 | `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
 | `references/OUTPUT-ARTIFACTS.md` | Output file contracts: xlsx, JSON, and CSV schemas, chat table column order |
+| `references/OUTPUT-LIST.md` | Column definitions and field vocabulary for the output list |
+| `references/QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
 | `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every run |
+| `scripts/build_downloads.py` | Generates xlsx, JSON, and CSV download files from job results |
 
 **Example prompts**
 
@@ -305,10 +323,10 @@ where money is entering (funding) and where ownership is consolidating (M&A)
 — without manually combining two separate reports.
 
 **Interface:** MCP (`https://catchall-mcp.newscatcherapi.com/mcp`) · **Folder:**
-[`skills/vc-pack`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/vc-pack)
+[`skills/vc-pack-catchall`](https://github.com/Newscatcher/newscatcher-catchall-integrations/tree/main/skills/vc-pack-catchall)
 
 <Tree>
-  <Tree.Folder name="vc-pack" defaultOpen>
+  <Tree.Folder name="vc-pack-catchall" defaultOpen>
     <Tree.File name="SKILL.md" />
     <Tree.Folder name="assets" defaultOpen>
       <Tree.File name="render.py" />
@@ -318,6 +336,11 @@ where money is entering (funding) and where ownership is consolidating (M&A)
       <Tree.File name="EXTRACTION.md" />
       <Tree.File name="JOB-LIFECYCLE.md" />
       <Tree.File name="NEXT-STEPS.md" />
+      <Tree.File name="CONCURRENCY.md" />
+      <Tree.File name="QUERY-REVIEW.md" />
+    </Tree.Folder>
+    <Tree.Folder name="scripts" defaultOpen>
+      <Tree.File name="render.py" />
     </Tree.Folder>
   </Tree.Folder>
 </Tree>
@@ -330,6 +353,9 @@ where money is entering (funding) and where ownership is consolidating (M&A)
 | `references/EXTRACTION.md` | Query formulas, validators, and full enrichment schemas for both the funding and M&A feeds |
 | `references/JOB-LIFECYCLE.md` | Polling rules, progress tracking, completion detection |
 | `references/NEXT-STEPS.md` | Footer links and follow-up actions rendered after every dashboard |
+| `references/CONCURRENCY.md` | Concurrency wave cadence for submitting the two parallel jobs |
+| `references/QUERY-REVIEW.md` | Pre-run intake rules: scope confirmation, cost gates, timeframe defaults |
+| `scripts/render.py` | Standalone script version of the dashboard generator for non-MCP environments |
 
 **Example prompts**
 
