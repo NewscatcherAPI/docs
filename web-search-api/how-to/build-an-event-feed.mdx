@@ -1,0 +1,365 @@
+---
+title: "Build a recurring event feed"
+sidebarTitle: "Build an event feed"
+description: "Go from a one-off query to a scheduled monitor that delivers fresh event records to your app every day."
+---
+
+This guide strings together the full pipeline: test a query, create a webhook,
+schedule a monitor, and handle the results your endpoint receives. Each step links
+to its detailed reference if you need to go deeper.
+
+## Before you begin
+
+- Get a CatchAll API key from [platform.newscatcherapi.com](https://platform.newscatcherapi.com/).
+- Set up a publicly accessible HTTPS endpoint that returns a 2xx and accepts a JSON POST, or use [webhook.site](https://webhook.site) for testing.
+- Optionally, install the CatchAll SDK for your language:
+
+<CodeGroup>
+```bash cURL
+# cURL is included on most systems. Check with:
+curl --version
+```
+
+```python Python
+pip install newscatcher-catchall-sdk
+```
+
+```typescript TypeScript
+npm install newscatcher-catchall-sdk
+```
+
+```java Java
+// build.gradle
+dependencies {
+    implementation 'com.newscatcherapi:newscatcher-catchall-sdk:3.0.0'
+}
+```
+</CodeGroup>
+
+<Steps>
+  <Step title="Test the query">
+    Submit your query as a one-off job and review the results before committing it to
+    a schedule. Keep the `job_id`; you reference it when creating the monitor.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "Acquisitions, mergers, and funding rounds in the fintech industry",
+        "limit": 10
+      }'
+    ```
+
+    ```python Python
+    from newscatcher_catchall import CatchAllApi
+    import time
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+
+    job = client.jobs.create_job(
+        query="Acquisitions, mergers, and funding rounds in the fintech industry",
+        limit=10,
+    )
+    job_id = job.job_id
+
+    # Poll until the job is done
+    while True:
+        status = client.jobs.get_job_status(job_id)
+        if status.status in ("completed", "failed"):
+            break
+        time.sleep(60)
+
+    results = client.jobs.get_job_results(job_id)
+    ```
+
+    ```typescript TypeScript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const job = await client.jobs.createJob({
+      query: "Acquisitions, mergers, and funding rounds in the fintech industry",
+      limit: 10,
+    });
+    const jobId = job.job_id;
+
+    // Poll until the job is done
+    let status;
+    do {
+      await new Promise((r) => setTimeout(r, 60000));
+      status = await client.jobs.getJobStatus({ job_id: jobId });
+    } while (status.status !== "completed" && status.status !== "failed");
+
+    const results = await client.jobs.getJobResults(jobId);
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    var job = client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("Acquisitions, mergers, and funding rounds in the fintech industry")
+            .limit(10)
+            .build()
+    );
+    String jobId = job.getJobId();
+    // Poll getJobStatus until "completed", then getJobResults(jobId)
+    ```
+    </CodeGroup>
+
+    Each record is structured according to an LLM-generated enrichment schema. A
+    single record looks like this:
+
+    ```json
+    {
+      "record_id": "5685210581375815445",
+      "record_title": "Marvell to Acquire Celestial AI for $3.25 Billion",
+      "enrichment": {
+        "enrichment_confidence": "high",
+        "deal_date": "2025-12-02",
+        "acquiring_company": "Marvell Technology",
+        "acquired_company": "Celestial AI",
+        "deal_value": "$3.25 billion"
+      },
+      "citations": [
+        { "title": "Marvell to buy chip startup Celestial AI for $3.25 billion", "link": "https://example.com/marvell-celestial", "published_date": "2025-12-04 03:01:56" }
+      ]
+    }
+    ```
+
+    <Note>
+      Field names inside `enrichment` are LLM-generated and vary between jobs, even for
+      the same query. To lock the schema, define custom enrichments on the job or preview
+      suggestions with `POST /catchAll/initialize`. See [Dynamic schemas](/web-search-api/concepts/dynamic-schemas).
+    </Note>
+  </Step>
+
+  <Step title="Create a webhook">
+    A webhook is created once at the organization level, then attached to any number of
+    jobs or monitors. Save the returned `webhook.id`.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Fintech deals feed",
+        "url": "https://your-app.com/catchall/webhook",
+        "type": "generic",
+        "delivery_mode": "full"
+      }'
+    ```
+
+    ```python Python
+    webhook = client.webhooks.create_webhook(
+        name="Fintech deals feed",
+        url="https://your-app.com/catchall/webhook",
+        type="generic",
+        delivery_mode="full",
+    )
+    webhook_id = webhook.webhook.id
+    ```
+
+    ```typescript TypeScript
+    const created = await client.webhooks.createWebhook({
+      name: "Fintech deals feed",
+      url: "https://your-app.com/catchall/webhook",
+      type: "generic",
+      delivery_mode: "full",
+    });
+    const webhookId = created.webhook.id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.webhooks.requests.CreateWebhookRequestDto;
+    import com.newscatcher.catchall.types.WebhookType;
+    import com.newscatcher.catchall.types.DeliveryMode;
+
+    var created = client.webhooks().createWebhook(
+        CreateWebhookRequestDto.builder()
+            .name("Fintech deals feed")
+            .url("https://your-app.com/catchall/webhook")
+            .type(WebhookType.GENERIC)
+            .deliveryMode(DeliveryMode.FULL)
+            .build()
+    );
+    String webhookId = created.getWebhook().getId();
+    ```
+    </CodeGroup>
+
+    <Tip>
+      Verify your endpoint is reachable before going live with
+      `POST /catchAll/webhooks/{webhook_id}/test`. CatchAll also supports `slack` and
+      `teams` webhook types. See [Set up webhooks](/web-search-api/how-to/set-up-webhooks).
+    </Tip>
+  </Step>
+
+  <Step title="Schedule a monitor">
+    A monitor re-runs your query on a schedule, deduplicates against previous runs, and
+    delivers each run to the webhooks in `webhook_ids`.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "reference_job_id": "YOUR_JOB_ID",
+        "schedule": "every day at 9 AM UTC",
+        "webhook_ids": ["YOUR_WEBHOOK_ID"]
+      }'
+    ```
+
+    ```python Python
+    monitor = client.monitors.create_monitor(
+        reference_job_id=job_id,
+        schedule="every day at 9 AM UTC",
+        webhook_ids=[webhook_id],
+    )
+    monitor_id = monitor.monitor_id
+    ```
+
+    ```typescript TypeScript
+    const monitor = await client.monitors.createMonitor({
+      reference_job_id: jobId,
+      schedule: "every day at 9 AM UTC",
+      webhook_ids: [webhookId],
+    });
+    const monitorId = monitor.monitor_id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+    import java.util.List;
+
+    var monitor = client.monitors().createMonitor(
+        CreateMonitorRequestDto.builder()
+            .referenceJobId(jobId)
+            .schedule("every day at 9 AM UTC")
+            .webhookIds(List.of(webhookId))
+            .build()
+    );
+    String monitorId = monitor.getMonitorId();
+    ```
+    </CodeGroup>
+
+    <Warning>
+      The reference job's `end_date` must be within the last 7 days, and the default minimum
+      schedule interval is 24 hours, but can be more frequent depending on your subscription plan. See
+      [Configure monitors](/web-search-api/how-to/configure-monitors).
+    </Warning>
+  </Step>
+
+  <Step title="Handle the delivery">
+    After each scheduled run, CatchAll sends a POST to your webhook URL. Return a 2xx
+    within 5 seconds and process asynchronously.
+
+    The payload:
+
+    ```json
+    {
+      "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+      "latest_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+      "records_count": 2,
+      "records": [
+        {
+          "record_id": "5685210581375815445",
+          "record_title": "Brightwell Financial acquires SMB lender Keystone Capital for $740M",
+          "enrichment": {
+            "enrichment_confidence": "high",
+            "event_type": "acquisition",
+            "acquiring_company": "Brightwell Financial",
+            "acquired_company": "Keystone Capital",
+            "deal_value": "$740 million"
+          },
+          "citations": [
+            { "title": "Brightwell to buy Keystone Capital", "link": "https://example.com/brightwell-keystone", "published_date": "2026-06-17 09:01:00" }
+          ]
+        }
+      ]
+    }
+    ```
+
+    A minimal receiver reads the structured fields directly:
+
+    <CodeGroup>
+    ```python Python · Flask
+    from flask import Flask, request, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/catchall/webhook", methods=["POST"])
+    def handle_webhook():
+        payload = request.json
+        # Return 200 immediately, then process asynchronously
+        if payload["records_count"] > 0:
+            for r in payload["records"]:
+                e = r.get("enrichment", {})
+                print(e.get("acquiring_company"), e.get("deal_value"), "-", r["record_title"])
+        return jsonify({"status": "received"}), 200
+    ```
+
+    ```typescript TypeScript · Express
+    import express from "express";
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/catchall/webhook", (req, res) => {
+      const payload = req.body;
+      res.status(200).json({ status: "received" }); // return immediately
+      if (payload.records_count > 0) {
+        for (const r of payload.records) {
+          const e = r.enrichment ?? {};
+          console.log(e.acquiring_company, e.deal_value, "-", r.record_title);
+        }
+      }
+    });
+    ```
+
+    ```java Java · Spring
+    @RestController
+    public class WebhookController {
+        @PostMapping("/catchall/webhook")
+        public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Map<String, Object> payload) {
+            CompletableFuture.runAsync(() -> {
+                Integer count = (Integer) payload.get("records_count");
+                if (count != null && count > 0) {
+                    // process payload.get("records")
+                }
+            });
+            return ResponseEntity.ok(Map.of("status", "received"));
+        }
+    }
+    ```
+    </CodeGroup>
+
+    <Note>
+      Prefer no code? Point the webhook `url` at an [n8n](/web-search-api/integrations/n8n),
+      [Make](/web-search-api/integrations/make), or Zapier webhook trigger and map `records`
+      into a Slack message, a spreadsheet row, or a CRM record.
+    </Note>
+  </Step>
+</Steps>
+
+## Adapt it
+
+Swap the query for any event you want to watch: product recalls, executive moves,
+regulatory actions, competitor launches. The pipeline is identical: test the query,
+create a webhook, schedule a monitor, handle the delivery. To change which webhooks a
+monitor notifies, `PATCH /catchAll/monitors/{monitor_id}` with new `webhook_ids`.
+
+## See also
+
+- [Monitors](/web-search-api/concepts/monitors): how scheduling, deduplication, and rolling date windows work
+- [Set up webhooks](/web-search-api/how-to/set-up-webhooks): webhook types, auth, testing, and delivery history
+- [Configure monitors](/web-search-api/how-to/configure-monitors): schedules, robust webhook handling, updating a monitor
+- [Write effective queries](/web-search-api/how-to/write-effective-queries): get the query right before you schedule it

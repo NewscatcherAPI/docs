@@ -6,7 +6,7 @@
   "metadata": {
     "project": "NewsCatcher API Documentation",
     "change": "Remove the v3 prefix and introduce a new structure: Home | Web Search API | News API | Local News API. Flatten API reference docs and use a consistent pattern for other documentation types.",
-    "total_redirects": 98
+    "total_redirects": 104
   },
   "redirects": [
     {
@@ -23,19 +23,19 @@
     },
     {
       "source": "/docs/v3/catch-all/overview/monitors",
-      "destination": "/docs/web-search-api/guides-and-concepts/monitors",
+      "destination": "/docs/web-search-api/concepts/monitors",
       "type": "permanent",
       "status_code": 301
     },
     {
       "source": "/docs/v3/catch-all/overview/dynamic-schemas",
-      "destination": "/docs/web-search-api/guides-and-concepts/dynamic-schemas",
+      "destination": "/docs/web-search-api/concepts/dynamic-schemas",
       "type": "permanent",
       "status_code": 301
     },
     {
       "source": "/docs/v3/catch-all/overview/understanding-dynamic-schemas",
-      "destination": "/docs/web-search-api/guides-and-concepts/dynamic-schemas",
+      "destination": "/docs/web-search-api/concepts/dynamic-schemas",
       "type": "permanent",
       "status_code": 301
     },
@@ -594,6 +594,42 @@
     {
       "source": "/docs/v3/local-news/endpoints",
       "destination": "/docs/local-news-api/api-reference/search/search-articles-post",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/jobs",
+      "destination": "/docs/web-search-api/concepts/jobs",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/monitors",
+      "destination": "/docs/web-search-api/concepts/monitors",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/company-search",
+      "destination": "/docs/web-search-api/concepts/company-search",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/projects",
+      "destination": "/docs/web-search-api/concepts/projects",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/index-and-search-depth",
+      "destination": "/docs/web-search-api/concepts/index-and-search-depth",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/web-search-api/guides-and-concepts/dynamic-schemas",
+      "destination": "/docs/web-search-api/concepts/dynamic-schemas",
       "type": "permanent",
       "status_code": 301
     }

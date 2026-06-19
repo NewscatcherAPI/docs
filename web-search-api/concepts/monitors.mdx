@@ -189,8 +189,8 @@ Response:
       "reference_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
       "reference_job_query": "AI company acquisitions and mergers",
       "enabled": true,
-      "schedule": "every 5 minutes",
-      "timezone": "UTC",
+      "schedule": "every Monday at 9 AM EST",
+      "timezone": "EST",
       "created_at": "2025-11-07T10:54:42Z"
     }
   ]
@@ -339,7 +339,7 @@ Response:
 ```json
 {
   "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
-  "cron_expression": "*/5 * * * *",
+  "cron_expression": "0 12 * * *",
   "timezone": "UTC",
   "reference_job": {
     "query": "AI company acquisitions and mergers",

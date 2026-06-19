@@ -13,22 +13,22 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/get-started/changelog</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/jobs</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/jobs</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/monitors</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/monitors</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/company-search</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/company-search</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/projects</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/projects</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/index-and-search-depth</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/index-and-search-depth</loc>
     </url>
     <url>
-        <loc>https://www.newscatcherapi.com/docs/web-search-api/guides-and-concepts/dynamic-schemas</loc>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/dynamic-schemas</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/write-effective-queries</loc>
@@ -41,6 +41,9 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/how-to/build-an-event-feed</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/validate-query</loc>
