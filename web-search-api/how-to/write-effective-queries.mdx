@@ -1,4 +1,4 @@
----
+﻿---
 title: Write effective queries
 sidebarTitle: Write queries
 description: Construct queries that produce high-quality event records.
@@ -27,7 +27,7 @@ Before submitting a query, review these recommendations:
 ### What CatchAll finds
 
 CatchAll, by design, focuses on identifying and extracting **real-world events**
-— things that actually happen and get reported. The system queries a
+â€” things that actually happen and get reported. The system queries a
 continuously updated index of 2+ billion web pages, featuring time-sensitive,
 event-driven content.
 
@@ -45,20 +45,20 @@ event-driven content.
 
 **CatchAll vs traditional web search:**
 
-- **Traditional web search:** "Information about clinical trials" → Articles
+- **Traditional web search:** "Information about clinical trials" â†’ Articles
   explaining what clinical trials are
-- **CatchAll:** "Phase 3 clinical trial results for oncology drugs" → Every
+- **CatchAll:** "Phase 3 clinical trial results for oncology drugs" â†’ Every
   specific trial result with efficacy data, statistical significance, and trial
   identifiers
 
 <CodeGroup>
-```text ✅ Good queries (describe events)
+```text âœ… Good queries (describe events)
 Find all seed-round funding in the AI space over $5M in January 2026
 List all road infrastructure projects announced in the US, California
 Data breaches at financial institutions over the last week
 ```
 
-```text ❌ Poor queries (request articles or static data)
+```text âŒ Poor queries (request articles or static data)
 Catch all news from CNBC since December 1
 (Requests articles, not events)
 
@@ -74,7 +74,7 @@ Get historical GDP data by country
 ## Specify event type
 
 An **event** is something that happens and gets reported. CatchAll can only find
-events that appear in published content—if something happens but isn't reported
+events that appear in published contentâ€”if something happens but isn't reported
 anywhere, it's not observable to the system.
 
 Target recognizable event types that get consistently reported:
@@ -97,7 +97,7 @@ Target recognizable event types that get consistently reported:
 </Note>
 
 <CodeGroup>
-```text ✅ Good queries
+```text âœ… Good queries
 FDA drug approvals for rare diseases
 (Specific agency + event type + category)
 
@@ -107,12 +107,12 @@ Executive departures at Fortune 500 companies (Event type + company category)
 
 ````
 
-```text ❌ Poor queries
+```text âŒ Poor queries
 Tech industry trends
 (Analysis/commentary, not specific event)
 
 AI developments
-(Too vague—what kind of development?)
+(Too vagueâ€”what kind of development?)
 
 Tesla news
 ("News" requests content, no event type specified)
@@ -126,7 +126,7 @@ Balance breadth and focus. Too few details returns everything; too many details
 returns nothing. Add 2-4 details like industry, threshold, or geography.
 
 <CodeGroup>
-```text ✅ Optimal (2-4 details)
+```text âœ… Optimal (2-4 details)
 AI company acquisitions over $50M
 (Event type + industry + threshold)
 
@@ -136,18 +136,18 @@ FDA drug approvals for oncology treatments (Agency + event type + medical field)
 
 ````
 
-```text ❌ Too few details
+```text âŒ Too few details
 Acquisitions
-(No industry, geography, or threshold—millions of potential results)
+(No industry, geography, or thresholdâ€”millions of potential results)
 
 Technology announcements
 (What kind of announcement? Product launch? Partnership? Earnings?)
 ````
 
-```text ❌ Too many details
+```text âŒ Too many details
 Series C funding rounds for AI cybersecurity companies
 in San Francisco over $100M announced on Tuesdays
-(7 details—very few results will match all constraints)
+(7 detailsâ€”very few results will match all constraints)
 ```
 
 </CodeGroup>
@@ -168,21 +168,21 @@ the request.
 
 <Tip>
   To learn how search depth and date ranges work, see
-  [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
+  [Index and search depth](/web-search-api/concepts/index-and-search-depth).
 </Tip>
 
 <CodeGroup>
-```text ✅ Good queries
+```text âœ… Good queries
 Tech IPOs announced this week
 Recent cybersecurity incidents at healthcare companies
 AI model releases in the past month
 ```
-```text ❌ Poor queries
+```text âŒ Poor queries
 AI funding rounds recently
-(Vague timeframe — use "last 7 days" or "this month" instead)
+(Vague timeframe â€” use "last 7 days" or "this month" instead)
 
 Corporate bankruptcies since 2020
-(Multi-year range — likely exceeds plan's search depth)
+(Multi-year range â€” likely exceeds plan's search depth)
 ```
 </CodeGroup>
 
@@ -198,7 +198,7 @@ Focused queries produce cleaner, more useful results. If your query combines
 multiple entities or event types, consider splitting it into separate queries.
 
 <CodeGroup>
-```text ✅ Recommended: Single event type
+```text âœ… Recommended: Single event type
 Apple acquisitions in AI sector
 (Focused on one company's M&A activity)
 
@@ -210,7 +210,7 @@ one sector)
 
 ````
 
-```text ⚠️ Works, but consider splitting
+```text âš ï¸ Works, but consider splitting
 Acquisitions by Apple, Microsoft, and Google
 (Mixed results - three different companies' strategies)
 
@@ -220,7 +220,7 @@ Better approach:
 - Query 3: Google acquisitions
 ````
 
-```text ❌ Difficult to work with
+```text âŒ Difficult to work with
 Apple acquisitions and Microsoft layoffs
 (Mixes two different event types)
 
@@ -236,4 +236,4 @@ Better approach: Split into focused queries for each event type.
 
 - [Quickstart guide](/web-search-api/get-started/quickstart)
 - [Configure monitors](/web-search-api/how-to/configure-monitors)
-- [Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)
+- [Dynamic schemas](/web-search-api/concepts/dynamic-schemas)

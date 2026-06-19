@@ -1,4 +1,4 @@
----
+﻿---
 title: CatchAll API changelog
 sidebarTitle: Changelog
 description: Track updates, improvements, and fixes to the CatchAll API.
@@ -8,8 +8,8 @@ rss: true
 <Update label="1.6.1" description="2026-06-09">
 ## Company Watchlist improvements and performance fixes
 
-Adds two new Company Watchlist controls — association-type filtering and
-all-news queries — along with performance improvements and API quality fixes.
+Adds two new Company Watchlist controls â€” association-type filtering and
+all-news queries â€” along with performance improvements and API quality fixes.
 
 ### Association type filtering
 
@@ -17,10 +17,10 @@ When submitting a job connected to a dataset (watchlist), you can now set
 `ed_association_type` to control how strictly tracked entities must relate to
 each returned event.
 
-- **`event_associated`** — only returns events where a tracked entity is the
+- **`event_associated`** â€” only returns events where a tracked entity is the
   primary actor (e.g., the company that raised funding, was acquired, or
   announced layoffs). Passing references are excluded.
-- **`mention`** — returns any event where a tracked entity appears, whether as
+- **`mention`** â€” returns any event where a tracked entity appears, whether as
   a primary actor or a passing reference.
 
 When omitted, no association-type filter is applied.
@@ -32,14 +32,14 @@ how it relates to that specific record.
 
 - `ed_association_type` on
   [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job)
-  — Filter connected-entity results by association type. Requires
+  â€” Filter connected-entity results by association type. Requires
   `connected_dataset_ids`.
 
 ### All-news watchlist queries
 
 You can now submit a connected job without specifying a topic query. Set
 `fetch_all_watchlist_news: true` to retrieve all news for the entities in your
-connected watchlist — no topic required. Wildcard queries (`*`) and generic
+connected watchlist â€” no topic required. Wildcard queries (`*`) and generic
 phrases like "all news" also trigger this behavior.
 
 Monitors created from an all-news job preserve the behavior: each recurring run
@@ -52,11 +52,11 @@ error.
 
 - `fetch_all_watchlist_news` on
   [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job)
-  — When `true`, retrieves all news for connected watchlist entities without
+  â€” When `true`, retrieves all news for connected watchlist entities without
   topic filtering. Requires `connected_dataset_ids`.
 - `fetch_all_watchlist_news` on
   [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job)
-  — Preview validators and enrichments for an all-news watchlist query. Also
+  â€” Preview validators and enrichments for an all-news watchlist query. Also
   accepts `connected_dataset_ids`.
 
 ### Fixes and improvements
@@ -102,27 +102,27 @@ reusable, resource-agnostic webhook system.
 **New endpoints:**
 
 - [`POST /catchAll/webhooks`](/web-search-api/api-reference/webhooks/create-webhook)
-  — Create a webhook.
+  â€” Create a webhook.
 - [`GET /catchAll/webhooks`](/web-search-api/api-reference/webhooks/list-webhooks)
-  — List webhooks.
+  â€” List webhooks.
 - [`GET /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/get-webhook)
-  — Get a webhook.
+  â€” Get a webhook.
 - [`PATCH /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/update-webhook)
-  — Update a webhook.
+  â€” Update a webhook.
 - [`DELETE /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/delete-webhook)
-  — Delete a webhook.
+  â€” Delete a webhook.
 - [`POST /catchAll/webhooks/{webhook_id}/test`](/web-search-api/api-reference/webhooks/test-webhook)
-  — Test webhook delivery.
+  â€” Test webhook delivery.
 - [`POST /catchAll/webhooks/{webhook_id}/resources`](/web-search-api/api-reference/webhooks/assign-resource)
-  — Assign a resource to a webhook.
+  â€” Assign a resource to a webhook.
 - [`GET /catchAll/webhooks/{webhook_id}/resources`](/web-search-api/api-reference/webhooks/list-webhook-resources)
-  — List resources assigned to a webhook.
+  â€” List resources assigned to a webhook.
 - [`DELETE /catchAll/webhooks/{webhook_id}/resources/{resource_type}/{resource_id}`](/web-search-api/api-reference/webhooks/remove-resource)
-  — Remove a resource from a webhook.
+  â€” Remove a resource from a webhook.
 - [`GET /catchAll/resources/{resource_type}/{resource_id}/webhooks`](/web-search-api/api-reference/webhooks/list-resource-webhooks)
-  — List webhooks assigned to a resource.
+  â€” List webhooks assigned to a resource.
 - [`GET /catchAll/webhook-history`](/web-search-api/api-reference/webhooks/get-delivery-history)
-  — Get webhook delivery history for a resource.
+  â€” Get webhook delivery history for a resource.
 
 ### Query validation
 
@@ -132,7 +132,7 @@ before creating a job.
 **New endpoint:**
 
 - [`POST /catchAll/validate`](/web-search-api/api-reference/jobs/validate-query)
-  — Validate a query before submission.
+  â€” Validate a query before submission.
 
 ### Projects
 
@@ -151,23 +151,23 @@ shared with teammates.
 **Endpoints:**
 
 - [`GET /catchAll/projects`](/web-search-api/api-reference/projects/list-projects)
-  — List projects.
+  â€” List projects.
 - [`POST /catchAll/projects`](/web-search-api/api-reference/projects/create-project)
-  — Create a project.
+  â€” Create a project.
 - [`GET /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/get-project)
-  — Get a project.
+  â€” Get a project.
 - [`PATCH /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/update-project)
-  — Update a project.
+  â€” Update a project.
 - [`DELETE /catchAll/projects/{project_id}`](/web-search-api/api-reference/projects/delete-project)
-  — Delete a project.
+  â€” Delete a project.
 - [`GET /catchAll/projects/{project_id}/overview`](/web-search-api/api-reference/projects/get-project-overview)
-  — Get resource counts by type and status.
+  â€” Get resource counts by type and status.
 - [`GET /catchAll/projects/{project_id}/resources`](/web-search-api/api-reference/projects/list-resources)
-  — List resources in a project.
+  â€” List resources in a project.
 - [`POST /catchAll/projects/{project_id}/resources`](/web-search-api/api-reference/projects/add-resource)
-  — Add resources to a project.
+  â€” Add resources to a project.
 - [`DELETE /catchAll/projects/{project_id}/resources/{resource_type}/{resource_id}`](/web-search-api/api-reference/projects/remove-resource)
-  — Remove a resource from a project.
+  â€” Remove a resource from a project.
 
 </Update>
 
@@ -211,7 +211,7 @@ and filtering by ownership across all list endpoints.
 **Features:**
 
 - **Delete jobs and monitors**: Remove jobs and monitors you no longer need.
-  Deleted resources no longer appear in list results. Deletion is idempotent —
+  Deleted resources no longer appear in list results. Deletion is idempotent â€”
   deleting an already-deleted resource returns `200`.
 - **Monitor status history**: Inspect the full execution history of a monitor,
   including per-run record counts and webhook delivery results.
@@ -227,18 +227,18 @@ and filtering by ownership across all list endpoints.
 **Endpoints:**
 
 - [`DELETE /catchAll/jobs/{job_id}`](/web-search-api/api-reference/jobs/delete-job)
-  — Delete a job.
+  â€” Delete a job.
 - [`DELETE /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/monitors/delete-monitor)
-  — Delete a monitor.
+  â€” Delete a monitor.
 - [`GET /catchAll/monitors/{monitor_id}/status`](/web-search-api/api-reference/monitors/get-monitor-status-history)
-  — Get monitor execution status history.
+  â€” Get monitor execution status history.
 
 </Update>
 
 <Update label="1.4.0" description="2026-04-14">
 ## Company search
 
-Introduces company search — track specific companies across CatchAll jobs by
+Introduces company search â€” track specific companies across CatchAll jobs by
 connecting datasets of entities.
 
 **Features:**
@@ -256,44 +256,44 @@ connecting datasets of entities.
 **Endpoints:**
 
 - [`GET /catchAll/entities`](/web-search-api/api-reference/entities/list-entities)
-  — List entities.
+  â€” List entities.
 - [`POST /catchAll/entities`](/web-search-api/api-reference/entities/create-entity)
-  — Create a company entity.
+  â€” Create a company entity.
 - [`POST /catchAll/entities/batch`](/web-search-api/api-reference/entities/create-entities-batch)
-  — Create multiple entities.
+  â€” Create multiple entities.
 - [`GET /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/get-entity)
-  — Get entity.
+  â€” Get entity.
 - [`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity)
-  — Update entity.
+  â€” Update entity.
 - [`DELETE /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/delete-entity)
-  — Delete entity.
+  â€” Delete entity.
 - [`GET /catchAll/datasets`](/web-search-api/api-reference/datasets/list-datasets)
-  — List datasets.
+  â€” List datasets.
 - [`POST /catchAll/datasets`](/web-search-api/api-reference/datasets/create-dataset)
-  — Create dataset from entity IDs.
+  â€” Create dataset from entity IDs.
 - [`POST /catchAll/datasets/upload`](/web-search-api/api-reference/datasets/create-dataset-from-csv)
-  — Create dataset from CSV.
+  â€” Create dataset from CSV.
 - [`GET /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/get-dataset)
-  — Get dataset.
+  â€” Get dataset.
 - [`PATCH /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/update-dataset)
-  — Update dataset.
+  â€” Update dataset.
 - [`DELETE /catchAll/datasets/{dataset_id}`](/web-search-api/api-reference/datasets/delete-dataset)
-  — Delete dataset.
+  â€” Delete dataset.
 - [`GET /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/list-entities-in-dataset)
-  — List entities in dataset.
+  â€” List entities in dataset.
 - [`POST /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/add-entities-to-dataset)
-  — Add entities to dataset.
+  â€” Add entities to dataset.
 - [`DELETE /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/remove-entities-from-dataset)
-  — Remove entities from dataset.
+  â€” Remove entities from dataset.
 - [`GET /catchAll/datasets/{dataset_id}/status`](/web-search-api/api-reference/datasets/get-dataset-status-history)
-  — Get dataset status history.
+  â€” Get dataset status history.
 - [`POST /catchAll/datasets/{dataset_id}/upload`](/web-search-api/api-reference/datasets/upload-csv-to-dataset)
-  — Add companies to dataset via CSV.
+  â€” Add companies to dataset via CSV.
 
 **Changed:**
 
 - [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) now
-  accepts `connected_dataset_ids` — an optional array of dataset UUIDs that
+  accepts `connected_dataset_ids` â€” an optional array of dataset UUIDs that
   activates company search mode.
 
 </Update>
@@ -312,7 +312,7 @@ connecting datasets of entities.
 **Endpoints:**
 
 - [`POST /catchAll/user/limits`](/web-search-api/api-reference/meta/get-plan-limits)
-  — Get plan features and current usage.
+  â€” Get plan features and current usage.
 
 **Improvements:**
 
@@ -386,13 +386,13 @@ controls, and structured company enrichments.
 **Endpoints:**
 
 - [`POST /catchAll/initialize`](/web-search-api/api-reference/jobs/initialize-job)
-  — Get validator, enrichment, and date range suggestions.
+  â€” Get validator, enrichment, and date range suggestions.
 - Enhanced
-  [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — Now
+  [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) â€” Now
   accepts date ranges, validators, and enrichments.
 - Enhanced
   [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
-  — Now supports pagination.
+  â€” Now supports pagination.
 
 **Improvements:**
 
@@ -419,10 +419,10 @@ controls, and structured company enrichments.
 
 **Endpoints:**
 
-- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) —
+- [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job) â€”
   Continue completed job with higher limit.
 - [`PATCH /catchAll/monitors/{monitor_id}`](/web-search-api/api-reference/monitors/update-monitor)
-  — Update monitor webhook configuration.
+  â€” Update monitor webhook configuration.
 
 **Improvements:**
 
@@ -500,11 +500,11 @@ streamline automated data collection workflows.
 **Endpoints:**
 
 - [`GET /catchAll/monitors`](/web-search-api/api-reference/monitors/list-monitors)
-  — List all monitors for your API key.
+  â€” List all monitors for your API key.
 - [`POST /catchAll/monitors/{monitor_id}/enable`](/web-search-api/api-reference/monitors/enable-monitor)
-  — Enable a disabled monitor.
+  â€” Enable a disabled monitor.
 - [`POST /catchAll/monitors/{monitor_id}/disable`](/web-search-api/api-reference/monitors/disable-monitor)
-  — Disable an active monitor.
+  â€” Disable an active monitor.
 
 **Improvements:**
 
@@ -524,9 +524,9 @@ and improved data quality.
 **Endpoints:**
 
 - [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
-  — List all jobs created with your API key.
+  â€” List all jobs created with your API key.
 - [`GET /catchAll/monitors/pull/{monitor_id}`](/web-search-api/api-reference/monitors/get-monitor-results)
-  — Retrieve aggregated results from all monitor jobs.
+  â€” Retrieve aggregated results from all monitor jobs.
 
 **Improvements:**
 
@@ -543,7 +543,7 @@ and improved data quality.
 ## Monitors feature
 
 Introduced
-[monitors for automated queries](/web-search-api/guides-and-concepts/monitors) —
+[monitors for automated queries](/web-search-api/concepts/monitors) â€”
 schedule recurring data collection from a reference job.
 
 **Features:**
@@ -558,9 +558,9 @@ schedule recurring data collection from a reference job.
 **Endpoints:**
 
 - [`POST /catchAll/monitors/create`](/web-search-api/api-reference/monitors/create-monitor)
-  — Create scheduled monitor.
+  â€” Create scheduled monitor.
 - [`GET /catchAll/monitors/{monitor_id}/jobs`](/web-search-api/api-reference/monitors/list-monitor-jobs)
-  — List monitor jobs.
+  â€” List monitor jobs.
 
 **Improvements:**
 
@@ -579,7 +579,7 @@ validated event data extracted from billions of web sources.
 
 - **Plain text input**: Submit queries in plain text and receive structured
   event data with source citations.
-- **[Dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas)**:
+- **[Dynamic schemas](/web-search-api/concepts/dynamic-schemas)**:
   Response structures adapt to your query, generating relevant fields
   automatically.
 - **Real-time status tracking**: Track job progress from submission through
@@ -588,14 +588,14 @@ validated event data extracted from billions of web sources.
 
 **Endpoints:**
 
-- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) —
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) â€”
   Create jobs using a plain text queries.
 - [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status)
-  — Check a job processing status.
+  â€” Check a job processing status.
 - [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
-  — Retrieve structured results with citations.
+  â€” Retrieve structured results with citations.
 
-→
+â†’
 [Get started with the quickstart guide](/web-search-api/get-started/quickstart)
 
 </Update>

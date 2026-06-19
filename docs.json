@@ -43,14 +43,14 @@
             ]
           },
           {
-            "group": "Guides and concepts",
+            "group": "Concepts",
             "pages": [
-              "web-search-api/guides-and-concepts/jobs",
-              "web-search-api/guides-and-concepts/monitors",
-              "web-search-api/guides-and-concepts/company-search",
-              "web-search-api/guides-and-concepts/projects",
-              "web-search-api/guides-and-concepts/index-and-search-depth",
-              "web-search-api/guides-and-concepts/dynamic-schemas"
+              "web-search-api/concepts/jobs",
+              "web-search-api/concepts/monitors",
+              "web-search-api/concepts/company-search",
+              "web-search-api/concepts/projects",
+              "web-search-api/concepts/index-and-search-depth",
+              "web-search-api/concepts/dynamic-schemas"
             ]
           },
           {
@@ -59,7 +59,8 @@
               "web-search-api/how-to/write-effective-queries",
               "web-search-api/how-to/set-up-webhooks",
               "web-search-api/how-to/configure-monitors",
-              "web-search-api/how-to/troubleshoot-monitors"
+              "web-search-api/how-to/troubleshoot-monitors",
+              "web-search-api/how-to/build-an-event-feed"
             ]
           },
           {

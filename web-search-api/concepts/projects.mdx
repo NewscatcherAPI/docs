@@ -1,24 +1,24 @@
----
+﻿---
 title: Projects
 sidebarTitle: Projects
 description: Organize jobs, monitors, and datasets into named groups for easier management and sharing.
 ---
 
 A project is a named container for jobs, monitors, and datasets. Use projects
-to separate work by use case, team, or client — and to share that work with
+to separate work by use case, team, or client â€” and to share that work with
 teammates across your organization.
 
 ## How it works
 
 Resources can be assigned to a project in two ways:
 
-- **At creation time** — include `project_id` in the request body of any
+- **At creation time** â€” include `project_id` in the request body of any
   create endpoint for jobs, monitors, or datasets.
-- **Post-hoc** — use the [Add resources](/web-search-api/api-reference/projects/add-resource)
+- **Post-hoc** â€” use the [Add resources](/web-search-api/api-reference/projects/add-resource)
   endpoint to assign one or more existing resources by type and ID.
 
 Each resource belongs to at most one project. Entities cannot be assigned to
-projects — they are shared across the entire organization.
+projects â€” they are shared across the entire organization.
 
 ## Create a project
 
@@ -141,7 +141,7 @@ resources belonging to a specific project:
 
 ## Get a project overview
 
-Returns resource counts grouped by type and status — useful for dashboards
+Returns resource counts grouped by type and status â€” useful for dashboards
 without fetching full resource lists:
 
 ```bash cURL
@@ -176,7 +176,7 @@ For `jobs` and `monitors`, keys are status values with integer counts. For
 
 ## Delete a project
 
-By default, deleting a project unassigns its resources — they continue to exist
+By default, deleting a project unassigns its resources â€” they continue to exist
 without a project association. Set `delete_resources=true` to permanently delete
 all assigned resources along with the project.
 
@@ -203,6 +203,6 @@ all assigned resources along with the project.
 ## See also
 
 - [Projects API reference](/web-search-api/api-reference/projects/create-project)
-- [Jobs](/web-search-api/guides-and-concepts/jobs)
-- [Monitors](/web-search-api/guides-and-concepts/monitors)
-- [Company search](/web-search-api/guides-and-concepts/company-search)
+- [Jobs](/web-search-api/concepts/jobs)
+- [Monitors](/web-search-api/concepts/monitors)
+- [Company search](/web-search-api/concepts/company-search)

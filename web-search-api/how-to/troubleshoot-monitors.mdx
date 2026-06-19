@@ -1,4 +1,4 @@
----
+﻿---
 title: Troubleshoot monitors
 sidebarTitle: Troubleshoot monitors
 description: Diagnose and fix common monitor issues.
@@ -62,9 +62,9 @@ and use that as your reference.
   <Step title="Assess event frequency vs schedule">
     Consider whether events matching your query occur frequently enough for your monitor schedule:
     
-    - ✅ **Good match**: Daily monitor for `"AI startup funding rounds over $10M"` (multiple events per week)
+    - âœ… **Good match**: Daily monitor for `"AI startup funding rounds over $10M"` (multiple events per week)
     
-    - ❌ **Frequency mismatch**: Daily monitor for `"Unicorn IPOs in biotech sector"` (rare events)
+    - âŒ **Frequency mismatch**: Daily monitor for `"Unicorn IPOs in biotech sector"` (rare events)
     
     **If events are infrequent:**
     - Adjust monitor schedule (weekly instead of daily)
@@ -89,7 +89,7 @@ and use that as your reference.
     
     **Option 2 - Adjust query scope**: Expand to capture more events without losing business value.
     
-    Create new reference job → Create new monitor → Disable old monitor.
+    Create new reference job â†’ Create new monitor â†’ Disable old monitor.
   </Step>
 </Steps>
 
@@ -143,8 +143,8 @@ executions. If you're seeing duplicates, this indicates a potential issue.
   <Step title="Verify HTTPS">
     Ensure your webhook URL uses HTTPS (not HTTP):
 
-    - ✅ `https://your-endpoint.com/webhook` 
-    - ❌ `http://your-endpoint.com/webhook`
+    - âœ… `https://your-endpoint.com/webhook` 
+    - âŒ `http://your-endpoint.com/webhook`
   </Step>
 
   <Step title="Check firewall rules">
@@ -177,7 +177,7 @@ For webhook implementation guidance including error handling and retry logic, se
 If you encounter issues not covered in this guide:
 
 1. Check the [Changelog](/web-search-api/get-started/changelog) for recent updates.
-2. Review [Monitors overview](/web-search-api/guides-and-concepts/monitors) for how monitors work.
+2. Review [Monitors overview](/web-search-api/concepts/monitors) for how monitors work.
 3. Review [Configure monitors](/web-search-api/how-to/configure-monitors) for setup and testing guidance.
 4. Contact support at support@newscatcherapi.com with:
    - `monitor_id` or `job_id`

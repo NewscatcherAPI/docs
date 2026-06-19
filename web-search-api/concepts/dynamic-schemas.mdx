@@ -1,10 +1,10 @@
----
+﻿---
 title: Working with dynamic schemas
 sidebarTitle: Dynamic schemas
 description: Build integrations that handle variable field names and structures.
 ---
 
-By default, CatchAll generates response schemas dynamically—field names can change 
+By default, CatchAll generates response schemas dynamicallyâ€”field names can change 
 between jobs, even with identical inputs. This guide shows how to build integrations 
 that handle this variability and how to define custom enrichments to ensure 
 consistent field names.
@@ -274,4 +274,4 @@ const company = findField(record.enrichment, ["company", "company_name"]);
 
 - [Initialize endpoint](/web-search-api/api-reference/jobs/initialize-job)
 - [Create job endpoint](/web-search-api/api-reference/jobs/create-job)
-- [Monitors](/web-search-api/guides-and-concepts/monitors)
+- [Monitors](/web-search-api/concepts/monitors)

@@ -1,4 +1,4 @@
----
+﻿---
 title: "Meet CatchAll: Our recall-first web search API"
 sidebarTitle: Introduction
 description: Find all results, not just top candidates
@@ -6,7 +6,7 @@ description: Find all results, not just top candidates
 
 CatchAll is a web search API that generates unique datasets that don't exist 
 anywhere else on the web. Built on NewsCatcher's proprietary real-world event 
-index, it delivers state-of-the-art recall—finding all relevant events, not just 
+index, it delivers state-of-the-art recallâ€”finding all relevant events, not just 
 top results.
 
 ## How it works
@@ -54,16 +54,16 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
 <AccordionGroup>
   <Accordion title="Event-centric index" icon="database">
-    CatchAll searches NewsCatcher’s continuously updated web index of 2+ billion 
+    CatchAll searches NewsCatcherâ€™s continuously updated web index of 2+ billion 
     web pages, optimized for finding real-world events (acquisitions, approvals, 
-    incidents). The index is time-series by nature — each web page is recorded by 
+    incidents). The index is time-series by nature â€” each web page is recorded by 
     its discovery date, not the date of the event it describes. This means a web 
     page discovered today may report on an event from months ago, yet CatchAll 
     still evaluates it against your query.
 
     <Tip>
       To learn how the index works and what search depth controls, see
-      [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
+      [Index and search depth](/web-search-api/concepts/index-and-search-depth).
     </Tip>
   </Accordion>
 
@@ -100,7 +100,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
 
   <Accordion title="Dynamic schemas" icon="flask">
     Each job generates a unique response schema. Field names and structure in 
-    the `enrichment` object vary between jobs—even with identical inputs.
+    the `enrichment` object vary between jobsâ€”even with identical inputs.
 
     **Guaranteed fields in every record:**
     - `record_id`
@@ -112,7 +112,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     - All fields inside `enrichment` (names, types, structure)
 
     <Tip>
-      See [Understanding dynamic schemas](/web-search-api/guides-and-concepts/dynamic-schemas) 
+      See [Understanding dynamic schemas](/web-search-api/concepts/dynamic-schemas) 
       for integration patterns.
     </Tip>
   </Accordion>
@@ -129,7 +129,7 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
       
     <Tip>
       To learn how search depth and date ranges work, see
-      [Index and search depth](/web-search-api/guides-and-concepts/index-and-search-depth).
+      [Index and search depth](/web-search-api/concepts/index-and-search-depth).
     </Tip>
   </Accordion>
 
@@ -177,10 +177,10 @@ CatchAll processes queries through a multi-stage pipeline that analyzes over
     Build a dataset of company entities, then connect it to any job:
     - Results are filtered to events relevant to your companies
     - Each record includes a `connected_entities` array with `entity_id`,
-      `name`, `ed_score` (1–10), and `relation` for each matched company
+      `name`, `ed_score` (1â€“10), and `relation` for each matched company
 
     <Tip>
-      See [Company search](/web-search-api/guides-and-concepts/company-search)
+      See [Company search](/web-search-api/concepts/company-search)
       for a full walkthrough.
     </Tip>
   </Accordion>
@@ -338,7 +338,7 @@ Bankruptcy filings by retail companies in the US this quarter
   >
     Make your first request and get results in minutes
   </Card>
-  <Card title="Monitors" icon="clock" href="/web-search-api/guides-and-concepts/monitors">
+  <Card title="Monitors" icon="clock" href="/web-search-api/concepts/monitors">
     Automate recurring queries with scheduled execution
   </Card>
   <Card
