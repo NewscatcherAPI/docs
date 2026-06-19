@@ -81,7 +81,7 @@ def read_mdx_frontmatter(page_path: str, root: Path) -> dict:
     for ext in (".mdx", ".md"):
         candidate = root / f"{page_path}{ext}"
         if candidate.exists():
-            return parse_frontmatter(candidate.read_text(encoding="utf-8"))
+            return parse_frontmatter(candidate.read_text(encoding="utf-8-sig"))
     return {}
 
 
