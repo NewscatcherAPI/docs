@@ -1,19 +1,19 @@
-﻿---
+---
 title: Company Watchlist
 sidebarTitle: Company Watchlist
 description: Track specific companies across CatchAll jobs with per-company relevance scores.
 ---
 
 Company Watchlist filters CatchAll job results to a predefined list of companies
-and scores each matching record per company. Use it to track specific companies â€” 
-a portfolio, a competitor set, or any curated list â€” instead of running broad queries.
+and scores each matching record per company. Use it to track specific companies — 
+a portfolio, a competitor set, or any curated list — instead of running broad queries.
 
 ## How it works
 
 Company Watchlist uses three connected concepts:
 
 **Entities** are individual company definitions. Each entity stores identifying
-information â€” name, domain, alternative names, key persons â€” that the system
+information — name, domain, alternative names, key persons — that the system
 uses to recognize the company in web content.
 
 **Datasets** are named collections of entities. A dataset acts as a watchlist or
@@ -21,13 +21,13 @@ portfolio. You create it once and can reuse it across multiple jobs and monitors
 
 **Connected jobs** are standard CatchAll jobs submitted with a
 `connected_dataset_ids` parameter. Adding this parameter activates company
-search mode; everything else about the job â€” query, validators, enrichments,
-date ranges â€” works identically to a normal job.
+search mode; everything else about the job — query, validators, enrichments,
+date ranges — works identically to a normal job.
 
 ## Create entities
 
 Matching quality depends on what you provide. `domain` is the most reliable
-signal â€” two companies can share a name, but not a domain.
+signal — two companies can share a name, but not a domain.
 
 ### Single entity
 
@@ -147,9 +147,9 @@ String entityId = entity.getId();
 }
 ```
 
-Entities move through `pending â†’ enriching â†’ ready` (or `failed`) after
+Entities move through `pending → enriching → ready` (or `failed`) after
 creation. You don't need to wait for individual entities to be ready before
-creating a dataset â€” the dataset status is what matters before submitting a job.
+creating a dataset — the dataset status is what matters before submitting a job.
 
 <Note>
   External enrichment is not yet active. Entities move directly to `ready`
@@ -161,7 +161,7 @@ creating a dataset â€” the dataset status is what matters before submitting
 ### Batch
 
 Use batch creation when adding multiple entities at once. Each entity is
-processed independently â€” one failure does not affect the others.
+processed independently — one failure does not affect the others.
 
 <CodeGroup>
 
@@ -347,7 +347,7 @@ Results are returned in the same order as the input array.
 ### From entity IDs
 
 Create a dataset from existing entity IDs. All IDs must belong to your
-organization â€” any invalid ID returns `400`.
+organization — any invalid ID returns `400`.
 
 <CodeGroup>
 
@@ -429,7 +429,7 @@ String datasetId = dataset.getId();
 
 ### From CSV
 
-Upload a CSV to create both entities and the dataset in a single request â€”
+Upload a CSV to create both entities and the dataset in a single request —
 the fastest path for most use cases.
 
 The `name` and `domain` columns are required; all other columns are optional. 
@@ -654,7 +654,7 @@ relate to each result by setting `ed_association_type`.
 
 | Value | Behavior |
 |---|---|
-| `event_associated` | Only returns events where a tracked entity is the primary actor â€” the company that raised funding, was acquired, announced layoffs, etc. Passing references are excluded. |
+| `event_associated` | Only returns events where a tracked entity is the primary actor — the company that raised funding, was acquired, announced layoffs, etc. Passing references are excluded. |
 | `mention` | Returns any event where a tracked entity appears, whether as a primary actor or a passing reference. |
 
 When omitted, no association-type filter is applied and all matching records are
@@ -777,7 +777,7 @@ var job = client.jobs().createJob(
 
 </CodeGroup>
 
-Monitors created from an all-news job preserve this behavior â€” each recurring
+Monitors created from an all-news job preserve this behavior — each recurring
 run collects all news for the connected watchlist, not topic-restricted results.
 
 ## Get results
@@ -799,7 +799,7 @@ results = client.jobs.get_job_results(job_id)
 for record in results.all_records:
     print(record.record_title)
     for entity in record.connected_entities:
-        print(f"  {entity.name} â€” score {entity.ed_score}/10")
+        print(f"  {entity.name} — score {entity.ed_score}/10")
         print(f"  {entity.relation}")
 ```
 
@@ -809,7 +809,7 @@ const results = await client.jobs.getJobResults({ job_id: jobId });
 for (const record of results.all_records) {
   console.log(record.record_title);
   for (const entity of record.connected_entities ?? []) {
-    console.log(`  ${entity.name} â€” score ${entity.ed_score}/10`);
+    console.log(`  ${entity.name} — score ${entity.ed_score}/10`);
     console.log(`  ${entity.relation}`);
   }
 }
@@ -824,7 +824,7 @@ results.getAllRecords().forEach(record -> {
     System.out.println(record.getRecordTitle());
     record.getConnectedEntities().ifPresent(entities ->
         entities.forEach(entity -> {
-            System.out.printf("  %s â€” score %.0f/10%n",
+            System.out.printf("  %s — score %.0f/10%n",
                 entity.getName(), entity.getEdScore());
             System.out.println("  " + entity.getRelation());
         })

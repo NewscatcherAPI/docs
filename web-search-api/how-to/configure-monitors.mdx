@@ -1,4 +1,4 @@
-﻿---
+---
 title: Configure monitors
 sidebarTitle: Configure monitors
 description: Configure reliable, efficient monitors and optimize performance.
@@ -24,7 +24,7 @@ Match schedule frequency to your data needs and budget. Each scheduled run creat
 | Market intelligence | Daily or weekly      | Adjust based on update cycles               |
 
 <Warning>
-  **Minimum interval** depends on your subscription. For trials and PAYG is **24 hours**. But for the smallest paid subscription it is **12 hours**.
+  **Minimum interval: 24 hours.** Schedules more frequent than daily are not supported.
 </Warning>
 
 ### Schedule formats
@@ -32,11 +32,6 @@ Match schedule frequency to your data needs and budget. Each scheduled run creat
 Define schedules in natural language with explicit timezone.
 
 <Tabs>
- <Tab title="Hourly (If your plan allows it)">
-    - `"every hour"`
-    - `"every 6 hours"`
-    - `"every 12 hours"`
-  </Tab>
   <Tab title="Daily schedules">
     - `"every day at 12 PM UTC"`
     - `"every day at 9 AM EST"`
@@ -52,15 +47,21 @@ Define schedules in natural language with explicit timezone.
     - `"every 3 days at 9 AM EST"`
     - `"every 7 days at 12 PM UTC"`
   </Tab>
+
+  <Tab title="Invalid (sub-24h)">
+    - ❌ `"every hour"`
+    - ❌ `"every 6 hours"`
+    - ❌ `"every 12 hours"`
+  </Tab>
 </Tabs>
 
 **Common cron patterns:**
 
 | Schedule                     | Cron Expression | Valid                    |
 | ---------------------------- | --------------- | ------------------------ |
-| `"every day at 12 PM UTC"`   | `0 12 * * *`    | âœ… Daily                 |
-| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | âœ… Weekly                |
-| `"every 12 hours"`           | `0 */12 * * *`  | âœ… Hourly (If your plan allows it)                |
+| `"every day at 12 PM UTC"`   | `0 12 * * *`    | ✅ Daily                 |
+| `"every Monday at 9 AM EST"` | `0 9 * * 1`     | ✅ Weekly                |
+| `"every 6 hours"`            | `0 */6 * * *`   | ❌ Below 24h minimum     |
 
 ### Testing procedure
 

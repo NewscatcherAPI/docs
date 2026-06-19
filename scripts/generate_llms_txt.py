@@ -81,7 +81,7 @@ def read_mdx_frontmatter(page_path: str, root: Path) -> dict:
     for ext in (".mdx", ".md"):
         candidate = root / f"{page_path}{ext}"
         if candidate.exists():
-            return parse_frontmatter(candidate.read_text(encoding="utf-8-sig"))
+            return parse_frontmatter(candidate.read_text(encoding="utf-8"))
     return {}
 
 
@@ -396,7 +396,7 @@ def generate(root: Path) -> tuple[str, list[str]]:
 
 def _report_missing(missing: list[str]) -> None:
     print(
-        f"\n✗  {len(missing)} page(s) have no description. "
+        f"\nFAIL  {len(missing)} page(s) have no description. "
         "Add a `description` field to their frontmatter:\n",
         file=sys.stderr,
     )
@@ -446,25 +446,25 @@ def main() -> None:
     if args.check:
         if not output_path.exists():
             print(
-                f"✗  {args.output} does not exist.\n" "   Run: npm run llms:generate",
+                f"FAIL  {args.output} does not exist.\n" "   Run: npm run llms:generate",
                 file=sys.stderr,
             )
             sys.exit(1)
         existing = output_path.read_text(encoding="utf-8")
         if existing != content:
             print(
-                f"✗  {args.output} is out of date.\n"
+                f"FAIL  {args.output} is out of date.\n"
                 "   Run: npm run llms:generate  and commit the result.",
                 file=sys.stderr,
             )
             sys.exit(1)
         page_count = content.count("\n- [")
-        print(f"✓  {args.output} is up to date ({page_count} entries).")
+        print(f"OK  {args.output} is up to date ({page_count} entries).")
         return
 
     output_path.write_text(content, encoding="utf-8")
     page_count = content.count("\n- [")
-    print(f"✓  Generated {args.output} ({page_count} entries).")
+    print(f"OK  Generated {args.output} ({page_count} entries).")
 
 
 if __name__ == "__main__":

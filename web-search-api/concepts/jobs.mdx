@@ -1,4 +1,4 @@
-﻿---
+---
 title: Jobs
 sidebarTitle: Jobs
 description: How CatchAll jobs work and how to move from query to results.
@@ -10,7 +10,7 @@ job completes.
 
 ## Jobs lifecycle
 
-![Job lifecycle diagram showing three flows: Basic (initialize optional â†’ submit â†’ get status â†’ pull results), Continue (continue â†’ get status â†’ pull results, extends a job submitted with limit), and Audit (list user jobs, returns all jobs for your API key).](/images/guides/job-lifecycle.png)
+![Job lifecycle diagram showing three flows: Basic (initialize optional → submit → get status → pull results), Continue (continue → get status → pull results, extends a job submitted with limit), and Audit (list user jobs, returns all jobs for your API key).](/images/guides/job-lifecycle.png)
 
 ## Initialize job
 
@@ -18,7 +18,7 @@ job completes.
 analyzes your query and returns LLM-generated suggestions for validators,
 enrichments, and a date range. It does not create a job or start processing.
 
-This endpoint is a preview â€” it shows you one example of what validators and
+This endpoint is a preview — it shows you one example of what validators and
 enrichments could look like for your query. Because the suggestions are
 LLM-generated, they are not deterministic. If you call initialize and then
 submit a job without passing any validators or enrichments, the system generates
@@ -138,11 +138,11 @@ System.out.println(suggestions);
 ## Create job
 
 [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) creates
-the job and starts processing. Only `query` is required â€” all other parameters
+the job and starts processing. Only `query` is required — all other parameters
 are optional.
 
 Validators and enrichments are independent. You can define one without the
-other â€” for example, provide custom enrichments and let the system generate
+other — for example, provide custom enrichments and let the system generate
 validators, or define validators and let the system generate enrichments.
 If you omit both, the system generates both from scratch based on your query.
 
@@ -532,8 +532,8 @@ while (true) {
 
 <Info>
   Records from Company Search jobs include a `connected_entities` array with
-  one entry per matched company â€” each with `entity_id`, `name`, `ed_score`
-  (1â€“10), and `relation`. See [Company search](/web-search-api/concepts/company-search) 
+  one entry per matched company — each with `entity_id`, `name`, `ed_score`
+  (1–10), and `relation`. See [Company search](/web-search-api/concepts/company-search) 
   for the full output format.
 </Info>
 
@@ -541,13 +541,13 @@ while (true) {
 
 To process more records after reviewing the initial results of a job submitted
 with a `limit`, use [`POST /catchAll/continue`](/web-search-api/api-reference/jobs/continue-job). 
-It extends the limit without restarting the job â€” all analysis, validation, and
+It extends the limit without restarting the job — all analysis, validation, and
 enrichment logic from the original job is preserved.
 
 Before continuing, check `candidate_records` and `progress_validated` in the pull 
 response to estimate how much data remains. `candidate_records` is the total number 
 of event clusters found, `progress_validated` is how many have been checked so far. 
-The difference tells you roughly how many candidates are still unprocessed â€” note 
+The difference tells you roughly how many candidates are still unprocessed — note 
 that hit rate is not linear, so the number of new valid records per continuation may vary.
 
 <CodeGroup>
@@ -573,7 +573,7 @@ continued = client.jobs.continue_job(
     job_id=job_id,
     new_limit=100
 )
-print(f"Continued: {continued.previous_limit} â†’ {continued.new_limit} records")
+print(f"Continued: {continued.previous_limit} → {continued.new_limit} records")
 
 # Poll and pull again
 while True:
@@ -591,7 +591,7 @@ const continued = await client.jobs.continueJob({
   new_limit: 100,
 });
 console.log(
-  `Continued: ${continued.previous_limit} â†’ ${continued.new_limit} records`,
+  `Continued: ${continued.previous_limit} → ${continued.new_limit} records`,
 );
 
 // Poll and pull again
@@ -613,7 +613,7 @@ var continued = client.jobs().continueJob(
         .newLimit(100)
         .build()
 );
-System.out.println("Continued: " + continued.getPreviousLimit() + " â†’ " + continued.getNewLimit());
+System.out.println("Continued: " + continued.getPreviousLimit() + " → " + continued.getNewLimit());
 
 // Poll and pull again
 while (true) {
@@ -710,7 +710,7 @@ for (var job : jobs.getJobs()) {
 
 [`DELETE /catchAll/jobs/{job_id}`](/web-search-api/api-reference/jobs/delete-job)
 soft-deletes a job. The job is flagged as deleted and no longer appears in list
-results. Deletion is idempotent â€” deleting an already-deleted job returns `200`.
+results. Deletion is idempotent — deleting an already-deleted job returns `200`.
 
 <CodeGroup>
 ```bash cURL
