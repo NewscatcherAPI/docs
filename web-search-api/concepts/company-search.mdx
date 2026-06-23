@@ -13,7 +13,7 @@ a portfolio, a competitor set, or any curated list — instead of running broad 
 Company Watchlist uses three connected concepts:
 
 **Entities** are individual company definitions. Each entity stores identifying
-information — name, domain, alternative names, key persons — that the system
+information — name, domain, description, alternative names, key persons — that the system
 uses to recognize the company in web content.
 
 **Datasets** are named collections of entities. A dataset acts as a watchlist or
@@ -26,8 +26,10 @@ date ranges — works identically to a normal job.
 
 ## Create entities
 
-Matching quality depends on what you provide. `domain` is the most reliable
-signal — two companies can share a name, but not a domain.
+Matching quality depends on what you provide. `domain` and `description` are the most reliable
+signals:
+- Two companies can share a name, but not a domain.
+- Companies might have the same name, but they usually operate in different sectors. That's why description is the key to a proper disambiguation
 
 ### Single entity
 
@@ -169,22 +171,24 @@ The goal is to **fingerprint** the company, not to sell it. Aim for two to four
 sentences covering **what the company is** and **what it offers**.
 
 **Good description:**
-> Apple Inc. is an American technology company headquartered in Cupertino,
-> California, founded in 1976 by Steve Jobs, Steve Wozniak, and Ronald Wayne.
-> It designs consumer electronics and software, including the iPhone, iPad, and
-> Mac, and offers services such as the App Store, Apple Music, and iCloud.
+> Apollo Global Management (also known as Apollo) is a US-based alternative
+> asset management firm headquartered in New York City, founded in 1990 by
+> Leon Black, Marc Rowan, and Josh Harris. It manages private equity, credit,
+> and real assets funds with over $650 billion in assets under management and
+> is publicly traded on the NYSE under the ticker APO.
 
 **Bad description:**
-> Apple is a leading, innovative company that provides world-class solutions to
-> customers across many sectors.
+> Apollo is a global leader providing innovative solutions to clients across
+> multiple industries worldwide.
 
-The bad example cannot be distinguished from any other company named Apple —
-including Apple Corps Ltd., the London-based music and media company founded by
-The Beatles in 1968. What separates them is geography (Cupertino vs. London),
-industry (electronics vs. music/media), era and founders (1976/Jobs vs.
-1968/The Beatles), and products. The same pattern applies to "Delta" (airline
-vs. faucets vs. insurance) and "Dove" (Unilever personal care vs. Mars
-chocolate).
+The bad example fits dozens of companies named Apollo equally well. Consider
+two real ones: **Apollo Global Management** (New York City; alternative asset
+management; founded 1990; NYSE: APO) and **Apollo Hospitals** (Chennai, India;
+private hospital chain; founded 1983 by Dr. Prathap C. Reddy; largest private
+hospital network in Asia). The name alone tells you nothing — what separates
+them is geography, industry, founders, and products. The same pattern applies
+to "Delta" (airline vs. faucets vs. dental insurance) and "Dove" (Unilever
+personal care vs. Mars chocolate).
 
 The details that do the disambiguation work are: **aliases**, **specific
 industry**, **headquarters location**, **founding year and founders**, and
