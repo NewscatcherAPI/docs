@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.6.1
+  version: 1.6.2
   contact:
     name: NewsCatcher
     url: https://newscatcherapi.com
@@ -2331,15 +2331,6 @@ tags:
   description: Operations to check API health and version.
 components:
   schemas:
-    HTTPValidationError:
-      properties:
-        detail:
-          items:
-            $ref: '#/components/schemas/ValidationError'
-          type: array
-          title: Detail
-      type: object
-      title: HTTPValidationError
     CheckQueryQualityResponseDto:
       properties:
         status:
@@ -2374,6 +2365,15 @@ components:
       - confidence
       title: CheckQueryQualityResponseDto
       description: Complete query validation result
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
     CheckQueryQualityRequestDto:
       properties:
         query:
@@ -2383,356 +2383,6 @@ components:
       required:
       - query
       title: CheckQueryQualityRequestDto
-    EntityListResponseDto:
-      properties:
-        entities:
-          items:
-            $ref: '#/components/schemas/EntityResponseDto'
-          type: array
-          title: Entities
-          description: Array of entity objects for this page.
-        total:
-          type: integer
-          title: Total
-          description: Total number of entities matching the filter criteria.
-        page:
-          type: integer
-          title: Page
-          description: Current page number.
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of entities per page.
-      type: object
-      required:
-      - entities
-      - total
-      - page
-      - page_size
-      title: EntityListResponse
-    AddResourceResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the overall operation succeeded.
-        message:
-          type: string
-          title: Message
-          description: Top-level result message.
-        results:
-          items:
-            $ref: '#/components/schemas/ResourceResultResponseDto'
-          type: array
-          title: Results
-          description: Per-resource outcome, one entry per submitted resource.
-      type: object
-      required:
-      - success
-      - message
-      title: AddResourceResponseDto
-    UpdateProjectRequestDto:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: New name for the project.
-        description:
-          type: string
-          title: Description
-          description: New description for the project.
-      type: object
-      title: UpdateProjectRequestDto
-    CsvUploadCreateResponseDto:
-      properties:
-        dataset_id:
-          type: string
-          format: uuid
-          title: Dataset Id
-          description: Unique identifier of the created dataset.
-        dataset_name:
-          type: string
-          title: Dataset Name
-          description: Name of the created dataset.
-        entities_created:
-          type: integer
-          title: Entities Created
-          description: Number of entities successfully created from the CSV.
-        validation_report:
-          allOf:
-          - $ref: '#/components/schemas/CsvValidationReportDto'
-          title: Validation Report
-          description: Summary of CSV processing results.
-      type: object
-      required:
-      - dataset_id
-      - dataset_name
-      - entities_created
-      - validation_report
-      title: CreateDatasetCsvResponse
-    UpdateWebhookResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        webhook:
-          allOf:
-          - $ref: '#/components/schemas/WebhookResponseDto'
-          title: Webhook
-          description: Updated webhook details.
-      type: object
-      required:
-      - success
-      - message
-      title: UpdateWebhookResponseDto
-    DatasetSortBy:
-      type: string
-      enum:
-      - name
-      - created_at
-      - status
-      title: DatasetSortBy
-      description: Fields available for sorting dataset list results.
-    ProjectResourceTypeEnum:
-      type: string
-      enum:
-      - job
-      - monitor
-      - dataset
-      - monitor_group
-      title: ProjectResourceTypeEnum
-      description: Resource type for project association.
-    ListMonitorsResponseDto:
-      properties:
-        total:
-          type: integer
-          title: Total
-          description: Total number of monitors for this user.
-        page:
-          type: integer
-          title: Page
-          description: Current page number.
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of monitors per page.
-        total_pages:
-          type: integer
-          title: Total Pages
-          description: Total number of pages available.
-        monitors:
-          items:
-            $ref: '#/components/schemas/MonitorListItemResponseDto'
-          type: array
-          title: Monitors
-          description: Array of monitor summaries.
-      type: object
-      required:
-      - total
-      - page
-      - page_size
-      - total_pages
-      - monitors
-      title: ListMonitorsResponseDto
-    CreateEntitiesBatchRequestDto:
-      properties:
-        entities:
-          items:
-            $ref: '#/components/schemas/CreateEntityRequestDto'
-          type: array
-          title: Entities
-          description: Array of entities to create.
-      type: object
-      required:
-      - entities
-      title: CreateEntitiesBatchRequest
-    ResourceListResponseDto:
-      properties:
-        total:
-          type: integer
-          title: Total
-          description: Total number of resources assigned to the project.
-        page:
-          type: integer
-          title: Page
-          description: Current page number.
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of resources per page.
-        total_pages:
-          type: integer
-          title: Total Pages
-          description: Total number of pages available.
-        resources:
-          items:
-            $ref: '#/components/schemas/ResourceItemResponseDto'
-          type: array
-          title: Resources
-          description: Resources on this page.
-      type: object
-      required:
-      - total
-      - page
-      - page_size
-      - total_pages
-      - resources
-      title: ProjectResourceListResponseDto
-    SuggestInitializeRequestDto:
-      properties:
-        query:
-          type: string
-          title: Query
-          description: Natural-language question to analyse. The API returns the validators
-            and enrichments it would auto-generate for this query.
-          example: Which airlines expanded their routes in Asia?
-        context:
-          type: string
-          title: Context
-          description: Optional context string that sharpens the suggested fields.
-          example: Focus on low-cost carriers.
-        connected_dataset_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Connected Dataset Ids
-          description: Optional list of watchlist dataset IDs connected to this job.
-        fetch_all_watchlist_news:
-          type: boolean
-          title: Fetch All Watchlist News
-          description: When true, returns generic news validators and enrichments
-            suitable for watchlist-based article collection instead of query-specific
-            fields.
-      type: object
-      required:
-      - query
-      title: InitializeRequestDto
-      example:
-        query: Which airlines expanded their routes in Asia?
-        context: Focus on low-cost carriers.
-    CreateMonitorResponseDto:
-      properties:
-        monitor_id:
-          type: string
-          format: uuid
-          title: Monitor Id
-          description: Monitor identifier. Null if creation failed.
-        status:
-          type: string
-          title: Status
-          description: Creation status or error message.
-          default: Monitor Created Successfully
-      type: object
-      title: CreateMonitorResponseDto
-    DeleteMonitorResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the delete operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        monitor_id:
-          type: string
-          format: uuid
-          title: Monitor Id
-          description: ID of the deleted monitor. Null on failure.
-      type: object
-      required:
-      - success
-      - message
-      title: DeleteMonitorResponseDto
-    EntityStatus:
-      type: string
-      enum:
-      - pending
-      - enriching
-      - ready
-      - failed
-      title: EntityStatus
-      description: 'Processing status of an entity: pending → enriching → ready. Failed
-        entities may still be used but matching quality may be reduced.'
-    CreateProjectRequestDto:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Name for the project.
-        description:
-          type: string
-          title: Description
-          description: Optional description.
-      type: object
-      required:
-      - name
-      title: CreateProjectRequestDto
-    CreateDatasetRequestDto:
-      properties:
-        name:
-          type: string
-          minLength: 1
-          title: Name
-          description: Name for the dataset.
-        description:
-          type: string
-          title: Description
-          description: Optional description.
-        entity_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Entity Ids
-          description: IDs of existing entities to include in the dataset.
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-          description: Project to assign this dataset to.
-      type: object
-      required:
-      - name
-      title: CreateDatasetRequest
-    EntitySortBy:
-      type: string
-      enum:
-      - created_at
-      - name
-      - status
-      title: EntitySortBy
-      description: Fields available for sorting entity list results.
-    CreateProjectResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-          description: Project identifier.
-        name:
-          type: string
-          title: Name
-          description: Name of the created project.
-      type: object
-      required:
-      - success
-      - message
-      title: CreateProjectResponseDto
     ListUserJobsResponseDto:
       properties:
         total:
@@ -2765,7 +2415,7 @@ components:
       - total_pages
       - jobs
       title: ListUserJobsResponseDto
-    EnableMonitorResponseDto:
+    GetProjectResponseDto:
       properties:
         success:
           type: boolean
@@ -2774,17 +2424,157 @@ components:
         message:
           type: string
           title: Message
-          description: Human-readable success message.
-        monitor_id:
+          description: Human-readable result message.
+        project_id:
           type: string
           format: uuid
-          title: Monitor Id
-          description: ID of the enabled monitor.
+          title: Project Id
+          description: Project identifier.
+        name:
+          type: string
+          title: Name
+          description: Project name.
+        description:
+          type: string
+          title: Description
+          description: Project description.
+        resources_count:
+          type: integer
+          title: Resources Count
+          description: Number of resources assigned to this project.
+          default: 0
+        created_at:
+          type: string
+          title: Created At
+          description: Project creation timestamp.
+        updated_at:
+          type: string
+          title: Updated At
+          description: Timestamp of the last update.
+        sharing_info:
+          allOf:
+          - $ref: '#/components/schemas/SharingInfoDto'
+          title: Sharing Info
+          description: Present when this project was shared with the authenticated
+            user.
       type: object
       required:
       - success
       - message
-      title: EnableMonitorResponseDto
+      title: GetProjectResponseDto
+    CreateMonitorResponseDto:
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: Monitor identifier. Null if creation failed.
+        status:
+          type: string
+          title: Status
+          description: Creation status or error message.
+          default: Monitor Created Successfully
+      type: object
+      title: CreateMonitorResponseDto
+    EnableMonitorRequestDto:
+      properties:
+        backfill:
+          type: boolean
+          title: Backfill
+          description: If True, enforce lookback check on last job; if False, skip
+            date check.
+          default: true
+      type: object
+      title: EnableMonitorRequestDto
+      description: Optional body for POST /{monitor_id}/enable.
+    CsvUploadToExistingResponseDto:
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          title: Dataset Id
+          description: ID of the dataset that was updated.
+        entities_created:
+          type: integer
+          title: Entities Created
+          description: Number of new entities created from the CSV.
+        validation_report:
+          allOf:
+          - $ref: '#/components/schemas/CsvValidationReportDto'
+          title: Validation Report
+          description: Summary of CSV processing results.
+      type: object
+      required:
+      - dataset_id
+      - entities_created
+      - validation_report
+      title: UploadCsvToDatasetResponse
+    AssignWebhookResourceRequestDto:
+      properties:
+        resource_type:
+          allOf:
+          - $ref: '#/components/schemas/MappableResourceType'
+          description: Type of resource to assign.
+        resource_id:
+          type: string
+          format: uuid
+          title: Resource Id
+          description: ID of the resource to assign.
+      type: object
+      required:
+      - resource_type
+      - resource_id
+      title: AssignWebhookResourceRequestDto
+    CreateEntitiesBatchResponseDto:
+      properties:
+        entities:
+          items:
+            $ref: '#/components/schemas/CreateEntityResponseDto'
+          type: array
+          title: Entities
+          description: Array of created entity stubs in the same order as the input.
+        count:
+          type: integer
+          title: Count
+          description: Total number of entities created.
+      type: object
+      required:
+      - entities
+      - count
+      title: CreateEntitiesBatchResponse
+    ContinueResponseDto:
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          title: Job Id
+          description: UUID of the continued job.
+        previous_limit:
+          type: integer
+          title: Previous Limit
+          description: The limit before this continue request.
+        new_limit:
+          type: integer
+          title: New Limit
+          description: The new limit now in effect.
+        status:
+          type: string
+          title: Status
+          description: Always 'accepted' on success.
+          default: accepted
+      type: object
+      required:
+      - job_id
+      - new_limit
+      title: ContinueResponseDto
+    EntityType:
+      type: string
+      enum:
+      - company
+      - person
+      title: EntityType
+      description: The type of entity. 'company' for organizations (default), 'person'
+        for individuals.
     GetWebhookResponseDto:
       properties:
         success:
@@ -2805,44 +2595,6 @@ components:
       - success
       - message
       title: GetWebhookResponseDto
-    DatasetStatusHistoryResponseDto:
-      properties:
-        dataset_id:
-          type: string
-          format: uuid
-          title: Dataset Id
-          description: Dataset identifier.
-        history:
-          items:
-            $ref: '#/components/schemas/DatasetStatusEntryDto'
-          type: array
-          title: History
-          description: Status change entries, ordered oldest to newest.
-      type: object
-      required:
-      - dataset_id
-      - history
-      title: DatasetStatusHistoryResponse
-    ContinueRequestDto:
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          title: Job Id
-          description: Existing job to extend with a higher result limit.
-        new_limit:
-          type: integer
-          title: New Limit
-          description: New limit, must be greater than the current limit. If null,
-            raises to the plan maximum.
-          example: 250
-      type: object
-      required:
-      - job_id
-      title: ContinueRequestDto
-      example:
-        job_id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-        new_limit: 250
     DeleteJobResponseDto:
       properties:
         success:
@@ -2863,7 +2615,53 @@ components:
       - success
       - message
       title: DeleteJobResponseDto
-    AssignWebhookResourceResponseDto:
+    DeleteMonitorResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the delete operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: ID of the deleted monitor. Null on failure.
+      type: object
+      required:
+      - success
+      - message
+      title: DeleteMonitorResponseDto
+    DatasetStatusHistoryResponseDto:
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          title: Dataset Id
+          description: Dataset identifier.
+        history:
+          items:
+            $ref: '#/components/schemas/DatasetStatusEntryDto'
+          type: array
+          title: History
+          description: Status change entries, ordered oldest to newest.
+      type: object
+      required:
+      - dataset_id
+      - history
+      title: DatasetStatusHistoryResponse
+    SortOrder:
+      type: string
+      enum:
+      - asc
+      - desc
+      title: SortOrder
+      description: Sort direction for list results. 'asc' for ascending (oldest first),
+        'desc' for descending (newest first).
+    CreateProjectResponseDto:
       properties:
         success:
           type: boolean
@@ -2873,20 +2671,61 @@ components:
           type: string
           title: Message
           description: Human-readable result message.
-        already_existed:
-          type: boolean
-          title: Already Existed
-          description: True if the mapping already existed.
-          default: false
-        mapping:
-          allOf:
-          - $ref: '#/components/schemas/WebhookResourceMappingResponseDto'
-          title: Mapping
-          description: Created or existing resource mapping.
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: Project identifier.
+        name:
+          type: string
+          title: Name
+          description: Name of the created project.
       type: object
       required:
       - success
-      title: AssignWebhookResourceResponseDto
+      - message
+      title: CreateProjectResponseDto
+    ListMonitorJobsResponseDto:
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: Monitor identifier.
+        sort_order:
+          type: string
+          title: Sort Order
+          description: Sort order applied to the job list.
+        total_jobs:
+          type: integer
+          title: Total Jobs
+          description: Total number of jobs executed by this monitor.
+        jobs:
+          items:
+            $ref: '#/components/schemas/MonitorJobItemResponseDto'
+          type: array
+          title: Jobs
+          description: Array of monitor job executions.
+      type: object
+      required:
+      - monitor_id
+      - sort_order
+      - total_jobs
+      title: ListMonitorJobsResponseDto
+    UpdateMonitorResponseDto:
+      properties:
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: Monitor identifier.
+        status:
+          type: string
+          title: Status
+          description: Confirmation message.
+          default: Monitor updated Successfully
+      type: object
+      title: UpdateMonitorResponseDto
     MonitorStatusHistoryResponseDto:
       properties:
         success:
@@ -2916,58 +2755,112 @@ components:
       required:
       - success
       title: MonitorStatusHistoryResponseDto
-    Body_uploadCSVToDataset:
+    EntityStatus:
+      type: string
+      enum:
+      - pending
+      - enriching
+      - ready
+      - failed
+      title: EntityStatus
+      description: 'Processing status of an entity: pending → enriching → ready. Failed
+        entities may still be used but matching quality may be reduced.'
+    ListMonitorsResponseDto:
       properties:
-        file:
-          type: string
-          format: binary
-          title: File
+        total:
+          type: integer
+          title: Total
+          description: Total number of monitors for this user.
+        page:
+          type: integer
+          title: Page
+          description: Current page number.
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of monitors per page.
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of pages available.
+        monitors:
+          items:
+            $ref: '#/components/schemas/MonitorListItemResponseDto'
+          type: array
+          title: Monitors
+          description: Array of monitor summaries.
       type: object
       required:
-      - file
-      title: Body_uploadCSVToDataset
-    SuggestInitializeResponseDto:
+      - total
+      - page
+      - page_size
+      - total_pages
+      - monitors
+      title: ListMonitorsResponseDto
+    CreateEntityResponseDto:
       properties:
-        query:
+        id:
           type: string
-          title: Query
-          description: Echo of the query from the request.
-        context:
+          format: uuid
+          title: Id
+          description: Unique identifier of the created entity.
+        status:
           type: string
-          title: Context
-          description: Echo of the context from the request. Null if not provided.
-        start_date:
-          type: string
-          format: date-time
-          title: Start Date
-          description: Suggested start date for web search in ISO 8601 format.
-        end_date:
-          type: string
-          format: date-time
-          title: End Date
-          description: Suggested end date for web search in ISO 8601 format.
-        validators:
-          items:
-            $ref: '#/components/schemas/ValidatorSchema'
-          type: array
-          title: Validators
-          description: Suggested validators for filtering relevant web pages.
-        enrichments:
-          items:
-            $ref: '#/components/schemas/EnrichmentSchema'
-          type: array
-          title: Enrichments
-          description: Suggested enrichment fields for data extraction.
-        date_modification_message:
-          items:
-            type: string
-          type: array
-          title: Date Modification Message
-          description: Messages explaining date adjustments due to plan limits.
+          title: Status
+          description: Initial status of the entity. Always pending immediately after
+            creation.
+          default: pending
       type: object
       required:
-      - query
-      title: InitializeResponseDto
+      - id
+      title: CreateEntityResponse
+    CreateEntitiesBatchRequestDto:
+      properties:
+        entities:
+          items:
+            $ref: '#/components/schemas/CreateEntityRequestDto'
+          type: array
+          title: Entities
+          description: Array of entities to create.
+      type: object
+      required:
+      - entities
+      title: CreateEntitiesBatchRequest
+    CreateProjectRequestDto:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Name for the project.
+        description:
+          type: string
+          title: Description
+          description: Optional description.
+      type: object
+      required:
+      - name
+      title: CreateProjectRequestDto
+    AddResourceResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the overall operation succeeded.
+        message:
+          type: string
+          title: Message
+          description: Top-level result message.
+        results:
+          items:
+            $ref: '#/components/schemas/ResourceResultResponseDto'
+          type: array
+          title: Results
+          description: Per-resource outcome, one entry per submitted resource.
+      type: object
+      required:
+      - success
+      - message
+      title: AddResourceResponseDto
     ProjectListResponseDto:
       properties:
         total:
@@ -3000,18 +2893,19 @@ components:
       - total_pages
       - projects
       title: ProjectListResponseDto
-    UpdateDatasetRequestDto:
+    DatasetEntityIdsRequestDto:
       properties:
-        name:
-          type: string
-          title: Name
-          description: Updated dataset name.
-        description:
-          type: string
-          title: Description
-          description: Updated description.
+        entity_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Entity Ids
+          description: List of entity IDs to add or remove.
       type: object
-      title: UpdateDatasetRequest
+      required:
+      - entity_ids
+      title: DatasetEntityIdsRequest
     PullMonitorResponseDto:
       properties:
         monitor_id:
@@ -3079,6 +2973,408 @@ components:
       - reference_job
       - status
       title: PullMonitorResponseDto
+    RemoveResourceResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+      type: object
+      required:
+      - success
+      - message
+      title: RemoveResourceResponseDto
+    UpdateProjectRequestDto:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: New name for the project.
+        description:
+          type: string
+          title: Description
+          description: New description for the project.
+      type: object
+      title: UpdateProjectRequestDto
+    MappableResourceType:
+      type: string
+      enum:
+      - job
+      - monitor
+      - monitor_group
+      title: MappableResourceType
+      description: 'Resource types that can be assigned to a webhook: job, monitor,
+        or monitor_group.'
+    WebhookHistoryByResourceDto:
+      properties:
+        mode:
+          type: string
+          enum:
+          - resource
+          title: Mode
+          default: resource
+        resource_type:
+          $ref: '#/components/schemas/MappableResourceType'
+        resource_id:
+          type: string
+          format: uuid
+          title: Resource Id
+        total:
+          type: integer
+          title: Total
+        page:
+          type: integer
+          title: Page
+        page_size:
+          type: integer
+          title: Page Size
+        items:
+          items:
+            $ref: '#/components/schemas/WebhookStatusItemDto'
+          type: array
+          title: Items
+      type: object
+      required:
+      - resource_type
+      - resource_id
+      - total
+      - page
+      - page_size
+      - items
+      title: WebhookHistoryByResourceDto
+    UpdateEntityRequestDto:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Updated entity name.
+        description:
+          type: string
+          title: Description
+          description: Updated description.
+        additional_attributes:
+          allOf:
+          - $ref: '#/components/schemas/AdditionalAttributesDto'
+          title: Additional Attributes
+          description: Updated type-specific attributes.
+      type: object
+      title: UpdateEntityRequest
+    TestWebhookRequestDto:
+      properties:
+        payload:
+          type: object
+          title: Payload
+          description: Custom payload to send in the test request.
+      type: object
+      title: TestWebhookRequestDto
+    Body_createDatasetFromCsv:
+      properties:
+        file:
+          type: string
+          format: binary
+          title: File
+        name:
+          type: string
+          title: Name
+        description:
+          type: string
+          title: Description
+        project_id:
+          type: string
+          title: Project Id
+      type: object
+      required:
+      - file
+      - name
+      title: Body_createDatasetFromCsv
+    AddResourceRequestDto:
+      properties:
+        resources:
+          items:
+            $ref: '#/components/schemas/ResourceItemRequestDto'
+          type: array
+          title: Resources
+          description: Resources to assign to the project.
+      type: object
+      required:
+      - resources
+      title: AddResourceRequestDto
+    DatasetResponseDto:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique identifier of the dataset.
+        organization_id:
+          type: string
+          title: Organization Id
+          description: Organization that owns this dataset.
+        name:
+          type: string
+          title: Name
+          description: Dataset name.
+        description:
+          type: string
+          title: Description
+          description: Optional description.
+        entity_count:
+          type: integer
+          title: Entity Count
+          description: Total number of entities in this dataset.
+          default: 0
+        entity_status_breakdown:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Entity Status Breakdown
+          description: Count of entities grouped by processing status.
+        health_score:
+          type: number
+          title: Health Score
+          description: Overall health score of the dataset.
+        health_breakdown:
+          additionalProperties:
+            type: number
+          type: object
+          title: Health Breakdown
+          description: Health scores broken down by attribute.
+        latest_status:
+          type: string
+          title: Latest Status
+          description: Most recent processing status of the dataset.
+        created_by_user_id:
+          type: string
+          title: Created By User Id
+          description: ID of the user who created this dataset.
+        sharing_info:
+          allOf:
+          - $ref: '#/components/schemas/SharingInfoDto'
+          title: Sharing Info
+          description: Present when this dataset was shared with the authenticated
+            user.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp of when the dataset was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Timestamp of when the dataset was last updated.
+      type: object
+      required:
+      - id
+      - organization_id
+      - name
+      title: DatasetResponse
+    UpdateMonitorRequestDto:
+      properties:
+        webhook_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Webhook Ids
+          description: Optional list of centralized webhook IDs to assign to this
+            monitor. Empty list clears assignments.
+        limit:
+          type: integer
+          title: Limit
+          description: Optional max results per monitor run (min 10, validated against
+            plan)
+      type: object
+      title: UpdateMonitorRequestDto
+    EnableMonitorResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable success message.
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: ID of the enabled monitor.
+      type: object
+      required:
+      - success
+      - message
+      title: EnableMonitorResponseDto
+    SubmitResponseDto:
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          title: Job Id
+          description: UUID of the created job. Use this in /status and /pull.
+          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+      type: object
+      required:
+      - job_id
+      title: SubmitResponseDto
+    ListWebhooksForResourceResponseDto:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: Total number of webhooks assigned to this resource.
+        page:
+          type: integer
+          title: Page
+          description: Current page number.
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of webhooks per page.
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of pages available.
+        webhooks:
+          items:
+            $ref: '#/components/schemas/WebhookResponseDto'
+          type: array
+          title: Webhooks
+          description: Array of webhook objects.
+      type: object
+      required:
+      - total
+      - page
+      - page_size
+      - total_pages
+      - webhooks
+      title: ListWebhooksForResourceResponseDto
+    UpdateWebhookRequestDto:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Updated webhook name.
+        url:
+          type: string
+          title: Url
+          description: Updated webhook endpoint URL.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/WebhookType'
+          description: Updated webhook target type.
+        delivery_mode:
+          allOf:
+          - $ref: '#/components/schemas/DeliveryMode'
+          description: Updated delivery mode.
+        method:
+          allOf:
+          - $ref: '#/components/schemas/HttpMethod'
+          description: Updated HTTP method.
+        headers:
+          additionalProperties:
+            type: string
+          type: object
+          title: Headers
+          description: Updated HTTP headers.
+        params:
+          additionalProperties:
+            type: string
+          type: object
+          title: Params
+          description: Updated query string parameters.
+        auth:
+          oneOf:
+          - $ref: '#/components/schemas/BearerAuthDto'
+          - $ref: '#/components/schemas/ApiKeyAuthDto'
+          - $ref: '#/components/schemas/BasicAuthDto'
+          title: Auth
+          description: 'Authentication forwarded with each delivery. Supported types:
+            ''bearer'' (token), ''api_key'' (header + value), ''basic'' (username
+            + password).'
+          discriminator:
+            propertyName: type
+            mapping:
+              bearer: '#/components/schemas/BearerAuthDto'
+              api_key: '#/components/schemas/ApiKeyAuthDto'
+              basic: '#/components/schemas/BasicAuthDto'
+        formatter_config:
+          type: object
+          title: Formatter Config
+          description: Updated formatter configuration.
+        is_active:
+          type: boolean
+          title: Is Active
+          description: Set to true to activate or false to deactivate.
+      type: object
+      title: UpdateWebhookRequestDto
+    SuggestInitializeResponseDto:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Echo of the query from the request.
+        context:
+          type: string
+          title: Context
+          description: Echo of the context from the request. Null if not provided.
+        start_date:
+          type: string
+          format: date-time
+          title: Start Date
+          description: Suggested start date for web search in ISO 8601 format.
+        end_date:
+          type: string
+          format: date-time
+          title: End Date
+          description: Suggested end date for web search in ISO 8601 format.
+        validators:
+          items:
+            $ref: '#/components/schemas/ValidatorSchema'
+          type: array
+          title: Validators
+          description: Suggested validators for filtering relevant web pages.
+        enrichments:
+          items:
+            $ref: '#/components/schemas/EnrichmentSchema'
+          type: array
+          title: Enrichments
+          description: Suggested enrichment fields for data extraction.
+        date_modification_message:
+          items:
+            type: string
+          type: array
+          title: Date Modification Message
+          description: Messages explaining date adjustments due to plan limits.
+      type: object
+      required:
+      - query
+      title: InitializeResponseDto
+    DisableMonitorResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable success message.
+        monitor_id:
+          type: string
+          format: uuid
+          title: Monitor Id
+          description: ID of the disabled monitor.
+      type: object
+      required:
+      - success
+      - message
+      title: DisableMonitorResponseDto
     StatusResponseDto:
       properties:
         job_id:
@@ -3103,6 +3399,165 @@ components:
       required:
       - job_id
       title: StatusResponseDto
+    DatasetStatus:
+      type: string
+      enum:
+      - pending
+      - enriching
+      - ready
+      - failed
+      title: DatasetStatus
+      description: 'Processing status of a dataset: pending → enriching → ready. Failed
+        indicates one or more entity enrichments failed.'
+    ManageEntitiesResponseDto:
+      properties:
+        dataset_id:
+          type: string
+          format: uuid
+          title: Dataset Id
+          description: ID of the dataset that was modified.
+        affected_count:
+          type: integer
+          title: Affected Count
+          description: Number of entities that were added or removed.
+      type: object
+      required:
+      - dataset_id
+      - affected_count
+      title: ManageEntitiesResponse
+    TestWebhookResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the test delivery succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+        http_status_code:
+          type: integer
+          title: Http Status Code
+          description: HTTP status code returned by the webhook endpoint.
+        response_body:
+          title: Response Body
+          description: Response body returned by the webhook endpoint.
+      type: object
+      required:
+      - success
+      - message
+      title: TestWebhookResponseDto
+    ProjectOverviewResponseDto:
+      properties:
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: Project identifier.
+        overview:
+          additionalProperties:
+            additionalProperties:
+              type: integer
+            type: object
+          type: object
+          title: Overview
+          description: Resource counts grouped by type.
+      type: object
+      required:
+      - project_id
+      - overview
+      title: ProjectOverviewResponseDto
+    ListDatasetEntitiesRequestDto:
+      properties:
+        page:
+          type: integer
+          minimum: 1.0
+          title: Page
+          description: The page number to retrieve.
+          default: 1
+        page_size:
+          type: integer
+          maximum: 500.0
+          minimum: 1.0
+          title: Page Size
+          description: The number of entities per page.
+          default: 100
+        search:
+          type: string
+          title: Search
+          description: Filters entities by name using case-insensitive substring match.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/EntityStatus'
+          description: Filter entities by processing status.
+        entity_type:
+          allOf:
+          - $ref: '#/components/schemas/EntityType'
+          description: Filter entities by type.
+        sort_by:
+          allOf:
+          - $ref: '#/components/schemas/EntitySortBy'
+          description: Field to sort results by.
+          default: created_at
+        sort_order:
+          allOf:
+          - $ref: '#/components/schemas/SortOrder'
+          description: Sort direction.
+          default: desc
+      type: object
+      title: ListDatasetEntitiesRequest
+    UpdateProjectResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: Project identifier.
+      type: object
+      required:
+      - success
+      - message
+      title: UpdateProjectResponseDto
+    ListWebhooksResponseDto:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: Total number of webhooks.
+        page:
+          type: integer
+          title: Page
+          description: Current page number.
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of webhooks per page.
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of pages available.
+        webhooks:
+          items:
+            $ref: '#/components/schemas/WebhookResponseDto'
+          type: array
+          title: Webhooks
+          description: Array of webhook objects on this page.
+      type: object
+      required:
+      - total
+      - page
+      - page_size
+      - total_pages
+      - webhooks
+      title: ListWebhooksResponseDto
     SubmitRequestDto:
       properties:
         query:
@@ -3221,211 +3676,29 @@ components:
         - name: employees_affected
           description: Number of employees affected, if mentioned.
           type: number
-    TestWebhookRequestDto:
-      properties:
-        payload:
-          type: object
-          title: Payload
-          description: Custom payload to send in the test request.
-      type: object
-      title: TestWebhookRequestDto
-    ContinueResponseDto:
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          title: Job Id
-          description: UUID of the continued job.
-        previous_limit:
-          type: integer
-          title: Previous Limit
-          description: The limit before this continue request.
-        new_limit:
-          type: integer
-          title: New Limit
-          description: The new limit now in effect.
-        status:
-          type: string
-          title: Status
-          description: Always 'accepted' on success.
-          default: accepted
-      type: object
-      required:
-      - job_id
-      - new_limit
-      title: ContinueResponseDto
-    SortOrder:
+    DatasetSortBy:
       type: string
       enum:
-      - asc
-      - desc
-      title: SortOrder
-      description: Sort direction for list results. 'asc' for ascending (oldest first),
-        'desc' for descending (newest first).
-    Body_createDatasetFromCsv:
-      properties:
-        file:
-          type: string
-          format: binary
-          title: File
-        name:
-          type: string
-          title: Name
-        description:
-          type: string
-          title: Description
-        project_id:
-          type: string
-          title: Project Id
-      type: object
-      required:
-      - file
       - name
-      title: Body_createDatasetFromCsv
-    CreateWebhookResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        webhook:
-          allOf:
-          - $ref: '#/components/schemas/WebhookResponseDto'
-          title: Webhook
-          description: Created webhook details.
-      type: object
-      required:
-      - success
-      - message
-      title: CreateWebhookResponseDto
-    DatasetStatus:
-      type: string
-      enum:
-      - pending
-      - enriching
-      - ready
-      - failed
-      title: DatasetStatus
-      description: 'Processing status of a dataset: pending → enriching → ready. Failed
-        indicates one or more entity enrichments failed.'
-    DeleteProjectResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-          description: ID of the deleted project.
-        deleted_resources:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Deleted Resources
-          description: Count of deleted resources grouped by type.
-      type: object
-      required:
-      - success
-      - message
-      title: DeleteProjectResponseDto
-    ManageEntitiesResponseDto:
-      properties:
-        dataset_id:
-          type: string
-          format: uuid
-          title: Dataset Id
-          description: ID of the dataset that was modified.
-        affected_count:
-          type: integer
-          title: Affected Count
-          description: Number of entities that were added or removed.
-      type: object
-      required:
-      - dataset_id
-      - affected_count
-      title: ManageEntitiesResponse
-    EntityResponseDto:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Unique identifier of the entity.
-        entity_type:
-          type: string
-          title: Entity Type
-          description: The type of entity.
-        organization_id:
-          type: string
-          title: Organization Id
-          description: Organization that owns this entity.
-        name:
-          type: string
-          title: Name
-          description: Entity name.
-        description:
-          type: string
-          title: Description
-          description: Free-text description.
-        additional_attributes:
-          allOf:
-          - $ref: '#/components/schemas/AdditionalAttributesDto'
-          title: Additional Attributes
-          description: Type-specific attributes.
-        status:
-          allOf:
-          - $ref: '#/components/schemas/EntityStatus'
-          description: Processing status of the entity.
-        created_by_user_id:
-          type: string
-          title: Created By User Id
-          description: ID of the user who created this entity.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Timestamp of when the entity was created.
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-          description: Timestamp of when the entity was last updated.
-      type: object
-      required:
-      - id
-      - entity_type
-      - organization_id
-      - name
+      - created_at
       - status
-      title: EntityResponse
-    SubmitResponseDto:
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          title: Job Id
-          description: UUID of the created job. Use this in /status and /pull.
-          example: 3fa85f64-5717-4562-b3fc-2c963f66afa6
-      type: object
-      required:
-      - job_id
-      title: SubmitResponseDto
-    ListWebhooksResponseDto:
+      title: DatasetSortBy
+      description: Fields available for sorting dataset list results.
+    ProjectResourceTypeEnum:
+      type: string
+      enum:
+      - job
+      - monitor
+      - dataset
+      - monitor_group
+      title: ProjectResourceTypeEnum
+      description: Resource type for project association.
+    ListWebhookResourcesResponseDto:
       properties:
         total:
           type: integer
           title: Total
-          description: Total number of webhooks.
+          description: Total number of resource mappings.
         page:
           type: integer
           title: Page
@@ -3433,54 +3706,52 @@ components:
         page_size:
           type: integer
           title: Page Size
-          description: Number of webhooks per page.
+          description: Number of mappings per page.
         total_pages:
           type: integer
           title: Total Pages
           description: Total number of pages available.
-        webhooks:
+        resources:
           items:
-            $ref: '#/components/schemas/WebhookResponseDto'
+            $ref: '#/components/schemas/WebhookResourceMappingResponseDto'
           type: array
-          title: Webhooks
-          description: Array of webhook objects on this page.
+          title: Resources
+          description: Array of resource mappings on this page.
       type: object
       required:
       - total
       - page
       - page_size
       - total_pages
-      - webhooks
-      title: ListWebhooksResponseDto
-    DisableMonitorResponseDto:
+      - resources
+      title: ListWebhookResourcesResponseDto
+    CsvUploadCreateResponseDto:
       properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable success message.
-        monitor_id:
+        dataset_id:
           type: string
           format: uuid
-          title: Monitor Id
-          description: ID of the disabled monitor.
+          title: Dataset Id
+          description: Unique identifier of the created dataset.
+        dataset_name:
+          type: string
+          title: Dataset Name
+          description: Name of the created dataset.
+        entities_created:
+          type: integer
+          title: Entities Created
+          description: Number of entities successfully created from the CSV.
+        validation_report:
+          allOf:
+          - $ref: '#/components/schemas/CsvValidationReportDto'
+          title: Validation Report
+          description: Summary of CSV processing results.
       type: object
       required:
-      - success
-      - message
-      title: DisableMonitorResponseDto
-    MappableResourceType:
-      type: string
-      enum:
-      - job
-      - monitor
-      - monitor_group
-      title: MappableResourceType
-      description: 'Resource types that can be assigned to a webhook: job, monitor,
-        or monitor_group.'
+      - dataset_id
+      - dataset_name
+      - entities_created
+      - validation_report
+      title: CreateDatasetCsvResponse
     DatasetListResponseDto:
       properties:
         datasets:
@@ -3508,6 +3779,76 @@ components:
       - page
       - page_size
       title: DatasetListResponse
+    ResourceListResponseDto:
+      properties:
+        total:
+          type: integer
+          title: Total
+          description: Total number of resources assigned to the project.
+        page:
+          type: integer
+          title: Page
+          description: Current page number.
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of resources per page.
+        total_pages:
+          type: integer
+          title: Total Pages
+          description: Total number of pages available.
+        resources:
+          items:
+            $ref: '#/components/schemas/ResourceItemResponseDto'
+          type: array
+          title: Resources
+          description: Resources on this page.
+      type: object
+      required:
+      - total
+      - page
+      - page_size
+      - total_pages
+      - resources
+      title: ProjectResourceListResponseDto
+    UpdateDatasetRequestDto:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Updated dataset name.
+        description:
+          type: string
+          title: Description
+          description: Updated description.
+      type: object
+      title: UpdateDatasetRequest
+    DeleteProjectResponseDto:
+      properties:
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+        project_id:
+          type: string
+          format: uuid
+          title: Project Id
+          description: ID of the deleted project.
+        deleted_resources:
+          additionalProperties:
+            type: integer
+          type: object
+          title: Deleted Resources
+          description: Count of deleted resources grouped by type.
+      type: object
+      required:
+      - success
+      - message
+      title: DeleteProjectResponseDto
     PullResponseDto:
       properties:
         job_id:
@@ -3620,49 +3961,34 @@ components:
       required:
       - job_id
       title: PullJobResponseDto
-    CreateEntitiesBatchResponseDto:
+    DatasetEntityListResponseDto:
       properties:
         entities:
           items:
-            $ref: '#/components/schemas/CreateEntityResponseDto'
+            $ref: '#/components/schemas/EntitySummaryDto'
           type: array
           title: Entities
-          description: Array of created entity stubs in the same order as the input.
-        count:
+          description: Array of entity summary objects for this page.
+        total:
           type: integer
-          title: Count
-          description: Total number of entities created.
+          title: Total
+          description: Total number of entities in the dataset.
+        page:
+          type: integer
+          title: Page
+          description: Current page number.
+        page_size:
+          type: integer
+          title: Page Size
+          description: Number of entities per page.
       type: object
       required:
       - entities
-      - count
-      title: CreateEntitiesBatchResponse
-    EnableMonitorRequestDto:
-      properties:
-        backfill:
-          type: boolean
-          title: Backfill
-          description: If True, enforce lookback check on last job; if False, skip
-            date check.
-          default: true
-      type: object
-      title: EnableMonitorRequestDto
-      description: Optional body for POST /{monitor_id}/enable.
-    UpdateMonitorResponseDto:
-      properties:
-        monitor_id:
-          type: string
-          format: uuid
-          title: Monitor Id
-          description: Monitor identifier.
-        status:
-          type: string
-          title: Status
-          description: Confirmation message.
-          default: Monitor updated Successfully
-      type: object
-      title: UpdateMonitorResponseDto
-    UpdateProjectResponseDto:
+      - total
+      - page
+      - page_size
+      title: DatasetEntityListResponse
+    CreateWebhookResponseDto:
       properties:
         success:
           type: boolean
@@ -3672,154 +3998,16 @@ components:
           type: string
           title: Message
           description: Human-readable result message.
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-          description: Project identifier.
+        webhook:
+          allOf:
+          - $ref: '#/components/schemas/WebhookResponseDto'
+          title: Webhook
+          description: Created webhook details.
       type: object
       required:
       - success
       - message
-      title: UpdateProjectResponseDto
-    UpdateEntityRequestDto:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Updated entity name.
-        description:
-          type: string
-          title: Description
-          description: Updated description.
-        additional_attributes:
-          allOf:
-          - $ref: '#/components/schemas/AdditionalAttributesDto'
-          title: Additional Attributes
-          description: Updated type-specific attributes.
-      type: object
-      title: UpdateEntityRequest
-    ListDatasetEntitiesRequestDto:
-      properties:
-        page:
-          type: integer
-          minimum: 1.0
-          title: Page
-          description: The page number to retrieve.
-          default: 1
-        page_size:
-          type: integer
-          maximum: 500.0
-          minimum: 1.0
-          title: Page Size
-          description: The number of entities per page.
-          default: 100
-        search:
-          type: string
-          title: Search
-          description: Filters entities by name using case-insensitive substring match.
-        status:
-          allOf:
-          - $ref: '#/components/schemas/EntityStatus'
-          description: Filter entities by processing status.
-        entity_type:
-          allOf:
-          - $ref: '#/components/schemas/EntityType'
-          description: Filter entities by type.
-        sort_by:
-          allOf:
-          - $ref: '#/components/schemas/EntitySortBy'
-          description: Field to sort results by.
-          default: created_at
-        sort_order:
-          allOf:
-          - $ref: '#/components/schemas/SortOrder'
-          description: Sort direction.
-          default: desc
-      type: object
-      title: ListDatasetEntitiesRequest
-    CsvUploadToExistingResponseDto:
-      properties:
-        dataset_id:
-          type: string
-          format: uuid
-          title: Dataset Id
-          description: ID of the dataset that was updated.
-        entities_created:
-          type: integer
-          title: Entities Created
-          description: Number of new entities created from the CSV.
-        validation_report:
-          allOf:
-          - $ref: '#/components/schemas/CsvValidationReportDto'
-          title: Validation Report
-          description: Summary of CSV processing results.
-      type: object
-      required:
-      - dataset_id
-      - entities_created
-      - validation_report
-      title: UploadCsvToDatasetResponse
-    DatasetEntityIdsRequestDto:
-      properties:
-        entity_ids:
-          items:
-            type: string
-            format: uuid
-          type: array
-          title: Entity Ids
-          description: List of entity IDs to add or remove.
-      type: object
-      required:
-      - entity_ids
-      title: DatasetEntityIdsRequest
-    GetProjectResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the operation succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        project_id:
-          type: string
-          format: uuid
-          title: Project Id
-          description: Project identifier.
-        name:
-          type: string
-          title: Name
-          description: Project name.
-        description:
-          type: string
-          title: Description
-          description: Project description.
-        resources_count:
-          type: integer
-          title: Resources Count
-          description: Number of resources assigned to this project.
-          default: 0
-        created_at:
-          type: string
-          title: Created At
-          description: Project creation timestamp.
-        updated_at:
-          type: string
-          title: Updated At
-          description: Timestamp of the last update.
-        sharing_info:
-          allOf:
-          - $ref: '#/components/schemas/SharingInfoDto'
-          title: Sharing Info
-          description: Present when this project was shared with the authenticated
-            user.
-      type: object
-      required:
-      - success
-      - message
-      title: GetProjectResponseDto
+      title: CreateWebhookResponseDto
     CreateMonitorRequestDto:
       properties:
         reference_job_id:
@@ -3874,86 +4062,34 @@ components:
       - reference_job_id
       - schedule
       title: CreateMonitorRequestDto
-    ProjectOverviewResponseDto:
+    CreateDatasetRequestDto:
       properties:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Name for the dataset.
+        description:
+          type: string
+          title: Description
+          description: Optional description.
+        entity_ids:
+          items:
+            type: string
+            format: uuid
+          type: array
+          title: Entity Ids
+          description: IDs of existing entities to include in the dataset.
         project_id:
           type: string
           format: uuid
           title: Project Id
-          description: Project identifier.
-        overview:
-          additionalProperties:
-            additionalProperties:
-              type: integer
-            type: object
-          type: object
-          title: Overview
-          description: Resource counts grouped by type.
+          description: Project to assign this dataset to.
       type: object
       required:
-      - project_id
-      - overview
-      title: ProjectOverviewResponseDto
-    UpdateWebhookRequestDto:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Updated webhook name.
-        url:
-          type: string
-          title: Url
-          description: Updated webhook endpoint URL.
-        type:
-          allOf:
-          - $ref: '#/components/schemas/WebhookType'
-          description: Updated webhook target type.
-        delivery_mode:
-          allOf:
-          - $ref: '#/components/schemas/DeliveryMode'
-          description: Updated delivery mode.
-        method:
-          allOf:
-          - $ref: '#/components/schemas/HttpMethod'
-          description: Updated HTTP method.
-        headers:
-          additionalProperties:
-            type: string
-          type: object
-          title: Headers
-          description: Updated HTTP headers.
-        params:
-          additionalProperties:
-            type: string
-          type: object
-          title: Params
-          description: Updated query string parameters.
-        auth:
-          oneOf:
-          - $ref: '#/components/schemas/BearerAuthDto'
-          - $ref: '#/components/schemas/ApiKeyAuthDto'
-          - $ref: '#/components/schemas/BasicAuthDto'
-          title: Auth
-          description: 'Authentication forwarded with each delivery. Supported types:
-            ''bearer'' (token), ''api_key'' (header + value), ''basic'' (username
-            + password).'
-          discriminator:
-            propertyName: type
-            mapping:
-              bearer: '#/components/schemas/BearerAuthDto'
-              api_key: '#/components/schemas/ApiKeyAuthDto'
-              basic: '#/components/schemas/BasicAuthDto'
-        formatter_config:
-          type: object
-          title: Formatter Config
-          description: Updated formatter configuration.
-        is_active:
-          type: boolean
-          title: Is Active
-          description: Set to true to activate or false to deactivate.
-      type: object
-      title: UpdateWebhookRequestDto
-    RemoveResourceResponseDto:
+      - name
+      title: CreateDatasetRequest
+    AssignWebhookResourceResponseDto:
       properties:
         success:
           type: boolean
@@ -3963,76 +4099,108 @@ components:
           type: string
           title: Message
           description: Human-readable result message.
+        already_existed:
+          type: boolean
+          title: Already Existed
+          description: True if the mapping already existed.
+          default: false
+        mapping:
+          allOf:
+          - $ref: '#/components/schemas/WebhookResourceMappingResponseDto'
+          title: Mapping
+          description: Created or existing resource mapping.
       type: object
       required:
       - success
-      - message
-      title: RemoveResourceResponseDto
-    ListWebhooksForResourceResponseDto:
+      title: AssignWebhookResourceResponseDto
+    ContinueRequestDto:
       properties:
-        total:
+        job_id:
+          type: string
+          format: uuid
+          title: Job Id
+          description: Existing job to extend with a higher result limit.
+        new_limit:
           type: integer
-          title: Total
-          description: Total number of webhooks assigned to this resource.
-        page:
-          type: integer
-          title: Page
-          description: Current page number.
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of webhooks per page.
-        total_pages:
-          type: integer
-          title: Total Pages
-          description: Total number of pages available.
-        webhooks:
-          items:
-            $ref: '#/components/schemas/WebhookResponseDto'
-          type: array
-          title: Webhooks
-          description: Array of webhook objects.
+          title: New Limit
+          description: New limit, must be greater than the current limit. If null,
+            raises to the plan maximum.
+          example: 250
       type: object
       required:
-      - total
-      - page
-      - page_size
-      - total_pages
-      - webhooks
-      title: ListWebhooksForResourceResponseDto
-    UpdateMonitorRequestDto:
+      - job_id
+      title: ContinueRequestDto
+      example:
+        job_id: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+        new_limit: 250
+    Ownership:
+      type: string
+      enum:
+      - all
+      - own
+      - shared
+      title: Ownership
+      description: Controls which resources are returned based on ownership. 'all'
+        returns owned and shared resources, 'own' returns only user-created resources,
+        'shared' returns only resources shared by others.
+    CreateEntityRequestDto:
       properties:
-        webhook_ids:
+        name:
+          type: string
+          minLength: 1
+          title: Name
+          description: Entity name. Required and must be non-empty.
+        entity_type:
+          type: string
+          title: Entity Type
+          description: The type of entity.
+          default: company
+        description:
+          type: string
+          title: Description
+          description: Free-text description for disambiguation.
+        additional_attributes:
+          allOf:
+          - $ref: '#/components/schemas/AdditionalAttributesDto'
+          title: Additional Attributes
+          description: Type-specific attributes for the entity.
+      type: object
+      required:
+      - name
+      title: CreateEntityRequest
+    SuggestInitializeRequestDto:
+      properties:
+        query:
+          type: string
+          title: Query
+          description: Natural-language question to analyse. The API returns the validators
+            and enrichments it would auto-generate for this query.
+          example: Which airlines expanded their routes in Asia?
+        context:
+          type: string
+          title: Context
+          description: Optional context string that sharpens the suggested fields.
+          example: Focus on low-cost carriers.
+        connected_dataset_ids:
           items:
             type: string
             format: uuid
           type: array
-          title: Webhook Ids
-          description: Optional list of centralized webhook IDs to assign to this
-            monitor. Empty list clears assignments.
-        limit:
-          type: integer
-          title: Limit
-          description: Optional max results per monitor run (min 10, validated against
-            plan)
-      type: object
-      title: UpdateMonitorRequestDto
-    AssignWebhookResourceRequestDto:
-      properties:
-        resource_type:
-          allOf:
-          - $ref: '#/components/schemas/MappableResourceType'
-          description: Type of resource to assign.
-        resource_id:
-          type: string
-          format: uuid
-          title: Resource Id
-          description: ID of the resource to assign.
+          title: Connected Dataset Ids
+          description: Optional list of watchlist dataset IDs connected to this job.
+        fetch_all_watchlist_news:
+          type: boolean
+          title: Fetch All Watchlist News
+          description: When true, returns generic news validators and enrichments
+            suitable for watchlist-based article collection instead of query-specific
+            fields.
       type: object
       required:
-      - resource_type
-      - resource_id
-      title: AssignWebhookResourceRequestDto
+      - query
+      title: InitializeRequestDto
+      example:
+        query: Which airlines expanded their routes in Asia?
+        context: Focus on low-cost carriers.
     CreateWebhookRequestDto:
       properties:
         name:
@@ -4105,38 +4273,26 @@ components:
         url: https://hooks.slack.com/services/T000/B000/xxxx
         type: slack
         delivery_mode: full
-    ListWebhookResourcesResponseDto:
+    UpdateWebhookResponseDto:
       properties:
-        total:
-          type: integer
-          title: Total
-          description: Total number of resource mappings.
-        page:
-          type: integer
-          title: Page
-          description: Current page number.
-        page_size:
-          type: integer
-          title: Page Size
-          description: Number of mappings per page.
-        total_pages:
-          type: integer
-          title: Total Pages
-          description: Total number of pages available.
-        resources:
-          items:
-            $ref: '#/components/schemas/WebhookResourceMappingResponseDto'
-          type: array
-          title: Resources
-          description: Array of resource mappings on this page.
+        success:
+          type: boolean
+          title: Success
+          description: True if the operation succeeded; false otherwise.
+        message:
+          type: string
+          title: Message
+          description: Human-readable result message.
+        webhook:
+          allOf:
+          - $ref: '#/components/schemas/WebhookResponseDto'
+          title: Webhook
+          description: Updated webhook details.
       type: object
       required:
-      - total
-      - page
-      - page_size
-      - total_pages
-      - resources
-      title: ListWebhookResourcesResponseDto
+      - success
+      - message
+      title: UpdateWebhookResponseDto
     WebhookHistoryByWebhookDto:
       properties:
         mode:
@@ -4171,18 +4327,80 @@ components:
       - page_size
       - items
       title: WebhookHistoryByWebhookDto
-    DatasetEntityListResponseDto:
+    EntityResponseDto:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Unique identifier of the entity.
+        entity_type:
+          type: string
+          title: Entity Type
+          description: The type of entity.
+        organization_id:
+          type: string
+          title: Organization Id
+          description: Organization that owns this entity.
+        name:
+          type: string
+          title: Name
+          description: Entity name.
+        description:
+          type: string
+          title: Description
+          description: Free-text description.
+        additional_attributes:
+          allOf:
+          - $ref: '#/components/schemas/AdditionalAttributesDto'
+          title: Additional Attributes
+          description: Type-specific attributes.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/EntityStatus'
+          description: Processing status of the entity.
+        created_by_user_id:
+          type: string
+          title: Created By User Id
+          description: ID of the user who created this entity.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp of when the entity was created.
+        updated_at:
+          type: string
+          format: date-time
+          title: Updated At
+          description: Timestamp of when the entity was last updated.
+      type: object
+      required:
+      - id
+      - entity_type
+      - organization_id
+      - name
+      - status
+      title: EntityResponse
+    EntitySortBy:
+      type: string
+      enum:
+      - created_at
+      - name
+      - status
+      title: EntitySortBy
+      description: Fields available for sorting entity list results.
+    EntityListResponseDto:
       properties:
         entities:
           items:
-            $ref: '#/components/schemas/EntitySummaryDto'
+            $ref: '#/components/schemas/EntityResponseDto'
           type: array
           title: Entities
-          description: Array of entity summary objects for this page.
+          description: Array of entity objects for this page.
         total:
           type: integer
           title: Total
-          description: Total number of entities in the dataset.
+          description: Total number of entities matching the filter criteria.
         page:
           type: integer
           title: Page
@@ -4197,235 +4415,17 @@ components:
       - total
       - page
       - page_size
-      title: DatasetEntityListResponse
-    CreateEntityRequestDto:
+      title: EntityListResponse
+    Body_uploadCSVToDataset:
       properties:
-        name:
+        file:
           type: string
-          minLength: 1
-          title: Name
-          description: Entity name. Required and must be non-empty.
-        entity_type:
-          type: string
-          title: Entity Type
-          description: The type of entity.
-          default: company
-        description:
-          type: string
-          title: Description
-          description: Free-text description for disambiguation.
-        additional_attributes:
-          allOf:
-          - $ref: '#/components/schemas/AdditionalAttributesDto'
-          title: Additional Attributes
-          description: Type-specific attributes for the entity.
+          format: binary
+          title: File
       type: object
       required:
-      - name
-      title: CreateEntityRequest
-    EntityType:
-      type: string
-      enum:
-      - company
-      - person
-      title: EntityType
-      description: The type of entity. 'company' for organizations (default), 'person'
-        for individuals.
-    CreateEntityResponseDto:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Unique identifier of the created entity.
-        status:
-          type: string
-          title: Status
-          description: Initial status of the entity. Always pending immediately after
-            creation.
-          default: pending
-      type: object
-      required:
-      - id
-      title: CreateEntityResponse
-    Ownership:
-      type: string
-      enum:
-      - all
-      - own
-      - shared
-      title: Ownership
-      description: Controls which resources are returned based on ownership. 'all'
-        returns owned and shared resources, 'own' returns only user-created resources,
-        'shared' returns only resources shared by others.
-    AddResourceRequestDto:
-      properties:
-        resources:
-          items:
-            $ref: '#/components/schemas/ResourceItemRequestDto'
-          type: array
-          title: Resources
-          description: Resources to assign to the project.
-      type: object
-      required:
-      - resources
-      title: AddResourceRequestDto
-    DatasetResponseDto:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Unique identifier of the dataset.
-        organization_id:
-          type: string
-          title: Organization Id
-          description: Organization that owns this dataset.
-        name:
-          type: string
-          title: Name
-          description: Dataset name.
-        description:
-          type: string
-          title: Description
-          description: Optional description.
-        entity_count:
-          type: integer
-          title: Entity Count
-          description: Total number of entities in this dataset.
-          default: 0
-        entity_status_breakdown:
-          additionalProperties:
-            type: integer
-          type: object
-          title: Entity Status Breakdown
-          description: Count of entities grouped by processing status.
-        health_score:
-          type: number
-          title: Health Score
-          description: Overall health score of the dataset.
-        health_breakdown:
-          additionalProperties:
-            type: number
-          type: object
-          title: Health Breakdown
-          description: Health scores broken down by attribute.
-        latest_status:
-          type: string
-          title: Latest Status
-          description: Most recent processing status of the dataset.
-        created_by_user_id:
-          type: string
-          title: Created By User Id
-          description: ID of the user who created this dataset.
-        sharing_info:
-          allOf:
-          - $ref: '#/components/schemas/SharingInfoDto'
-          title: Sharing Info
-          description: Present when this dataset was shared with the authenticated
-            user.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Timestamp of when the dataset was created.
-        updated_at:
-          type: string
-          format: date-time
-          title: Updated At
-          description: Timestamp of when the dataset was last updated.
-      type: object
-      required:
-      - id
-      - organization_id
-      - name
-      title: DatasetResponse
-    ListMonitorJobsResponseDto:
-      properties:
-        monitor_id:
-          type: string
-          format: uuid
-          title: Monitor Id
-          description: Monitor identifier.
-        sort_order:
-          type: string
-          title: Sort Order
-          description: Sort order applied to the job list.
-        total_jobs:
-          type: integer
-          title: Total Jobs
-          description: Total number of jobs executed by this monitor.
-        jobs:
-          items:
-            $ref: '#/components/schemas/MonitorJobItemResponseDto'
-          type: array
-          title: Jobs
-          description: Array of monitor job executions.
-      type: object
-      required:
-      - monitor_id
-      - sort_order
-      - total_jobs
-      title: ListMonitorJobsResponseDto
-    TestWebhookResponseDto:
-      properties:
-        success:
-          type: boolean
-          title: Success
-          description: True if the test delivery succeeded; false otherwise.
-        message:
-          type: string
-          title: Message
-          description: Human-readable result message.
-        http_status_code:
-          type: integer
-          title: Http Status Code
-          description: HTTP status code returned by the webhook endpoint.
-        response_body:
-          title: Response Body
-          description: Response body returned by the webhook endpoint.
-      type: object
-      required:
-      - success
-      - message
-      title: TestWebhookResponseDto
-    WebhookHistoryByResourceDto:
-      properties:
-        mode:
-          type: string
-          enum:
-          - resource
-          title: Mode
-          default: resource
-        resource_type:
-          $ref: '#/components/schemas/MappableResourceType'
-        resource_id:
-          type: string
-          format: uuid
-          title: Resource Id
-        total:
-          type: integer
-          title: Total
-        page:
-          type: integer
-          title: Page
-        page_size:
-          type: integer
-          title: Page Size
-        items:
-          items:
-            $ref: '#/components/schemas/WebhookStatusItemDto'
-          type: array
-          title: Items
-      type: object
-      required:
-      - resource_type
-      - resource_id
-      - total
-      - page
-      - page_size
-      - items
-      title: WebhookHistoryByResourceDto
+      - file
+      title: Body_uploadCSVToDataset
     GetFeaturesResponse:
       properties:
         features:
@@ -4438,6 +4438,46 @@ components:
       required:
       - features
       title: GetPlanLimitsResponseDto
+    Suggestion:
+      properties:
+        issue:
+          $ref: '#/components/schemas/IssueType'
+        message:
+          type: string
+          title: Message
+          description: Clear, specific guidance
+        example:
+          type: string
+          title: Example
+          description: Example of improved query
+      type: object
+      required:
+      - issue
+      - message
+      title: Suggestion
+      description: Actionable recommendation for query improvement
+    IssueType:
+      type: string
+      enum:
+      - missing_event_type
+      - too_vague
+      - too_specific
+      - wrong_timeframe
+      - static_content
+      - article_request
+      - multiple_event_types
+      - too_short
+      - too_long
+      title: IssueType
+      description: Specific categories of query issues
+    QueryStatus:
+      type: string
+      enum:
+      - good
+      - needs_work
+      - critical
+      title: QueryStatus
+      description: Query quality assessment levels
     ValidationError:
       properties:
         loc:
@@ -4459,77 +4499,63 @@ components:
       - msg
       - type
       title: ValidationError
-    IssueType:
-      type: string
-      enum:
-      - missing_event_type
-      - too_vague
-      - too_specific
-      - wrong_timeframe
-      - static_content
-      - article_request
-      - multiple_event_types
-      - too_short
-      - too_long
-      title: IssueType
-      description: Specific categories of query issues
-    Suggestion:
+    UserJobResponseDto:
       properties:
-        issue:
-          $ref: '#/components/schemas/IssueType'
-        message:
-          type: string
-          title: Message
-          description: Clear, specific guidance
-        example:
-          type: string
-          title: Example
-          description: Example of improved query
-      type: object
-      required:
-      - issue
-      - message
-      title: Suggestion
-      description: Actionable recommendation for query improvement
-    QueryStatus:
-      type: string
-      enum:
-      - good
-      - needs_work
-      - critical
-      title: QueryStatus
-      description: Query quality assessment levels
-    ResourceResultResponseDto:
-      properties:
-        resource_type:
-          type: string
-          title: Resource Type
-          description: Type of the resource.
-        resource_id:
+        job_id:
           type: string
           format: uuid
-          title: Resource Id
-          description: Resource identifier.
-        success:
-          type: boolean
-          title: Success
-          description: True if this resource was processed successfully.
-        message:
+          title: Job Id
+          description: Job identifier.
+        query:
           type: string
-          title: Message
-          description: Per-resource result message.
-        already_exists:
-          type: boolean
-          title: Already Exists
-          description: True if the resource is already assigned to this project.
-          default: false
+          title: Query
+          description: Plain text query for this job.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Job creation timestamp.
+        status:
+          allOf:
+          - $ref: '#/components/schemas/PublicJobStatus'
+          description: Current processing status of the job.
+        user_key:
+          type: string
+          title: User Key
+          description: Masked API key that created this job.
+        sharing_info:
+          allOf:
+          - $ref: '#/components/schemas/SharingInfoDto'
+          title: Sharing Info
+          description: Present when this job was shared with the authenticated user.
+            Omitted when the user owns the job.
+        mode:
+          allOf:
+          - $ref: '#/components/schemas/ProcessingMode'
+          description: Processing mode used for this job.
+          default: base
       type: object
       required:
-      - resource_type
-      - resource_id
-      - success
-      - message
-      title: ResourceResultDto
+      - job_id
+      - query
+      - created_at
+      - status
+      - user_key
+      title: UserJob
+    SharingInfoDto:
+      properties:
+        shared_at:
+          type: string
+          format: date-time
+          title: Shared At
+        shared_by_user_id:
+          type: string
+          title: Shared By User Id
+        permission:
+          type: string
+          title: Permission
+      type: object
+      title: SharingInfo
     CsvValidationReportDto:
       properties:
         total_rows:
@@ -4627,6 +4653,69 @@ components:
       - method
       - is_active
       title: WebhookDto
+    DatasetStatusEntryDto:
+      properties:
+        status:
+          type: string
+          title: Status
+          description: Dataset processing status.
+        additional_information:
+          type: object
+          title: Additional Information
+          description: Additional context about the status change.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp of when this status was set.
+      type: object
+      required:
+      - status
+      title: DatasetStatusEntry
+    MonitorJobItemResponseDto:
+      properties:
+        job_id:
+          type: string
+          format: uuid
+          title: Job Id
+          description: Unique identifier for this job execution.
+        start_date:
+          type: string
+          title: Start Date
+          description: Start of the data collection time window for this job execution.
+        end_date:
+          type: string
+          title: End Date
+          description: End of the data collection time window for this job execution.
+      type: object
+      required:
+      - job_id
+      title: MonitorJobItem
+    MonitorStatusEntryDto:
+      properties:
+        id:
+          type: integer
+          title: Id
+          description: Status entry identifier.
+        status:
+          type: string
+          title: Status
+          description: Type of lifecycle event.
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          description: Timestamp of this event.
+        additional_information:
+          title: Additional Information
+          description: Event-specific metadata. Null for created, enable, and disable
+            events.
+      type: object
+      required:
+      - id
+      - status
+      - created_at
+      title: MonitorStatusEntry
     MonitorListItemResponseDto:
       properties:
         monitor_id:
@@ -4680,7 +4769,7 @@ components:
       - reference_job_query
       - enabled
       title: MonitorListItemDto
-    ResourceItemResponseDto:
+    ResourceResultResponseDto:
       properties:
         resource_type:
           type: string
@@ -4691,194 +4780,26 @@ components:
           format: uuid
           title: Resource Id
           description: Resource identifier.
-        name:
+        success:
+          type: boolean
+          title: Success
+          description: True if this resource was processed successfully.
+        message:
           type: string
-          title: Name
-          description: Resource display name.
-        created_at:
-          type: string
-          title: Created At
-          description: Resource creation timestamp.
-        metadata:
-          type: object
-          title: Metadata
-          description: Additional resource-specific metadata.
+          title: Message
+          description: Per-resource result message.
+        already_exists:
+          type: boolean
+          title: Already Exists
+          description: True if the resource is already assigned to this project.
+          default: false
       type: object
       required:
       - resource_type
       - resource_id
-      title: ProjectResourceDto
-    UserJobResponseDto:
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          title: Job Id
-          description: Job identifier.
-        query:
-          type: string
-          title: Query
-          description: Plain text query for this job.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Job creation timestamp.
-        status:
-          allOf:
-          - $ref: '#/components/schemas/PublicJobStatus'
-          description: Current processing status of the job.
-        user_key:
-          type: string
-          title: User Key
-          description: Masked API key that created this job.
-        sharing_info:
-          allOf:
-          - $ref: '#/components/schemas/SharingInfoDto'
-          title: Sharing Info
-          description: Present when this job was shared with the authenticated user.
-            Omitted when the user owns the job.
-        mode:
-          allOf:
-          - $ref: '#/components/schemas/ProcessingMode'
-          description: Processing mode used for this job.
-          default: base
-      type: object
-      required:
-      - job_id
-      - query
-      - created_at
-      - status
-      - user_key
-      title: UserJob
-    DatasetStatusEntryDto:
-      properties:
-        status:
-          type: string
-          title: Status
-          description: Dataset processing status.
-        additional_information:
-          type: object
-          title: Additional Information
-          description: Additional context about the status change.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Timestamp of when this status was set.
-      type: object
-      required:
-      - status
-      title: DatasetStatusEntry
-    WebhookResourceMappingResponseDto:
-      properties:
-        id:
-          type: string
-          format: uuid
-          title: Id
-          description: Mapping identifier.
-        webhook_id:
-          type: string
-          format: uuid
-          title: Webhook Id
-          description: Webhook identifier.
-        resource_type:
-          type: string
-          title: Resource Type
-          description: Type of the assigned resource.
-        resource_id:
-          type: string
-          format: uuid
-          title: Resource Id
-          description: Resource identifier.
-        assigned_at:
-          type: string
-          title: Assigned At
-          description: Timestamp of when the resource was assigned.
-      type: object
-      required:
-      - id
-      - webhook_id
-      - resource_type
-      - resource_id
-      title: WebhookResourceMappingDto
-    MonitorStatusEntryDto:
-      properties:
-        id:
-          type: integer
-          title: Id
-          description: Status entry identifier.
-        status:
-          type: string
-          title: Status
-          description: Type of lifecycle event.
-        created_at:
-          type: string
-          format: date-time
-          title: Created At
-          description: Timestamp of this event.
-        additional_information:
-          title: Additional Information
-          description: Event-specific metadata. Null for created, enable, and disable
-            events.
-      type: object
-      required:
-      - id
-      - status
-      - created_at
-      title: MonitorStatusEntry
-    EnrichmentSchema:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Machine-friendly field name (snake_case recommended).
-          example: company_name
-        description:
-          type: string
-          title: Description
-          description: What information to extract from each article.
-          example: The name of the company that is conducting the layoffs.
-        type:
-          allOf:
-          - $ref: '#/components/schemas/EnrichmentType'
-          description: 'Data type for this enrichment field. Supported: text, number,
-            date, option, url, company.'
-          example: company
-      type: object
-      required:
-      - name
-      - description
-      - type
-      title: EnrichmentSchema
-      description: A custom extraction field added to each validated article.
-    ValidatorSchema:
-      properties:
-        name:
-          type: string
-          title: Name
-          description: Machine-friendly field name (snake_case recommended).
-          example: is_about_layoffs
-        description:
-          type: string
-          title: Description
-          description: Natural-language criterion evaluated against each article.
-            Returns true if the article satisfies this criterion.
-          example: The article is specifically about job layoffs or workforce reductions.
-        type:
-          type: string
-          enum:
-          - boolean
-          title: Type
-          description: Always 'boolean'. Only articles where all validators return
-            true count as valid_records.
-          default: boolean
-      type: object
-      required:
-      - name
-      - description
-      title: ValidatorSchema
-      description: A boolean classifier applied to every candidate article.
+      - success
+      - message
+      title: ResourceResultDto
     ProjectResponseDto:
       properties:
         project_id:
@@ -4963,6 +4884,31 @@ components:
           description: ISO 8601 timestamp when this record was last updated.
       type: object
       title: MonitorRecord
+    EnrichmentSchema:
+      properties:
+        name:
+          type: string
+          title: Name
+          description: Machine-friendly field name (snake_case recommended).
+          example: company_name
+        description:
+          type: string
+          title: Description
+          description: What information to extract from each article.
+          example: The name of the company that is conducting the layoffs.
+        type:
+          allOf:
+          - $ref: '#/components/schemas/EnrichmentType'
+          description: 'Data type for this enrichment field. Supported: text, number,
+            date, option, url, company.'
+          example: company
+      type: object
+      required:
+      - name
+      - description
+      - type
+      title: EnrichmentSchema
+      description: A custom extraction field added to each validated article.
     RunInfoDto:
       properties:
         first_run:
@@ -4987,212 +4933,33 @@ components:
           description: Context provided with the reference job query.
       type: object
       title: ReferenceJob
-    SharingInfoDto:
+    ValidatorSchema:
       properties:
-        shared_at:
+        name:
           type: string
-          format: date-time
-          title: Shared At
-        shared_by_user_id:
+          title: Name
+          description: Machine-friendly field name (snake_case recommended).
+          example: is_about_layoffs
+        description:
           type: string
-          title: Shared By User Id
-        permission:
-          type: string
-          title: Permission
-      type: object
-      title: SharingInfo
-    JobStep:
-      properties:
-        status:
-          $ref: '#/components/schemas/PublicJobStatus'
-        order:
-          type: integer
-          title: Order
-        completed:
-          type: boolean
-          title: Completed
-          default: false
-      type: object
-      required:
-      - status
-      - order
-      title: JobStep
-    PublicJobStatus:
-      enum:
-      - submitted
-      - analyzing
-      - fetching
-      - clustering
-      - enriching
-      - completed
-      - failed
-      title: PublicJobStatus
-      description: 'Current job processing status. Jobs progress through stages: submitted
-        → analyzing → fetching → clustering → enriching → completed. Poll /catchAll/status/{job_id}
-        every 30-60 seconds until completed (typically 10-15 minutes).'
-    EntityAssociationType:
-      type: string
-      enum:
-      - mention
-      - event_associated
-      title: EntityAssociationType
-      description: 'How an entity relates to an event: direct actor or merely mentioned.'
-    ProcessingMode:
-      type: string
-      enum:
-      - base
-      - lite
-      title: ProcessingMode
-      description: Job processing mode. 'base' runs the full pipeline with clustering
-        and enrichment. 'lite' is a faster mode that skips clustering.
-    AdditionalAttributesDto:
-      properties:
-        company_attributes:
-          allOf:
-          - $ref: '#/components/schemas/CompanyAttributesDto'
-          title: Company Attributes
-          description: Identifying attributes for a company entity.
-      type: object
-      title: AdditionalAttributes
-    ArticleRecordDto:
-      properties:
-        record_id:
-          type: string
-          title: Record Id
-          description: Unique cluster identifier for this record.
-        record_title:
-          type: string
-          title: Record Title
-          description: Event or cluster title.
-        enrichment:
-          type: object
-          title: Enrichment
-          description: Custom enrichment fields extracted for this record. Keys match
-            the enrichment names defined in the job. Values are job-specific. For
-            'company' type enrichments, each value is a CompanyEnrichmentOutput object.
-        enrichment_confidence:
-          additionalProperties:
-            type: number
-          type: object
-          title: Enrichment Confidence
-          description: Per-field confidence scores for enrichment values. Keys mirror
-            the enrichment dict; values are floats in [0, 1].
-        citations:
-          items:
-            $ref: '#/components/schemas/CitationDto'
-          type: array
-          title: Citations
-          description: Source articles included in this record.
-        connected_entities:
-          items:
-            $ref: '#/components/schemas/ConnectedEntityDto'
-          type: array
-          title: Connected Entities
-          description: Entities from connected datasets that matched this record.
-            Present only when entity datasets are used.
-      type: object
-      title: Record
-    DateRangeDto:
-      properties:
-        start_date:
-          type: string
-          title: Start Date
-          description: Inclusive start of the article date range (ISO 8601).
-        end_date:
-          type: string
-          title: End Date
-          description: Inclusive end of the article date range (ISO 8601).
-      type: object
-      title: DateRange
-    HttpMethod:
-      type: string
-      enum:
-      - GET
-      - POST
-      - PUT
-      - PATCH
-      - DELETE
-      title: HttpMethod
-      description: HTTP method used for webhook delivery.
-    WebhookType:
-      type: string
-      enum:
-      - generic
-      - slack
-      - teams
-      - custom
-      title: WebhookType
-      description: Webhook target type. 'slack' and 'teams' send pre-formatted payloads;
-        'generic' and 'custom' send the raw result payload.
-    BearerAuthDto:
-      properties:
+          title: Description
+          description: Natural-language criterion evaluated against each article.
+            Returns true if the article satisfies this criterion.
+          example: The article is specifically about job layoffs or workforce reductions.
         type:
           type: string
           enum:
-          - bearer
+          - boolean
           title: Type
-          description: Authentication type.
-        token:
-          type: string
-          title: Token
-          description: Bearer token value sent in the Authorization header.
+          description: Always 'boolean'. Only articles where all validators return
+            true count as valid_records.
+          default: boolean
       type: object
       required:
-      - type
-      - token
-      title: BearerAuth
-    BasicAuthDto:
-      properties:
-        type:
-          type: string
-          enum:
-          - basic
-          title: Type
-          description: Authentication type.
-        username:
-          type: string
-          title: Username
-          description: Basic auth username.
-        password:
-          type: string
-          title: Password
-          description: Basic auth password.
-      type: object
-      required:
-      - type
-      - username
-      - password
-      title: BasicAuth
-    ApiKeyAuthDto:
-      properties:
-        type:
-          type: string
-          enum:
-          - api_key
-          title: Type
-          description: Authentication type.
-        header:
-          type: string
-          title: Header
-          description: HTTP header name for the API key, e.g. 'X-API-Key'.
-        value:
-          type: string
-          title: Value
-          description: API key value.
-      type: object
-      required:
-      - type
-      - header
-      - value
-      title: ApiKeyAuth
-    DeliveryMode:
-      type: string
-      enum:
-      - full
-      - per_record
-      title: DeliveryMode
-      description: Delivery mode for webhook payloads. 'full' delivers the entire
-        result set in one call; 'per_record' sends one call per article.
+      - name
+      - description
+      title: ValidatorSchema
+      description: A boolean classifier applied to every candidate article.
     WebhookStatusItemDto:
       properties:
         id:
@@ -5239,6 +5006,274 @@ components:
       - timestamp
       - delivery_status
       title: WebhookStatusItemDto
+    AdditionalAttributesDto:
+      properties:
+        company_attributes:
+          allOf:
+          - $ref: '#/components/schemas/CompanyAttributesDto'
+          title: Company Attributes
+          description: Identifying attributes for a company entity.
+      type: object
+      title: AdditionalAttributes
+    ResourceItemRequestDto:
+      properties:
+        resource_type:
+          allOf:
+          - $ref: '#/components/schemas/ProjectResourceTypeEnum'
+          description: Type of resource to add.
+        resource_id:
+          type: string
+          format: uuid
+          title: Resource Id
+          description: ID of the resource to add.
+      type: object
+      required:
+      - resource_type
+      - resource_id
+      title: ResourceItemDto
+    BearerAuthDto:
+      properties:
+        type:
+          type: string
+          enum:
+          - bearer
+          title: Type
+          description: Authentication type.
+        token:
+          type: string
+          title: Token
+          description: Bearer token value sent in the Authorization header.
+      type: object
+      required:
+      - type
+      - token
+      title: BearerAuth
+    DeliveryMode:
+      type: string
+      enum:
+      - full
+      - per_record
+      title: DeliveryMode
+      description: Delivery mode for webhook payloads. 'full' delivers the entire
+        result set in one call; 'per_record' sends one call per article.
+    WebhookType:
+      type: string
+      enum:
+      - generic
+      - slack
+      - teams
+      - custom
+      title: WebhookType
+      description: Webhook target type. 'slack' and 'teams' send pre-formatted payloads;
+        'generic' and 'custom' send the raw result payload.
+    BasicAuthDto:
+      properties:
+        type:
+          type: string
+          enum:
+          - basic
+          title: Type
+          description: Authentication type.
+        username:
+          type: string
+          title: Username
+          description: Basic auth username.
+        password:
+          type: string
+          title: Password
+          description: Basic auth password.
+      type: object
+      required:
+      - type
+      - username
+      - password
+      title: BasicAuth
+    HttpMethod:
+      type: string
+      enum:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      title: HttpMethod
+      description: HTTP method used for webhook delivery.
+    ApiKeyAuthDto:
+      properties:
+        type:
+          type: string
+          enum:
+          - api_key
+          title: Type
+          description: Authentication type.
+        header:
+          type: string
+          title: Header
+          description: HTTP header name for the API key, e.g. 'X-API-Key'.
+        value:
+          type: string
+          title: Value
+          description: API key value.
+      type: object
+      required:
+      - type
+      - header
+      - value
+      title: ApiKeyAuth
+    PublicJobStatus:
+      enum:
+      - submitted
+      - analyzing
+      - fetching
+      - clustering
+      - enriching
+      - completed
+      - failed
+      title: PublicJobStatus
+      description: 'Current job processing status. Jobs progress through stages: submitted
+        → analyzing → fetching → clustering → enriching → completed. Poll /catchAll/status/{job_id}
+        every 30-60 seconds until completed (typically 10-15 minutes).'
+    JobStep:
+      properties:
+        status:
+          $ref: '#/components/schemas/PublicJobStatus'
+        order:
+          type: integer
+          title: Order
+        completed:
+          type: boolean
+          title: Completed
+          default: false
+      type: object
+      required:
+      - status
+      - order
+      title: JobStep
+    EntityAssociationType:
+      type: string
+      enum:
+      - mention
+      - event_associated
+      title: EntityAssociationType
+      description: 'How an entity relates to an event: direct actor or merely mentioned.'
+    ProcessingMode:
+      type: string
+      enum:
+      - base
+      - lite
+      title: ProcessingMode
+      description: Job processing mode. 'base' runs the full pipeline with clustering
+        and enrichment. 'lite' is a faster mode that skips clustering.
+    WebhookResourceMappingResponseDto:
+      properties:
+        id:
+          type: string
+          format: uuid
+          title: Id
+          description: Mapping identifier.
+        webhook_id:
+          type: string
+          format: uuid
+          title: Webhook Id
+          description: Webhook identifier.
+        resource_type:
+          type: string
+          title: Resource Type
+          description: Type of the assigned resource.
+        resource_id:
+          type: string
+          format: uuid
+          title: Resource Id
+          description: Resource identifier.
+        assigned_at:
+          type: string
+          title: Assigned At
+          description: Timestamp of when the resource was assigned.
+      type: object
+      required:
+      - id
+      - webhook_id
+      - resource_type
+      - resource_id
+      title: WebhookResourceMappingDto
+    ResourceItemResponseDto:
+      properties:
+        resource_type:
+          type: string
+          title: Resource Type
+          description: Type of the resource.
+        resource_id:
+          type: string
+          format: uuid
+          title: Resource Id
+          description: Resource identifier.
+        name:
+          type: string
+          title: Name
+          description: Resource display name.
+        created_at:
+          type: string
+          title: Created At
+          description: Resource creation timestamp.
+        metadata:
+          type: object
+          title: Metadata
+          description: Additional resource-specific metadata.
+      type: object
+      required:
+      - resource_type
+      - resource_id
+      title: ProjectResourceDto
+    DateRangeDto:
+      properties:
+        start_date:
+          type: string
+          title: Start Date
+          description: Inclusive start of the article date range (ISO 8601).
+        end_date:
+          type: string
+          title: End Date
+          description: Inclusive end of the article date range (ISO 8601).
+      type: object
+      title: DateRange
+    ArticleRecordDto:
+      properties:
+        record_id:
+          type: string
+          title: Record Id
+          description: Unique cluster identifier for this record.
+        record_title:
+          type: string
+          title: Record Title
+          description: Event or cluster title.
+        enrichment:
+          type: object
+          title: Enrichment
+          description: Custom enrichment fields extracted for this record. Keys match
+            the enrichment names defined in the job. Values are job-specific. For
+            'company' type enrichments, each value is a CompanyEnrichmentOutput object.
+        enrichment_confidence:
+          additionalProperties:
+            type: number
+          type: object
+          title: Enrichment Confidence
+          description: Per-field confidence scores for enrichment values. Keys mirror
+            the enrichment dict; values are floats in [0, 1].
+        citations:
+          items:
+            $ref: '#/components/schemas/CitationDto'
+          type: array
+          title: Citations
+          description: Source articles included in this record.
+        connected_entities:
+          items:
+            $ref: '#/components/schemas/ConnectedEntityDto'
+          type: array
+          title: Connected Entities
+          description: Entities from connected datasets that matched this record.
+            Present only when entity datasets are used.
+      type: object
+      title: Record
     EntitySummaryDto:
       properties:
         id:
@@ -5274,41 +5309,6 @@ components:
       - entity_type
       - status
       title: EntitySummary
-    ResourceItemRequestDto:
-      properties:
-        resource_type:
-          allOf:
-          - $ref: '#/components/schemas/ProjectResourceTypeEnum'
-          description: Type of resource to add.
-        resource_id:
-          type: string
-          format: uuid
-          title: Resource Id
-          description: ID of the resource to add.
-      type: object
-      required:
-      - resource_type
-      - resource_id
-      title: ResourceItemDto
-    MonitorJobItemResponseDto:
-      properties:
-        job_id:
-          type: string
-          format: uuid
-          title: Job Id
-          description: Unique identifier for this job execution.
-        start_date:
-          type: string
-          title: Start Date
-          description: Start of the data collection time window for this job execution.
-        end_date:
-          type: string
-          title: End Date
-          description: End of the data collection time window for this job execution.
-      type: object
-      required:
-      - job_id
-      title: MonitorJobItem
     BillingFeatureWithUsage:
       properties:
         name:
@@ -5352,18 +5352,6 @@ components:
       - row
       - reason
       title: SkippedRow
-    EnrichmentType:
-      type: string
-      enum:
-      - text
-      - number
-      - date
-      - option
-      - url
-      - company
-      title: EnrichmentType
-      description: 'Canonical enrichment types: text, number, date, option, url, company.
-        See Company enrichment docs for the company type data model.'
     MonitorCitationDto:
       properties:
         title:
@@ -5433,6 +5421,25 @@ components:
       - name
       - type
       title: ConnectedEntity
+    EnrichmentType:
+      type: string
+      enum:
+      - text
+      - number
+      - date
+      - option
+      - url
+      - company
+      title: EnrichmentType
+      description: 'Canonical enrichment types: text, number, date, option, url, company.
+        See Company enrichment docs for the company type data model.'
+    WebhookDeliveryStatus:
+      type: string
+      enum:
+      - SUCCESS
+      - FAILED
+      title: WebhookDeliveryStatus
+      description: Webhook delivery outcome status.
     CompanyAttributesDto:
       properties:
         alternative_names:
@@ -5474,13 +5481,6 @@ components:
           description: Publication date of the source document.
       type: object
       title: Citation
-    WebhookDeliveryStatus:
-      type: string
-      enum:
-      - SUCCESS
-      - FAILED
-      title: WebhookDeliveryStatus
-      description: Webhook delivery outcome status.
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
