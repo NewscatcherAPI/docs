@@ -46,8 +46,6 @@
             "group": "Concepts",
             "pages": [
               "web-search-api/concepts/jobs",
-              "web-search-api/concepts/monitors",
-              "web-search-api/concepts/company-search",
               "web-search-api/concepts/projects",
               "web-search-api/concepts/index-and-search-depth",
               "web-search-api/concepts/dynamic-schemas"

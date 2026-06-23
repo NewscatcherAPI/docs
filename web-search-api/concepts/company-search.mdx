@@ -42,7 +42,7 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
   -d '{
     "name": "NewsCatcher",
     "entity_type": "company",
-    "description": "NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
+    "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
     "additional_attributes": {
       "company_attributes": {
         "domain": "newscatcherapi.com",
@@ -57,7 +57,7 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
 {
   "name": "NewsCatcher",
   "entity_type": "company",
-  "description": "NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
+  "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
   "additional_attributes": {
     "company_attributes": {
       "domain": "newscatcherapi.com",
@@ -80,7 +80,7 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 entity = client.entities.create_entity(
     name="NewsCatcher",
     entity_type="company",
-    description="NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
+    description="NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
     additional_attributes=AdditionalAttributes(
         company_attributes=CompanyAttributes(
             domain="newscatcherapi.com",
@@ -100,7 +100,7 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const entity = await client.entities.createEntity({
   name: "NewsCatcher",
   entity_type: "company",
-  description: "NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
+  description: "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
   additional_attributes: {
     company_attributes: {
       domain: "newscatcherapi.com",
@@ -125,7 +125,7 @@ CreateEntityResponse entity = client.entities().createEntity(
     CreateEntityRequest.builder()
         .name("NewsCatcher")
         .entityType(EntityType.COMPANY)
-        .description("NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).")
+        .description("NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).")
         .additionalAttributes(AdditionalAttributes.builder()
             .companyAttributes(CompanyAttributes.builder()
                 .domain("newscatcherapi.com")
@@ -171,7 +171,7 @@ The goal is to **fingerprint** the company, not to sell it. Aim for two to four
 sentences covering **what the company is** and **what it offers**.
 
 **Good description:**
-> Apollo Global Management (also known as Apollo) is a US-based alternative
+> Apollo Global Management is a US-based alternative
 > asset management firm headquartered in New York City, founded in 1990 by
 > Leon Black, Marc Rowan, and Josh Harris. It manages private equity, credit,
 > and real assets funds with over $650 billion in assets under management and
@@ -203,7 +203,7 @@ industry**, **headquarters location**, **founding year and founders**, and
 
 A complete description includes:
 
-- Full legal name and any aliases ("also known as")
+- Full legal name
 - Specific industry or sector — not "technology" but "freight forwarding and customs brokerage"
 - Headquarters city and country, plus main regions of operation
 - Concrete products, services, and brand names
@@ -489,7 +489,7 @@ Rows with an empty `name` are skipped and reported in `validation_report`.
 
 ```csv
 name,description,domain,alternative_names,key_persons
-NewsCatcher,"NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",newscatcherapi.com,"NewsCatcher CatchAll;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+NewsCatcher,"NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",newscatcherapi.com,"NewsCatcher CatchAll;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
 OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
 Stripe,"Online payments platform",stripe.com,"","Patrick Collison;John Collison"
 ```
@@ -919,7 +919,7 @@ results.getAllRecords().forEach(record -> {
           "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal",
           "company": {
             "domain": "newscatcherapi.com",
-            "description": "NewsCatcher (also known as NewsCatcher API) is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
+            "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
             "alternative_names": [
               "NewsCatcher CatchAll",
               "NewsCatcher API"
