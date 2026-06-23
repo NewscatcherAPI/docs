@@ -185,6 +185,14 @@
         ]
       },
       {
+        "tab": "Monitors",
+        "pages": ["web-search-api/concepts/monitors"]
+      },
+      {
+        "tab": "Company Watchlist",
+        "pages": ["web-search-api/concepts/company-search"]
+      },
+      {
         "tab": "News API",
         "groups": [
           {

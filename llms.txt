@@ -216,6 +216,10 @@ deleted — it becomes unassigned and continues to exist.
 - [n8n Integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/n8n): Use CatchAll in your n8n automations
 - [Apify integration](https://www.newscatcherapi.com/docs/web-search-api/integrations/apify): Use CatchAll in your Apify workflows.
 
+## Monitors
+
+## Company Watchlist
+
 ## News API
 
 ### Get started

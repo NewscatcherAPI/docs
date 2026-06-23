@@ -13,7 +13,7 @@ a portfolio, a competitor set, or any curated list — instead of running broad 
 Company Watchlist uses three connected concepts:
 
 **Entities** are individual company definitions. Each entity stores identifying
-information — name, domain, alternative names, key persons — that the system
+information — name, domain, description, alternative names, key persons — that the system
 uses to recognize the company in web content.
 
 **Datasets** are named collections of entities. A dataset acts as a watchlist or
@@ -26,8 +26,10 @@ date ranges — works identically to a normal job.
 
 ## Create entities
 
-Matching quality depends on what you provide. `domain` is the most reliable
-signal — two companies can share a name, but not a domain.
+Matching quality depends on what you provide. `domain` and `description` are the most reliable
+signals:
+- Two companies can share a name, but not a domain.
+- Companies might have the same name, but they usually operate in different sectors. That's why description is the key to a proper disambiguation
 
 ### Single entity
 
@@ -40,11 +42,11 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
   -d '{
     "name": "NewsCatcher",
     "entity_type": "company",
-    "description": "AI-powered news data provider",
+    "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
     "additional_attributes": {
       "company_attributes": {
         "domain": "newscatcherapi.com",
-        "alternative_names": ["NC", "NewsCatcher API"],
+        "alternative_names": ["NewsCatcher API", "NewsCatcher CatchAll"],
         "key_persons": ["Artem Bugara", "Maksym Sugonyaka"]
       }
     }
@@ -55,11 +57,11 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
 {
   "name": "NewsCatcher",
   "entity_type": "company",
-  "description": "AI-powered news data provider",
+  "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
   "additional_attributes": {
     "company_attributes": {
       "domain": "newscatcherapi.com",
-      "alternative_names": ["NC", "NewsCatcher API"],
+      "alternative_names": ["NewsCatcher API", "NewsCatcher CatchAll"],
       "key_persons": ["Artem Bugara", "Maksym Sugonyaka"]
     }
   }
@@ -78,11 +80,11 @@ client = CatchAllApi(api_key="YOUR_API_KEY")
 entity = client.entities.create_entity(
     name="NewsCatcher",
     entity_type="company",
-    description="AI-powered news data provider",
+    description="NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
     additional_attributes=AdditionalAttributes(
         company_attributes=CompanyAttributes(
             domain="newscatcherapi.com",
-            alternative_names=["NC", "NewsCatcher API"],
+            alternative_names=["NewsCatcher CatchAll", "NewsCatcher API"],
             key_persons=["Artem Bugara", "Maksym Sugonyaka"],
         )
     ),
@@ -98,11 +100,11 @@ const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
 const entity = await client.entities.createEntity({
   name: "NewsCatcher",
   entity_type: "company",
-  description: "AI-powered news data provider",
+  description: "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
   additional_attributes: {
     company_attributes: {
       domain: "newscatcherapi.com",
-      alternative_names: ["NC", "NewsCatcher API"],
+      alternative_names: ["NewsCatcher CatchAll", "NewsCatcher API"],
       key_persons: ["Artem Bugara", "Maksym Sugonyaka"],
     },
   },
@@ -123,11 +125,11 @@ CreateEntityResponse entity = client.entities().createEntity(
     CreateEntityRequest.builder()
         .name("NewsCatcher")
         .entityType(EntityType.COMPANY)
-        .description("AI-powered news data provider")
+        .description("NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).")
         .additionalAttributes(AdditionalAttributes.builder()
             .companyAttributes(CompanyAttributes.builder()
                 .domain("newscatcherapi.com")
-                .alternativeNames(List.of("NC", "NewsCatcher API"))
+                .alternativeNames(List.of("NewsCatcher CatchAll", "NewsCatcher API"))
                 .keyPersons(List.of("Artem Bugara", "Maksym Sugonyaka"))
                 .build())
             .build())
@@ -157,6 +159,55 @@ creating a dataset — the dataset status is what matters before submitting a jo
 </Note>
 
 </Expandable>
+
+### Writing effective descriptions
+
+The `description` field is the primary signal used to tell two companies with
+the same name apart. A specific, factual description gives the matching model
+distinctive features to anchor on — vague, marketing-style text produces false
+positives or missed coverage.
+
+The goal is to **fingerprint** the company, not to sell it. Aim for two to four
+sentences covering **what the company is** and **what it offers**.
+
+**Good description:**
+> Apollo Global Management is a US-based alternative
+> asset management firm headquartered in New York City, founded in 1990 by
+> Leon Black, Marc Rowan, and Josh Harris. It manages private equity, credit,
+> and real assets funds with over $650 billion in assets under management and
+> is publicly traded on the NYSE under the ticker APO.
+
+**Bad description:**
+> Apollo is a global leader providing innovative solutions to clients across
+> multiple industries worldwide.
+
+The bad example fits dozens of companies named Apollo equally well. Consider
+two real ones: **Apollo Global Management** (New York City; alternative asset
+management; founded 1990; NYSE: APO) and **Apollo Hospitals** (Chennai, India;
+private hospital chain; founded 1983 by Dr. Prathap C. Reddy; largest private
+hospital network in Asia). The name alone tells you nothing — what separates
+them is geography, industry, founders, and products. The same pattern applies
+to "Delta" (airline vs. faucets vs. dental insurance) and "Dove" (Unilever
+personal care vs. Mars chocolate).
+
+The details that do the disambiguation work are: **aliases**, **specific
+industry**, **headquarters location**, **founding year and founders**, and
+**concrete products or services**. Generic adjectives ("leading," "innovative,"
+"world-class") carry no disambiguating signal — drop them.
+
+<Tip>
+  Before saving: *Could this description be true of a different company with the
+  same name?* If yes, add the attribute that breaks the tie — usually industry,
+  geography, or flagship products.
+</Tip>
+
+A complete description includes:
+
+- Full legal name
+- Specific industry or sector — not "technology" but "freight forwarding and customs brokerage"
+- Headquarters city and country, plus main regions of operation
+- Concrete products, services, and brand names
+- Parent company, subsidiaries, ticker, or public/private status when relevant
 
 ### Batch
 
@@ -438,7 +489,7 @@ Rows with an empty `name` are skipped and reported in `validation_report`.
 
 ```csv
 name,description,domain,alternative_names,key_persons
-NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+NewsCatcher,"NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",newscatcherapi.com,"NewsCatcher CatchAll;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
 OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
 Stripe,"Online payments platform",stripe.com,"","Patrick Collison;John Collison"
 ```
@@ -868,9 +919,9 @@ results.getAllRecords().forEach(record -> {
           "relation": "NewsCatcher is a named partner in the announced AI infrastructure deal",
           "company": {
             "domain": "newscatcherapi.com",
-            "description": "AI-powered news data provider",
+            "description": "NewsCatcher is a data-as-a-service company headquartered in Middletown, Delaware, USA, founded in 2021, providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",
             "alternative_names": [
-              "NC",
+              "NewsCatcher CatchAll",
               "NewsCatcher API"
             ],
             "key_persons": [
