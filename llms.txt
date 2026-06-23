@@ -15,6 +15,8 @@
 ### Concepts
 
 - [Jobs](https://www.newscatcherapi.com/docs/web-search-api/concepts/jobs): How CatchAll jobs work and how to move from query to results.
+- [Monitors](https://www.newscatcherapi.com/docs/web-search-api/concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
+- [Company Watchlist](https://www.newscatcherapi.com/docs/web-search-api/concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
 - [Projects](https://www.newscatcherapi.com/docs/web-search-api/concepts/projects): Organize jobs, monitors, and datasets into named groups for easier management and sharing.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
