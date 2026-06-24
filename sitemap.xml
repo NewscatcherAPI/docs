@@ -61,6 +61,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results-as-csv</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job</loc>
     </url>
     <url>
@@ -77,6 +80,9 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitors</loc>
