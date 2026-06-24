@@ -39,6 +39,8 @@ Returns a quality assessment with a status level, identified issues, and actiona
 - [Create Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/create-job): Submit a query to create a new processing job.
 - [Get Job Status](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-status): Retrieve the current processing status of a job.
 - [Get Job Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results): Retrieve the final results for a completed job.
+- [Get Job Results As Csv](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/get-job-results-as-csv): Returns a completed job's result records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+
 - [Continue Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/continue-job): Continue an existing job to process more records beyond the initial limit.
 - [List User Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-user-jobs): Returns all jobs created by the authenticated user.
 - [Delete Job](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/delete-job): Soft-deletes a job. The job is flagged as deleted and no longer appears in list results. The underlying data is retained.
@@ -53,6 +55,8 @@ Deleting an already-deleted job returns `200`.
 
 - [Create Monitor](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/create-monitor): Create a scheduled monitor based on a reference job.
 - [Get Monitor Results](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-results): Retrieve aggregated results from all jobs executed by a monitor.
+- [Get Latest Monitor Results As Csv](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv): Returns the most recent run's records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+
 - [List Monitors](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitors): Returns all monitors created by the authenticated user.
 - [List Monitor Jobs](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/list-monitor-jobs): Return all jobs executed by a monitor.
 - [Get Monitor Status History](https://www.newscatcherapi.com/docs/web-search-api/api-reference/monitors/get-monitor-status-history): Returns the full execution history of a monitor as a list of status entries, ordered from newest to oldest.

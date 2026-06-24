@@ -5,6 +5,58 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.6.3" description="2026-06-23">
+## External entity IDs, CSV exports, and connected dataset details
+
+Adds support for your own external entity identifiers, CSV downloads for job and
+monitor results, and richer connected-dataset information in pull responses.
+
+### External entity IDs
+
+You can now attach your own identifier to an entity with the new
+`external_entity_id` field — store a CRM, data warehouse, or internal database ID
+and round-trip it through CatchAll so you can join results back to your systems
+without extra mapping work. The field is a free-form string (up to 255
+characters) and is not enforced as unique.
+
+**Where it appears:**
+
+- Accepted when creating an entity via
+  [`POST /catchAll/entities`](/web-search-api/api-reference/entities/create-entity)
+  and when updating one via
+  [`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity).
+- Returned on entity responses, dataset entity summaries, and connected entities
+  in Company Watchlist results. Null when not set.
+
+### CSV export endpoints
+
+Pull job and monitor results directly as a CSV download for spreadsheet-friendly
+analysis and reporting. Each row is one record, with enrichment fields as
+columns, citations as a JSON column, and connected entities split into
+`event_associated_entities` and `mention_entities` JSON columns.
+
+**New endpoints:**
+
+- [`GET /catchAll/pull/{job_id}/csv`](/web-search-api/api-reference/jobs/get-job-results-as-csv)
+  — Download a completed job's results as CSV.
+- [`GET /catchAll/monitors/pull/{monitor_id}/csv`](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv)
+  — Download the latest monitor run's results as CSV.
+
+### Connected dataset details in pull responses
+
+Job and monitor pull responses now include a `connected_datasets` array — each
+entry has the dataset `id`, `name`, and an `is_deleted` flag — alongside an
+`is_all_news_query` boolean indicating whether the query was submitted as an
+all-news (watchlist-generic) query.
+
+### Fixes and improvements
+
+- Reliability and observability improvements, data-model and validation
+  hardening, and language-query guardrails.
+- Relaxed company domain requirements and safer enrichment handling for edge
+  cases.
+</Update>
+
 <Update label="1.6.1" description="2026-06-09">
 ## Company Watchlist improvements and performance fixes
 

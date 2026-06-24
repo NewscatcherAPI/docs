@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.6.1
+  version: 1.6.3
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -269,6 +269,28 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /catchAll/pull/{job_id}/csv:
+    get:
+      tags:
+        - Jobs
+      summary: Get job results as CSV
+      description: |
+        Returns a completed job's result records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+      operationId: getJobResultsCsv
+      parameters:
+        - $ref: "#/components/parameters/JobId"
+      responses:
+        "200":
+          description: CSV export of job results.
+          content:
+            text/csv:
+              schema:
+                type: string
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+
   /catchAll/continue:
     post:
       tags:
@@ -394,6 +416,34 @@ paths:
           $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
+
+  /catchAll/monitors/pull/{monitor_id}/csv:
+    get:
+      tags:
+        - Monitors
+      summary: Get latest monitor results as CSV
+      description: |
+        Returns the most recent run's records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+      operationId: pullMonitorResultsCsv
+      parameters:
+        - name: monitor_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Monitor identifier.
+      responses:
+        "200":
+          description: CSV export of the latest monitor run.
+          content:
+            text/csv:
+              schema:
+                type: string
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
   /catchAll/monitors/{monitor_id}/jobs:
     get:
@@ -2228,6 +2278,7 @@ components:
             organization_id: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
             name: NewsCatcher
             description: AI-powered news data provider
+            external_entity_id: "crm-12345"
             additional_attributes:
               company_attributes:
                 domain: newscatcherapi.com
@@ -3579,6 +3630,16 @@ components:
           default: "base"
           description: Processing mode used for this job.
           example: "base"
+        connected_datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectedDataset"
+          description: |
+            Datasets used to narrow retrieval scope, each with `id` and `name`.
+        is_all_news_query:
+          type: boolean
+          description: |
+            True when the query was submitted as an all-news (watchlist-generic) query.
         sharing_info:
           oneOf:
             - $ref: "#/components/schemas/SharingInfo"
@@ -4606,6 +4667,16 @@ components:
           type: ["integer", "null"]
           description: Record limit applied to this monitor's jobs.
           example: 100
+        connected_datasets:
+          type: array
+          items:
+            $ref: "#/components/schemas/ConnectedDataset"
+          description: |
+            Datasets used to narrow retrieval scope, each with `id` and `name`.
+        is_all_news_query:
+          type: boolean
+          description: |
+            True when the reference job was submitted as an all-news (watchlist-generic) query.
 
     ListMonitorsResponseDto:
       type: object
@@ -5090,6 +5161,12 @@ components:
           description: |
             Free-text description of the entity used for disambiguation when similar names exist.
           example: AI-powered news data provider
+        external_entity_id:
+          type: string
+          maxLength: 255
+          description: |
+            Optional external identifier for this entity. Free-form string, not enforced as unique. Use it to store your own CRM, data warehouse, or internal database ID so you can join CatchAll results back to your systems.
+          example: "crm-12345"
         additional_attributes:
           $ref: "#/components/schemas/AdditionalAttributes"
 
@@ -5108,6 +5185,11 @@ components:
           type: string
           description: Updated description.
           example: Updated description
+        external_entity_id:
+          type: string
+          maxLength: 255
+          description: Updated external identifier for this entity.
+          example: "crm-12345"
         additional_attributes:
           $ref: "#/components/schemas/AdditionalAttributes"
 
@@ -5157,6 +5239,10 @@ components:
           type: ["string", "null"]
           description: Free-text description.
           example: AI-powered news data provider
+        external_entity_id:
+          type: ["string", "null"]
+          description: External identifier for this entity. Null when not set.
+          example: "crm-12345"
         additional_attributes:
           $ref: "#/components/schemas/AdditionalAttributes"
         status:
@@ -5266,6 +5352,10 @@ components:
           type: ["string", "null"]
           description: Free-text description.
           example: AI-powered news data provider
+        external_entity_id:
+          type: ["string", "null"]
+          description: External identifier for this entity. Null when not set.
+          example: "crm-12345"
         attributes:
           $ref: "#/components/schemas/CompanyAttributes"
 
@@ -5666,13 +5756,41 @@ components:
           description: |
             The entity type.
           example: "company"
+        external_entity_id:
+          type: ["string", "null"]
+          description: External identifier for this entity. Null when not set.
+          example: "crm-12345"
         company:
           allOf:
             - $ref: "#/components/schemas/CompanyAttributes"
           description: |
-            The stored attributes for this entity. Present only when attributes exist in the database. 
-            
+            The stored attributes for this entity. Present only when attributes exist in the database.
+
             The field name matches the value of `type` — for example, `"company"` type entities have a `company`  field.
+
+    ConnectedDataset:
+      type: object
+      required:
+        - id
+        - name
+      description: |
+        A dataset used to narrow the retrieval scope of a job or monitor, returned with its identifier and name.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Dataset identifier.
+          example: "9f3a8b2c-1e4d-4a5b-9c8d-6e7f8a9b0c1d"
+        name:
+          type: string
+          description: |
+            Dataset name as stored. Check `is_deleted` to determine whether the dataset is still active.
+          example: My Portfolio
+        is_deleted:
+          type: boolean
+          default: false
+          description: True when the dataset has been deleted.
+          example: false
 
 # ── Project schemas ───────────────────────────────────────────────────
 

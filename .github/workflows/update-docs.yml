@@ -70,11 +70,11 @@ jobs:
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
         run: |
-          mkdir -p /tmp/agents/update-mintify-docs
+          mkdir -p /tmp/agents/update-mintify-docs-when-api-release
 
           FILES=(
-            "agents%2Fupdate-mintify-docs%2FAGENT.md:/tmp/agents/update-mintify-docs/AGENT.md"
-            "agents%2Fupdate-mintify-docs%2FLESSONS.md:/tmp/agents/update-mintify-docs/LESSONS.md"
+            "agents%2Fupdate-mintify-docs-when-api-release%2FAGENT.md:/tmp/agents/update-mintify-docs-when-api-release/AGENT.md"
+            "agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md:/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md"
           )
 
           for entry in "${FILES[@]}"; do
@@ -87,7 +87,7 @@ jobs:
           done
 
           echo "--- AGENT.md preview (first 5 lines) ---"
-          head -5 /tmp/agents/update-mintify-docs/AGENT.md
+          head -5 /tmp/agents/update-mintify-docs-when-api-release/AGENT.md
 
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
@@ -103,17 +103,15 @@ jobs:
           TARGET_SPEC_PATH: "web-search-api/api-reference/catch-all-api.yml"
           TARGET_BRANCH: ${{ inputs.target_branch }}
           DOCS_REPO_PATH: ${{ github.workspace }}
-          LESSONS_PATH: "/tmp/agents/update-mintify-docs/LESSONS.md"
+          LESSONS_PATH: "/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          claude \
+          PROMPT="Read and execute the agent instructions at /tmp/agents/update-mintify-docs-when-api-release/AGENT.md. All required environment variables are already set. Working directory is the docs repo root: $DOCS_REPO_PATH"
+
+          echo "$PROMPT" | claude \
             --print \
             --dangerously-skip-permissions \
-            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" \
-            --max-turns 50 \
-            "Read and execute the agent instructions at /tmp/agents/update-mintify-docs/AGENT.md.
-             All required environment variables are already set.
-             Working directory is the docs repo root: $DOCS_REPO_PATH"
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
       # If the agent updated LESSONS.md, push it back to GitLab via the Files API.
       # Requires GITLAB_PAT to have write_repository scope.
@@ -122,15 +120,15 @@ jobs:
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
         run: |
-          ORIGINAL="/tmp/agents/update-mintify-docs/LESSONS.md.original"
+          ORIGINAL="/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md.original"
 
           # Re-fetch the original to compare
           curl -sf \
             -H "PRIVATE-TOKEN: $GITLAB_PAT" \
-            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs%2FLESSONS.md/raw?ref=${GITLAB_BRANCH}" \
+            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md/raw?ref=${GITLAB_BRANCH}" \
             -o "$ORIGINAL"
 
-          if diff -q "$ORIGINAL" /tmp/agents/update-mintify-docs/LESSONS.md > /dev/null 2>&1; then
+          if diff -q "$ORIGINAL" /tmp/agents/update-mintify-docs-when-api-release/LESSONS.md > /dev/null 2>&1; then
             echo "LESSONS.md unchanged — nothing to push"
             exit 0
           fi
@@ -138,12 +136,12 @@ jobs:
           echo "LESSONS.md was updated — pushing back to GitLab"
 
           # Base64-encode the updated content (GitLab API requires it)
-          CONTENT=$(base64 -w 0 /tmp/agents/update-mintify-docs/LESSONS.md)
+          CONTENT=$(base64 -w 0 /tmp/agents/update-mintify-docs-when-api-release/LESSONS.md)
 
           curl -sf -X PUT \
             -H "PRIVATE-TOKEN: $GITLAB_PAT" \
             -H "Content-Type: application/json" \
-            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs%2FLESSONS.md" \
+            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md" \
             -d "{
               \"branch\": \"${GITLAB_BRANCH}\",
               \"encoding\": \"base64\",
@@ -157,10 +155,13 @@ jobs:
 #   ANTHROPIC_API_KEY   — Anthropic API key (console.anthropic.com)
 #   NOTION_API_TOKEN    — Notion integration token (notion.so/my-integrations)
 #   GITLAB_PAT          — GitLab personal access token
-#                           read_repository  (to fetch AGENT.md / LESSONS.md)
-#                           write_repository (to push updated LESSONS.md back)
+#                           Scopes:  read_repository + write_repository
+#                           Role:    Developer or higher (Guest/Reporter → 403)
+#                           Tip:     use a project access token on ai-configs
+#                                    (Settings → Access Tokens) to avoid user
+#                                    membership issues
 #   GITLAB_PROJECT      — URL-encoded GitLab namespace/project
-#                           e.g. "newscatcherapi%2Fai-configs"
+#                           e.g. "newscatcher%2Fai-configs"
 #
 # GITHUB_TOKEN is provided automatically — no secret needed.
 #
