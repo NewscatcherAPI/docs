@@ -106,13 +106,12 @@ jobs:
           LESSONS_PATH: "/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md"
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          claude \
+          PROMPT="Read and execute the agent instructions at /tmp/agents/update-mintify-docs-when-api-release/AGENT.md. All required environment variables are already set. Working directory is the docs repo root: $DOCS_REPO_PATH"
+
+          echo "$PROMPT" | claude \
             --print \
             --dangerously-skip-permissions \
-            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" \
-            "Read and execute the agent instructions at /tmp/agents/update-mintify-docs-when-api-release/AGENT.md.
-             All required environment variables are already set.
-             Working directory is the docs repo root: $DOCS_REPO_PATH"
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
       # If the agent updated LESSONS.md, push it back to GitLab via the Files API.
       # Requires GITLAB_PAT to have write_repository scope.
