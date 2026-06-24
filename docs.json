@@ -74,6 +74,7 @@
                   "web-search-api/api-reference/jobs/create-job",
                   "web-search-api/api-reference/jobs/get-job-status",
                   "web-search-api/api-reference/jobs/get-job-results",
+                  "web-search-api/api-reference/jobs/get-job-results-as-csv",
                   "web-search-api/api-reference/jobs/continue-job",
                   "web-search-api/api-reference/jobs/list-user-jobs",
                   "web-search-api/api-reference/jobs/delete-job",
@@ -85,6 +86,7 @@
                 "pages": [
                   "web-search-api/api-reference/monitors/create-monitor",
                   "web-search-api/api-reference/monitors/get-monitor-results",
+                  "web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv",
                   "web-search-api/api-reference/monitors/list-monitors",
                   "web-search-api/api-reference/monitors/list-monitor-jobs",
                   "web-search-api/api-reference/monitors/get-monitor-status-history",

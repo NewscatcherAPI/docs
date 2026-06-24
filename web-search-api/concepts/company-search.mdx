@@ -160,6 +160,34 @@ creating a dataset — the dataset status is what matters before submitting a jo
 
 </Expandable>
 
+### Attach an external entity ID
+
+Use the optional `external_entity_id` field to store your own identifier for an
+entity — a CRM, data warehouse, or internal database ID. CatchAll stores it as
+provided and returns it on entity responses, dataset entity summaries, and
+connected entities in job results, so you can join CatchAll output back to your
+systems without maintaining a separate mapping.
+
+```json JSON
+{
+  "name": "NewsCatcher",
+  "entity_type": "company",
+  "description": "NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
+  "external_entity_id": "crm-12345",
+  "additional_attributes": {
+    "company_attributes": {
+      "domain": "newscatcherapi.com"
+    }
+  }
+}
+```
+
+The value is a free-form string of up to 255 characters and is **not** enforced
+as unique — CatchAll does not deduplicate entities by it. You can set it when
+creating an entity (single or batch) and change it later with
+[`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity).
+When no value is set, the field is returned as `null`.
+
 ### Writing effective descriptions
 
 The `description` field is the primary signal used to tell two companies with

@@ -537,6 +537,26 @@ while (true) {
   for the full output format.
 </Info>
 
+### Export results as CSV
+
+To pull results in a spreadsheet-friendly format, use
+[`GET /catchAll/pull/{job_id}/csv`](/web-search-api/api-reference/jobs/get-job-results-as-csv).
+It returns the job's records as a `text/csv` download instead of JSON.
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/pull/5f0c9087-85cb-4917-b3c7-e5a5eff73a0c/csv" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -o job-results.csv
+```
+
+Each record becomes one row. Enrichment fields are flattened into columns,
+`citations` are serialized as a JSON column, and connected entities from Company
+Search jobs are split into two JSON columns: `event_associated_entities` (direct
+actors) and `mention_entities` (passing references). For monitors, the
+equivalent endpoint is
+[`GET /catchAll/monitors/pull/{monitor_id}/csv`](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv),
+which exports the most recent run's records.
+
 ## Continue job
 
 To process more records after reviewing the initial results of a job submitted

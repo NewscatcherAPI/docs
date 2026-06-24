@@ -390,6 +390,21 @@ Response:
 
 </Expandable>
 
+### Export results as CSV
+
+To download the most recent run's records as a spreadsheet-friendly file, use
+[`GET /catchAll/monitors/pull/{monitor_id}/csv`](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv).
+It returns the latest run as a `text/csv` download — one row per record, with
+enrichment fields as columns, `citations` as a JSON column, and connected
+entities split into `event_associated_entities` and `mention_entities` JSON
+columns.
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/3fec5b07-8786-46d7-9486-d43ff67eccd4/csv" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -o monitor-results.csv
+```
+
 ## Manage monitors
 
 Use these endpoints to update webhook assignments, pause, resume, or delete a 
