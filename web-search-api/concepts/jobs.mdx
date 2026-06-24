@@ -543,11 +543,58 @@ To pull results in a spreadsheet-friendly format, use
 [`GET /catchAll/pull/{job_id}/csv`](/web-search-api/api-reference/jobs/get-job-results-as-csv).
 It returns the job's records as a `text/csv` download instead of JSON.
 
+<CodeGroup>
+
 ```bash cURL
 curl "https://catchall.newscatcherapi.com/catchAll/pull/5f0c9087-85cb-4917-b3c7-e5a5eff73a0c/csv" \
   -H "x-api-key: YOUR_API_KEY" \
   -o job-results.csv
 ```
+
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+csv_data = client.jobs.get_job_results_csv(
+    job_id="5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+)
+with open("job-results.csv", "wb") as f:
+    f.write(csv_data)
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const csvData = await client.jobs.getJobResultsCsv({
+  job_id: "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+});
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import java.nio.file.*;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+byte[] csvData = client.jobs().getJobResultsCsv(
+    "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c"
+);
+Files.write(Paths.get("job-results.csv"), csvData);
+```
+
+</CodeGroup>
+
+<Tip>
+  For agentic workflows and data pipelines, use the JSON endpoint instead. CSV
+  and Excel are notorious for silent encoding issues, truncated long-text fields,
+  and mangled special characters — problems that are hard to catch and harder to
+  debug downstream.
+</Tip>
 
 Each record becomes one row. Enrichment fields are flattened into columns,
 `citations` are serialized as a JSON column, and connected entities from Company

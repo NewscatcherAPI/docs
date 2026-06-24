@@ -399,11 +399,58 @@ enrichment fields as columns, `citations` as a JSON column, and connected
 entities split into `event_associated_entities` and `mention_entities` JSON
 columns.
 
+<CodeGroup>
+
 ```bash cURL
 curl "https://catchall.newscatcherapi.com/catchAll/monitors/pull/3fec5b07-8786-46d7-9486-d43ff67eccd4/csv" \
   -H "x-api-key: YOUR_API_KEY" \
   -o monitor-results.csv
 ```
+
+```python Python
+from newscatcher_catchall import CatchAllApi
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+csv_data = client.monitors.pull_monitor_results_csv(
+    monitor_id="3fec5b07-8786-46d7-9486-d43ff67eccd4"
+)
+with open("monitor-results.csv", "wb") as f:
+    f.write(csv_data)
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const csvData = await client.monitors.pullMonitorResultsCsv({
+  monitor_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+});
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import java.nio.file.*;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+byte[] csvData = client.monitors().pullMonitorResultsCsv(
+    "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+);
+Files.write(Paths.get("monitor-results.csv"), csvData);
+```
+
+</CodeGroup>
+
+<Tip>
+  For agentic workflows and data pipelines, use the JSON endpoint instead. CSV
+  and Excel are notorious for silent encoding issues, truncated long-text fields,
+  and mangled special characters — problems that are hard to catch and harder to
+  debug downstream.
+</Tip>
 
 ## Manage monitors
 

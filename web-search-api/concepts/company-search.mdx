@@ -160,34 +160,6 @@ creating a dataset — the dataset status is what matters before submitting a jo
 
 </Expandable>
 
-### Attach an external entity ID
-
-Use the optional `external_entity_id` field to store your own identifier for an
-entity — a CRM, data warehouse, or internal database ID. CatchAll stores it as
-provided and returns it on entity responses, dataset entity summaries, and
-connected entities in job results, so you can join CatchAll output back to your
-systems without maintaining a separate mapping.
-
-```json JSON
-{
-  "name": "NewsCatcher",
-  "entity_type": "company",
-  "description": "NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
-  "external_entity_id": "crm-12345",
-  "additional_attributes": {
-    "company_attributes": {
-      "domain": "newscatcherapi.com"
-    }
-  }
-}
-```
-
-The value is a free-form string of up to 255 characters and is **not** enforced
-as unique — CatchAll does not deduplicate entities by it. You can set it when
-creating an entity (single or batch) and change it later with
-[`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity).
-When no value is set, the field is returned as `null`.
-
 ### Writing effective descriptions
 
 The `description` field is the primary signal used to tell two companies with
@@ -236,6 +208,122 @@ A complete description includes:
 - Headquarters city and country, plus main regions of operation
 - Concrete products, services, and brand names
 - Parent company, subsidiaries, ticker, or public/private status when relevant
+
+### Attach an external entity ID
+
+Use the optional `external_entity_id` field to store your own identifier for an
+entity — a CRM, data warehouse, or internal database ID. CatchAll stores it as
+provided and returns it on entity responses, dataset entity summaries, and
+connected entities in job results, so you can join CatchAll output back to your
+systems without maintaining a separate mapping.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/entities" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "NewsCatcher",
+    "entity_type": "company",
+    "description": "NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
+    "external_entity_id": "crm-12345",
+    "additional_attributes": {
+      "company_attributes": {
+        "domain": "newscatcherapi.com"
+      }
+    }
+  }'
+```
+
+```json JSON
+{
+  "name": "NewsCatcher",
+  "entity_type": "company",
+  "description": "NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
+  "external_entity_id": "crm-12345",
+  "additional_attributes": {
+    "company_attributes": {
+      "domain": "newscatcherapi.com"
+    }
+  }
+}
+```
+
+```python Python
+from newscatcher_catchall import (
+    CatchAllApi,
+    AdditionalAttributes,
+    CompanyAttributes,
+)
+
+client = CatchAllApi(api_key="YOUR_API_KEY")
+
+entity = client.entities.create_entity(
+    name="NewsCatcher",
+    entity_type="company",
+    description="NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
+    external_entity_id="crm-12345",
+    additional_attributes=AdditionalAttributes(
+        company_attributes=CompanyAttributes(
+            domain="newscatcherapi.com",
+        )
+    ),
+)
+entity_id = entity.id
+```
+
+```typescript TypeScript
+import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+const entity = await client.entities.createEntity({
+  name: "NewsCatcher",
+  entity_type: "company",
+  description: "NewsCatcher is a data-as-a-service company providing news intelligence APIs.",
+  external_entity_id: "crm-12345",
+  additional_attributes: {
+    company_attributes: {
+      domain: "newscatcherapi.com",
+    },
+  },
+});
+const entityId = entity.id;
+```
+
+```java Java
+import com.newscatcher.catchall.CatchAllApi;
+import com.newscatcher.catchall.types.*;
+
+CatchAllApi client = CatchAllApi.builder()
+    .apiKey("YOUR_API_KEY")
+    .build();
+
+CreateEntityResponse entity = client.entities().createEntity(
+    CreateEntityRequest.builder()
+        .name("NewsCatcher")
+        .entityType(EntityType.COMPANY)
+        .description("NewsCatcher is a data-as-a-service company providing news intelligence APIs.")
+        .externalEntityId("crm-12345")
+        .additionalAttributes(AdditionalAttributes.builder()
+            .companyAttributes(CompanyAttributes.builder()
+                .domain("newscatcherapi.com")
+                .build())
+            .build())
+        .build()
+);
+String entityId = entity.getId();
+```
+
+</CodeGroup>
+
+The value is a free-form string of up to 255 characters and is **not** enforced
+as unique — CatchAll does not deduplicate entities by it. You can set it when
+creating an entity (single or batch) and change it later with
+[`PATCH /catchAll/entities/{entity_id}`](/web-search-api/api-reference/entities/update-entity).
+When no value is set, the field is returned as `null`.
+
 
 ### Batch
 
