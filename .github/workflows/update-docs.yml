@@ -110,7 +110,6 @@ jobs:
             --print \
             --dangerously-skip-permissions \
             --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch" \
-            --max-turns 50 \
             "Read and execute the agent instructions at /tmp/agents/update-mintify-docs-when-api-release/AGENT.md.
              All required environment variables are already set.
              Working directory is the docs repo root: $DOCS_REPO_PATH"
