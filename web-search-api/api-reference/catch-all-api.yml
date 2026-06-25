@@ -5145,7 +5145,9 @@ components:
       required:
         - name
       description: |
-        Request body for creating a single entity. Only `name` is required.
+        Request body for creating a single entity. The `name` field is required.
+        You must also provide at least one of: a top-level `description` or a `domain`
+        inside `additional_attributes.company_attributes`.
         The more fields you provide, the better the matching quality.
       properties:
         name:

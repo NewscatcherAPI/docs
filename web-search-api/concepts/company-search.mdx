@@ -26,6 +26,8 @@ date ranges — works identically to a normal job.
 
 ## Create entities
 
+The `name` field is required. You must also provide at least one of `description`
+or `domain` (inside `additional_attributes.company_attributes`).
 Matching quality depends on what you provide. `domain` and `description` are the most reliable
 signals:
 - Two companies can share a name, but not a domain.
