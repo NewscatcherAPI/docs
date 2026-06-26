@@ -24,7 +24,7 @@ Match schedule frequency to your data needs and budget. Each scheduled run creat
 | Market intelligence | Daily or weekly      | Adjust based on update cycles               |
 
 <Warning>
-  **Minimum interval: 24 hours.** Schedules more frequent than daily are not supported.
+  **Minimum default interval: 24 hours.** Schedules more frequent depends on your subscription plan.
 </Warning>
 
 ### Schedule formats
@@ -48,10 +48,10 @@ Define schedules in natural language with explicit timezone.
     - `"every 7 days at 12 PM UTC"`
   </Tab>
 
-  <Tab title="Invalid (sub-24h)">
-    - ❌ `"every hour"`
-    - ❌ `"every 6 hours"`
-    - ❌ `"every 12 hours"`
+  <Tab title="sub-24h (if your plan allows it)">
+    -  `"every hour"`
+    -  `"every 6 hours"`
+    -  `"every 12 hours"`
   </Tab>
 </Tabs>
 
@@ -61,7 +61,7 @@ Define schedules in natural language with explicit timezone.
 | ---------------------------- | --------------- | ------------------------ |
 | `"every day at 12 PM UTC"`   | `0 12 * * *`    | ✅ Daily                 |
 | `"every Monday at 9 AM EST"` | `0 9 * * 1`     | ✅ Weekly                |
-| `"every 6 hours"`            | `0 */6 * * *`   | ❌ Below 24h minimum     |
+| `"every 6 hours"`            | `0 */6 * * *`   | ✅ Hourly (For specific plans)     |
 
 ### Testing procedure
 
