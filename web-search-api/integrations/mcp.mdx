@@ -353,8 +353,8 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | Tool | Description |
     |------|-------------|
     | `validate_query` | Check query quality before submission — returns `good`, `needs_work`, or `critical` with suggestions |
-    | `initialize_query` | Preview suggested validators, enrichments, and date ranges before submitting a job. Accepts an optional `fetch_all_watchlist_news` flag to align previewed suggestions when you intend to retrieve all watchlist news without topic filtering |
-    | `submit_query` | Submit a natural language query and create a job. Accepts optional `ed_association_type` (`event_associated` or `mention`) to filter how strongly a watchlist entity must appear in each event, and `fetch_all_watchlist_news` to retrieve all news for connected watchlist entities without topic filtering — both require `connected_dataset_ids` |
+    | `initialize_query` | Preview suggested validators, enrichments, and date ranges before submitting a job.  |
+    | `submit_query` | Submit a natural language query and create a job. |
     | `get_job_status` | Check job progress through the processing pipeline |
     | `pull_results` | Retrieve validated, enriched records from a completed or in-progress job |
     | `pull_job_csv` | Download completed job results as a CSV file — prefer over `pull_results` when a spreadsheet format is needed |
@@ -419,11 +419,11 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
 
     | Tool | Description |
     |------|-------------|
-    | `create_entity` | Create a single company or person entity. Accepts an optional `external_entity_id` string to link the entity to a record in an external system |
+    | `create_entity` | Create a single company or person entity.  |
     | `create_entities_batch` | Bulk-create multiple entities in one call |
     | `list_entities` | List all entities for the authenticated user |
     | `get_entity` | Get details for a specific entity |
-    | `update_entity` | Update entity name, domain, or metadata. Accepts an optional `external_entity_id` string to link the entity to a record in an external system |
+    | `update_entity` | Update entity name, domain, or metadata. |
     | `delete_entity` | Delete an entity |
   </Tab>
 
