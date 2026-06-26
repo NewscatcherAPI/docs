@@ -353,10 +353,11 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | Tool | Description |
     |------|-------------|
     | `validate_query` | Check query quality before submission — returns `good`, `needs_work`, or `critical` with suggestions |
-    | `initialize_query` | Preview suggested validators, enrichments, and date ranges before submitting a job |
-    | `submit_query` | Submit a natural language query and create a job |
+    | `initialize_query` | Preview suggested validators, enrichments, and date ranges before submitting a job.  |
+    | `submit_query` | Submit a natural language query and create a job. |
     | `get_job_status` | Check job progress through the processing pipeline |
     | `pull_results` | Retrieve validated, enriched records from a completed or in-progress job |
+    | `pull_job_csv` | Download completed job results as a CSV file — prefer over `pull_results` when a spreadsheet format is needed |
     | `continue_job` | Expand a job to process additional records beyond the initial limit |
     | `list_user_jobs` | List all jobs submitted by the authenticated user |
     | `delete_job` | Delete a job and its results |
@@ -370,6 +371,7 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `list_monitors` | List all monitors for the authenticated user |
     | `list_monitor_jobs` | List all jobs produced by a specific monitor |
     | `pull_monitor_results` | Retrieve latest aggregated results from a monitor |
+    | `pull_monitor_csv` | Download the most recent monitor run results as a CSV file |
     | `get_monitor_status` | Get the full execution history and state changes for a monitor |
     | `enable_monitor` | Re-enable a previously disabled monitor |
     | `disable_monitor` | Pause a monitor without deleting it |
@@ -409,17 +411,19 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `remove_dataset_entities` | Remove entities from a dataset |
     | `list_dataset_entities` | List all entities in a dataset |
     | `get_dataset_status` | Check dataset enrichment progress and health score |
+    | `create_dataset_from_csv` | Create a new dataset by uploading CSV content — pass raw CSV text or base64 in the `file` parameter (inline content only, 10 MB cap; server-side file paths are not accepted) |
+    | `append_csv_to_dataset` | Append entities to an existing dataset from CSV content — same `file` format as `create_dataset_from_csv` |
     | `delete_dataset` | Delete a dataset (entities are preserved) |
 
     **Entities**
 
     | Tool | Description |
     |------|-------------|
-    | `create_entity` | Create a single company or person entity |
+    | `create_entity` | Create a single company or person entity.  |
     | `create_entities_batch` | Bulk-create multiple entities in one call |
     | `list_entities` | List all entities for the authenticated user |
     | `get_entity` | Get details for a specific entity |
-    | `update_entity` | Update entity name, domain, or metadata |
+    | `update_entity` | Update entity name, domain, or metadata. |
     | `delete_entity` | Delete an entity |
   </Tab>
 
