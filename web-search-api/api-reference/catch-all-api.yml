@@ -2327,6 +2327,11 @@ components:
             name: My Portfolio
             description: Companies in our investment portfolio
             entity_count: 4
+            entity_status_breakdown:
+              ready: 4
+            health_score: 100
+            health_breakdown:
+              company: 100
             latest_status: ready
             created_by_user_id: "870e258e-12ec-4a47-8656-e7a43b0265b3"
             created_at: "2026-04-08T15:21:36.026993"
@@ -5433,6 +5438,30 @@ components:
           description: Total number of entities in this dataset.
           default: 0
           example: 4
+        entity_status_breakdown:
+          type: object
+          additionalProperties:
+            type: integer
+          description: |
+            Count of entities grouped by processing status. Keys are status values
+            (`ready`, `pending`, `enriching`, `failed`); values are entity counts.
+          example:
+            ready: 4
+        health_score:
+          type: number
+          description: |
+            Overall health score of the dataset, from 0 to 100. Reflects how many
+            entities have sufficient identifying information for reliable matching.
+          example: 100
+        health_breakdown:
+          type: object
+          additionalProperties:
+            type: number
+          description: |
+            Health scores broken down by entity type. Keys are entity types
+            (e.g. `company`); values are scores from 0 to 100.
+          example:
+            company: 100
         latest_status:
           $ref: "#/components/schemas/DatasetStatus"
         created_by_user_id:
