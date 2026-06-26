@@ -3204,7 +3204,11 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/ValidatorSchema"
-          description: Suggested validators for filtering relevant web pages.
+          description: |
+            Suggested validators for filtering relevant web pages. When the job is
+            submitted, the system may inject additional validators during the `analyzing`
+            stage — check the returned `validators[]` in the job status to see the
+            complete applied set.
           minItems: 0
         enrichments:
           type: array
@@ -3252,6 +3256,10 @@ components:
             Custom validators for filtering web page clusters.
 
             If not provided, validators are generated automatically based on the query.
+            The system may also inject validators during the `analyzing` stage — for
+            example, converting a relative time qualifier into an explicit event-date
+            gate. The returned `validators[]` in the job status shows the complete
+            applied set, including any system-added ones.
         enrichments:
           type: array
           items:
