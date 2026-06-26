@@ -55,9 +55,9 @@ restart the client.
         - **Name**: `CatchAll`
         - **Remote MCP server URL**:
 
-        ```
+        
         https://catchall-mcp.newscatcherapi.com/mcp?apiKey=YOUR_CATCHALL_API_KEY
-        ```
+        
       </Step>
       <Step title="Add and verify">
         Click **Add**. Verify that CatchAll appears under **Web** in your connectors list.
@@ -85,26 +85,26 @@ restart the client.
       <Step title="Fix npm permissions (once)">
         Run this once to avoid permission errors when using `npx`:
 
-        ```bash
+        bash
         sudo chown -R $(whoami) ~/.npm
-        ```
+        
       </Step>
       <Step title="Install mcp-remote">
-        ```bash
+        bash
         npm install -g mcp-remote
-        ```
+        
       </Step>
       <Step title="Open configuration file">
         <Tabs>
           <Tab title="macOS">
-            ```txt
+            txt
             ~/Library/Application Support/Claude/claude_desktop_config.json
-            ```
+            
           </Tab>
           <Tab title="Windows">
-            ```txt
+            txt
             %APPDATA%\Claude\claude_desktop_config.json
-            ```
+            
           </Tab>
         </Tabs>
 
@@ -113,7 +113,7 @@ restart the client.
       <Step title="Add CatchAll entry">
         Paste the following into the file:
 
-        ```json
+        
         {
           "mcpServers": {
             "catchall": {
@@ -127,7 +127,7 @@ restart the client.
             }
           }
         }
-        ```
+        
       </Step>
       <Step title="Restart Claude Desktop">
         Save the file and quit Claude Desktop completely, then relaunch it. Claude Desktop loads MCP tools on startup.
@@ -146,11 +146,11 @@ restart the client.
   <Tab title="Claude Code">
     Run in your terminal:
 
-    ```bash
+    bash
     claude mcp add --transport http catchall \
       "https://catchall-mcp.newscatcherapi.com/mcp" \
       --header "x-api-key:YOUR_CATCHALL_API_KEY"
-    ```
+    
 
     <Tip>
       For Claude-specific features like the SKILL file and Python agents, see [Claude integration](/web-search-api/integrations/claude).
@@ -167,7 +167,7 @@ restart the client.
 
     Or add to `~/.cursor/mcp.json` manually:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -176,7 +176,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart Cursor after saving.
 
@@ -187,7 +187,7 @@ restart the client.
 
     Or add to `.vscode/mcp.json` in your project root manually:
 
-    ```json
+    
     {
       "servers": {
         "catchall": {
@@ -196,7 +196,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart VS Code after saving.
 
@@ -205,7 +205,7 @@ restart the client.
   <Tab title="Windsurf">
     Add to `~/.codeium/windsurf/mcp_config.json`:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -216,7 +216,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart Windsurf after saving.
 
@@ -225,7 +225,7 @@ restart the client.
   <Tab title="Zed">
     Add to your Zed settings (`~/.config/zed/settings.json`):
 
-    ```json
+    
     {
       "context_servers": {
         "catchall": {
@@ -236,7 +236,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart Zed after saving.
 
@@ -245,7 +245,7 @@ restart the client.
   <Tab title="Warp">
     Go to **Settings > MCP Servers > Add MCP Server** and add:
 
-    ```json
+    
     {
       "catchall": {
         "url": "https://catchall-mcp.newscatcherapi.com/mcp",
@@ -254,14 +254,14 @@ restart the client.
         }
       }
     }
-    ```
+    
 
   </Tab>
 
   <Tab title="Gemini CLI">
     Add to `~/.gemini/settings.json`:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -272,7 +272,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart Gemini CLI after saving.
 
@@ -281,7 +281,7 @@ restart the client.
   <Tab title="Roo Code">
     Add to your Roo Code MCP config:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -293,7 +293,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart Roo Code after saving.
 
@@ -302,7 +302,7 @@ restart the client.
   <Tab title="Other clients">
     For clients that support native HTTP MCP with headers:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -313,11 +313,11 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     If your client does not support remote MCP servers natively, use `mcp-remote` as a proxy:
 
-    ```json
+    
     {
       "mcpServers": {
         "catchall": {
@@ -331,7 +331,7 @@ restart the client.
         }
       }
     }
-    ```
+    
 
     Restart your client after saving the configuration.
 
@@ -357,6 +357,7 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `submit_query` | Submit a natural language query and create a job |
     | `get_job_status` | Check job progress through the processing pipeline |
     | `pull_results` | Retrieve validated, enriched records from a completed or in-progress job |
+    | `pull_job_csv` | Download a completed job's results as a CSV file — use instead of `pull_results` when you need spreadsheet format |
     | `continue_job` | Expand a job to process additional records beyond the initial limit |
     | `list_user_jobs` | List all jobs submitted by the authenticated user |
     | `delete_job` | Delete a job and its results |
@@ -370,6 +371,7 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `list_monitors` | List all monitors for the authenticated user |
     | `list_monitor_jobs` | List all jobs produced by a specific monitor |
     | `pull_monitor_results` | Retrieve latest aggregated results from a monitor |
+    | `pull_monitor_csv` | Download the most recent monitor run's results as a CSV file |
     | `get_monitor_status` | Get the full execution history and state changes for a monitor |
     | `enable_monitor` | Re-enable a previously disabled monitor |
     | `disable_monitor` | Pause a monitor without deleting it |
@@ -410,16 +412,18 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
     | `list_dataset_entities` | List all entities in a dataset |
     | `get_dataset_status` | Check dataset enrichment progress and health score |
     | `delete_dataset` | Delete a dataset (entities are preserved) |
+    | `create_dataset_from_csv` | Create a new dataset by uploading CSV content (raw text or base64, max 10 MB) |
+    | `append_csv_to_dataset` | Append entities to an existing dataset by uploading CSV content (raw text or base64, max 10 MB) |
 
     **Entities**
 
     | Tool | Description |
     |------|-------------|
-    | `create_entity` | Create a single company or person entity |
+    | `create_entity` | Create a single company or person entity; accepts an optional `external_entity_id` to link to a record in an external system |
     | `create_entities_batch` | Bulk-create multiple entities in one call |
     | `list_entities` | List all entities for the authenticated user |
     | `get_entity` | Get details for a specific entity |
-    | `update_entity` | Update entity name, domain, or metadata |
+    | `update_entity` | Update entity name, domain, or metadata; accepts an optional `external_entity_id` to link to a record in an external system |
     | `delete_entity` | Delete an entity |
   </Tab>
 
@@ -459,12 +463,12 @@ the [API reference](/web-search-api/api-reference/jobs/create-job).
 <Accordion title="Connection refused or timeout">
   Verify your API key is valid by calling an authenticated endpoint:
 
-  ```bash
+  bash
   curl -X POST "https://catchall.newscatcherapi.com/catchAll/initialize" \
     -H "x-api-key: YOUR_CATCHALL_API_KEY" \
     -H "Content-Type: application/json" \
     -d '{"query": "test"}'
-  ```
+  
 
   If this returns a `403` error, your key is invalid. Check it at
   [platform.newscatcherapi.com](https://platform.newscatcherapi.com).
