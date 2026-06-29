@@ -1,0 +1,497 @@
+---
+title: "Watch a portfolio of companies"
+sidebarTitle: "Watch a portfolio"
+description: "Turn a list of companies into a scheduled watchlist that delivers fresh, per-company news to your app every day."
+---
+
+This guide builds a Company Watchlist end to end: upload your list of companies,
+run a connected job to confirm the matching, then schedule a monitor that re-runs
+it and delivers per-company events to your app. Each step links to its reference
+if you need to go deeper.
+
+Use this when you track a fixed set of companies — a fund's portfolio, a competitor
+set, an account list — and want recurring coverage scored per company, instead of
+running broad topic queries.
+
+## Before you begin
+
+- Get a CatchAll API key from [platform.newscatcherapi.com](https://platform.newscatcherapi.com/).
+- Have your company list ready as a CSV with `name` and `domain` columns (see the format in [Step 1](#step-1)).
+- Set up a publicly accessible HTTPS endpoint that returns a 2xx and accepts a JSON POST, or use [webhook.site](https://webhook.site) for testing.
+- Optionally, install the CatchAll SDK for your language:
+
+<CodeGroup>
+```bash cURL
+# cURL is included on most systems. Check with:
+curl --version
+```
+
+```python Python
+pip install newscatcher-catchall-sdk
+```
+
+```typescript TypeScript
+npm install newscatcher-catchall-sdk
+```
+
+```java Java
+// build.gradle
+dependencies {
+    implementation 'com.newscatcherapi:newscatcher-catchall-sdk:3.0.0'
+}
+```
+</CodeGroup>
+
+<Steps>
+  <Step title="Build the watchlist">
+    A dataset is a named collection of company entities — your portfolio. The fastest
+    way to create one is to upload a CSV: it creates the entities and the dataset in a
+    single request. The `name` and `domain` columns are required; everything else is
+    optional. Use semicolons to separate multiple values.
+
+    ```csv companies.csv
+    name,description,domain,alternative_names,key_persons
+    Apollo Global Management,"US-based alternative asset manager headquartered in New York City, founded 1990, NYSE: APO.",apollo.com,"Apollo","Marc Rowan"
+    Stripe,"Online payments platform headquartered in San Francisco and Dublin.",stripe.com,"","Patrick Collison;John Collison"
+    Databricks,"Data and AI platform company headquartered in San Francisco, founded 2013.",databricks.com,"",""
+    ```
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/datasets/upload" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -F "file=@companies.csv" \
+      -F "name=Q2 Portfolio"
+    ```
+
+    ```python Python
+    from newscatcher_catchall import CatchAllApi
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+
+    dataset = client.datasets.create_dataset_from_csv(
+        file=open("companies.csv", "rb"),
+        name="Q2 Portfolio",
+    )
+    dataset_id = dataset.dataset_id
+    ```
+
+    ```typescript TypeScript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+    import { createReadStream } from "fs";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const dataset = await client.datasets.createDatasetFromCsv({
+      file: createReadStream("companies.csv"),
+      name: "Q2 Portfolio",
+    });
+    const datasetId = dataset.dataset_id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.datasets.requests.CreateDatasetFromCsvRequest;
+    import com.newscatcher.catchall.types.CreateDatasetCsvResponse;
+    import java.io.File;
+
+    CatchAllApi client = CatchAllApi.builder()
+        .apiKey("YOUR_API_KEY")
+        .build();
+
+    CreateDatasetCsvResponse dataset = client.datasets().createDatasetFromCsv(
+        new File("companies.csv"),
+        CreateDatasetFromCsvRequest.builder()
+            .name("Q2 Portfolio")
+            .build()
+    );
+    String datasetId = dataset.getDatasetId();
+    ```
+    </CodeGroup>
+
+    <Tip>
+      The `description` is the signal that tells two companies with the same name apart.
+      A specific, factual description ("US-based alternative asset manager, NYSE: APO")
+      beats a vague one ("global leader in solutions"). See
+      [Company Watchlist](/web-search-api/concepts/company-search) for how to write
+      descriptions that disambiguate, plus the JSON and batch alternatives to CSV upload.
+    </Tip>
+  </Step>
+
+  <Step title="Wait for the dataset to be ready">
+    Entities are enriched after upload. Poll the dataset until `latest_status` reaches
+    `ready` — don't submit a job before this completes.
+
+    <CodeGroup>
+    ```bash cURL
+    curl "https://catchall.newscatcherapi.com/catchAll/datasets/YOUR_DATASET_ID" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+
+    ```python Python
+    import time
+
+    while True:
+        status = client.datasets.get_dataset(dataset_id)
+        if status.latest_status == "ready":
+            break
+        if status.latest_status == "failed":
+            raise RuntimeError("Dataset processing failed")
+        time.sleep(5)
+    ```
+
+    ```typescript TypeScript
+    while (true) {
+      const status = await client.datasets.getDataset({ dataset_id: datasetId });
+      if (status.latest_status === "ready") break;
+      if (status.latest_status === "failed") {
+        throw new Error("Dataset processing failed");
+      }
+      await new Promise((r) => setTimeout(r, 5000));
+    }
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.types.DatasetResponse;
+    import com.newscatcher.catchall.types.DatasetStatus;
+    import java.util.concurrent.TimeUnit;
+
+    while (true) {
+        DatasetResponse status = client.datasets().getDataset(datasetId);
+        if (DatasetStatus.READY.equals(status.getLatestStatus().orElse(null))) break;
+        if (DatasetStatus.FAILED.equals(status.getLatestStatus().orElse(null))) {
+            throw new RuntimeException("Dataset processing failed");
+        }
+        TimeUnit.SECONDS.sleep(5);
+    }
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Test a connected job">
+    Run the watchlist once before scheduling it. Submit a standard job with
+    `connected_dataset_ids` to activate company search mode. To collect all news about
+    your companies rather than a single topic, set `fetch_all_watchlist_news: true`;
+    to track a specific theme, pass a real query instead. Keep the `job_id` — you
+    reference it when creating the monitor.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "query": "all news",
+        "connected_dataset_ids": ["YOUR_DATASET_ID"],
+        "fetch_all_watchlist_news": true
+      }'
+    ```
+
+    ```python Python
+    job = client.jobs.create_job(
+        query="all news",
+        connected_dataset_ids=[dataset_id],
+        fetch_all_watchlist_news=True,
+    )
+    job_id = job.job_id
+
+    # Poll until the job is done
+    while True:
+        status = client.jobs.get_job_status(job_id)
+        if status.status in ("completed", "failed"):
+            break
+        time.sleep(60)
+
+    results = client.jobs.get_job_results(job_id)
+    for record in results.all_records:
+        print(record.record_title)
+        for entity in record.connected_entities:
+            print(f"  {entity.name} — score {entity.ed_score}/10")
+    ```
+
+    ```typescript TypeScript
+    const job = await client.jobs.createJob({
+      query: "all news",
+      connected_dataset_ids: [datasetId],
+      fetch_all_watchlist_news: true,
+    });
+    const jobId = job.job_id;
+
+    // Poll until the job is done
+    let status;
+    do {
+      await new Promise((r) => setTimeout(r, 60000));
+      status = await client.jobs.getJobStatus({ job_id: jobId });
+    } while (status.status !== "completed" && status.status !== "failed");
+
+    const results = await client.jobs.getJobResults({ job_id: jobId });
+    for (const record of results.all_records) {
+      console.log(record.record_title);
+      for (const entity of record.connected_entities ?? []) {
+        console.log(`  ${entity.name} — score ${entity.ed_score}/10`);
+      }
+    }
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+    import java.util.List;
+
+    var job = client.jobs().createJob(
+        SubmitRequestDto.builder()
+            .query("all news")
+            .connectedDatasetIds(List.of(datasetId))
+            .fetchAllWatchlistNews(true)
+            .build()
+    );
+    String jobId = job.getJobId();
+    // Poll getJobStatus until "completed", then getJobResults(jobId).
+    // Each record carries a connected_entities[] array with per-company ed_score.
+    ```
+    </CodeGroup>
+
+    Each record carries a `connected_entities` array — one entry per matched company,
+    with an `ed_score` from 1 to 10 and a one-line `relation` explaining the match.
+
+    <Note>
+      To return only events where a tracked company is the primary actor (the company
+      that raised funding, was acquired, announced layoffs), add
+      `"ed_association_type": "event_associated"`. See
+      [Company Watchlist](/web-search-api/concepts/company-search#filter-by-association-type).
+    </Note>
+  </Step>
+
+  <Step title="Create a webhook">
+    A webhook is created once at the organization level, then attached to any number of
+    jobs or monitors. Save the returned `webhook.id`.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Portfolio news feed",
+        "url": "https://your-app.com/catchall/webhook",
+        "type": "generic",
+        "delivery_mode": "full"
+      }'
+    ```
+
+    ```python Python
+    webhook = client.webhooks.create_webhook(
+        name="Portfolio news feed",
+        url="https://your-app.com/catchall/webhook",
+        type="generic",
+        delivery_mode="full",
+    )
+    webhook_id = webhook.webhook.id
+    ```
+
+    ```typescript TypeScript
+    const created = await client.webhooks.createWebhook({
+      name: "Portfolio news feed",
+      url: "https://your-app.com/catchall/webhook",
+      type: "generic",
+      delivery_mode: "full",
+    });
+    const webhookId = created.webhook.id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.webhooks.requests.CreateWebhookRequestDto;
+    import com.newscatcher.catchall.types.WebhookType;
+    import com.newscatcher.catchall.types.DeliveryMode;
+
+    var created = client.webhooks().createWebhook(
+        CreateWebhookRequestDto.builder()
+            .name("Portfolio news feed")
+            .url("https://your-app.com/catchall/webhook")
+            .type(WebhookType.GENERIC)
+            .deliveryMode(DeliveryMode.FULL)
+            .build()
+    );
+    String webhookId = created.getWebhook().getId();
+    ```
+    </CodeGroup>
+
+    <Tip>
+      CatchAll also supports `slack` and `teams` webhook types if you'd rather deliver
+      portfolio updates straight to a channel. See
+      [Set up webhooks](/web-search-api/how-to/set-up-webhooks).
+    </Tip>
+  </Step>
+
+  <Step title="Schedule the monitor">
+    A monitor re-runs the connected job on a schedule, deduplicates against previous
+    runs, and delivers each run to the webhooks in `webhook_ids`. A monitor created from
+    a watchlist job keeps the connection — every run scores the same portfolio.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "reference_job_id": "YOUR_JOB_ID",
+        "schedule": "every day at 9 AM UTC",
+        "webhook_ids": ["YOUR_WEBHOOK_ID"]
+      }'
+    ```
+
+    ```python Python
+    monitor = client.monitors.create_monitor(
+        reference_job_id=job_id,
+        schedule="every day at 9 AM UTC",
+        webhook_ids=[webhook_id],
+    )
+    monitor_id = monitor.monitor_id
+    ```
+
+    ```typescript TypeScript
+    const monitor = await client.monitors.createMonitor({
+      reference_job_id: jobId,
+      schedule: "every day at 9 AM UTC",
+      webhook_ids: [webhookId],
+    });
+    const monitorId = monitor.monitor_id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+    import java.util.List;
+
+    var monitor = client.monitors().createMonitor(
+        CreateMonitorRequestDto.builder()
+            .referenceJobId(jobId)
+            .schedule("every day at 9 AM UTC")
+            .webhookIds(List.of(webhookId))
+            .build()
+    );
+    String monitorId = monitor.getMonitorId();
+    ```
+    </CodeGroup>
+
+    <Warning>
+      The reference job's `end_date` must be within the last 7 days, and the default
+      minimum schedule interval is 24 hours (more frequent intervals depend on your
+      plan). See [Configure monitors](/web-search-api/how-to/configure-monitors).
+    </Warning>
+  </Step>
+
+  <Step title="Handle the delivery">
+    After each scheduled run, CatchAll sends a POST to your webhook URL. Return a 2xx
+    within 5 seconds and process asynchronously. For a connected watchlist, each record
+    carries the same `connected_entities` array you saw when testing — so you can route
+    each event to the right company.
+
+    The payload:
+
+    ```json
+    {
+      "monitor_id": "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+      "latest_job_id": "295b95d8-6041-4f4b-b132-9f009fc6af70",
+      "records_count": 1,
+      "records": [
+        {
+          "record_id": "6417909601438475967",
+          "record_title": "Stripe acquires payments startup Lemon for $1.1B",
+          "enrichment": {
+            "enrichment_confidence": "high",
+            "event_type": "acquisition",
+            "deal_value": "$1.1 billion"
+          },
+          "citations": [
+            { "title": "Stripe buys Lemon", "link": "https://example.com/stripe-lemon", "published_date": "2026-06-17 09:01:00" }
+          ],
+          "connected_entities": [
+            {
+              "entity_id": "854198fa-f702-49db-a381-0427fa87f173",
+              "name": "Stripe",
+              "type": "company",
+              "ed_score": 9,
+              "association_type": "event_associated",
+              "relation": "Stripe is the acquiring company in the announced deal"
+            }
+          ]
+        }
+      ]
+    }
+    ```
+
+    A minimal receiver routes each record by matched company:
+
+    <CodeGroup>
+    ```python Python · Flask
+    from flask import Flask, request, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/catchall/webhook", methods=["POST"])
+    def handle_webhook():
+        payload = request.json
+        # Return 200 immediately, then process asynchronously
+        for r in payload.get("records", []):
+            for e in r.get("connected_entities", []):
+                print(f"[{e['name']}] {r['record_title']} (score {e['ed_score']}/10)")
+        return jsonify({"status": "received"}), 200
+    ```
+
+    ```typescript TypeScript · Express
+    import express from "express";
+
+    const app = express();
+    app.use(express.json());
+
+    app.post("/catchall/webhook", (req, res) => {
+      const payload = req.body;
+      res.status(200).json({ status: "received" }); // return immediately
+      for (const r of payload.records ?? []) {
+        for (const e of r.connected_entities ?? []) {
+          console.log(`[${e.name}] ${r.record_title} (score ${e.ed_score}/10)`);
+        }
+      }
+    });
+    ```
+
+    ```java Java · Spring
+    @RestController
+    public class WebhookController {
+        @PostMapping("/catchall/webhook")
+        public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Map<String, Object> payload) {
+            CompletableFuture.runAsync(() -> {
+                // iterate payload.get("records"), then each record's "connected_entities"
+            });
+            return ResponseEntity.ok(Map.of("status", "received"));
+        }
+    }
+    ```
+    </CodeGroup>
+
+    <Note>
+      Prefer no code? Point the webhook `url` at an [n8n](/web-search-api/integrations/n8n),
+      [Make](/web-search-api/integrations/make), or Zapier webhook trigger and map each
+      `connected_entities` entry into a Slack message, a spreadsheet row, or a CRM record
+      on the matching company.
+    </Note>
+  </Step>
+</Steps>
+
+## Keep the watchlist current
+
+Portfolios change. Update the dataset without rebuilding the monitor — the next
+scheduled run picks up the new roster automatically:
+
+- Add companies: [`POST /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/add-entities-to-dataset).
+- Remove companies: [`DELETE /catchAll/datasets/{dataset_id}/entities`](/web-search-api/api-reference/datasets/remove-entities-from-dataset).
+
+See the [Datasets API reference](/web-search-api/api-reference/datasets/create-dataset)
+for the full set of dataset operations.
+
+## See also
+
+- [Company Watchlist](/web-search-api/concepts/company-search): entities, datasets, association types, and per-company scoring in depth
+- [Monitors](/web-search-api/concepts/monitors): how scheduling, deduplication, and rolling date windows work
+- [Build an event feed](/web-search-api/how-to/build-an-event-feed): the same pipeline for a topic query instead of a watchlist
+- [Set up webhooks](/web-search-api/how-to/set-up-webhooks): webhook types, auth, testing, and delivery history
+- [Configure monitors](/web-search-api/how-to/configure-monitors): schedules, robust webhook handling, updating a monitor
