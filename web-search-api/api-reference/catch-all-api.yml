@@ -1055,10 +1055,10 @@ paths:
       description: |
         Creates a new company entity and begins background enrichment.
 
+        Each entity requires a `name` plus at least one of: a `description` or a `domain`. Providing both is recommended — `domain` is the highest-signal identifier because it is unambiguous; a well-written `description` is the best alternative when no domain is available.
+
         The entity status starts as `pending` and transitions to `ready` once
-        enrichment completes. Provide as much identifying information as
-        possible — `domain` is the highest-signal field because it is
-        unambiguous.
+        enrichment completes.
       operationId: createEntity
       requestBody:
         required: true
@@ -1094,6 +1094,8 @@ paths:
       summary: Create entities in batch
       description: |
         Creates multiple entities in a single request. Each entity is processed independently — a failure in one does not affect others.
+
+        Each entity requires a `name` plus at least one of: a `description` or a `domain`. See [Create entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entity) for the full field reference.
 
         Returns an array of `{id, status}` objects in the same order as the input array.
       operationId: createEntitiesBatch
@@ -1260,7 +1262,9 @@ paths:
         - Datasets
       summary: Create dataset
       description: |
-        Creates a new dataset from a list of existing entity IDs.
+        Creates a new dataset from a list of existing entity IDs. The optional `description` field here describes the dataset itself — it is separate from the entity-level `description` used for matching.
+
+        Entities must be created before adding them to a dataset. Each entity requires a `name` plus at least one of: a `description` or a `domain`. Use [Create entity](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entity) or [Create entities batch](https://www.newscatcherapi.com/docs/web-search-api/api-reference/entities/create-entities-batch) to create entities first.
 
         If any of the provided entity IDs do not exist or do not belong to
         your organization, the request fails with `400`. All entity IDs must
@@ -1297,7 +1301,7 @@ paths:
         - Datasets
       summary: Create dataset from CSV
       description: |
-        Creates a new dataset by uploading a CSV file. Each row in the CSV becomes an entity. The `name` and `domain`columns are required; all other columns are optional.
+        Creates a new dataset by uploading a CSV file. Each row in the CSV becomes an entity. Each row requires a `name` plus at least one of: a `description` or a `domain`; all other columns are optional. Note: `description` in the CSV is the entity's matching description — it is separate from the dataset-level `description` field in the form data.
 
         **CSV format:**
         ```csv
@@ -5123,10 +5127,6 @@ components:
 
             The most reliable identifier — strongly recommended when available.
           example: newscatcherapi.com
-        description:
-          type: ["string", "null"]
-          description: Detailed description of the company used for matching.
-          example: Provider of news and web search APIs for developers
         key_persons:
           type: ["array", "null"]
           items:
@@ -5174,7 +5174,7 @@ components:
         description:
           type: string
           description: |
-            Free-text description of the entity used for disambiguation when similar names exist.
+            Free-text description of the entity used for disambiguation when similar names exist. See [Writing effective descriptions](https://www.newscatcherapi.com/docs/web-search-api/concepts/company-search#writing-effective-descriptions) for guidance on improving matching quality.
           example: AI-powered news data provider
         external_entity_id:
           type: string
