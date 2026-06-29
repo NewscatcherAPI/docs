@@ -5123,10 +5123,6 @@ components:
 
             The most reliable identifier — strongly recommended when available.
           example: newscatcherapi.com
-        description:
-          type: ["string", "null"]
-          description: Detailed description of the company used for matching.
-          example: Provider of news and web search APIs for developers
         key_persons:
           type: ["array", "null"]
           items:
