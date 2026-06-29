@@ -136,6 +136,8 @@ restart the client.
         }
         ```
 
+        Write the header value as `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon (see [Authentication](#authentication)).
+
         <Note>
           On Windows, `npx` often cannot be launched directly from this config.
           If the server fails to start, wrap it with `cmd`: set `"command":
@@ -166,6 +168,8 @@ restart the client.
           "https://catchall-mcp.newscatcherapi.com/mcp" \
           --header "x-api-key:YOUR_CATCHALL_API_KEY"
         ```
+
+        Keep the colon tight: `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon, or the header is sent malformed (see [Authentication](#authentication)).
       </Step>
       <Step title="Verify connection">
         Run `claude mcp list` and confirm `catchall` is listed, or type `/mcp` inside a Claude Code session to see it marked as connected.
@@ -355,6 +359,8 @@ restart the client.
       }
     }
     ```
+
+    Write the header value as `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon (see [Authentication](#authentication)).
 
     Restart your client after saving the configuration.
 
