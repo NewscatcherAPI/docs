@@ -1069,12 +1069,12 @@ paths:
             example:
               name: NewsCatcher
               entity_type: company
-              description: AI-powered news data provider
+              description: "NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries)."
               additional_attributes:
                 company_attributes:
                   domain: newscatcherapi.com
                   alternative_names:
-                    - NC
+                    - NewsCatcher CatchAll
                     - NewsCatcher API
                   key_persons:
                     - Artem Bugara
@@ -1172,7 +1172,7 @@ paths:
               additional_attributes:
                 company_attributes:
                   alternative_names:
-                    - NC
+                    - NewsCatcher CatchAll
                     - NewsCatcher API
                     - NCA
       responses:
@@ -1306,7 +1306,7 @@ paths:
         **CSV format:**
         ```csv
         name,description,domain,alternative_names,key_persons
-        NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+        NewsCatcher,"NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",newscatcherapi.com,"NewsCatcher CatchAll;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
         OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
         ```
 
@@ -2281,17 +2281,16 @@ components:
             entity_type: company
             organization_id: "e5d9e9b0-e415-4941-8ef0-916c5ee56207"
             name: NewsCatcher
-            description: AI-powered news data provider
+            description: "NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries)."
             external_entity_id: "crm-12345"
             additional_attributes:
               company_attributes:
                 domain: newscatcherapi.com
-                description: Provider of news and web search APIs for developers
                 key_persons:
                   - Artem Bugara
                   - Maksym Sugonyaka
                 alternative_names:
-                  - NC
+                  - NewsCatcher CatchAll
                   - NewsCatcher API
             status: ready
             created_by_user_id: "870e258e-12ec-4a47-8656-e7a43b0265b3"
@@ -5143,7 +5142,7 @@ components:
           description: |
             Alternative names, abbreviations, or aliases. Helps resolve common variations of the company name.
           example:
-            - NC
+            - NewsCatcher CatchAll
             - NewsCatcher API
 
     AdditionalAttributes:
@@ -5175,7 +5174,7 @@ components:
           type: string
           description: |
             Free-text description of the entity used for disambiguation when similar names exist. See [Writing effective descriptions](https://www.newscatcherapi.com/docs/web-search-api/concepts/company-search#writing-effective-descriptions) for guidance on improving matching quality.
-          example: AI-powered news data provider
+          example: "NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries)."
         external_entity_id:
           type: string
           maxLength: 255
@@ -5253,7 +5252,7 @@ components:
         description:
           type: ["string", "null"]
           description: Free-text description.
-          example: AI-powered news data provider
+          example: "NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries)."
         external_entity_id:
           type: ["string", "null"]
           description: External identifier for this entity. Null when not set.
@@ -5366,7 +5365,7 @@ components:
         description:
           type: ["string", "null"]
           description: Free-text description.
-          example: AI-powered news data provider
+          example: "NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries)."
         external_entity_id:
           type: ["string", "null"]
           description: External identifier for this entity. Null when not set.

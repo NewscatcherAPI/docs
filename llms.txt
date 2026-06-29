@@ -154,7 +154,7 @@ endpoint instead.
 **CSV format:**
 ```csv
 name,description,domain,alternative_names,key_persons
-NewsCatcher,"AI-powered news data provider",newscatcherapi.com,"NC;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
+NewsCatcher,"NewsCatcher is a data-as-a-service company providing news intelligence APIs including the CatchAll Web Search API (2B+ web pages indexed) and News API (140,000+ sources, 100+ countries).",newscatcherapi.com,"NewsCatcher CatchAll;NewsCatcher API","Artem Bugara;Maksym Sugonyaka"
 OpenAI,"Artificial intelligence research company",openai.com,"Open AI","Sam Altman"
 ```
 
