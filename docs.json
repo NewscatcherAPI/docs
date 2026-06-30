@@ -385,5 +385,10 @@
       "linkedin": "https://www.linkedin.com/company/newscatcherapi/about/",
       "twitter": "https://twitter.com/newscatcherapi"
     }
+  },
+  "integrations": {
+    "gtm": {
+      "tagId": "GTM-KLCW9GXN"
+    }
   }
 }
