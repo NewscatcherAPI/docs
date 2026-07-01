@@ -1383,7 +1383,7 @@ components:
             image.
         content:
           type: string
-          description: A snippet or summary of the article's content.
+          description: The full content of the article.
         authors:
           type: array
           items:
