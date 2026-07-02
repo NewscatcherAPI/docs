@@ -36,8 +36,10 @@ dependencies {
 ```
 </CodeGroup>
 
+## Build the feed
+
 <Steps>
-  <Step title="Test the query">
+  <Step title="Test the query" titleSize="h3">
     Submit your query as a one-off job and review the results before committing it to
     a schedule. Keep the `job_id`; you reference it when creating the monitor.
 
@@ -141,7 +143,7 @@ dependencies {
     </Note>
   </Step>
 
-  <Step title="Create a webhook">
+  <Step title="Create a webhook" titleSize="h3">
     A webhook is created once at the organization level, then attached to any number of
     jobs or monitors. Save the returned `webhook.id`.
 
@@ -202,7 +204,7 @@ dependencies {
     </Tip>
   </Step>
 
-  <Step title="Schedule a monitor">
+  <Step title="Schedule a monitor" titleSize="h3">
     A monitor re-runs your query on a schedule, deduplicates against previous runs, and
     delivers each run to the webhooks in `webhook_ids`.
 
@@ -258,7 +260,7 @@ dependencies {
     </Warning>
   </Step>
 
-  <Step title="Handle the delivery">
+  <Step title="Handle the delivery" titleSize="h3">
     After each scheduled run, CatchAll sends a POST to your webhook URL. Return a 2xx
     within 5 seconds and process asynchronously.
 
