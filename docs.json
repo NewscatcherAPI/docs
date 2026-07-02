@@ -61,7 +61,8 @@
               "web-search-api/how-to/configure-monitors",
               "web-search-api/how-to/troubleshoot-monitors",
               "web-search-api/how-to/build-an-event-feed",
-              "web-search-api/how-to/monitor-a-portfolio"
+              "web-search-api/how-to/monitor-a-portfolio",
+              "web-search-api/how-to/send-events-to-slack"
             ]
           },
           {

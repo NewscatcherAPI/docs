@@ -42,8 +42,10 @@ dependencies {
 ```
 </CodeGroup>
 
+## Build the monitor
+
 <Steps>
-  <Step title="Build the watchlist">
+  <Step title="Build the watchlist" titleSize="h3">
     A dataset is a named collection of company entities — your portfolio. The fastest
     way to create one is to upload a CSV: it creates the entities and the dataset in a
     single request. The `name` and `domain` columns are required; everything else is
@@ -118,7 +120,7 @@ dependencies {
     </Tip>
   </Step>
 
-  <Step title="Wait for the dataset to be ready">
+  <Step title="Wait for the dataset to be ready" titleSize="h3">
     Entities are enriched after upload. Poll the dataset until `latest_status` reaches
     `ready` — don't submit a job before this completes.
 
@@ -168,7 +170,7 @@ dependencies {
     </CodeGroup>
   </Step>
 
-  <Step title="Test a connected job">
+  <Step title="Test a connected job" titleSize="h3">
     Run the watchlist once before scheduling it. Submit a standard job with
     `connected_dataset_ids` to activate company search mode. To collect all news about
     your companies rather than a single topic, set `fetch_all_watchlist_news: true`;
@@ -261,7 +263,7 @@ dependencies {
     </Note>
   </Step>
 
-  <Step title="Create a webhook">
+  <Step title="Create a webhook" titleSize="h3">
     A webhook is created once at the organization level, then attached to any number of
     jobs or monitors. Save the returned `webhook.id`.
 
@@ -322,7 +324,7 @@ dependencies {
     </Tip>
   </Step>
 
-  <Step title="Schedule the monitor">
+  <Step title="Schedule the monitor" titleSize="h3">
     A monitor re-runs the connected job on a schedule, deduplicates against previous
     runs, and delivers each run to the webhooks in `webhook_ids`. A monitor created from
     a watchlist job keeps the connection — every run scores the same portfolio.
@@ -379,7 +381,7 @@ dependencies {
     </Warning>
   </Step>
 
-  <Step title="Handle the delivery">
+  <Step title="Handle the delivery" titleSize="h3">
     After each scheduled run, CatchAll sends a POST to your webhook URL. Return a 2xx
     within 5 seconds and process asynchronously. For a connected watchlist, each record
     carries the same `connected_entities` array you saw when testing — so you can route
