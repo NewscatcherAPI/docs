@@ -36,6 +36,13 @@ uses option 2 (the `apiKey` query parameter) automatically. The tools
 To rotate your key, update your client configuration with the new key and
 restart the client.
 
+<Note>
+  When you pass the key through a `--header` flag (Claude Code, `mcp-remote`),
+  use the `header-name:value` format with no space after the colon — for
+  example `x-api-key:YOUR_CATCHALL_API_KEY`. A space or a missing colon is the
+  most common reason a connection silently fails to authenticate.
+</Note>
+
 <Warning>
   Your configuration file contains your API key in plain text. Treat it as a
   secret and do not share it or commit it to version control.
@@ -63,7 +70,7 @@ restart the client.
         Click **Add**. Verify that CatchAll appears under **Web** in your connectors list.
       </Step>
       <Step title="Test connection">
-        Open a new chat and type a CatchAll query, for example: "Find AI company acquisitions in the last 7 days, limit 5". Claude should call the CatchAll tools and return structured results.
+        Open a new chat and ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection itself works — isolating connection problems from key problems. Then try a real query, for example: "Find AI company acquisitions in the last 7 days, limit 10". Claude should call the CatchAll tools and return structured results.
       </Step>
     </Steps>
 
@@ -128,12 +135,20 @@ restart the client.
           }
         }
         ```
+
+        Write the header value as `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon (see [Authentication](#authentication)).
+
+        <Note>
+          On Windows, `npx` often cannot be launched directly from this config.
+          If the server fails to start, wrap it with `cmd`: set `"command":
+          "cmd"` and prepend `"/c", "npx"` to the `args` array.
+        </Note>
       </Step>
       <Step title="Restart Claude Desktop">
         Save the file and quit Claude Desktop completely, then relaunch it. Claude Desktop loads MCP tools on startup.
       </Step>
       <Step title="Verify connection">
-        Go to **Settings > Developer**. Next to **catchall**, the status should show **running**.
+        Go to **Settings > Developer**. Next to **catchall**, the status should show **running**. To confirm end to end, open a new chat and ask Claude to run `check_health` — it needs no API key, so a clean response proves the connection works.
       </Step>
     </Steps>
 
@@ -144,13 +159,25 @@ restart the client.
   </Tab>
 
   <Tab title="Claude Code">
-    Run in your terminal:
+    <Steps>
+      <Step title="Add the server">
+        Run in your terminal:
 
-    ```bash
-    claude mcp add --transport http catchall \
-      "https://catchall-mcp.newscatcherapi.com/mcp" \
-      --header "x-api-key:YOUR_CATCHALL_API_KEY"
-    ```
+        ```bash
+        claude mcp add --transport http catchall \
+          "https://catchall-mcp.newscatcherapi.com/mcp" \
+          --header "x-api-key:YOUR_CATCHALL_API_KEY"
+        ```
+
+        Keep the colon tight: `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon, or the header is sent malformed (see [Authentication](#authentication)).
+      </Step>
+      <Step title="Verify connection">
+        Run `claude mcp list` and confirm `catchall` is listed, or type `/mcp` inside a Claude Code session to see it marked as connected.
+      </Step>
+      <Step title="Test connection">
+        In a session, ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection works before you spend credits on a real query. Then try: "Find AI company acquisitions in the last 7 days, limit 10".
+      </Step>
+    </Steps>
 
     <Tip>
       For Claude-specific features like the SKILL file and Python agents, see [Claude integration](/web-search-api/integrations/claude).
@@ -333,6 +360,8 @@ restart the client.
     }
     ```
 
+    Write the header value as `x-api-key:YOUR_CATCHALL_API_KEY` with no space after the colon (see [Authentication](#authentication)).
+
     Restart your client after saving the configuration.
 
   </Tab>
@@ -347,6 +376,17 @@ restart the client.
 
 Each tool maps to a CatchAll API endpoint. For request and response schemas, see
 the [API reference](/web-search-api/api-reference/jobs/create-job).
+
+The server ships usage guidance to the client automatically, so Claude already
+knows the job lifecycle — `submit_query` creates a job, `get_job_status` polls
+it, and `pull_results` retrieves records once it completes. You do not need to
+explain this flow yourself.
+
+<Note>
+  Jobs consume API credits in proportion to how many records they process. When
+  testing a new query, pass a small `limit` (for example, "limit 10") to keep
+  cost low, then raise it or use `continue_job` once the results look right.
+</Note>
 
 <Tabs>
   <Tab title="Jobs">
