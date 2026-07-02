@@ -29,6 +29,7 @@
 - [Troubleshoot monitors](https://www.newscatcherapi.com/docs/web-search-api/how-to/troubleshoot-monitors): Diagnose and fix common monitor issues.
 - [Build a recurring event feed](https://www.newscatcherapi.com/docs/web-search-api/how-to/build-an-event-feed): Go from a one-off query to a scheduled monitor that delivers fresh event records to your app every day.
 - [Monitor a portfolio of companies](https://www.newscatcherapi.com/docs/web-search-api/how-to/monitor-a-portfolio): Turn a list of companies into a scheduled watchlist that delivers fresh, per-company news to your app every day.
+- [Send events to Slack](https://www.newscatcherapi.com/docs/web-search-api/how-to/send-events-to-slack): Post CatchAll results straight to a Slack channel as formatted messages, with no endpoint to build or host.
 
 ### API Reference — Jobs
 

@@ -1,0 +1,169 @@
+---
+title: "Send events to Slack"
+description: "Post CatchAll results straight to a Slack channel as formatted messages, with no endpoint to build or host."
+---
+
+CatchAll can post results directly to Slack as formatted messages. You don't need
+to build or host an endpoint: create a webhook of type `slack`, point it at a Slack
+incoming webhook URL, and attach it to a job or monitor.
+
+## Before you begin
+
+- Get a CatchAll API key from [platform.newscatcherapi.com](https://platform.newscatcherapi.com/).
+- Create a Slack incoming webhook in your workspace and copy its URL — it starts with `https://hooks.slack.com/`. If you haven't set one up, follow Slack's guide, [Sending messages using incoming webhooks](https://api.slack.com/messaging/webhooks).
+
+## Set up Slack delivery
+
+<Steps>
+  <Step title="Create a Slack webhook" titleSize="h3">
+    Set `type` to `slack` and use your Slack incoming webhook URL. CatchAll formats
+    each delivery as a Slack Block Kit message automatically.
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Fintech deals to #deal-flow",
+        "url": "https://hooks.slack.com/services/T000/B000/XXXXXXXX",
+        "type": "slack",
+        "delivery_mode": "full"
+      }'
+    ```
+
+    ```python Python
+    from newscatcher_catchall import CatchAllApi
+
+    client = CatchAllApi(api_key="YOUR_API_KEY")
+
+    webhook = client.webhooks.create_webhook(
+        name="Fintech deals to #deal-flow",
+        url="https://hooks.slack.com/services/T000/B000/XXXXXXXX",
+        type="slack",
+        delivery_mode="full",
+    )
+    webhook_id = webhook.webhook.id
+    ```
+
+    ```typescript TypeScript
+    import { CatchAllApiClient } from "newscatcher-catchall-sdk";
+
+    const client = new CatchAllApiClient({ apiKey: "YOUR_API_KEY" });
+
+    const created = await client.webhooks.createWebhook({
+      name: "Fintech deals to #deal-flow",
+      url: "https://hooks.slack.com/services/T000/B000/XXXXXXXX",
+      type: "slack",
+      delivery_mode: "full",
+    });
+    const webhookId = created.webhook.id;
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.CatchAllApi;
+    import com.newscatcher.catchall.resources.webhooks.requests.CreateWebhookRequestDto;
+    import com.newscatcher.catchall.types.WebhookType;
+    import com.newscatcher.catchall.types.DeliveryMode;
+
+    CatchAllApi client = CatchAllApi.builder().apiKey("YOUR_API_KEY").build();
+
+    var created = client.webhooks().createWebhook(
+        CreateWebhookRequestDto.builder()
+            .name("Fintech deals to #deal-flow")
+            .url("https://hooks.slack.com/services/T000/B000/XXXXXXXX")
+            .type(WebhookType.SLACK)
+            .deliveryMode(DeliveryMode.FULL)
+            .build()
+    );
+    String webhookId = created.getWebhook().getId();
+    ```
+    </CodeGroup>
+
+    <Tip>
+      Verify the webhook before attaching it with
+      `POST /catchAll/webhooks/{webhook_id}/test`. A test message in the channel
+      confirms the URL works. See [Set up webhooks](/web-search-api/how-to/set-up-webhooks#test-before-attaching).
+    </Tip>
+  </Step>
+
+  <Step title="Choose how messages arrive" titleSize="h3">
+    `delivery_mode` controls batching:
+
+    - `full` (default): one Slack message per run, listing all new records. Best for a daily digest.
+    - `per_record`: one Slack message per record. Best when each event should be actionable on its own.
+
+    <Warning>
+      With `per_record`, a run that returns many records posts that many Slack messages.
+      Use `full` for high-volume feeds to avoid flooding the channel and hitting Slack
+      rate limits.
+    </Warning>
+  </Step>
+
+  <Step title="Attach it to a job or monitor" titleSize="h3">
+    Pass the webhook ID in `webhook_ids` when you create a monitor (for a recurring
+    feed) or submit a job (for a one-off run).
+
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST "https://catchall.newscatcherapi.com/catchAll/monitors/create" \
+      -H "x-api-key: YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "reference_job_id": "YOUR_JOB_ID",
+        "schedule": "every day at 9 AM UTC",
+        "webhook_ids": ["YOUR_WEBHOOK_ID"]
+      }'
+    ```
+
+    ```python Python
+    monitor = client.monitors.create_monitor(
+        reference_job_id="YOUR_JOB_ID",
+        schedule="every day at 9 AM UTC",
+        webhook_ids=[webhook_id],
+    )
+    ```
+
+    ```typescript TypeScript
+    const monitor = await client.monitors.createMonitor({
+      reference_job_id: "YOUR_JOB_ID",
+      schedule: "every day at 9 AM UTC",
+      webhook_ids: [webhookId],
+    });
+    ```
+
+    ```java Java
+    import com.newscatcher.catchall.resources.monitors.requests.CreateMonitorRequestDto;
+    import java.util.List;
+
+    var monitor = client.monitors().createMonitor(
+        CreateMonitorRequestDto.builder()
+            .referenceJobId("YOUR_JOB_ID")
+            .schedule("every day at 9 AM UTC")
+            .webhookIds(List.of(webhookId))
+            .build()
+    );
+    ```
+    </CodeGroup>
+
+    <Note>
+      Need to build the job and monitor first? See
+      [Build a recurring event feed](/web-search-api/how-to/build-an-event-feed) for the
+      full query → monitor → delivery pipeline.
+    </Note>
+  </Step>
+</Steps>
+
+## Other destinations
+
+Microsoft Teams works the same way: use `type: teams` with a `*.webhook.office.com`
+URL — CatchAll posts a formatted Adaptive Card. For Google Sheets, a database, or a
+CRM, create a `generic` webhook pointing at an automation tool
+([n8n](/web-search-api/integrations/n8n), [Make](/web-search-api/integrations/make),
+or Zapier) and map the records to your destination there.
+
+## See also
+
+- [Set up webhooks](/web-search-api/how-to/set-up-webhooks): webhook types, auth, testing, and delivery history
+- [Build a recurring event feed](/web-search-api/how-to/build-an-event-feed): the full job → monitor → delivery pipeline
+- [Configure monitors](/web-search-api/how-to/configure-monitors): schedules and reliable delivery
