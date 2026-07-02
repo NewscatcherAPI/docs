@@ -70,7 +70,7 @@ restart the client.
         Click **Add**. Verify that CatchAll appears under **Web** in your connectors list.
       </Step>
       <Step title="Test connection">
-        Open a new chat and ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection itself works — isolating connection problems from key problems. Then try a real query, for example: "Find AI company acquisitions in the last 7 days, limit 5". Claude should call the CatchAll tools and return structured results.
+        Open a new chat and ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection itself works — isolating connection problems from key problems. Then try a real query, for example: "Find AI company acquisitions in the last 7 days, limit 10". Claude should call the CatchAll tools and return structured results.
       </Step>
     </Steps>
 
@@ -175,7 +175,7 @@ restart the client.
         Run `claude mcp list` and confirm `catchall` is listed, or type `/mcp` inside a Claude Code session to see it marked as connected.
       </Step>
       <Step title="Test connection">
-        In a session, ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection works before you spend credits on a real query. Then try: "Find AI company acquisitions in the last 7 days, limit 5".
+        In a session, ask Claude to run `check_health`. This tool needs no API key, so a successful response confirms the connection works before you spend credits on a real query. Then try: "Find AI company acquisitions in the last 7 days, limit 10".
       </Step>
     </Steps>
 
@@ -384,7 +384,7 @@ explain this flow yourself.
 
 <Note>
   Jobs consume API credits in proportion to how many records they process. When
-  testing a new query, pass a small `limit` (for example, "limit 5") to keep
+  testing a new query, pass a small `limit` (for example, "limit 10") to keep
   cost low, then raise it or use `continue_job` once the results look right.
 </Note>
 
