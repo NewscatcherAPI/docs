@@ -5,6 +5,56 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.6.4" description="2026-07-07">
+## Custom webhook payloads and manual delivery triggers
+
+Adds custom-formatted webhook payloads with Liquid templates and a new endpoint
+to trigger webhook delivery on demand, plus search quality and coverage
+improvements.
+
+### Custom webhook payload formatting
+
+Webhooks with `type` set to `custom` now accept a structured `formatter_config`
+so you can shape the delivered request body to fit a downstream system — trim or
+rename fields, apply conditional logic, or emit non-JSON formats.
+
+- `formatter_config.template` — a [Liquid](https://shopify.github.io/liquid/)
+  template string rendered at dispatch time (up to 10 KB).
+- `formatter_config.content_type` — the `Content-Type` of the rendered output
+  (defaults to `application/json`; also supports `text/html`, `text/plain`,
+  `text/csv`, XML, and JSON-LD).
+
+Accepted on
+[`POST /catchAll/webhooks`](/web-search-api/api-reference/webhooks/create-webhook)
+and
+[`PATCH /catchAll/webhooks/{webhook_id}`](/web-search-api/api-reference/webhooks/update-webhook),
+and returned on webhook objects. See
+[Set up webhooks](/web-search-api/how-to/set-up-webhooks#custom-payload-formatting).
+
+### Manual webhook trigger
+
+Dispatch a webhook delivery for a resource on demand — to re-deliver after a
+failed delivery or replay a past run — without waiting for the next job or
+monitor cycle.
+
+**New endpoint:**
+
+- [`POST /catchAll/webhook/trigger/{resource_type}/{resource_id}`](/web-search-api/api-reference/webhooks/trigger-webhook)
+  — Trigger delivery for an assigned webhook, with an optional `job_id` to replay
+  a specific run.
+
+### Fixes and improvements
+
+- More precise query generation for faster, lower-cost jobs without sacrificing
+  relevance.
+- Broader coverage, including support for fetching more than 10K articles per
+  query and expanded Beyond News sources (podcasts included by default).
+- Cleaner results through improved cluster ranking, minimum-citation thresholds,
+  and low-signal cluster suppression.
+- Stronger entity disambiguation and automatic entity descriptions to reduce
+  same-name false positives in watchlist matching.
+</Update>
+
 <Update label="1.6.3" description="2026-06-23">
 ## External entity IDs, CSV exports, and connected dataset details
 
