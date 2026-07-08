@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.6.3
+  version: 1.6.4
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -941,6 +941,51 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListResourceWebhooksResponse"
+        "403":
+          $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /catchAll/webhook/trigger/{resource_type}/{resource_id}:
+    post:
+      tags:
+        - Webhooks
+      summary: Manually trigger webhook delivery
+      description: |
+        Manually dispatches a webhook delivery for a resource on demand, without
+        waiting for the next job or monitor cycle.
+
+        Use this to re-deliver results after a failed delivery, replay a specific
+        job's results, or validate a webhook against live data. The webhook must
+        already be assigned to the resource.
+      operationId: triggerWebhook
+      parameters:
+        - $ref: "#/components/parameters/WebhookResourceType"
+        - $ref: "#/components/parameters/WebhookResourceId"
+        - name: webhook_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Identifier of the webhook to trigger. Must be assigned to the resource.
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        - name: job_id
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: |
+            Specific job run to deliver. Optional for `job` resources; for
+            `monitor` and `monitor_group` resources, selects a past run to replay.
+            When omitted, the latest available results are delivered.
+          example: "3fec5b07-8786-46d7-9486-d43ff67eccd4"
+      responses:
+        "200":
+          description: Webhook delivery triggered.
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -4130,6 +4175,29 @@ components:
           description: Basic auth password.
           example: "pass"
 
+    FormatterConfigDto:
+      type: object
+      required:
+        - template
+      description: |
+        Custom payload formatter for `custom` webhooks. A Liquid template is
+        rendered at dispatch time to build a fully tailored request body — trim or
+        rename fields, apply conditional logic, or emit non-JSON formats.
+      properties:
+        template:
+          type: string
+          description: |
+            Liquid template string rendered at dispatch time. Maximum 10 KB.
+          example: '{"event": "{{ event }}", "count": {{ records_count }}}'
+        content_type:
+          type: string
+          default: application/json
+          description: |
+            Content-Type of the rendered output. Supported values: `application/json`,
+            `application/ld+json`, `text/html`, `text/plain`, `text/xml`,
+            `application/xml`, `text/csv`.
+          example: application/json
+
     WebhookResponseDto:
       type: object
       required:
@@ -4175,8 +4243,10 @@ components:
           description: Query parameters appended to the webhook URL.
           example: {}
         formatter_config:
-          type: ["object", "null"]
-          description: Custom payload transformation configuration. Used only when `type` is `custom`.
+          anyOf:
+            - $ref: "#/components/schemas/FormatterConfigDto"
+            - type: "null"
+          description: Custom payload formatter. Set only when `type` is `custom`.
           example: null
         is_active:
           type: boolean
@@ -4260,8 +4330,10 @@ components:
             - `api_key`: Adds a custom header with the specified name and value.
             - `basic`: Adds an `Authorization: Basic <credentials>` header.
         formatter_config:
-          type: ["object", "null"]
-          description: Custom payload transformation configuration. Required only when `type` is `custom`.
+          anyOf:
+            - $ref: "#/components/schemas/FormatterConfigDto"
+            - type: "null"
+          description: Custom payload formatter. Required when `type` is `custom`.
       example:
         name: "Layoffs Alert"
         url: "https://hooks.slack.com/services/T000/B000/xxx"
@@ -4367,8 +4439,10 @@ components:
               basic: "#/components/schemas/BasicAuthDto"
           description: Updated authentication configuration. Replaces existing auth entirely.
         formatter_config:
-          type: ["object", "null"]
-          description: Updated formatter configuration.
+          anyOf:
+            - $ref: "#/components/schemas/FormatterConfigDto"
+            - type: "null"
+          description: Updated custom payload formatter. Set only when `type` is `custom`.
         is_active:
           type: boolean
           description: Set to `false` to disable delivery without deleting the webhook.

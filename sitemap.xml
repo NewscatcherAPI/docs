@@ -145,6 +145,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/get-delivery-history</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/trigger-webhook</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload</loc>
     </url>
     <url>

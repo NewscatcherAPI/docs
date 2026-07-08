@@ -110,6 +110,13 @@ The webhook and the resource itself are not deleted.
 
 Each record shows the webhook dispatched, the HTTP status code returned, delivery outcome, and any error or warning messages. Use this to debug failed deliveries or audit dispatch activity.
 
+- [Trigger Webhook](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/trigger-webhook): Manually dispatches a webhook delivery for a resource on demand, without
+waiting for the next job or monitor cycle.
+
+Use this to re-deliver results after a failed delivery, replay a specific
+job's results, or validate a webhook against live data. The webhook must
+already be assigned to the resource.
+
 - [Webhook payload](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/webhook-payload): Data model for the payload delivered to a webhook when a monitor job completes.
 
 ### API Reference — Entities

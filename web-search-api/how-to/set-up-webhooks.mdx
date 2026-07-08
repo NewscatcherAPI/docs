@@ -311,6 +311,81 @@ client.webhooks().updateWebhook(
 
 To pause deliveries without deleting the webhook, set `is_active` to `false`.
 
+## Custom payload formatting
+
+By default, webhooks send CatchAll's standard payload. To tailor the request body
+to a downstream system — trim or rename fields, apply conditional logic, or emit a
+non-JSON format — create a webhook with `type` set to `custom` and supply a
+`formatter_config`.
+
+`formatter_config` takes two fields:
+
+- `template` — a [Liquid](https://shopify.github.io/liquid/) template string
+  rendered at dispatch time (maximum 10 KB). Reference delivery variables such as
+  `event` and `records_count`.
+- `content_type` — the `Content-Type` of the rendered output. Defaults to
+  `application/json`. Supported values: `application/json`, `application/ld+json`,
+  `text/html`, `text/plain`, `text/xml`, `application/xml`, `text/csv`.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Layoffs Alert (custom)",
+    "url": "https://your-endpoint.com/catchall",
+    "type": "custom",
+    "delivery_mode": "full",
+    "formatter_config": {
+      "template": "{\"event\": \"{{ event }}\", \"count\": {{ records_count }}}",
+      "content_type": "application/json"
+    }
+  }'
+```
+```python Python
+webhook = client.webhooks.create_webhook(
+    name="Layoffs Alert (custom)",
+    url="https://your-endpoint.com/catchall",
+    type="custom",
+    delivery_mode="full",
+    formatter_config={
+        "template": '{"event": "{{ event }}", "count": {{ records_count }}}',
+        "content_type": "application/json",
+    },
+)
+```
+```typescript TypeScript
+const response = await client.webhooks.createWebhook({
+  name: "Layoffs Alert (custom)",
+  url: "https://your-endpoint.com/catchall",
+  type: "custom",
+  delivery_mode: "full",
+  formatter_config: {
+    template: '{"event": "{{ event }}", "count": {{ records_count }}}',
+    content_type: "application/json",
+  },
+});
+```
+```java Java
+client.webhooks().createWebhook(
+    CreateWebhookRequestDto.builder()
+        .name("Layoffs Alert (custom)")
+        .url("https://your-endpoint.com/catchall")
+        .type(WebhookType.CUSTOM)
+        .deliveryMode(DeliveryMode.FULL)
+        .formatterConfig(FormatterConfigDto.builder()
+            .template("{\"event\": \"{{ event }}\", \"count\": {{ records_count }}}")
+            .contentType("application/json")
+            .build())
+        .build()
+);
+```
+</CodeGroup>
+
+`formatter_config` is required when `type` is `custom` and ignored for other
+types. Update it later with `PATCH /catchAll/webhooks/{webhook_id}`.
+
 ## Handle deliveries
 
 Your endpoint must meet the following requirements and handle incoming requests 
@@ -430,6 +505,43 @@ for (var item : history.getItems()) {
 
 Each record shows the HTTP status code returned by your endpoint, the delivery
 outcome (`SUCCESS` or `FAILED`), and any error or warning messages.
+
+## Trigger delivery manually
+
+To re-deliver results after a failed delivery — or to push a resource's results
+on demand without waiting for the next job or monitor cycle — trigger a webhook
+manually. The webhook must already be assigned to the resource.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhook/trigger/monitor/{monitor_id}?webhook_id={webhook_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+```python Python
+client.webhooks.trigger_webhook(
+    resource_type="monitor",
+    resource_id="3fec5b07-8786-46d7-9486-d43ff67eccd4",
+    webhook_id="a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+)
+```
+```typescript TypeScript
+await client.webhooks.triggerWebhook({
+  resource_type: "monitor",
+  resource_id: "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+  webhook_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+});
+```
+```java Java
+client.webhooks().triggerWebhook(
+    MappableResourceType.MONITOR,
+    "3fec5b07-8786-46d7-9486-d43ff67eccd4",
+    "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+);
+```
+</CodeGroup>
+
+Pass an optional `job_id` query parameter to replay a specific past run. When
+omitted, the latest available results are delivered.
 
 ## See also
 
