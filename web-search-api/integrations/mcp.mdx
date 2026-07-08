@@ -431,6 +431,7 @@ explain this flow yourself.
     | `remove_webhook_resource` | Detach a webhook from a specific resource |
     | `list_resource_webhooks` | List all webhooks attached to a specific job or monitor |
     | `get_webhook_history` | Retrieve per-dispatch delivery outcomes and HTTP status codes |
+    | `trigger_webhook` | Manually trigger webhook delivery for a job, monitor, or monitor_group — dispatch is asynchronous; use `get_webhook_history` to see the outcome |
     | `delete_webhook` | Delete a webhook endpoint |
   </Tab>
 
