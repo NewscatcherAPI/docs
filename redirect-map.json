@@ -6,7 +6,7 @@
   "metadata": {
     "project": "NewsCatcher API Documentation",
     "change": "Remove the v3 prefix and introduce a new structure: Home | Web Search API | News API | Local News API. Flatten API reference docs and use a consistent pattern for other documentation types.",
-    "total_redirects": 104
+    "total_redirects": 105
   },
   "redirects": [
     {
@@ -239,7 +239,13 @@
     },
     {
       "source": "/docs/v3/documentation/guides-and-concepts/nlp-features",
-      "destination": "/docs/news-api/guides-and-concepts/nlp-features",
+      "destination": "/docs/news-api/guides-and-concepts/nlp-enrichments",
+      "type": "permanent",
+      "status_code": 301
+    },
+    {
+      "source": "/docs/news-api/guides-and-concepts/nlp-features",
+      "destination": "/docs/news-api/guides-and-concepts/nlp-enrichments",
       "type": "permanent",
       "status_code": 301
     },
