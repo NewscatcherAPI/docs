@@ -3443,7 +3443,7 @@ components:
 
         **Note**: NLP data is only available for articles indexed from July 2023 onward. For articles indexed before July 2023, the `nlp` field is returned as an empty object `{}`.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: true
 
     HasNlp:
@@ -3454,7 +3454,7 @@ components:
 
         **Note**: NLP data is only available for articles indexed from July 2023 onward. Applying this filter to a date range that predates July 2023 returns zero results.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: true
 
     Theme:
@@ -3463,7 +3463,7 @@ components:
       description: |
         Filters articles based on their general topic, as determined by NLP analysis. To select multiple themes, use a comma-separated string.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
 
         Available options: `Business`, `Economics`, `Entertainment`, `Finance`, `Health`, `Politics`, `Science`, `Sports`, `Tech`, `Crime`, `Financial Crime`, `Lifestyle`, `Automotive`, `Travel`, `Weather`, `General`.
 
@@ -3473,7 +3473,7 @@ components:
       description: |
         Inverse of the `theme` parameter. Excludes articles based on their general topic, as determined by NLP analysis. To exclude multiple themes, use a comma-separated string.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
 
     OrgEntityName:
       type: string
@@ -3531,7 +3531,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: -0.5
 
     TitleSentimentMax:
@@ -3547,7 +3547,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: 0.5
 
     ContentSentimentMin:
@@ -3563,7 +3563,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: -0.5
 
     ContentSentimentMax:
@@ -3579,7 +3579,7 @@ components:
         - Positive values indicate positive sentiment.
         - Values close to 0 indicate neutral sentiment.
 
-        To learn more, see [NLP features](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-features).
+        To learn more, see [NLP Enrichments](https://www.newscatcherapi.com/docs/news-api/guides-and-concepts/nlp-enrichments).
       example: 0.5
 
     IptcTags:
