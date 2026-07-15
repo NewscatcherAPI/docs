@@ -49,7 +49,7 @@ BLOCKQUOTE = (
     "Enterprise APIs for web search, news, and local news data. "
     "Three products: CatchAll (Web Search API) for recall-first structured "
     "event extraction from 50,000+ web pages per job; "
-    "News API for 120,000+ source news search with NLP enrichment, "
+    "News API for 140,000+ source news search with NLP enrichment, "
     "clustering, and deduplication; "
     "Local News API for hyper-local news with intelligent geographic "
     "detection and filtering."
