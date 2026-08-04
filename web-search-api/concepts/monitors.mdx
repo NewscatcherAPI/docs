@@ -395,9 +395,13 @@ Response:
 To download the most recent run's records as a spreadsheet-friendly file, use
 [`GET /catchAll/monitors/pull/{monitor_id}/csv`](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv).
 It returns the latest run as a `text/csv` download — one row per record, with
-enrichment fields as columns, `citations` as a JSON column, and connected
-entities split into `event_associated_entities` and `mention_entities` JSON
-columns.
+enrichment fields as columns and `citations` as a JSON column.
+
+If the monitor's reference job used a connected entity dataset, connected
+entities are split into `event_associated_entities` and `mention_entities` JSON
+columns. When no entity dataset was used, those two columns are omitted from the
+export entirely rather than included as empty columns — read columns by header
+name so both shapes parse correctly.
 
 <CodeGroup>
 

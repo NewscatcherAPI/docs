@@ -5,6 +5,73 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.7.0" description="2026-08-04">
+## Webhooks as project resources and search quality improvements
+
+A quality-focused release. Webhooks become a first-class project resource,
+webhook responses now return their masked auth configuration, and job listings
+can be filtered by processing mode. The bulk of this release is under the hood:
+recall, ranking, and clustering improvements to result quality.
+
+### Webhooks in projects
+
+Webhooks can now be organized into [projects](/web-search-api/concepts/projects)
+alongside jobs, monitors, and datasets.
+
+- `resource_type` accepts `webhook` when adding resources to a project via
+  [`POST /catchAll/projects/{project_id}/resources`](/web-search-api/api-reference/projects/add-resource).
+- [`POST /catchAll/webhooks`](/web-search-api/api-reference/webhooks/create-webhook)
+  accepts an optional `project_id` to attach a webhook to a project on creation.
+  Returns `404` if the project doesn't exist and `403` if it belongs to another
+  organization.
+- Project overview responses include a `webhooks` total.
+- Unlike other resources, a webhook can belong to several projects, and deleting
+  a project never deletes its webhooks — they are detached and keep delivering,
+  even with `delete_resources=true`.
+
+### Masked auth on webhook responses
+
+Webhook objects now include an `auth` field describing the authentication sent
+with each delivery, discriminated by `type` (`bearer`, `api_key`, or `basic`).
+Secret values — `token`, `value`, and `password` — are masked, so you can verify
+which scheme is configured without exposing credentials. `auth` is `null` when
+no authentication is set. See
+[Read back the configured auth](/web-search-api/how-to/set-up-webhooks#read-back-the-configured-auth).
+
+### Filter jobs by processing mode
+
+[`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
+accepts a new optional `mode` query parameter (`base` or `lite`) to return only
+jobs that ran in that mode. Omit it to list jobs in both modes.
+
+### CSV exports omit unused entity columns
+
+CSV exports from
+[jobs](/web-search-api/api-reference/jobs/get-job-results-as-csv) and
+[monitors](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv)
+now include the `event_associated_entities` and `mention_entities` columns only
+when the job used a connected entity dataset. Previously they were always
+present, often empty. If you parse exports by column position, read columns by
+header name instead.
+
+### Fixes and improvements
+
+- Query generation reverted to a recall-first generator by default for `base`
+  jobs — the previous precision-first approach was too narrow.
+- New ranking formula applied both at clustering and at pull time.
+- Clustering similarity threshold raised from 0.7 to 0.85, with NER-based and
+  time-decay edge weighting, to stop distinct events being merged.
+- Removed an enrichment timeframe filter that was incorrectly dropping valid
+  records and citations.
+- Beyond News: expanded domain-based fetching, percolation, and entity
+  enrichment across all connected-dataset jobs.
+- Monitor scheduler moved to fully asynchronous execution.
+- Fixed a gateway bug that returned "Invalid Request Received" on valid
+  requests.
+- Delivery history records now report `resource_type: test` for manual test
+  deliveries, which aren't tied to a real resource.
+</Update>
+
 <Update label="1.6.4" description="2026-07-07">
 ## Custom webhook payloads and manual delivery triggers
 

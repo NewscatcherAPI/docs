@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.6.4
+  version: 1.7.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -134,6 +134,7 @@ paths:
         - $ref: "#/components/parameters/Search"
         - $ref: "#/components/parameters/Ownership"
         - $ref: "#/components/parameters/ProjectIdQuery"
+        - $ref: "#/components/parameters/ModeQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
@@ -275,7 +276,9 @@ paths:
         - Jobs
       summary: Get job results as CSV
       description: |
-        Returns a completed job's result records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+        Returns a completed job's result records as a CSV download. One row per record, with enrichment fields as columns and citations as a JSON column.
+
+        If the job used connected entity datasets, connected entities are split into `event_associated_entities` and `mention_entities` JSON columns. When no entity dataset was used, those two columns are omitted from the export entirely.
       operationId: getJobResultsCsv
       parameters:
         - $ref: "#/components/parameters/JobId"
@@ -423,7 +426,9 @@ paths:
         - Monitors
       summary: Get latest monitor results as CSV
       description: |
-        Returns the most recent run's records as a CSV download. One row per record, with enrichment fields as columns, citations as a JSON column, and connected entities split into `event_associated_entities` and `mention_entities` JSON columns.
+        Returns the most recent run's records as a CSV download. One row per record, with enrichment fields as columns and citations as a JSON column.
+
+        If the monitor's reference job used connected entity datasets, connected entities are split into `event_associated_entities` and `mention_entities` JSON columns. When no entity dataset was used, those two columns are omitted from the export entirely.
       operationId: pullMonitorResultsCsv
       parameters:
         - name: monitor_id
@@ -676,6 +681,8 @@ paths:
       summary: Create webhook
       description: |
         Creates a new webhook endpoint for the organization.
+
+        Optionally pass `project_id` to attach the webhook to a project in the same request.
       operationId: createWebhook
       requestBody:
         required: true
@@ -688,11 +695,24 @@ paths:
               url: "https://hooks.slack.com/services/T000/B000/xxx"
               type: "slack"
               delivery_mode: "full"
+              project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
       responses:
         "201":
           $ref: "#/components/responses/CreateWebhookResponse"
         "403":
-          $ref: "#/components/responses/ForbiddenError"
+          description: |
+            Invalid or missing API key, or the `project_id` you supplied belongs to a different organization.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: |
+            The `project_id` you supplied does not reference an existing project.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         "422":
           $ref: "#/components/responses/ValidationError"
 
@@ -1697,7 +1717,9 @@ paths:
         - Projects
       summary: Delete project
       description: |
-        Deletes a project. By default, assigned resources are unassigned but not deleted. 
+        Deletes a project. By default, assigned resources are unassigned but not deleted.
+
+        Webhooks are an exception: they are never deleted by this operation, even when `delete_resources` is `true`. Any attached webhook is detached from the project and continues to exist and deliver, because the same webhook may be attached to other projects.
       operationId: deleteProject
       parameters:
         - $ref: "#/components/parameters/ProjectId"
@@ -1718,7 +1740,7 @@ paths:
       description: |
         Returns resource counts for a project, grouped by type and status.
 
-        For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets` and `monitor_groups`, only a `total` count is returned.
+        For `jobs` and `monitors`, counts are broken down by status (for example, `completed`, `failed`). For `datasets`, `monitor_groups`, and `webhooks`, only a `total` count is returned.
       operationId: getProjectOverview
       parameters:
         - $ref: "#/components/parameters/ProjectId"
@@ -1950,12 +1972,25 @@ components:
         format: uuid
       example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
 
+    ModeQuery:
+      name: mode
+      in: query
+      required: false
+      description: |
+        Filter results by processing mode. Returns only jobs that ran in the specified mode.
+      schema:
+        type: string
+        enum: ["lite", "base"]
+      example: "base"
+
     DeleteResources:
       name: delete_resources
       in: query
       required: false
       description: |
-        If true, permanently deletes all resources (jobs, monitors, datasets) assigned to the project. If false, the project is deleted and its resources are unassigned but not deleted.
+        If true, permanently deletes all resources (jobs, monitors, datasets, monitor groups) assigned to the project. If false, the project is deleted and its resources are unassigned but not deleted.
+
+        Webhooks are never deleted by either setting — they are only detached from the project.
       schema:
         type: boolean
         default: false
@@ -2527,6 +2562,7 @@ components:
               method: "POST"
               headers: {}
               params: {}
+              auth: null
               formatter_config: null
               is_active: true
               organization_id: "org-uuid-here"
@@ -2552,6 +2588,7 @@ components:
               method: "POST"
               headers: {}
               params: {}
+              auth: null
               formatter_config: null
               is_active: true
               organization_id: "org-uuid-here"
@@ -2577,6 +2614,7 @@ components:
               method: "POST"
               headers: {}
               params: {}
+              auth: null
               formatter_config: null
               is_active: true
               organization_id: "org-uuid-here"
@@ -2604,6 +2642,7 @@ components:
                 method: "POST"
                 headers: {}
                 params: {}
+                auth: null
                 formatter_config: null
                 is_active: true
                 organization_id: "org-uuid-here"
@@ -2619,6 +2658,10 @@ components:
                 headers:
                   Authorization: "Bearer token123"
                 params: {}
+                auth:
+                  type: "api_key"
+                  header: "x-api-key"
+                  value: "sk-a***c123"
                 formatter_config: null
                 is_active: true
                 organization_id: "org-uuid-here"
@@ -2693,6 +2736,7 @@ components:
                 method: "POST"
                 headers: {}
                 params: {}
+                auth: null
                 formatter_config: null
                 is_active: true
                 organization_id: "org-uuid-here"
@@ -2812,6 +2856,8 @@ components:
                 total: 2
               monitor_groups:
                 total: 0
+              webhooks:
+                total: 1
 
     AddResourceResponse:
       description: |
@@ -4011,6 +4057,23 @@ components:
         - monitor_group
       description: Resource types that can be assigned to a webhook.
 
+    WebhookHistoryResourceType:
+      type: string
+      enum:
+        - job
+        - monitor
+        - monitor_group
+        - test
+      description: |
+        Resource types a delivery history record can be attributed to.
+
+        A superset of `MappableResourceType`. Real deliveries are always tied to an
+        assignable resource (`job`, `monitor`, or `monitor_group`), but a manual test
+        delivery triggered through [`POST /catchAll/webhooks/{webhook_id}/test`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/webhooks/test-webhook)
+        is not tied to any real resource, so it is recorded against the synthetic
+        `test` type. `test` is only ever returned in delivery history — it is never
+        accepted when assigning a webhook to a resource.
+
     DeliveryStatus:
       type: string
       enum:
@@ -4040,8 +4103,9 @@ components:
           description: Identifier of the webhook that was dispatched.
           example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
         resource_type:
-          $ref: "#/components/schemas/MappableResourceType"
-          description: Type of the resource that triggered the delivery.
+          $ref: "#/components/schemas/WebhookHistoryResourceType"
+          description: |
+            Type of the resource that triggered the delivery. `test` indicates a manual test delivery not tied to a real resource.
         resource_id:
           type: string
           format: uuid
@@ -4175,6 +4239,65 @@ components:
           description: Basic auth password.
           example: "pass"
 
+    BearerAuthResponseDto:
+      type: object
+      required:
+        - type
+      description: |
+        Bearer authentication as returned in webhook responses. The token is masked.
+      properties:
+        type:
+          type: string
+          enum:
+            - bearer
+          description: Authentication type.
+        token:
+          type: ["string", "null"]
+          description: Masked bearer token. Never returned in full.
+          example: "my-s***oken"
+
+    ApiKeyAuthResponseDto:
+      type: object
+      required:
+        - type
+      description: |
+        API key authentication as returned in webhook responses. The key value is masked.
+      properties:
+        type:
+          type: string
+          enum:
+            - api_key
+          description: Authentication type.
+        header:
+          type: ["string", "null"]
+          description: HTTP header name for the API key. Returned in full.
+          example: "x-api-key"
+        value:
+          type: ["string", "null"]
+          description: Masked API key value. Never returned in full.
+          example: "sk-a***c123"
+
+    BasicAuthResponseDto:
+      type: object
+      required:
+        - type
+      description: |
+        Basic authentication as returned in webhook responses. The password is masked.
+      properties:
+        type:
+          type: string
+          enum:
+            - basic
+          description: Authentication type.
+        username:
+          type: ["string", "null"]
+          description: Basic auth username. Returned in full.
+          example: "user"
+        password:
+          type: ["string", "null"]
+          description: Masked password. Never returned in full.
+          example: "p***s"
+
     FormatterConfigDto:
       type: object
       required:
@@ -4242,6 +4365,24 @@ components:
             type: string
           description: Query parameters appended to the webhook URL.
           example: {}
+        auth:
+          anyOf:
+            - oneOf:
+                - $ref: "#/components/schemas/BearerAuthResponseDto"
+                - $ref: "#/components/schemas/ApiKeyAuthResponseDto"
+                - $ref: "#/components/schemas/BasicAuthResponseDto"
+              discriminator:
+                propertyName: type
+                mapping:
+                  bearer: "#/components/schemas/BearerAuthResponseDto"
+                  api_key: "#/components/schemas/ApiKeyAuthResponseDto"
+                  basic: "#/components/schemas/BasicAuthResponseDto"
+            - type: "null"
+          description: |
+            Authentication configured for this webhook, discriminated by `type`.
+            Secret values (`token`, `value`, `password`) are masked — the full
+            credentials are never returned. Null when no authentication is set.
+          example: null
         formatter_config:
           anyOf:
             - $ref: "#/components/schemas/FormatterConfigDto"
@@ -4334,11 +4475,23 @@ components:
             - $ref: "#/components/schemas/FormatterConfigDto"
             - type: "null"
           description: Custom payload formatter. Required when `type` is `custom`.
+        project_id:
+          type: ["string", "null"]
+          format: uuid
+          description: |
+            Optional project to attach this webhook to at creation time. Equivalent
+            to creating the webhook and then calling
+            [`POST /catchAll/projects/{project_id}/resources`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/projects/add-resource)
+            with `resource_type: webhook`.
+
+            The project must belong to your organization.
+          example: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
       example:
         name: "Layoffs Alert"
         url: "https://hooks.slack.com/services/T000/B000/xxx"
         type: "slack"
         delivery_mode: "full"
+        project_id: "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
 
     CreateWebhookResponseDto:
       type: object
@@ -5913,8 +6066,12 @@ components:
         - monitor
         - dataset
         - monitor_group
+        - webhook
       description: |
         Resource type for project association.
+
+        Unlike the other types, a `webhook` may be attached to several projects at
+        once, and deleting a project never deletes its webhooks.
     CreateProjectRequestDto:
       type: object
       required:
@@ -6154,6 +6311,7 @@ components:
             - monitors
             - datasets
             - monitor_groups
+            - webhooks
           properties:
             jobs:
               $ref: "#/components/schemas/ProjectOverviewCountsDto"
@@ -6162,6 +6320,8 @@ components:
             datasets:
               $ref: "#/components/schemas/ProjectOverviewCountsDto"
             monitor_groups:
+              $ref: "#/components/schemas/ProjectOverviewCountsDto"
+            webhooks:
               $ref: "#/components/schemas/ProjectOverviewCountsDto"
 
     ProjectResourceDto:
@@ -6182,7 +6342,7 @@ components:
           type: string
           description: |
             Resource display name. For jobs, this is the original query
-            string. For monitors and datasets, this is the resource name.
+            string. For monitors, datasets, and webhooks, this is the resource name.
           example: "Series B fintech funding rounds"
         created_at:
           type: string

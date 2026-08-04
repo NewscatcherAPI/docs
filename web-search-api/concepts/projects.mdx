@@ -1,24 +1,29 @@
 ---
 title: Projects
 sidebarTitle: Projects
-description: Organize jobs, monitors, and datasets into named groups for easier management and sharing.
+description: Organize jobs, monitors, datasets, and webhooks into named groups for easier management and sharing.
 ---
 
-A project is a named container for jobs, monitors, and datasets. Use projects
-to separate work by use case, team, or client — and to share that work with
-teammates across your organization.
+A project is a named container for jobs, monitors, datasets, and webhooks. Use
+projects to separate work by use case, team, or client — and to share that work
+with teammates across your organization.
 
 ## How it works
 
 Resources can be assigned to a project in two ways:
 
 - **At creation time** — include `project_id` in the request body of any
-  create endpoint for jobs, monitors, or datasets.
+  create endpoint for jobs, monitors, datasets, or webhooks.
 - **Post-hoc** — use the [Add resources](/web-search-api/api-reference/projects/add-resource)
   endpoint to assign one or more existing resources by type and ID.
 
-Each resource belongs to at most one project. Entities cannot be assigned to
-projects — they are shared across the entire organization.
+Valid `resource_type` values are `job`, `monitor`, `dataset`, `monitor_group`,
+and `webhook`.
+
+Most resources belong to at most one project. Webhooks are the exception: the
+same webhook can be attached to several projects at once, since one endpoint
+often serves multiple workstreams. Entities cannot be assigned to projects —
+they are shared across the entire organization.
 
 ## Create a project
 
@@ -97,6 +102,24 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
   }'
 ```
 
+Webhooks accept `project_id` on creation in the same way:
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "AI M&A Alerts",
+    "url": "https://hooks.slack.com/services/T000/B000/xxx",
+    "type": "slack",
+    "project_id": "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+  }'
+```
+
+If the `project_id` does not exist, the request fails with `404`. If it belongs
+to another organization, it fails with `403`; in both cases the webhook is not
+created.
+
 To add an existing resource post-hoc:
 
 ```bash cURL
@@ -108,6 +131,10 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78e
       {
         "resource_type": "job",
         "resource_id": "48421e16-1f50-4048-b62c-d3bc0789d30d"
+      },
+      {
+        "resource_type": "webhook",
+        "resource_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
       }
     ]
   }'
@@ -134,6 +161,15 @@ resources belonging to a specific project:
   <Tab title="Datasets">
     ```bash
     curl "https://catchall.newscatcherapi.com/catchAll/datasets?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Webhooks">
+    The webhook list endpoint does not take `project_id`. List a project's
+    webhooks through the project resources endpoint instead:
+
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04/resources?resource_type=webhook" \
       -H "x-api-key: YOUR_API_KEY"
     ```
   </Tab>
@@ -166,19 +202,27 @@ curl "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-8
     },
     "monitor_groups": {
       "total": 0
+    },
+    "webhooks": {
+      "total": 1
     }
   }
 }
 ```
 
 For `jobs` and `monitors`, keys are status values with integer counts. For
-`datasets` and `monitor_groups`, only a `total` count is returned.
+`datasets`, `monitor_groups`, and `webhooks`, only a `total` count is returned.
 
 ## Delete a project
 
 By default, deleting a project unassigns its resources — they continue to exist
 without a project association. Set `delete_resources=true` to permanently delete
 all assigned resources along with the project.
+
+Webhooks are never deleted by either option. An attached webhook is only
+detached from the project and keeps delivering, because the same webhook may
+still be attached to other projects. To remove a webhook itself, call
+[Delete webhook](/web-search-api/api-reference/webhooks/delete-webhook).
 
 <Tabs>
   <Tab title="Unassign resources (default)">
@@ -196,8 +240,9 @@ all assigned resources along with the project.
 </Tabs>
 
 <Warning>
-  `delete_resources=true` permanently deletes all jobs, monitors, and datasets
-  assigned to the project. This operation cannot be undone.
+  `delete_resources=true` permanently deletes all jobs, monitors, datasets, and
+  monitor groups assigned to the project. This operation cannot be undone.
+  Webhooks are detached rather than deleted.
 </Warning>
 
 ## See also
@@ -206,3 +251,4 @@ all assigned resources along with the project.
 - [Jobs](/web-search-api/concepts/jobs)
 - [Monitors](/web-search-api/concepts/monitors)
 - [Company search](/web-search-api/concepts/company-search)
+- [Set up webhooks](/web-search-api/how-to/set-up-webhooks)
