@@ -113,41 +113,106 @@ jobs:
             --dangerously-skip-permissions \
             --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch"
 
-      # If the agent updated LESSONS.md, push it back to GitLab via the Files API.
-      # Requires GITLAB_PAT to have write_repository scope.
-      - name: Push updated LESSONS.md back to GitLab
+      # If the agent updated LESSONS.md, open a GitLab merge request with the change.
+      # We never commit straight to GitLab main — it is a protected branch, so a
+      # direct Files API PUT is rejected. Instead: branch off main, commit there,
+      # open an MR, and let a human review and merge it.
+      - name: Open GitLab MR with updated LESSONS.md
         if: always()
         env:
           GITLAB_PAT: ${{ secrets.GITLAB_PAT }}
+          RELEASE_VERSION: ${{ inputs.release_version }}
+          RUN_ID: ${{ github.run_id }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          ORIGINAL="/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md.original"
+          set -uo pipefail
 
-          # Re-fetch the original to compare
-          curl -sf \
-            -H "PRIVATE-TOKEN: $GITLAB_PAT" \
-            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md/raw?ref=${GITLAB_BRANCH}" \
+          LESSONS="/tmp/agents/update-mintify-docs-when-api-release/LESSONS.md"
+          ORIGINAL="${LESSONS}.original"
+          FILE_PATH="agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md"
+          PROJECT_API="${GITLAB_BASE}/${GITLAB_PROJECT}"
+
+          if [ ! -f "$LESSONS" ]; then
+            echo "LESSONS.md not present locally — the agent step never got that far. Nothing to push."
+            exit 0
+          fi
+
+          # api <METHOD> <URL> [JSON_BODY]
+          # Prints the response body, sets RESPONSE_BODY, returns non-zero on HTTP >= 400.
+          # Deliberately no curl -f, so GitLab's error message is visible in the log.
+          api() {
+            local method="$1" url="$2" body="${3:-}" raw http
+            if [ -n "$body" ]; then
+              raw=$(curl -sS -X "$method" -w $'\n%{http_code}' \
+                -H "PRIVATE-TOKEN: $GITLAB_PAT" \
+                -H "Content-Type: application/json" \
+                --data "$body" "$url")
+            else
+              raw=$(curl -sS -X "$method" -w $'\n%{http_code}' \
+                -H "PRIVATE-TOKEN: $GITLAB_PAT" "$url")
+            fi
+            http=$(printf '%s' "$raw" | tail -n1)
+            RESPONSE_BODY=$(printf '%s' "$raw" | sed '$d')
+            echo "HTTP ${http}: ${RESPONSE_BODY}"
+            [ "$http" -lt 400 ]
+          }
+
+          # Compare against the current state of GitLab main.
+          curl -sS -H "PRIVATE-TOKEN: $GITLAB_PAT" \
+            "${PROJECT_API}/repository/files/${FILE_PATH}/raw?ref=${GITLAB_BRANCH}" \
             -o "$ORIGINAL"
 
-          if diff -q "$ORIGINAL" /tmp/agents/update-mintify-docs-when-api-release/LESSONS.md > /dev/null 2>&1; then
+          if diff -q "$ORIGINAL" "$LESSONS" > /dev/null 2>&1; then
             echo "LESSONS.md unchanged — nothing to push"
             exit 0
           fi
 
-          echo "LESSONS.md was updated — pushing back to GitLab"
+          BRANCH="docs-agent/lessons-v${RELEASE_VERSION}-${RUN_ID}"
+          echo "LESSONS.md was updated — opening MR from ${BRANCH} into ${GITLAB_BRANCH}"
 
-          # Base64-encode the updated content (GitLab API requires it)
-          CONTENT=$(base64 -w 0 /tmp/agents/update-mintify-docs-when-api-release/LESSONS.md)
+          if ! api POST "${PROJECT_API}/repository/branches" \
+            "$(jq -n --arg branch "$BRANCH" --arg ref "$GITLAB_BRANCH" \
+                 '{branch: $branch, ref: $ref}')"; then
+            echo "::error::Could not create GitLab branch ${BRANCH} (needs a PAT with api scope and Developer role or higher)"
+            exit 1
+          fi
 
-          curl -sf -X PUT \
-            -H "PRIVATE-TOKEN: $GITLAB_PAT" \
-            -H "Content-Type: application/json" \
-            "${GITLAB_BASE}/${GITLAB_PROJECT}/repository/files/agents%2Fupdate-mintify-docs-when-api-release%2FLESSONS.md" \
-            -d "{
-              \"branch\": \"${GITLAB_BRANCH}\",
-              \"encoding\": \"base64\",
-              \"content\": \"${CONTENT}\",
-              \"commit_message\": \"docs-agent: update LESSONS.md after v${{ inputs.release_version }} run\"
-            }"
+          if ! api PUT "${PROJECT_API}/repository/files/${FILE_PATH}" \
+            "$(jq -n \
+                 --arg branch "$BRANCH" \
+                 --arg content "$(base64 -w 0 "$LESSONS")" \
+                 --arg msg "docs-agent: update LESSONS.md after v${RELEASE_VERSION} run" \
+                 '{branch: $branch, encoding: "base64", content: $content, commit_message: $msg}')"; then
+            echo "::error::Could not commit LESSONS.md to ${BRANCH}"
+            exit 1
+          fi
+
+          if ! api POST "${PROJECT_API}/merge_requests" \
+            "$(jq -n \
+                 --arg source "$BRANCH" \
+                 --arg target "$GITLAB_BRANCH" \
+                 --arg title "docs-agent: LESSONS.md update after v${RELEASE_VERSION} run" \
+                 --arg desc "Automated LESSONS.md update from the docs agent run for v${RELEASE_VERSION}.
+
+          Triggered by GitHub Actions run: ${RUN_URL}
+
+          Please review the added lessons before merging." \
+                 '{source_branch: $source,
+                   target_branch: $target,
+                   title: $title,
+                   description: $desc,
+                   remove_source_branch: true}')"; then
+            echo "::error::Could not open the merge request (PAT needs api scope)"
+            exit 1
+          fi
+
+          MR_URL=$(printf '%s' "$RESPONSE_BODY" | jq -r '.web_url // empty')
+          echo "Merge request opened: ${MR_URL}"
+          {
+            echo "### LESSONS.md merge request"
+            echo ""
+            echo "Review and merge: ${MR_URL}"
+          } >> "$GITHUB_STEP_SUMMARY"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Required secrets (set in the docs repo → Settings → Secrets and variables):
@@ -155,7 +220,10 @@ jobs:
 #   ANTHROPIC_API_KEY   — Anthropic API key (console.anthropic.com)
 #   NOTION_API_TOKEN    — Notion integration token (notion.so/my-integrations)
 #   GITLAB_PAT          — GitLab personal access token
-#                           Scopes:  read_repository + write_repository
+#                           Scopes:  api  (required — creating a branch and a
+#                                    merge request goes through the REST API;
+#                                    read_repository + write_repository alone
+#                                    is NOT enough and returns 403/404)
 #                           Role:    Developer or higher (Guest/Reporter → 403)
 #                           Tip:     use a project access token on ai-configs
 #                                    (Settings → Access Tokens) to avoid user
