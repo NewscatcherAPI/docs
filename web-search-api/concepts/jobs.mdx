@@ -596,13 +596,23 @@ Files.write(Paths.get("job-results.csv"), csvData);
   debug downstream.
 </Tip>
 
-Each record becomes one row. Enrichment fields are flattened into columns,
-`citations` are serialized as a JSON column, and connected entities from Company
-Search jobs are split into two JSON columns: `event_associated_entities` (direct
-actors) and `mention_entities` (passing references). For monitors, the
-equivalent endpoint is
+Each record becomes one row. Enrichment fields are flattened into columns and
+`citations` are serialized as a JSON column. For monitors, the equivalent
+endpoint is
 [`GET /catchAll/monitors/pull/{monitor_id}/csv`](/web-search-api/api-reference/monitors/get-latest-monitor-results-as-csv),
 which exports the most recent run's records.
+
+Connected entities from Company Search jobs are split into two JSON columns:
+`event_associated_entities` (direct actors) and `mention_entities` (passing
+references). These two columns appear only when the job used a connected entity
+dataset — if it did not, they are omitted from the export entirely rather than
+included as empty columns.
+
+<Warning>
+  If you parse the CSV by column position, or expect a fixed header row, handle
+  both shapes. Read columns by header name so exports from jobs without entity
+  datasets don't shift your field mapping.
+</Warning>
 
 ## Continue job
 
@@ -714,7 +724,8 @@ var results = client.jobs().getJobResults(jobId);
 [`GET /catchAll/jobs/user`](/web-search-api/api-reference/jobs/list-user-jobs)
 returns all jobs created with your API key, sorted by creation date, most recent
 first. Supports pagination via `page` and `page_size`, text query filtering via
-`search`, and ownership filtering via `ownership` (`all`, `own`, `shared`).
+`search`, ownership filtering via `ownership` (`all`, `own`, `shared`), project
+filtering via `project_id`, and processing mode filtering via `mode`.
 
 <CodeGroup>
 ```bash cURL
@@ -760,18 +771,32 @@ for (var job : jobs.getJobs()) {
       "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
       "query": "Series B funding rounds for SaaS startups",
       "created_at": "2026-02-24T13:57:56.267572",
-      "status": "completed"
+      "status": "completed",
+      "mode": "base"
     },
     {
       "job_id": "8d618890-f9f5-4c97-af17-236136a306a7",
       "query": "Find corporate headquarters relocations in the US",
       "created_at": "2026-02-18T20:25:20.940731",
-      "status": "completed"
+      "status": "completed",
+      "mode": "lite"
     }
   ]
 }
 ```
 </Expandable>
+
+### Filter by processing mode
+
+Pass `mode=base` or `mode=lite` to return only jobs that ran in that mode —
+useful for separating full-pipeline runs from faster `lite` runs when reviewing
+history. Omit `mode` to list jobs in both modes. Each job in the response carries
+its own `mode` field.
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/jobs/user?mode=lite" \
+  -H "x-api-key: YOUR_API_KEY"
+```
 
 ## Delete a job
 

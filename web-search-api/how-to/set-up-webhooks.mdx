@@ -91,6 +91,7 @@ Response:
     "type": "generic",
     "delivery_mode": "full",
     "method": "POST",
+    "auth": null,
     "is_active": true
   }
 }
@@ -100,6 +101,73 @@ Save the `webhook.id` — you use it to attach the webhook to resources.
 
 For supported values of `type`, `delivery_mode`, and `auth`, see 
 [Create webhook API reference](/web-search-api/api-reference/webhooks/create-webhook).
+
+### Read back the configured auth
+
+Webhook responses include an `auth` object describing the authentication the
+webhook sends with each delivery. It is `null` when no authentication is
+configured. Secret values are always masked — the full token, API key, or
+password is never returned by the API:
+
+<Tabs>
+  <Tab title="Bearer">
+    ```json
+    "auth": {
+      "type": "bearer",
+      "token": "my-s***oken"
+    }
+    ```
+  </Tab>
+  <Tab title="API key">
+    ```json
+    "auth": {
+      "type": "api_key",
+      "header": "x-api-key",
+      "value": "sk-a***c123"
+    }
+    ```
+  </Tab>
+  <Tab title="Basic">
+    ```json
+    "auth": {
+      "type": "basic",
+      "username": "user",
+      "password": "p***s"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+Use `auth.type` to confirm which scheme is active, and non-secret fields such as
+`header` and `username` to verify the rest of the configuration. To rotate a
+credential, send a new `auth` object with [Update webhook](#update-webhook) —
+you cannot recover the existing secret from the API.
+
+### Attach to a project at creation
+
+Pass `project_id` to associate the webhook with a
+[project](/web-search-api/concepts/projects) in the same request:
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/webhooks" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Layoffs Alert",
+    "url": "https://your-endpoint.com/catchall",
+    "type": "generic",
+    "delivery_mode": "full",
+    "project_id": "60a85db4-78ec-4b78-876a-bc7d9cdadd04"
+  }'
+```
+
+This is equivalent to creating the webhook and then adding it to the project
+with `resource_type: webhook`. The project must belong to your organization —
+otherwise the call fails with `403`, or `404` if no such project exists, and the
+webhook is not created.
+
+A webhook can be attached to more than one project, and deleting a project never
+deletes its webhooks.
 
 ## Test before attaching
 
@@ -505,6 +573,12 @@ for (var item : history.getItems()) {
 
 Each record shows the HTTP status code returned by your endpoint, the delivery
 outcome (`SUCCESS` or `FAILED`), and any error or warning messages.
+
+Each record's `resource_type` is `job`, `monitor`, or `monitor_group` for a real
+delivery. Manual test deliveries are recorded with `resource_type` set to
+`test`, since they are not tied to any real resource — use this to tell your own
+[test calls](#test-before-attaching) apart from production traffic. `test` is
+only ever returned in delivery history; you cannot assign a webhook to it.
 
 ## Trigger delivery manually
 
