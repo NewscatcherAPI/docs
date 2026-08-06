@@ -9,6 +9,13 @@ NLP data before it is indexed: theme classification, sentiment scores, named
 entities, content tags, and vector embeddings. News API exposes these fields in
 the response when you set `include_nlp_data` to `true`.
 
+<Note>
+  `include_nlp_data` applies to the News API only. On the Local News API, the
+  `nlp` object is returned by default on every subscription plan, and sending
+  `include_nlp_data` returns
+  `403 Param include_nlp_data is not allowed for plan <plan_id>`.
+</Note>
+
 <Warning>
   NLP enrichment is available only for articles indexed from July 2023 onward.
   For earlier articles, the API returns `"nlp": {}`.
