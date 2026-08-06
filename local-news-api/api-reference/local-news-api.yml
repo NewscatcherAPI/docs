@@ -1597,7 +1597,10 @@ components:
 
     NlpDataEntity:
       type: object
-      description: Natural Language Processing data for the article.
+      description: |
+        Natural Language Processing data for the article.
+
+        **Note**: The `nlp` object is returned by default on every Local News API subscription plan. Do not send `include_nlp_data`, which is a News API parameter that the Local News API endpoints reject with a `403`.
       properties:
         theme:
           type: array

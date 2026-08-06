@@ -363,6 +363,9 @@ Now that you've made your first calls to the Local News API:
    [Search in translations](/news-api/how-to/search-in-translations) to
    find articles across languages using English keywords.
 4. Read about [NLP Enrichments](/news-api/guides-and-concepts/nlp-enrichments)
-   to extract insights from articles.
+   to extract insights from articles. Every Local News API plan returns the
+   `nlp` object by default, so skip the `include_nlp_data` parameter described
+   there: it applies to the News API only, and the Local News API endpoints
+   reject it with a `403`.
 
 <Note>Need help? Contact our support team at support@newscatcherapi.com</Note>
