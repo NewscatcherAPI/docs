@@ -16,7 +16,7 @@ Documentation repository for the NewsCatcher API, built with
 
 ## About
 
-NewsCatcher API provides access to news articles from over 90,000 sources
+NewsCatcher API provides access to news articles from over 140,000 sources
 worldwide with three main public APIs:
 
 - **Web Search API**: AI web search that finds real-world events and extracts
