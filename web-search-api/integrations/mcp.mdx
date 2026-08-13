@@ -399,7 +399,7 @@ explain this flow yourself.
     | `pull_results` | Retrieve validated, enriched records from a completed or in-progress job |
     | `pull_job_csv` | Download completed job results as a CSV file — prefer over `pull_results` when a spreadsheet format is needed |
     | `continue_job` | Expand a job to process additional records beyond the initial limit |
-    | `list_user_jobs` | List all jobs submitted by the authenticated user |
+    | `list_user_jobs` | List all jobs submitted by the authenticated user — supports `search`, `ownership`, `project_id`, and `mode` (`base` or `lite`) filters |
     | `delete_job` | Delete a job and its results |
   </Tab>
 
@@ -421,7 +421,7 @@ explain this flow yourself.
   <Tab title="Webhooks">
     | Tool | Description |
     |------|-------------|
-    | `create_webhook` | Register a named webhook endpoint with delivery mode and auth configuration |
+    | `create_webhook` | Register a named webhook endpoint with delivery mode and auth configuration — pass an optional `project_id` to attach the webhook to a project immediately on creation |
     | `list_webhooks` | List all webhook endpoints for the authenticated user |
     | `get_webhook` | Get full configuration details for a webhook |
     | `update_webhook` | Update webhook URL, delivery mode, or auth settings |
@@ -430,7 +430,7 @@ explain this flow yourself.
     | `list_webhook_resources` | List all resources (jobs and monitors) assigned to a webhook |
     | `remove_webhook_resource` | Detach a webhook from a specific resource |
     | `list_resource_webhooks` | List all webhooks attached to a specific job or monitor |
-    | `get_webhook_history` | Retrieve per-dispatch delivery outcomes and HTTP status codes |
+    | `get_webhook_history` | Retrieve delivery history in one of two modes: pass `resource_type` + `resource_id` to see deliveries for a specific job/monitor/monitor_group, or pass `webhook_id` to see all deliveries through one webhook (exactly one mode per call). Manual test deliveries from `test_webhook` only appear in webhook mode and are recorded with `resource_type: "test"` |
     | `trigger_webhook` | Manually trigger webhook delivery for a job, monitor, or monitor_group — dispatch is asynchronous; use `get_webhook_history` to see the outcome |
     | `delete_webhook` | Delete a webhook endpoint |
   </Tab>
@@ -469,8 +469,15 @@ explain this flow yourself.
   </Tab>
 
   <Tab title="Projects">
-    Projects group related jobs, monitors, and datasets into named containers
-    that can be shared with teammates and filtered across all list endpoints.
+    Projects group related jobs, monitors, datasets, and webhooks into named
+    containers that can be shared with teammates and filtered across all list
+    endpoints.
+
+    The `resource_type` field accepted by project resource tools is one of:
+    `job`, `monitor`, `dataset`, `monitor_group`, or `webhook`. A webhook can
+    belong to several projects at once. Deleting a project detaches its webhooks
+    but never deletes them — the response's `deleted_resources` map includes a
+    `webhook_unlinked` count for webhooks that were detached.
 
     | Tool | Description |
     |------|-------------|
@@ -479,10 +486,10 @@ explain this flow yourself.
     | `get_project` | Get project details and metadata |
     | `update_project` | Update project name or description |
     | `get_project_overview` | Get a resource count breakdown by type and status |
-    | `add_project_resources` | Add jobs, monitors, or datasets to a project |
-    | `list_project_resources` | List all resources inside a project |
-    | `remove_project_resource` | Remove a resource from a project without deleting it |
-    | `delete_project` | Delete a project (resources are preserved by default) |
+    | `add_project_resources` | Add jobs, monitors, datasets, monitor groups, or webhooks to a project |
+    | `list_project_resources` | List all resources inside a project — optionally filter by `resource_type` (`job`, `monitor`, `dataset`, `monitor_group`, or `webhook`) |
+    | `remove_project_resource` | Remove a resource from a project without deleting it (webhooks are only detached — they keep existing and remain attached to any other projects) |
+    | `delete_project` | Delete a project — contained jobs, monitors, datasets, and monitor groups are deleted when `delete_resources=true`; webhooks are always only detached, never deleted |
   </Tab>
 
   <Tab title="Meta">
