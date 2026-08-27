@@ -422,7 +422,7 @@ explain this flow yourself.
     | Tool | Description |
     |------|-------------|
     | `create_webhook` | Register a named webhook endpoint with delivery mode and auth configuration — pass an optional `project_id` to attach the webhook to a project immediately on creation |
-    | `list_webhooks` | List all webhook endpoints for the authenticated user |
+    | `list_webhooks` | List all webhook endpoints for the authenticated user — pass an optional `project_id` to filter to webhooks belonging to a specific project |
     | `get_webhook` | Get full configuration details for a webhook |
     | `update_webhook` | Update webhook URL, delivery mode, or auth settings |
     | `test_webhook` | Send a test payload to verify endpoint reachability before attaching to a resource |
@@ -462,7 +462,7 @@ explain this flow yourself.
     |------|-------------|
     | `create_entity` | Create a single company or person entity.  |
     | `create_entities_batch` | Bulk-create multiple entities in one call |
-    | `list_entities` | List all entities for the authenticated user |
+    | `list_entities` | List all entities for the authenticated user — pass an optional `project_id` to filter to entities belonging to a specific project |
     | `get_entity` | Get details for a specific entity |
     | `update_entity` | Update entity name, domain, or metadata. |
     | `delete_entity` | Delete an entity |
@@ -490,6 +490,16 @@ explain this flow yourself.
     | `list_project_resources` | List all resources inside a project — optionally filter by `resource_type` (`job`, `monitor`, `dataset`, `monitor_group`, or `webhook`) |
     | `remove_project_resource` | Remove a resource from a project without deleting it (webhooks are only detached — they keep existing and remain attached to any other projects) |
     | `delete_project` | Delete a project — contained jobs, monitors, datasets, and monitor groups are deleted when `delete_resources=true`; webhooks are always only detached, never deleted |
+  </Tab>
+
+  <Tab title="Source Groups">
+    Source groups are named, reusable domain allowlists — public groups plus any
+    organization-visibility groups your organization can access. Use a group's
+    `slug` to scope a job's fetching to that domain allowlist.
+
+    | Tool | Description |
+    |------|-------------|
+    | `list_source_groups` | List all available source groups — returns each group's `slug`, `name`, and `description`; supports optional `page` and `page_size` parameters |
   </Tab>
 
   <Tab title="Meta">
@@ -521,6 +531,13 @@ explain this flow yourself.
   If this returns a `403` error, your key is invalid. Check it at
   [platform.newscatcherapi.com](https://platform.newscatcherapi.com).
 
+</Accordion>
+
+<Accordion title="Tool calls returning errors">
+  When a tool call fails, the MCP server reports a real tool error (`isError=True`)
+  carrying the upstream status code and message — for example,
+  `API Error (401): Api key not found`. Check the error message returned by your
+  client for the specific status code and reason.
 </Accordion>
 
 <Accordion title="Client does not support remote MCP">
