@@ -3620,13 +3620,9 @@ components:
           description: |
             Slugs of source groups to scope fetching to their curated domain allowlists.
 
-            Source groups are named domain lists maintained by NewsCatcher (for example
-            "Top 100 US Finance"). Retrieve the groups available to your organization with
-            [List source groups](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups).
+            Source groups are named domain lists maintained by NewsCatcher (for example "Top 100 US Finance"). Retrieve the groups available to your organization with [List source groups](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups).
 
-            Domains are resolved when the job runs, so a group's current membership always
-            applies. Maximum 20 groups per job. An unknown or inaccessible slug is rejected
-            at submit time.
+            Domains are resolved when the job runs, so a group's current membership always applies. Maximum 20 groups per job. An unknown or inaccessible slug is rejected at submit time.
           example:
             - "top-100-us-finance"
 
