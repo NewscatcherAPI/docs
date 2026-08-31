@@ -146,6 +146,12 @@ other — for example, provide custom enrichments and let the system generate
 validators, or define validators and let the system generate enrichments.
 If you omit both, the system generates both from scratch based on your query.
 
+A validator applies its criteria literally to the evidence in the record's
+citations. A record whose citations don't support the criteria is dropped, rather
+than passed through as a borderline match. Write validator descriptions as
+checkable statements about the source text — if you need a broader net, loosen
+the description instead of relying on ambiguous cases passing.
+
 <Tip>
   Use `limit: 10` for quick testing. If the results look good, use [Continue
   job](#continue-job) to process more records without restarting.
