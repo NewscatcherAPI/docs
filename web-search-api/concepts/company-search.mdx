@@ -769,6 +769,11 @@ search mode:
   `connected_dataset_ids` accepts an array.
 </Note>
 
+A connected job searches the index restricted to the watchlist entities from the
+start, in a single combined pass per query, rather than fetching broadly and
+filtering afterwards. You get less noise in the results and faster completion,
+with no change to how you submit the job.
+
 <CodeGroup>
 
 ```bash cURL

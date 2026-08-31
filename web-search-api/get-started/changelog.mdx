@@ -5,6 +5,49 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.8.1" description="2026-08-29">
+## Sharper watchlist search and stricter validators
+
+A quality release with no request or response changes. Watchlist-connected jobs
+search the index in a single pass restricted to your watchlist from the start, and
+validator-driven queries judge evidence more literally. Existing jobs and monitors
+pick both up automatically.
+
+### Watchlist search is restricted from the start
+
+A job connected to a watchlist now runs one combined index search per query,
+scoped to the watchlist entities up front, instead of fetching broadly and
+filtering afterwards.
+
+- Less noise in the raw results, so fewer irrelevant articles reach your records.
+- Faster completion, since the wider unrestricted fetch is no longer performed.
+
+No changes to
+[`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) — the
+behavior applies to any job submitted with `connected_dataset_ids`. See
+[Company search](/web-search-api/concepts/company-search).
+
+### Validators apply their criteria literally
+
+A [validator](/web-search-api/concepts/dynamic-schemas) no longer defaults to
+passing a record when the evidence is ambiguous. It now applies the validator
+criteria literally to the evidence in the citation.
+
+Expect noticeably fewer false positives on validator-driven queries such as data
+breach detection. If a validator was previously passing borderline records for
+you, you may now see fewer records returned — tighten or loosen the validator
+description to tune it.
+
+### Fixes and improvements
+
+- Validator evaluation is faster and cheaper per record, with no quality
+  regression in internal benchmarks.
+- [`GET /catchAll/entities`](/web-search-api/api-reference/entities/list-entities)
+  and [`GET /catchAll/webhooks`](/web-search-api/api-reference/webhooks/list-webhooks)
+  now document the `404` returned when `project_id` doesn't reference an existing
+  project, matching the other project-scoped endpoints.
+</Update>
+
 <Update label="1.8.0" description="2026-08-26">
 ## Source groups, event tagging, and pipeline recall improvements
 
