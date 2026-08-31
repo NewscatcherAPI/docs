@@ -5,8 +5,8 @@ description: Scope a job to a curated set of trusted domains using named, reusab
 ---
 
 A source group is a named, curated domain allowlist maintained by NewsCatcher —
-for example "Top 100 US Finance". Attach one to a job and CatchAll fetches
-articles only from that group's domains.
+for example "Top 100 news publishers, global". Attach one to a job and CatchAll
+fetches articles only from that group's domains.
 
 Source groups exist so you don't have to hand-build and maintain a long domain
 list for common scoping needs. NewsCatcher curates the membership; you reference
@@ -85,21 +85,21 @@ groups.getSourceGroups().forEach(group ->
 
 ```json
 {
-  "total": 2,
-  "page": 1,
-  "page_size": 100,
   "source_groups": [
     {
-      "slug": "top-100-us-finance",
-      "name": "Top 100 US Finance",
-      "description": "Leading US financial news and trade publications."
+      "slug": "top_100_global_news",
+      "name": "Top 100 news publishers, global",
+      "description": "The most read news publishers worldwide, all languages, no aggregators."
     },
     {
-      "slug": "global-tech-press",
-      "name": "Global Tech Press",
-      "description": "Major technology news outlets worldwide."
+      "slug": "top_500_english_news",
+      "name": "Top 500 English-language news publishers",
+      "description": "The most read English-language news publishers worldwide."
     }
-  ]
+  ],
+  "total": 2,
+  "page": 1,
+  "page_size": 100
 }
 ```
 
@@ -118,28 +118,28 @@ curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "Series B funding rounds for SaaS startups",
-    "source_groups": ["top-100-us-finance"]
+    "source_groups": ["top_100_global_news"]
   }'
 ```
 
 ```json JSON
 {
   "query": "Series B funding rounds for SaaS startups",
-  "source_groups": ["top-100-us-finance"]
+  "source_groups": ["top_100_global_news"]
 }
 ```
 
 ```python Python
 job = client.jobs.create_job(
     query="Series B funding rounds for SaaS startups",
-    source_groups=["top-100-us-finance"],
+    source_groups=["top_100_global_news"],
 )
 ```
 
 ```typescript TypeScript
 const job = await client.jobs.createJob({
   query: "Series B funding rounds for SaaS startups",
-  source_groups: ["top-100-us-finance"],
+  source_groups: ["top_100_global_news"],
 });
 ```
 
@@ -147,7 +147,7 @@ const job = await client.jobs.createJob({
 var job = client.jobs().createJob(
     SubmitRequestDto.builder()
         .query("Series B funding rounds for SaaS startups")
-        .sourceGroups(List.of("top-100-us-finance"))
+        .sourceGroups(List.of("top_100_global_news"))
         .build()
 );
 ```
@@ -170,9 +170,9 @@ group.
   "status": "completed",
   "source_groups": [
     {
-      "slug": "top-100-us-finance",
-      "name": "Top 100 US Finance",
-      "description": "Leading US financial news and trade publications."
+      "slug": "top_100_global_news",
+      "name": "Top 100 news publishers, global",
+      "description": "The most read news publishers worldwide, all languages, no aggregators."
     }
   ],
   "all_records": []
