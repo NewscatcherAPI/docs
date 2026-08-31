@@ -165,15 +165,25 @@ resources belonging to a specific project:
     ```
   </Tab>
   <Tab title="Webhooks">
-    The webhook list endpoint does not take `project_id`. List a project's
-    webhooks through the project resources endpoint instead:
+    ```bash
+    curl "https://catchall.newscatcherapi.com/catchAll/webhooks?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
+      -H "x-api-key: YOUR_API_KEY"
+    ```
+  </Tab>
+  <Tab title="Entities">
+    Entities are attached to projects through their dataset, not directly.
+    Filtering by `project_id` returns the entities belonging to datasets
+    assigned to that project:
 
     ```bash
-    curl "https://catchall.newscatcherapi.com/catchAll/projects/60a85db4-78ec-4b78-876a-bc7d9cdadd04/resources?resource_type=webhook" \
+    curl "https://catchall.newscatcherapi.com/catchAll/entities?project_id=60a85db4-78ec-4b78-876a-bc7d9cdadd04" \
       -H "x-api-key: YOUR_API_KEY"
     ```
   </Tab>
 </Tabs>
+
+A `project_id` that doesn't exist returns `404`, and one that belongs to another
+organization returns `403`.
 
 ## Get a project overview
 

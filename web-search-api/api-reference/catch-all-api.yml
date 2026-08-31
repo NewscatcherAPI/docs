@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.7.0
+  version: 1.8.1
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -345,6 +345,38 @@ paths:
           $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
+
+  /catchAll/source-groups:
+    get:
+      tags:
+        - Jobs
+      summary: List source groups
+      description: |
+        Returns a paginated list of source groups visible to your organization: public groups plus any organization-visibility groups your organization has been granted access to.
+
+        A source group is a named, curated allowlist of domains. Attach one or more group slugs to a job with `source_groups` on `POST /catchAll/submit` to restrict fetching to those domains.
+
+        Each entry returns only `slug`, `name`, and `description`. Use the `slug` values when submitting a job.
+      operationId: listSourceGroups
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of source groups per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/ListSourceGroupsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
 
   # ── Monitors ──────────────────────────────────────────────────────────────
 
@@ -720,7 +752,10 @@ paths:
       tags:
         - Webhooks
       summary: List webhooks
-      description: Returns a paginated list of webhooks belonging to the organization.
+      description: |
+        Returns a paginated list of webhooks belonging to the organization.
+
+        Use `project_id` to return only the webhooks attached to a given project.
       operationId: listWebhooks
       parameters:
         - $ref: "#/components/parameters/Page"
@@ -734,11 +769,14 @@ paths:
             maximum: 500
           description: Number of webhooks per page.
         - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListWebhooksResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
         "422":
           $ref: "#/components/responses/ValidationError"
 
@@ -1067,6 +1105,8 @@ paths:
       summary: List entities
       description: |
         Returns a paginated list of entities belonging to the authenticated organization. Supports filtering by status and entity type, and sorting by name, status, or creation date.
+
+        Use `project_id` to scope the list to entities that belong to datasets attached to that project.
       operationId: listEntities
       parameters:
         - $ref: "#/components/parameters/Page"
@@ -1107,11 +1147,14 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/SortOrder"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/EntityListResponse"
         "403":
           $ref: "#/components/responses/ForbiddenError"
+        "404":
+          $ref: "#/components/responses/NotFoundError"
 
     post:
       tags:
@@ -2153,6 +2196,24 @@ components:
                 status: "completed"
                 user_key: "***...a1b2"
                 mode: "base"
+
+    ListSourceGroupsResponse:
+      description: Source groups retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListSourceGroupsApiResponse"
+          example:
+            total: 2
+            page: 1
+            page_size: 100
+            source_groups:
+              - slug: "tier-1-business-media"
+                name: "Tier 1 business media"
+                description: "Leading global business and financial news outlets."
+              - slug: "apac-tech-press"
+                name: "APAC tech press"
+                description: "Technology publications covering the Asia-Pacific region."
 
     PullJobResponse:
       description: Results retrieved successfully
@@ -3421,6 +3482,17 @@ components:
             events where the entity is a direct actor. `mention` keeps only events
             where the entity is merely referenced. Only relevant when
             connected_dataset_ids is set.
+        source_groups:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+          description: |
+            Slugs of source groups to scope fetching to their domain allowlists. Only pages from domains in the listed groups are fetched.
+
+            Retrieve the available slugs with [`GET /catchAll/source-groups`](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups). Maximum 20 per job.
+          example:
+            - "tier-1-business-media"
 
     SubmitResponseDto:
       type: object
@@ -3498,6 +3570,73 @@ components:
           format: uuid
           description: ID of the deleted job. `null` on failure.
           example: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    SourceGroupApiResponse:
+      type: object
+      required:
+        - slug
+        - name
+      properties:
+        slug:
+          type: string
+          description:
+            Stable identifier for the source group. Use this value in
+            `source_groups` when submitting a job.
+          example: "tier-1-business-media"
+        name:
+          type: string
+          description: Human-readable name of the source group.
+          example: "Tier 1 business media"
+        description:
+          type: ["string", "null"]
+          description:
+            What the group covers. `null` when no description was set.
+          example: "Leading global business and financial news outlets."
+
+    ListSourceGroupsApiResponse:
+      type: object
+      required:
+        - source_groups
+        - total
+        - page
+        - page_size
+      properties:
+        source_groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceGroupApiResponse"
+          description: Source groups visible to your organization.
+        total:
+          type: integer
+          description: Total number of visible source groups.
+          example: 2
+        page:
+          type: integer
+          description: Current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: Number of source groups per page.
+          example: 100
+
+    SourceGroupRef:
+      type: object
+      required:
+        - slug
+        - name
+      properties:
+        slug:
+          type: string
+          description: Source group slug.
+          example: "tier-1-business-media"
+        name:
+          type: string
+          description: Source group name.
+          example: "Tier 1 business media"
+        description:
+          type: ["string", "null"]
+          description: Source group description.
+          example: "Leading global business and financial news outlets."
 
     PublicJobStatus:
       type: string
@@ -3743,6 +3882,12 @@ components:
             $ref: "#/components/schemas/ConnectedDataset"
           description: |
             Datasets used to narrow retrieval scope, each with `id` and `name`.
+        source_groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceGroupRef"
+          description: |
+            Source groups attached to this job, each with `slug`, `name`, and `description`. Empty when the job was submitted without `source_groups`.
         is_all_news_query:
           type: boolean
           description: |
@@ -3834,6 +3979,33 @@ components:
               description: |
                 Entities from the connected dataset that are relevant to this record.
                 Only present when the job was submitted with `connected_dataset_ids`.
+            tags:
+              allOf:
+                - $ref: "#/components/schemas/EventTags"
+              description: |
+                Fixed-taxonomy classification of the event.
+
+                Present only for all-news queries (`is_all_news_query: true`), and absent for a record the classifier could not tag.
+
+    EventTags:
+      type: object
+      description: |
+        Fixed-taxonomy classification of an event. Unlike `enrichment`, whose
+        schema is generated per job, these values come from a stable taxonomy,
+        so they are safe to filter and route on.
+      properties:
+        event_type:
+          type: ["string", "null"]
+          description:
+            Taxonomy path describing what happened, for example
+            `deals.merger_acquisition`. `unclassifiable` when no path fits.
+          example: "deals.merger_acquisition"
+        sector:
+          type: ["string", "null"]
+          description:
+            Industry sector the event belongs to, for example `banking`.
+            `other_sector` when no sector fits.
+          example: "banking"
 
     Citation:
       type: object
@@ -4849,6 +5021,13 @@ components:
           type: string
           description: Context provided with the reference job query.
           example: "Focus on funding amount and company name"
+        source_groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceGroupRef"
+          description:
+            Source groups attached to the reference job, each with slug, name,
+            and description.
 
     PullMonitorResponseDto:
       type: object

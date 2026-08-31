@@ -232,6 +232,107 @@ System.out.println("Job created: " + jobId);
 ```
 </Expandable>
 
+### Scope a job to source groups
+
+A source group is a curated, named allowlist of domains. Attaching one to a job
+restricts fetching to those domains, which cuts noise without you having to
+maintain a long domain list in every request.
+
+Use source groups when you trust a specific set of publishers for a topic — for
+example, tier 1 business media for M&A coverage, or a regional press set for
+local events. Leave `source_groups` off to search the full index.
+
+First, list the groups available to you with
+[`GET /catchAll/source-groups`](/web-search-api/api-reference/jobs/list-source-groups).
+The response includes public groups plus any organization-visibility groups your
+organization has been granted access to. Each entry returns `slug`, `name`, and
+`description`:
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/source-groups" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+<Expandable title="List source groups response">
+```json
+{
+  "total": 2,
+  "page": 1,
+  "page_size": 100,
+  "source_groups": [
+    {
+      "slug": "tier-1-business-media",
+      "name": "Tier 1 business media",
+      "description": "Leading global business and financial news outlets."
+    },
+    {
+      "slug": "apac-tech-press",
+      "name": "APAC tech press",
+      "description": "Technology publications covering the Asia-Pacific region."
+    }
+  ]
+}
+```
+</Expandable>
+
+Then pass the `slug` values in `source_groups` when you submit the job. Listing
+several groups searches the union of their domains. Maximum 20 groups per job.
+
+<CodeGroup>
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Series B funding rounds for SaaS startups",
+    "source_groups": ["tier-1-business-media"],
+    "limit": 10
+  }'
+```
+
+```json JSON
+{
+  "query": "Series B funding rounds for SaaS startups",
+  "source_groups": ["tier-1-business-media"],
+  "limit": 10
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="Series B funding rounds for SaaS startups",
+    source_groups=["tier-1-business-media"],
+    limit=10
+)
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "Series B funding rounds for SaaS startups",
+  source_groups: ["tier-1-business-media"],
+  limit: 10,
+});
+```
+
+```java Java
+import com.newscatcher.catchall.resources.jobs.requests.SubmitRequestDto;
+
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("Series B funding rounds for SaaS startups")
+        .sourceGroups(List.of("tier-1-business-media"))
+        .limit(10)
+        .build()
+);
+```
+
+</CodeGroup>
+
+The job results echo back the groups the job was scoped to in a `source_groups`
+array, each with `slug`, `name`, and `description`, so you can tell what a job
+searched without re-reading the submit request. Monitors expose the same array
+on `reference_job`.
+
 ## Get job status
 
 [`GET /catchAll/status/{job_id}`](/web-search-api/api-reference/jobs/get-job-status)

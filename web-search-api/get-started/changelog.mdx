@@ -5,6 +5,70 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.8.1" description="2026-08-29">
+## Source groups, event tags, and wider project filtering
+
+Jobs can now be scoped to curated domain allowlists, all-news records carry a
+fixed-taxonomy classification, and two more list endpoints accept `project_id`.
+The rest of the release is pipeline work: stricter validation, better watchlist
+retrieval, and fewer false positives.
+
+### Scope jobs to source groups
+
+A source group is a named, curated allowlist of domains. Attaching one to a job
+restricts fetching to those domains, cutting noise without maintaining a long
+domain list in every request. See
+[Scope a job to source groups](/web-search-api/concepts/jobs#scope-a-job-to-source-groups).
+
+- [`GET /catchAll/source-groups`](/web-search-api/api-reference/jobs/list-source-groups)
+  — New endpoint. Returns the paginated groups visible to your organization:
+  public groups plus any organization-visibility groups you've been granted
+  access to. Each entry returns `slug`, `name`, and `description`.
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job)
+  accepts an optional `source_groups` array of slugs. Several groups search the
+  union of their domains. Maximum 20 per job.
+- [`GET /catchAll/pull/{job_id}`](/web-search-api/api-reference/jobs/get-job-results)
+  echoes back `source_groups` with the full `slug`, `name`, and `description` of
+  each attached group, so you can tell what a job searched without re-reading
+  the submit request. Monitors expose the same array on `reference_job`.
+
+### Event tags on all-news records
+
+Records from all-news watchlist queries now include a `tags` object with
+`event_type` and `sector`, drawn from a fixed taxonomy rather than a per-job
+schema — so the values are safe to filter and route on across jobs. `tags` is
+present only when `is_all_news_query` is `true`, and is absent on a record the
+classifier could not tag. See
+[Event tags on all-news records](/web-search-api/concepts/company-search#event-tags-on-all-news-records).
+
+### Filter entities and webhooks by project
+
+[`GET /catchAll/entities`](/web-search-api/api-reference/entities/list-entities)
+and [`GET /catchAll/webhooks`](/web-search-api/api-reference/webhooks/list-webhooks)
+now accept a `project_id` query parameter, matching the jobs, monitors, and
+datasets list endpoints. For entities, `project_id` returns the entities
+belonging to datasets assigned to that project. Both return `404` for a project
+that doesn't exist and `403` for one owned by another organization.
+
+### Fixes and improvements
+
+- Watchlist-connected jobs now search the index in a single combined pass per
+  query, restricted to the watchlist entities from the start, instead of
+  fetching broadly and filtering afterwards. Expect less noise in results and
+  faster completion.
+- Validators no longer default to accepting a record when the evidence is
+  ambiguous — criteria are applied literally to the cited text. Expect fewer
+  false positives on validator-driven queries such as data breach searches.
+- Stricter validation and deduplication to reduce missed events, false merges,
+  and false removals.
+- Enrichment can now resolve unknown validation criteria through web search and
+  correct or fill missing fields.
+- Bounded fan-out, retries, and backoff for large watchlists, so high-volume
+  jobs are less likely to time out.
+- Clearer authentication error messages, propagated consistently through the
+  pipeline.
+</Update>
+
 <Update label="1.7.0" description="2026-08-04">
 ## Webhooks as project resources and search quality improvements
 

@@ -80,6 +80,7 @@
                   "web-search-api/api-reference/jobs/continue-job",
                   "web-search-api/api-reference/jobs/list-user-jobs",
                   "web-search-api/api-reference/jobs/delete-job",
+                  "web-search-api/api-reference/jobs/list-source-groups",
                   "web-search-api/api-reference/jobs/company-enrichment-dto"
                 ]
               },

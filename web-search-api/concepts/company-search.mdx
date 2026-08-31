@@ -956,6 +956,36 @@ var job = client.jobs().createJob(
 Monitors created from an all-news job preserve this behavior — each recurring
 run collects all news for the connected watchlist, not topic-restricted results.
 
+### Event tags on all-news records
+
+An all-news feed has no query topic to filter on, so records carry a `tags`
+object that classifies each event against a fixed taxonomy. Use it to route or
+filter a broad feed — for example, sending only `deals.*` events to a
+corporate development channel.
+
+| Field | Description |
+| --- | --- |
+| `event_type` | Taxonomy path describing what happened, such as `deals.merger_acquisition`. Set to `unclassifiable` when no path fits. |
+| `sector` | Industry sector the event belongs to, such as `banking`. Set to `other_sector` when no sector fits. |
+
+Unlike `enrichment`, whose schema is generated per job, these values come from a
+stable taxonomy, so they are safe to filter and route on across jobs.
+
+`tags` is present only when the job ran as an all-news query — check
+`is_all_news_query` on the pull response — and is absent on a record the
+classifier could not tag. Always handle the field being missing.
+
+```json
+{
+  "record_id": "6983973854314692457",
+  "record_title": "Regional Bank Acquires Fintech Lender",
+  "tags": {
+    "event_type": "deals.merger_acquisition",
+    "sector": "banking"
+  }
+}
+```
+
 ## Get results
 
 Retrieve results the same way as a normal job. Each record includes a
