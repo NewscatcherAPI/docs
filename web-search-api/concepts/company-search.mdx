@@ -956,6 +956,95 @@ var job = client.jobs().createJob(
 Monitors created from an all-news job preserve this behavior — each recurring
 run collects all news for the connected watchlist, not topic-restricted results.
 
+## Event tagging
+
+Records from all-news watchlist jobs are classified automatically against a
+fixed taxonomy. Each record carries a `tags` object with two fields:
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `event_type` | string \| null | Taxonomy path describing what happened, such as `deals.merger_acquisition`. `unclassifiable` when no path fits. |
+| `sector` | string \| null | Industry the event belongs to, such as `banking`. `other_sector` when no sector fits. |
+
+Use these to filter, route, or aggregate a watchlist feed downstream — for
+example, sending only `deals.*` events to an alerting channel — without parsing
+record titles yourself.
+
+<Note>
+  Tagging applies only to all-news watchlist jobs, meaning those submitted with
+  `fetch_all_watchlist_news: true`. Topic-scoped jobs return no `tags`. The job
+  results report `is_all_news_query: true` for jobs that are tagged.
+</Note>
+
+Tagging is additive and never filters results. A record the classifier can't
+place is still returned, tagged `unclassifiable` or `other_sector` rather than
+dropped — so turning to tags can't reduce the events you receive.
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/pull/{job_id}" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+results = client.jobs.get_job_results(job_id)
+
+for record in results.all_records:
+    if record.tags:
+        print(f"{record.record_title} — {record.tags.event_type} / {record.tags.sector}")
+```
+
+```typescript TypeScript
+const results = await client.jobs.getJobResults({ job_id: jobId });
+
+for (const record of results.all_records) {
+  if (record.tags) {
+    console.log(`${record.record_title} — ${record.tags.event_type} / ${record.tags.sector}`);
+  }
+}
+```
+
+```java Java
+import com.newscatcher.catchall.types.PullJobResponseDto;
+
+PullJobResponseDto results = client.jobs().getJobResults(jobId);
+
+results.getAllRecords().forEach(record ->
+    record.getTags().ifPresent(tags ->
+        System.out.printf("%s — %s / %s%n",
+            record.getRecordTitle(), tags.getEventType(), tags.getSector())
+    )
+);
+```
+
+</CodeGroup>
+
+<Expandable title="Tagged record example">
+
+```json
+{
+  "record_id": "6417909601438475967",
+  "record_title": "NVIDIA Acquires Run:ai for $700M",
+  "tags": {
+    "event_type": "deals.merger_acquisition",
+    "sector": "technology"
+  },
+  "enrichment": {
+    "enrichment_confidence": "high"
+  },
+  "citations": [
+    {
+      "title": "NVIDIA to acquire Run:ai",
+      "link": "https://example.com/nvidia-runai",
+      "published_date": "2026-08-14T09:00:00Z"
+    }
+  ]
+}
+```
+
+</Expandable>
+
 ## Get results
 
 Retrieve results the same way as a normal job. Each record includes a

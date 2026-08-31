@@ -1,7 +1,7 @@
 openapi: 3.1.0
 info:
   title: NewsCatcher CatchAll API
-  version: 1.7.0
+  version: 1.8.0
   description: |
     CatchAll is a web search API that generates unique datasets that don't exist anywhere else on the web. Built on NewsCatcher's proprietary real-world event index, it delivers state-of-the-art recall—finding all relevant events, not just top results.
 
@@ -138,6 +138,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListUserJobsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -162,6 +164,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ValidateQueryResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -190,6 +194,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/InitializeResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -223,6 +229,8 @@ paths:
           $ref: "#/components/responses/SubmitResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -243,6 +251,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/StatusResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -265,6 +275,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PullJobResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -289,6 +301,8 @@ paths:
             text/csv:
               schema:
                 type: string
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -319,6 +333,8 @@ paths:
           $ref: "#/components/responses/ContinueResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -346,6 +362,41 @@ paths:
         "404":
           $ref: "#/components/responses/NotFoundError"
 
+  /catchAll/source-groups:
+    get:
+      tags:
+        - Jobs
+      summary: List source groups
+      description: |
+        Returns a paginated list of source groups visible to your organization.
+
+        A source group is a named, curated domain allowlist maintained by NewsCatcher — for
+        example "Top 100 US Finance". Pass a group's `slug` in `source_groups` when creating
+        a job to scope article fetching to that group's domains, instead of maintaining a
+        long domain list yourself.
+
+        The response covers public groups plus any restricted groups your organization has
+        been granted access to. Each entry returns `slug`, `name`, and `description`.
+      operationId: listSourceGroups
+      parameters:
+        - $ref: "#/components/parameters/Page"
+        - name: page_size
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 100
+            minimum: 1
+            maximum: 500
+          description: Number of source groups per page.
+      responses:
+        "200":
+          $ref: "#/components/responses/ListSourceGroupsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
   # ── Monitors ──────────────────────────────────────────────────────────────
 
   /catchAll/monitors:
@@ -364,6 +415,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -393,6 +446,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/CreateMonitorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "422":
           $ref: "#/components/responses/ValidationError"
 
@@ -415,6 +470,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/PullMonitorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
         "422":
@@ -445,6 +502,8 @@ paths:
             text/csv:
               schema:
                 type: string
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -476,6 +535,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListMonitorJobsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "404":
           $ref: "#/components/responses/NotFoundError"
         "422":
@@ -552,6 +613,8 @@ paths:
                     type: string
                     format: uuid
                     description: ID of the enabled monitor.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -598,6 +661,8 @@ paths:
                     type: string
                     format: uuid
                     description: ID of the disabled monitor.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -635,6 +700,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdateMonitorResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -699,6 +766,8 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/CreateWebhookResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           description: |
             Invalid or missing API key, or the `project_id` you supplied belongs to a different organization.
@@ -734,9 +803,12 @@ paths:
             maximum: 500
           description: Number of webhooks per page.
         - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/ListWebhooksResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -754,6 +826,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetWebhookResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -782,6 +856,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdateWebhookResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -803,6 +879,8 @@ paths:
       responses:
         "204":
           description: Webhook deleted successfully. No response body.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -833,6 +911,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/TestWebhookResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -868,6 +948,8 @@ paths:
           $ref: "#/components/responses/AssignWebhookResourceResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -902,6 +984,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListWebhookResourcesResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -926,6 +1010,8 @@ paths:
       responses:
         "204":
           description: Resource removed from webhook. No response body.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -961,6 +1047,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListResourceWebhooksResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1006,6 +1094,8 @@ paths:
       responses:
         "200":
           description: Webhook delivery triggered.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1051,6 +1141,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DeliveryHistoryResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1107,9 +1199,12 @@ paths:
           required: false
           schema:
             $ref: "#/components/schemas/SortOrder"
+        - $ref: "#/components/parameters/ProjectIdQuery"
       responses:
         "200":
           $ref: "#/components/responses/EntityListResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -1149,6 +1244,8 @@ paths:
           $ref: "#/components/responses/CreateEntityResponse"
         "400":
           $ref: "#/components/responses/EntityBadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -1196,6 +1293,8 @@ paths:
           $ref: "#/components/responses/CreateEntitiesBatchResponse"
         "400":
           $ref: "#/components/responses/EntityBadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -1212,6 +1311,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/EntityResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1245,6 +1346,8 @@ paths:
           $ref: "#/components/responses/EntityResponse"
         "400":
           $ref: "#/components/responses/EntityBadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1263,6 +1366,8 @@ paths:
       responses:
         "204":
           description: Entity deleted successfully. No response body.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1319,6 +1424,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DatasetListResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -1355,6 +1462,8 @@ paths:
           $ref: "#/components/responses/DatasetResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -1404,6 +1513,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/CreateDatasetCsvResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -1422,6 +1533,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DatasetResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1448,6 +1561,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DatasetResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1469,6 +1584,8 @@ paths:
       responses:
         "204":
           description: Dataset deleted successfully. No response body.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1496,6 +1613,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ManageEntitiesResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1524,6 +1643,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ManageEntitiesResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1558,6 +1679,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DatasetEntityListResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1578,6 +1701,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/DatasetStatusHistoryResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1611,6 +1736,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UploadCsvToDatasetResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1639,6 +1766,8 @@ paths:
       responses:
         "201":
           $ref: "#/components/responses/CreateProjectResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -1664,6 +1793,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListProjectsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "422":
@@ -1681,6 +1812,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ProjectResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1705,6 +1838,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/UpdateProjectResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1727,6 +1862,8 @@ paths:
       responses:
         "204":
           description: Project deleted successfully. No response body.
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1747,6 +1884,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ProjectOverviewResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1779,6 +1918,8 @@ paths:
           $ref: "#/components/responses/AddResourceResponse"
         "400":
           $ref: "#/components/responses/BadRequestError"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1802,6 +1943,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/ListProjectResourcesResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1836,6 +1979,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/RemoveResourceResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
         "404":
@@ -1878,6 +2023,8 @@ paths:
       responses:
         "200":
           $ref: "#/components/responses/GetPlanLimitsResponse"
+        "401":
+          $ref: "#/components/responses/UnauthorizedError"
         "403":
           $ref: "#/components/responses/ForbiddenError"
 
@@ -2217,6 +2364,24 @@ components:
             success: true
             message: "Job deleted successfully."
             job_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+
+    ListSourceGroupsResponse:
+      description: Source groups retrieved successfully.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ListSourceGroupsResponseDto"
+          example:
+            total: 2
+            page: 1
+            page_size: 100
+            source_groups:
+              - slug: "top-100-us-finance"
+                name: "Top 100 US Finance"
+                description: "Leading US financial news and trade publications."
+              - slug: "global-tech-press"
+                name: "Global Tech Press"
+                description: "Major technology news outlets worldwide."
 
     CreateMonitorResponse:
       description: Monitor created successfully
@@ -2962,7 +3127,12 @@ components:
                 status_code: 400
 
     ForbiddenError:
-      description: Invalid or missing API key
+      description: |
+        Authenticated, but not allowed to perform this request — for example the user is
+        not a member of the requested organization, has no active API key in it, or the
+        resource belongs to another organization.
+
+        A missing, unknown, or disabled API key returns `401`, not `403`.
       content:
         application/json:
           schema:
@@ -2983,7 +3153,12 @@ components:
             $ref: "#/components/schemas/ValidationErrorResponse"
 
     UnauthorizedError:
-      description: API key is missing or invalid.
+      description: |
+        The caller could not be identified: the `x-api-key` header is missing, the key is
+        unknown or disabled, or the key belongs to a different organization than the one
+        requested.
+
+        Once identity is established, an access failure returns `403` instead.
       content:
         application/json:
           schema:
@@ -3421,6 +3596,23 @@ components:
             events where the entity is a direct actor. `mention` keeps only events
             where the entity is merely referenced. Only relevant when
             connected_dataset_ids is set.
+        source_groups:
+          type: array
+          items:
+            type: string
+          maxItems: 20
+          description: |
+            Slugs of source groups to scope fetching to their curated domain allowlists.
+
+            Source groups are named domain lists maintained by NewsCatcher (for example
+            "Top 100 US Finance"). Retrieve the groups available to your organization with
+            [List source groups](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups).
+
+            Domains are resolved when the job runs, so a group's current membership always
+            applies. Maximum 20 groups per job. An unknown or inaccessible slug is rejected
+            at submit time.
+          example:
+            - "top-100-us-finance"
 
     SubmitResponseDto:
       type: object
@@ -3743,6 +3935,13 @@ components:
             $ref: "#/components/schemas/ConnectedDataset"
           description: |
             Datasets used to narrow retrieval scope, each with `id` and `name`.
+        source_groups:
+          type: ["array", "null"]
+          items:
+            $ref: "#/components/schemas/SourceGroupRef"
+          description: |
+            Source groups attached to this job, each with `slug`, `name`, and `description`.
+            `null` when the job was not scoped to any source group.
         is_all_news_query:
           type: boolean
           description: |
@@ -3834,6 +4033,16 @@ components:
               description: |
                 Entities from the connected dataset that are relevant to this record.
                 Only present when the job was submitted with `connected_dataset_ids`.
+            tags:
+              oneOf:
+                - $ref: "#/components/schemas/EventTags"
+                - type: "null"
+              description: |
+                Fixed-taxonomy classification of the event, as `event_type` and `sector`.
+
+                Only present for all-news watchlist jobs — those submitted with
+                `fetch_all_watchlist_news: true`, which the job pull response reports as
+                `is_all_news_query: true`. Absent or `null` for every other job.
 
     Citation:
       type: object
@@ -4849,6 +5058,13 @@ components:
           type: string
           description: Context provided with the reference job query.
           example: "Focus on funding amount and company name"
+        source_groups:
+          type: ["array", "null"]
+          items:
+            $ref: "#/components/schemas/SourceGroupRef"
+          description: |
+            Source groups attached to the reference job, each with `slug`, `name`, and
+            `description`. `null` when the reference job was not scoped to any source group.
 
     PullMonitorResponseDto:
       type: object
@@ -6056,6 +6272,81 @@ components:
           default: false
           description: True when the dataset has been deleted.
           example: false
+
+    SourceGroupRef:
+      type: object
+      required:
+        - slug
+        - name
+      description: |
+        A source group attached to a job, returned with its slug, name, and description.
+
+        Source groups are curated domain allowlists maintained by NewsCatcher. Attach one
+        to a job with `source_groups` on job creation to scope fetching to its domains.
+      properties:
+        slug:
+          type: string
+          description: |
+            Stable identifier for the source group. This is the value you pass in
+            `source_groups` when creating a job.
+          example: "top-100-us-finance"
+        name:
+          type: string
+          description: Human-readable name of the source group.
+          example: "Top 100 US Finance"
+        description:
+          type: ["string", "null"]
+          description: What the group covers, when set.
+          example: "Leading US financial news and trade publications."
+
+    ListSourceGroupsResponseDto:
+      type: object
+      required:
+        - source_groups
+        - total
+        - page
+        - page_size
+      properties:
+        source_groups:
+          type: array
+          items:
+            $ref: "#/components/schemas/SourceGroupRef"
+          description: Source groups visible to your organization.
+        total:
+          type: integer
+          description: Total number of source groups available to your organization.
+          example: 2
+        page:
+          type: integer
+          description: The current page number.
+          example: 1
+        page_size:
+          type: integer
+          description: The number of source groups per page.
+          example: 100
+
+    EventTags:
+      type: object
+      description: |
+        Fixed-taxonomy classification of the event described by a record.
+
+        Tagging is additive: it never filters or removes records. A record the classifier
+        cannot place is still returned, with `unclassifiable` or `other_sector` in place of
+        a taxonomy value.
+      properties:
+        event_type:
+          type: ["string", "null"]
+          description: |
+            Taxonomy path describing what happened, drawn from a fixed vocabulary.
+            `unclassifiable` when no path fits.
+          example: "deals.merger_acquisition"
+        sector:
+          type: ["string", "null"]
+          description: |
+            Industry sector the event belongs to, drawn from a fixed vocabulary.
+            `other_sector` when no sector fits.
+          example: "banking"
+
 
 # ── Project schemas ───────────────────────────────────────────────────
 

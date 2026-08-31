@@ -177,6 +177,12 @@ dependencies {
     to track a specific theme, pass a real query instead. Keep the `job_id` — you
     reference it when creating the monitor.
 
+    <Tip>
+      All-news watchlist records carry a `tags` object with `event_type` and
+      `sector`, so you can route or filter the feed by what happened. See [Event
+      tagging](/web-search-api/concepts/company-search#event-tagging).
+    </Tip>
+
     <CodeGroup>
     ```bash cURL
     curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \

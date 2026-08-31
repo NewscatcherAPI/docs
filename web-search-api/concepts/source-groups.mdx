@@ -1,0 +1,196 @@
+---
+title: Source groups
+sidebarTitle: Source groups
+description: Scope a job to a curated set of trusted domains using named, reusable source groups.
+---
+
+A source group is a named, curated domain allowlist maintained by NewsCatcher —
+for example "Top 100 US Finance". Attach one to a job and CatchAll fetches
+articles only from that group's domains.
+
+Source groups exist so you don't have to hand-build and maintain a long domain
+list for common scoping needs. NewsCatcher curates the membership; you reference
+the group by its `slug`.
+
+## How it works
+
+1. List the groups available to your organization with
+   [`GET /catchAll/source-groups`](/web-search-api/api-reference/jobs/list-source-groups).
+2. Pass one or more slugs in `source_groups` when you
+   [create a job](/web-search-api/api-reference/jobs/create-job).
+3. CatchAll resolves each slug to its domains when the job runs and restricts
+   fetching to that set.
+
+Because domains resolve at run time, a group's current membership always
+applies. When NewsCatcher adds or removes a domain, every later job and monitor
+run picks up the change — you don't need to resubmit anything.
+
+<Note>
+  Source groups narrow **where** CatchAll looks. They don't change **how far
+  back** it looks — that's still controlled by `start_date` and `end_date`. See
+  [Index and search depth](/web-search-api/concepts/index-and-search-depth).
+</Note>
+
+## Visibility
+
+| Visibility | Who can use it |
+| --- | --- |
+| Public | Every organization |
+| Restricted | Only organizations explicitly granted access |
+
+`GET /catchAll/source-groups` returns public groups plus any restricted groups
+your organization has been granted. If you need access to a restricted group,
+contact [support@newscatcherapi.com](mailto:support@newscatcherapi.com).
+
+## List available source groups
+
+The response is paginated and returns `slug`, `name`, and `description` for each
+group.
+
+<CodeGroup>
+
+```bash cURL
+curl "https://catchall.newscatcherapi.com/catchAll/source-groups" \
+  -H "x-api-key: YOUR_API_KEY"
+```
+
+```python Python
+groups = client.jobs.list_source_groups()
+
+for group in groups.source_groups:
+    print(f"{group.slug} — {group.name}")
+```
+
+```typescript TypeScript
+const groups = await client.jobs.listSourceGroups();
+
+for (const group of groups.source_groups) {
+  console.log(`${group.slug} — ${group.name}`);
+}
+```
+
+```java Java
+import com.newscatcher.catchall.types.ListSourceGroupsResponseDto;
+
+ListSourceGroupsResponseDto groups = client.jobs().listSourceGroups();
+
+groups.getSourceGroups().forEach(group ->
+    System.out.println(group.getSlug() + " — " + group.getName())
+);
+```
+
+</CodeGroup>
+
+<Expandable title="List source groups response">
+
+```json
+{
+  "total": 2,
+  "page": 1,
+  "page_size": 100,
+  "source_groups": [
+    {
+      "slug": "top-100-us-finance",
+      "name": "Top 100 US Finance",
+      "description": "Leading US financial news and trade publications."
+    },
+    {
+      "slug": "global-tech-press",
+      "name": "Global Tech Press",
+      "description": "Major technology news outlets worldwide."
+    }
+  ]
+}
+```
+
+</Expandable>
+
+## Scope a job to a source group
+
+Pass the slugs in `source_groups`. Maximum 20 groups per job. When you pass
+several, CatchAll fetches from the union of their domains.
+
+<CodeGroup>
+
+```bash cURL
+curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
+  -H "x-api-key: YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "Series B funding rounds for SaaS startups",
+    "source_groups": ["top-100-us-finance"]
+  }'
+```
+
+```json JSON
+{
+  "query": "Series B funding rounds for SaaS startups",
+  "source_groups": ["top-100-us-finance"]
+}
+```
+
+```python Python
+job = client.jobs.create_job(
+    query="Series B funding rounds for SaaS startups",
+    source_groups=["top-100-us-finance"],
+)
+```
+
+```typescript TypeScript
+const job = await client.jobs.createJob({
+  query: "Series B funding rounds for SaaS startups",
+  source_groups: ["top-100-us-finance"],
+});
+```
+
+```java Java
+var job = client.jobs().createJob(
+    SubmitRequestDto.builder()
+        .query("Series B funding rounds for SaaS startups")
+        .sourceGroups(List.of("top-100-us-finance"))
+        .build()
+);
+```
+
+</CodeGroup>
+
+An unknown slug, or one your organization can't access, is rejected when you
+submit the job.
+
+## Read back the attached groups
+
+Job results echo the attached groups as `source_groups`, each with `slug`,
+`name`, and `description`. The field is `null` when the job wasn't scoped to any
+group.
+
+```json
+{
+  "job_id": "5f0c9087-85cb-4917-b3c7-e5a5eff73a0c",
+  "query": "Series B funding rounds for SaaS startups",
+  "status": "completed",
+  "source_groups": [
+    {
+      "slug": "top-100-us-finance",
+      "name": "Top 100 US Finance",
+      "description": "Leading US financial news and trade publications."
+    }
+  ],
+  "all_records": []
+}
+```
+
+Monitor results report the same information under `reference_job`, so you can
+tell which groups a recurring run is scoped to.
+
+## Source groups and monitors
+
+A monitor created from a job scoped to source groups keeps that scoping — every
+recurring run fetches from the same groups, using their membership at the time
+the run happens.
+
+## See also
+
+- [Jobs](/web-search-api/concepts/jobs)
+- [Index and search depth](/web-search-api/concepts/index-and-search-depth)
+- [List source groups](/web-search-api/api-reference/jobs/list-source-groups)
+- [Create job](/web-search-api/api-reference/jobs/create-job)
