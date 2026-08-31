@@ -18,6 +18,7 @@
 - [Monitors](https://www.newscatcherapi.com/docs/web-search-api/concepts/monitors): Schedule recurring CatchAll jobs with webhook notifications.
 - [Company Watchlist](https://www.newscatcherapi.com/docs/web-search-api/concepts/company-search): Track specific companies across CatchAll jobs with per-company relevance scores.
 - [Projects](https://www.newscatcherapi.com/docs/web-search-api/concepts/projects): Organize jobs, monitors, datasets, and webhooks into named groups for easier management and sharing.
+- [Source groups](https://www.newscatcherapi.com/docs/web-search-api/concepts/source-groups): Scope a job to a curated set of trusted domains using named, reusable source groups.
 - [Understanding web index and search depth](https://www.newscatcherapi.com/docs/web-search-api/concepts/index-and-search-depth): How CatchAll's web index works and what start_date and end_date actually control.
 - [Working with dynamic schemas](https://www.newscatcherapi.com/docs/web-search-api/concepts/dynamic-schemas): Build integrations that handle variable field names and structures.
 
@@ -52,6 +53,16 @@ If the job used connected entity datasets, connected entities are split into `ev
 Only the job owner can delete a job. Returns `404` if the job is not found or does not belong to the authenticated user.
 
 Deleting an already-deleted job returns `200`.
+
+- [List Source Groups](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups): Returns a paginated list of source groups visible to your organization.
+
+A source group is a named, curated domain allowlist maintained by NewsCatcher — for
+example "Top 100 US Finance". Pass a group's `slug` in `source_groups` when creating
+a job to scope article fetching to that group's domains, instead of maintaining a
+long domain list yourself.
+
+The response covers public groups plus any restricted groups your organization has
+been granted access to. Each entry returns `slug`, `name`, and `description`.
 
 - [Company enrichment](https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto): Data model for enrichment fields of type company.
 

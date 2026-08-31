@@ -25,6 +25,9 @@
         <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/projects</loc>
     </url>
     <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/source-groups</loc>
+    </url>
+    <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/concepts/index-and-search-depth</loc>
     </url>
     <url>
@@ -77,6 +80,9 @@
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/delete-job</loc>
+    </url>
+    <url>
+        <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/list-source-groups</loc>
     </url>
     <url>
         <loc>https://www.newscatcherapi.com/docs/web-search-api/api-reference/jobs/company-enrichment-dto</loc>

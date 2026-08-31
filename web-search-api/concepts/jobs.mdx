@@ -158,6 +158,12 @@ If you omit both, the system generates both from scratch based on your query.
   instructions.
 </Note>
 
+<Note>
+  To restrict fetching to a curated set of trusted domains, add `source_groups`
+  with the slugs of the groups you want. See [Source
+  groups](/web-search-api/concepts/source-groups).
+</Note>
+
 <CodeGroup>
 ```bash cURL
 curl -X POST "https://catchall.newscatcherapi.com/catchAll/submit" \
@@ -839,5 +845,6 @@ Response:
 ## See also
 
 - [Monitors](/web-search-api/concepts/monitors)
+- [Source groups](/web-search-api/concepts/source-groups)
 - [Write effective queries](/web-search-api/how-to/write-effective-queries)
 - [Index and search depth](/web-search-api/concepts/index-and-search-depth)

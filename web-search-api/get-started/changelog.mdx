@@ -5,6 +5,98 @@ description: Track updates, improvements, and fixes to the CatchAll API.
 rss: true
 ---
 
+<Update label="1.8.0" description="2026-08-26">
+## Source groups, event tagging, and pipeline recall improvements
+
+Two new ways to shape what you get back: curated source groups to scope fetching
+to trusted domains, and automatic event classification on watchlist results. This
+release also carries a large body of pipeline work aimed at not missing obvious
+events, plus a clearer split between authentication and authorization errors.
+
+### Source groups
+
+Source groups are named, curated domain allowlists maintained by NewsCatcher — for
+example "Top 100 US Finance". Attach one to a job to scope article fetching to its
+domains instead of maintaining a long domain list yourself.
+
+- [`GET /catchAll/source-groups`](/web-search-api/api-reference/jobs/list-source-groups)
+  lists the groups available to your organization, each with `slug`, `name`, and
+  `description`. It covers public groups plus any restricted groups your
+  organization has been granted access to.
+- [`POST /catchAll/submit`](/web-search-api/api-reference/jobs/create-job) accepts
+  an optional `source_groups` array of slugs. Maximum 20 per job.
+- Job results echo the attached groups back as `source_groups`, and monitor results
+  do the same under `reference_job`.
+- Domains resolve when the job runs, so adding or removing a domain from a group
+  takes effect on every later run with no change on your side.
+
+See [Source groups](/web-search-api/concepts/source-groups).
+
+### Event tagging on watchlist results
+
+Records from all-news watchlist jobs — those submitted with
+`fetch_all_watchlist_news: true` — now carry a `tags` object classifying the event
+with a fixed taxonomy:
+
+- `event_type` describes what happened, as a taxonomy path such as
+  `deals.merger_acquisition`.
+- `sector` gives the industry, such as `banking`.
+
+Tagging is additive and never filters results. A record the classifier cannot place
+is still returned, with `unclassifiable` or `other_sector` in place of a taxonomy
+value. Other job types are unaffected and return no `tags`.
+
+See [Event tagging](/web-search-api/concepts/company-search#event-tagging).
+
+### Authentication and authorization errors are now distinct
+
+`401` and `403` now mean different things. A request whose caller cannot be
+identified returns `401`; a request from an identified caller who isn't allowed
+returns `403`.
+
+- A missing, unknown, or disabled API key now returns `401 Api key not found`.
+  It previously returned `403 User and organization combination not found`.
+- An API key belonging to a different organization than the requested
+  `x-organization-id` also returns `401`.
+- An unrecognized email now returns `401 User not found` instead of `404`.
+- A valid user who isn't a member of the requested organization still returns
+  `403`. A member with no active API key in that organization now returns the more
+  specific `403 No active API key found for user in this organization`.
+
+If you branch on status codes, treat `401` as re-authenticate and `403` as a
+permissions problem.
+
+### Filter entities and webhooks by project
+
+[`GET /catchAll/entities`](/web-search-api/api-reference/entities/list-entities) and
+[`GET /catchAll/webhooks`](/web-search-api/api-reference/webhooks/list-webhooks)
+accept the optional `project_id` query parameter, matching the job, monitor, and
+dataset lists.
+
+### Fixes and improvements
+
+- Fewer missed events: stronger validation and deduplication now reason about
+  event identity rather than article similarity, so materially different events
+  stay separate and weak records no longer contaminate merges.
+- Event timeframe validation gained a ±24-hour grace window, so an event reported
+  just outside an exact UTC boundary is no longer dropped. Monitors keep their
+  exact rolling window.
+- Clustering compares monetary amounts, so events with materially different values
+  are no longer merged, and oversized clusters are re-split.
+- Precision filtering now judges relevance from real source excerpts, reducing
+  false removal of relevant events.
+- Extraction returns no value rather than a guessed one when the source material
+  doesn't support it.
+- Jobs interrupted mid-run resume from the last checkpoint instead of repeating or
+  losing completed work.
+- Jobs whose requested enrichment fields are almost never derivable now stop early
+  and report that, rather than continuing to process. Records already produced are
+  kept.
+- Watchlist fetching is bounded per job to keep large watchlists predictable, and
+  monitor scheduling validates state at fire time so disabled monitors stop
+  reliably.
+</Update>
+
 <Update label="1.7.0" description="2026-08-04">
 ## Webhooks as project resources and search quality improvements
 
