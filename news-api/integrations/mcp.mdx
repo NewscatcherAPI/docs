@@ -241,8 +241,16 @@ restart the client.
   </Tab>
 
   <Tab title="VS Code">
-    Add to `.vscode/mcp.json` in your project root. VS Code can prompt for the
-    key and store it, so it never lands in a file you might commit:
+    [![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=news&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fnews-mcp.newscatcherapi.com%2Fmcp%22%2C%22headers%22%3A%7B%22x-api-token%22%3A%22YOUR_NEWS_API_KEY%22%7D%7D)
+
+    A deeplink cannot carry a prompted secret, so the button installs the
+    header with the literal `YOUR_NEWS_API_KEY` placeholder. Open
+    `.vscode/mcp.json` and replace it before your first call, or every call
+    fails with `401: Invalid api key`.
+
+    Or add it to `.vscode/mcp.json` in your project root manually. This way VS
+    Code prompts for the key and stores it, so it never lands in a file you
+    might commit:
 
     ```json
     {
@@ -268,15 +276,6 @@ restart the client.
 
     VS Code asks for the key the first time the server starts and reuses it
     afterwards.
-
-    There is also a one-click button:
-
-    [![Install in VS Code](https://img.shields.io/badge/Install_in-VS_Code-0098FF?style=flat-square&logo=visualstudiocode&logoColor=white)](https://vscode.dev/redirect/mcp/install?name=news&config=%7B%22type%22%3A%22http%22%2C%22url%22%3A%22https%3A%2F%2Fnews-mcp.newscatcherapi.com%2Fmcp%22%2C%22headers%22%3A%7B%22x-api-token%22%3A%22YOUR_NEWS_API_KEY%22%7D%7D)
-
-    A deeplink cannot carry a prompted input, so the button installs the header
-    with the literal `YOUR_NEWS_API_KEY` placeholder. Replace it in
-    `.vscode/mcp.json` before your first call, or every call fails with
-    `401: Invalid api key`.
 
     Restart VS Code after saving.
 
@@ -443,17 +442,23 @@ the [API reference](/news-api/api-reference/overview).
 | `check_health` | Local liveness ping — no authentication required |
 
 <Note>
-  Ask for `get_subscription` before a large pull. It costs one call and tells
-  the assistant your remaining quota, your concurrency limit, and how far back
-  your plan can search.
+  "Latest"/"most recent" needs `sort_by="date"` explicitly — every tool that
+  takes `sort_by` defaults to `"relevancy"`, not `"date"`. There is a hard cap
+  of 10,000 articles per query regardless of pagination; call
+  `get_aggregation_count` on a broad or undated query first and time-chunk the
+  date range if the count is high.
 </Note>
 
-## Defaults and limits
+## What you get by default
 
-The MCP passes News API's own defaults straight through, and a few of them
-catch people out:
+The MCP ships instructions that steer the assistant toward sensible parameters
+for whatever you asked, so in practice you rarely see the bare defaults. This
+table is the floor rather than the typical experience: it's what you get when
+neither you nor the assistant sets the parameter, whether the value comes from
+the MCP or from News API itself. That's what you need when a result comes back
+empty or in a shape you didn't expect.
 
-| Behavior | Default | How to change it |
+| Parameter | Value when unset | How to set it |
 | --- | --- | --- |
 | Date range | Last 7 days | Set `from_` and `to_`, e.g. `from_="2026-03-01"` |
 | Sort order | `relevancy` | `sort_by="date"` for "latest" or "most recent" |
@@ -461,7 +466,7 @@ catch people out:
 | Clustering | On for `search_articles` and `get_latest_headlines` | `clustering_enabled=false` |
 | NLP payload | On | `include_nlp_data=false` |
 | Near-duplicate removal | On | `exclude_duplicates=false` |
-| Fields per article | A short default set | Pass your own `fields` list |
+| Fields per article | A short default set (title, link, date, domain, author, language, NLP summary and theme) | Pass your own `fields` list |
 
 <Warning>
   The default date range is the **last 7 days**. An undated query about
@@ -660,7 +665,7 @@ matching does differently.
   Queries default to the **last 7 days**. If you asked about something older
   and got nothing back, add an explicit range — "from 2026-03-01 to
   2026-03-31" — and check `historical_days` from `get_subscription` to confirm
-  your plan reaches that far. See [Defaults and limits](#defaults-and-limits).
+  your plan reaches that far. See [What you get by default](#what-you-get-by-default).
 </Accordion>
 
 <Accordion title="429 errors or stalled requests">
