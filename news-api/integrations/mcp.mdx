@@ -461,6 +461,7 @@ catch people out:
 | Clustering | On for `search_articles` and `get_latest_headlines` | `clustering_enabled=false` |
 | NLP payload | On | `include_nlp_data=false` |
 | Near-duplicate removal | On | `exclude_duplicates=false` |
+| Fields per article | A short default set | Pass your own `fields` list |
 
 <Warning>
   The default date range is the **last 7 days**. An undated query about
@@ -490,35 +491,36 @@ Other limits worth knowing:
 
 ## Keeping responses small
 
-Every tool result lands in your client's context window, and the defaults are
-tuned for API clients rather than for chat. A bare `search_articles` call
-returns 100 articles wrapped in clusters, each with roughly 30 fields including
-the full article text — enough to fill the context window of most clients in a
-single call.
+Every tool result lands in your client's context window. The MCP already trims
+each article down to a short default set of fields — title, link, publish date,
+domain, author, language, and the NLP summary and theme — so the full article
+body and the large link arrays never cross the wire. What it does not trim is
+how *many* articles come back: the default is 100 per call, wrapped in
+clusters.
 
 Measured against production, same query, same day:
 
 | Call | Response size | Approx. tokens |
 | --- | --- | --- |
-| `search_articles(q="renewable energy")` | ~1.0 MB | ~262,000 |
-| The same query with `page_size=10`, `clustering_enabled=false`, `include_nlp_data=false`, and `fields=["title","link","published_date","domain_url","description"]` | ~5 KB | ~1,400 |
+| `search_articles(q="renewable energy")` | ~96 KB | ~24,000 |
+| The same query with `page_size=20` | ~19 KB | ~4,800 |
+| The same query with `page_size=20`, `clustering_enabled=false`, `include_nlp_data=false` | ~8 KB | ~1,900 |
 
-Four levers, in rough order of impact:
+Three levers, in order of impact:
 
-- **`fields`** — a list of article keys to keep. Most of the saving comes from
-  here, because the default response carries every field including `content`
-  and the large `all_links` and `all_domain_links` arrays.
-  `["title","link","published_date","domain_url","description"]` covers most
-  conversational use.
-- **`page_size`** — 10 to 25 is usually right for an answer you are going to
-  read.
+- **`page_size`** — the big one. 10 to 25 is usually right for an answer you
+  are going to read, against a default of 100.
 - **`clustering_enabled=false`** — flat list, no cluster wrapper.
-- **`include_nlp_data=false`** — drops the per-article `nlp` object when you
-  are not using sentiment, entities, themes, or summaries.
+- **`include_nlp_data=false`** — drops the per-article `nlp` block when you are
+  not using summaries, themes, sentiment, or entities.
 
-You do not have to name the parameters. Say what you want in the prompt and the
-client sets them for you: "20 results, just title, link, date and source, skip
-the NLP data."
+You can also pass your own `fields` list to narrow the default set further, or
+widen it when you need something it leaves out — `description`, `content`,
+`rank`, or the sentiment and entity fields under `nlp`.
+
+None of this has to be named explicitly. Say what you want in the prompt and
+the client sets the parameters for you: "20 results, just title, link, date and
+source, skip the NLP data."
 
 ## Language and country codes
 
@@ -669,10 +671,10 @@ matching does differently.
 </Accordion>
 
 <Accordion title="Response too large, or the client truncated the result">
-  The defaults return 100 clustered articles with the full NLP payload and full
-  article text. Ask for fewer results and fewer fields — "10 results, just
-  title, link, date and source" — or set `page_size`, `fields`,
-  `clustering_enabled=false` and `include_nlp_data=false` directly. See
+  The default is 100 articles per call, wrapped in clusters, with the NLP block
+  populated. Ask for fewer — "10 results, just title, link, date and source" —
+  or set `page_size`, `fields`, `clustering_enabled=false` and
+  `include_nlp_data=false` directly. See
   [Keeping responses small](#keeping-responses-small).
 </Accordion>
 
