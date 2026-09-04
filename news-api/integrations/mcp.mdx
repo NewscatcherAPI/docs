@@ -449,6 +449,65 @@ the top three of its cluster and never reach the response.
   default `page_size` of 100.
 </Note>
 
+## Response fields
+
+`search_articles`, `get_latest_headlines`, `get_breaking_news`,
+`search_by_author`, and `search_by_link` accept a `fields` parameter that trims
+each article to the keys you name. News API returns around 40 fields per
+article and the `content` body alone can push a 30-article call past 300 KB, so
+these tools default to a lean set instead:
+
+```text
+title, link, published_date, domain_url, author, language,
+nlp.summary, nlp.translation_summary, nlp.theme
+```
+
+To get the full article object, pass `fields` explicitly as an empty list
+(`[]`) or as `null`. **Leaving `fields` out of the call does not do this** — an
+omitted `fields` applies the lean default like any other call. Only an explicit
+`[]` or `null` opts out.
+
+Field names are validated against the real article schema before the request
+goes out, so a typo returns a corrective error instead of silently disappearing
+from the response. NLP subfields need a dotted path — `nlp.theme`,
+`nlp.sentiment`, `nlp.ner_ORG` — or pass `nlp` alone for the whole block. There
+is no top-level `summary` field: use `description` for the short lede or
+`nlp.summary` for the AI-generated summary.
+
+<Note>
+  For the boolean toggles — `clustering_enabled`, `exclude_duplicates`,
+  `include_nlp_data`, `include_translation_fields` — an explicit `null` means
+  the same as omitting the parameter: the tool's own default applies. `fields`
+  and `cluster_top_n_articles` are the two exceptions, where `null` carries its
+  own meaning (all fields, and no per-cluster cap).
+</Note>
+
+## Response size cap
+
+Article-returning tools (`search_articles`, `get_latest_headlines`,
+`get_breaking_news`, `search_by_author`) cap each response at 250,000 bytes.
+A broad request — `fields=[]` with a large `page_size` and no filters — would
+otherwise return a payload big enough to swamp the client's context window.
+
+The cap drops trailing articles until the response fits; it never touches the
+content of the articles it keeps, and it does not fire on responses that
+already fit, which is nearly all of them. When it does trim, the response
+carries a `response_capped` block:
+
+```json
+{
+  "response_capped": {
+    "reason": "response exceeded the 250000-byte cap",
+    "kept": 42,
+    "dropped": 958,
+    "hint": "narrow the query (add filters, pass fields=[...] instead of fields=[], or reduce page_size) to get more back in one call, or paginate with `page`"
+  }
+}
+```
+
+If you see it, narrow the query, name the fields you actually need instead of
+requesting the full object, lower `page_size`, or page through the results.
+
 ## Troubleshooting
 
 <Accordion title="Tools not appearing">
@@ -477,6 +536,15 @@ the top three of its cluster and never reach the response.
   or upstream API error comes back as a string starting with `Error: ...`; an
   unhandled exception comes back as `Unexpected error: ...`. Check the
   returned string for the specific reason.
+</Accordion>
+
+<Accordion title="Fewer results than expected">
+  Three separate limits can shorten a response. Clustered results show at most
+  `cluster_top_n_articles` articles per cluster (default 3) — `cluster_size`
+  reports the true total. The [response size
+  cap](#response-size-cap) drops trailing articles from oversized payloads and
+  adds a `response_capped` block when it does. And News API returns a maximum
+  of 10,000 articles per query regardless of pagination.
 </Accordion>
 
 <Accordion title="Client does not support remote MCP">
